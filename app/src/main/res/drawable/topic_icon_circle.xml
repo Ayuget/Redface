@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+
+    <solid
+        android:id="@+id/circle_bg_color"
+        android:color="@color/topic_icon_default_bg"/>
+
+    <size
+        android:width="@dimen/topic_icon_size"
+        android:height="@dimen/topic_icon_size"/>
+</shape>

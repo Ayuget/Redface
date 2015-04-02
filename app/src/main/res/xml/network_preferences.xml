@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="@string/pref_proxy_settings">
+        <CheckBoxPreference
+            android:key="enable_proxy"
+            android:title="@string/pref_activate_proxy_title"
+            android:summary="@string/pref_activate_proxy_summary"
+            android:defaultValue="false" />
+        <EditTextPreference
+            android:key="proxy_host"
+            android:title="@string/pref_proxy_host_title"
+            android:defaultValue=""
+            android:dependency="enable_proxy" />
+        <EditTextPreference
+            android:key="proxy_port"
+            android:title="@string/pref_proxy_port_title"
+            android:inputType="number"
+            android:defaultValue="80"
+            android:numeric="integer"
+            android:dependency="enable_proxy" />
+    </PreferenceCategory>
+</PreferenceScreen>

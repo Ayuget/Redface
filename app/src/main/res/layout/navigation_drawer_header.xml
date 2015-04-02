@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/chosen_account_view"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/navdrawer_chosen_account_height"
+    android:background="@color/theme_primary">
+
+    <ImageView
+        android:layout_width="150dp"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:id="@+id/profile_picture" />
+
+    <TextView
+        android:id="@+id/active_username"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_toRightOf="@id/profile_picture"
+        android:layout_alignParentBottom="true"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:textSize="18dp"
+        android:textColor="@color/navdrawer_active_user"
+        android:textStyle="bold"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:ellipsize="end"
+        tools:text="Pseudo"/>
+
+    <ImageView
+        android:id="@+id/expand_account_box_indicator"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:scaleType="center"
+        android:src="@drawable/ic_arrow_drop_down_white_24dp"
+        />
+</RelativeLayout>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guest_username">Anonyme</string>
+
+    <!-- Actionbar actions -->
+    <string name="action_settings">Paramètres</string>
+    <string name="action_topics_filter">Filtrer les sujets</string>
+    <string name="action_go_to_last_read_page">Aller à la dernière page lue</string>
+    <string name="action_go_to_first_page">Aller à la première page</string>
+    <string name="action_go_to_last_page">Aller à la dernière page</string>
+    <string name="action_go_to_specific_page">Aller à la page…</string>
+    <string name="action_reply_to_topic">Poster un message</string>
+
+    <!-- Navigation drawer -->
+    <string name="drawer_open">Ouvrir le panneau de navigation</string>
+    <string name="drawer_close">Fermer le panneau de navigation</string>
+
+    <!-- Post page -->
+    <string name="reload_page">Recharger</string>
+    <string name="page_loading_error">Erreur de chargement de la page</string>
+    <string name="action_reply_reply_dialog">Répondre</string>
+    <string name="action_sign_in">Se connecter</string>
+    <string name="action_topics_filter_all">Tous</string>
+    <string name="action_topics_filter_favorites">Favoris</string>
+    <string name="action_topics_filter_participated">Favoris &amp; Cyans</string>
+    <string name="action_topics_filter_read">Lus</string>
+    <string name="action_topics_filter_title">Filtre des sujets</string>
+    <string name="add_smiley_button_description">Ajouter un smiley</string>
+    <string name="category_icon_description">Icone de la catégorie</string>
+    <string name="default_fragment_text">Merci de sélectionner une catégorie</string>
+    <string name="error_loading_topics">Erreur lors du chargement des sujets</string>
+    <string name="error_loading_topics_page">Erreur lors du chargement de la page {page} des sujets</string>
+    <string name="prompt_go_to_page">Aller à la page…</string>
+    <string name="insert_link_button_description">Insérer un lien</string>
+    <string name="login_failed">Connexion impossible, vérifiez le couple pseudo/mot de passe</string>
+    <string name="login_password_empty">Le mot de passe ne peut pas être vide</string>
+    <string name="login_username_empty">Le pseudo ne peut pas être vide</string>
+    <string name="make_text_bold_button_description">Rendre le texte gras</string>
+    <string name="make_text_italic_button_description">Rendre le texte italique</string>
+    <string name="menu_about">A propos</string>
+    <string name="navdrawer_add_account">Ajouter un compte</string>
+    <string name="navdrawer_item_my_topics">Mes sujets</string>
+    <string name="navdrawer_item_private_messages">Messages privés</string>
+    <string name="navdrawer_item_profile">Profils</string>
+    <string name="navdrawer_item_settings">Paramètres</string>
+    <string name="navdrawer_profile_picture">Image de profil</string>
+    <string name="pref_activate_proxy_summary">Utiliser un proxy pour se connecter au forum</string>
+    <string name="pref_activate_proxy_title">Activer le proxy</string>
+    <string name="pref_appearance_summary">Changer l\'apparence de l\'application</string>
+    <string name="pref_appearance_title">Apparence</string>
+    <string name="pref_default_topic_filter">Filtres par défaut pour les sujets</string>
+    <string name="pref_default_topic_filter_default">NONE</string>
+    <string name="pref_general_title">Général</string>
+    <string name="pref_network_summary">Paramètres liés au réseau (proxy, …)</string>
+    <string name="pref_network_title">Réseau</string>
+    <string name="pref_proxy_host_title">Hôte du proxy</string>
+    <string name="pref_proxy_port_title">Port du proxy</string>
+    <string name="pref_proxy_settings">Paramètres du proxy</string>
+    <string name="prompt_password">Mot de passe</string>
+    <string name="prompt_username">Pseudo</string>
+    <string name="reply_post_failure">Erreur de traitement de la réponse</string>
+    <string name="reply_successfully_posted">Réponse postée avec succès</string>
+    <string name="message_successfully_edited">Message édité</string>
+    <string name="message_edit_failure">Erreur lors de l\'édition du message</string>
+    <string name="settings_title">Paramètres</string>
+    <string name="title_activity_login">Se connecter</string>
+    <string name="pref_notify_private_messages_summary">Être notifié lors de la réception d\'un MP</string>
+    <string name="pref_notify_private_messages_title">Notifications pour les nouveaux MPs</string>
+
+    <string-array name="pref_default_topic_filter_values">
+        <item>Tous</item>
+        <item>Favoris</item>
+        <item>Favoris &amp; Cyans</item>
+        <item>Lus</item>
+    </string-array>
+
+    <string-array name="pref_theme_values">
+        <item>Clair</item>
+        <item>Foncé</item>
+    </string-array>
+
+    <!-- Dialogs -->
+    <string name="dialog_go_to_page_positive_text">Aller !</string>
+</resources>

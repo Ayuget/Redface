@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="appBackgroundColor" format="reference|color" />
+
+    <!-- Text colors -->
+    <attr name="textColorPrimary" format="reference|color" />
+    <attr name="textColorSecondary" format="reference|color" />
+
+    <!-- List dividers -->
+    <attr name="listDividerColor" format="reference|color" />
+
+    <!-- Topic list -->
+    <attr name="defaultTopicIconBackgroundColor" format="reference|color" />
+    <attr name="defaultTopicIconTextColor" format="reference|color" />
+    <attr name="unreadCountBackgroundColor" format="reference|color" />
+    <attr name="readTopicIconBackgroundColor" format="reference|color" />
+    <attr name="readTopicIconTextColor" format="reference|color" />
+
+    <!-- Toolbar theme -->
+    <attr name="toolbarTheme" format="reference" />
+    <attr name="toolbarPopupTheme" format="reference" />
+    <attr name="tabletLandscapePagerBackground" format="reference|color" />
+
+    <!-- Reply toolbars -->
+    <attr name="replyToolbarBackground" format="reference|color" />
+    <attr name="replyToolbarIconsColor" format="reference|color" />
+
+    <declare-styleable name="ScrimInsetsView">
+        <attr name="insetForeground" format="reference|color" />
+    </declare-styleable>
+
+    <!-- Settings icons -->
+    <attr name="generalIconDrawable" format="reference" />
+    <attr name="appearanceIconDrawable" format="reference" />
+    <attr name="networkIconDrawable" format="reference" />
+</resources>

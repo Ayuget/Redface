@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <View
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/spinner_divider"
+        android:layout_width="fill_parent"
+        android:layout_height="1px"
+        android:background="@color/subcategories_spinner_divider" />
+
+    <TextView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/category_name"
+        android:layout_height="@dimen/subcategories_spinner_item_height"
+        android:layout_width="match_parent"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:drawablePadding="8dp"
+        android:gravity="center_vertical|start"
+        android:textSize="16sp"
+        android:textColor="@color/theme_primary_dark" />
+
+    <TextView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/subcategory_name"
+        android:layout_height="@dimen/subcategories_spinner_item_height"
+        android:layout_width="match_parent"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:drawablePadding="8dp"
+        android:gravity="center_vertical|start"
+        android:textSize="16sp"
+        android:textColor="?attr/textColorPrimary" />
+</LinearLayout>

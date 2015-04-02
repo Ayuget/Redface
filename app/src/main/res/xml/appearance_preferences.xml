@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <ListPreference
+        android:key="theme"
+        android:title="@string/pref_theme_title"
+        android:defaultValue="@string/pref_theme_default"
+        android:entries="@array/pref_theme_values"
+        android:entryValues="@array/pref_theme_entries" />
+    <ListPreference
+        android:key="default_topic_filter"
+        android:title="@string/pref_default_topic_filter"
+        android:defaultValue="@string/pref_default_topic_filter_default"
+        android:entries="@array/pref_default_topic_filter_values"
+        android:entryValues="@array/pref_default_topic_filter_entries" />
+</PreferenceScreen>

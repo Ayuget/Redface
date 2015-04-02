@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.ayuget.redface.ui.view.ScrimInsetsScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/NavigationDrawer"
+    android:id="@+id/drawer_view"
+    android:layout_width="304dp"
+    android:layout_height="fill_parent"
+    android:layout_gravity="left|start"
+    android:orientation="vertical"
+    android:fitsSystemWindows="false"
+    app:insetForeground="#4000">
+    <LinearLayout android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Drawer header (profile image & account selection) -->
+        <include layout="@layout/navigation_drawer_header" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <!-- Account items -->
+            <LinearLayout
+                android:id="@+id/account_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="vertical"
+                android:visibility="invisible" />
+
+            <!-- Drawer items -->
+            <LinearLayout
+                android:id="@+id/navdrawer_items_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:orientation="vertical" />
+        </FrameLayout>
+    </LinearLayout>
+
+</com.ayuget.redface.ui.view.ScrimInsetsScrollView>

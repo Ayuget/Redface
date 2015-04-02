@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="@dimen/subcategories_spinner_width"
+    android:layout_height="wrap_content"
+    android:weightSum="3">
+
+    <TextView
+        android:id="@+id/subcategory_name"
+        android:paddingLeft="@dimen/spinner_left_padding"
+        android:paddingRight="4dp"
+        android:layout_height="0dp"
+        android:layout_width="wrap_content"
+        android:layout_weight="2"
+        android:textColor="@color/subcategories_spinner_active_item"
+        android:textSize="16sp"
+        android:drawablePadding="6dp"
+        android:drawableRight="@drawable/spinner_triangle_sub" />
+
+    <TextView
+        android:id="@+id/selected_topics"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:paddingLeft="@dimen/spinner_left_padding"
+        android:paddingRight="4dp"
+        android:textColor="@color/subcategories_spinner_active_item"
+        android:fontFamily="sans-serif-condensed"
+        android:textSize="12sp"
+        />
+
+</LinearLayout>

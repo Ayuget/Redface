@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Redface</string>
+    <string name="guest_username">Guest</string>
+
+    <!-- Actionbar actions -->
+    <string name="action_settings">Settings</string>
+    <string name="action_topics_filter">Topic filters</string>
+    <string name="action_go_to_last_read_page">Go to last read page</string>
+    <string name="action_go_to_first_page">Go to first page</string>
+    <string name="action_go_to_last_page">Go to last page</string>
+    <string name="action_go_to_specific_page">Go to page…</string>
+    <string name="action_reply_to_topic">Post a reply</string>
+
+    <string name="action_topics_filter_title">Topics filter</string>
+    <string name="action_topics_filter_all">All</string>
+    <string name="action_topics_filter_favorites">Favorites</string>
+    <string name="action_topics_filter_participated">Favorites &amp; Starred</string>
+    <string name="action_topics_filter_read">Read</string>
+
+    <!-- Navigation drawer -->
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+    <string name="category_icon_description">Category icon</string>
+
+    <string name="navdrawer_item_private_messages">Private messages</string>
+    <string name="navdrawer_item_settings">Settings</string>
+    <string name="navdrawer_item_profile">Profile</string>
+    <string name="navdrawer_item_my_topics">My topics</string>
+    <string name="navdrawer_add_account">Add account</string>
+    <string name="navdrawer_profile_picture">Profile picture</string>
+
+    <!-- Default fragment -->
+    <string name="default_fragment_text">Please select a category from the navigation drawer</string>
+
+    <!-- Settings / Preferences -->
+    <string name="settings_title">Settings</string>
+
+    <!-- General preferences screen-->
+    <string name="pref_general_title">General</string>
+    <string name="pref_general_summary">Yes sir !</string>
+
+    <string name="pref_notify_private_messages_title">Notification for private messages</string>
+    <string name="pref_notify_private_messages_summary">Be notified when you receive a new private message</string>
+
+    <!-- Network preferences screen-->
+    <string name="pref_network_title">Network</string>
+    <string name="pref_network_summary">Configure network related options (proxy, ...)</string>
+
+    <string name="pref_activate_proxy_title">Enable proxy</string>
+    <string name="pref_activate_proxy_summary">Use a proxy to connect to the forum</string>
+    <string name="pref_proxy_host_title">Proxy host</string>
+    <string name="pref_proxy_port_title">Proxy port</string>
+
+    <string name="pref_proxy_settings">Proxy settings</string>
+
+    <!-- Appearance preferences screen-->
+    <string name="pref_appearance_title">Appearance</string>
+    <string name="pref_appearance_summary">Change how the application looks</string>
+
+    <string name="pref_default_topic_filter">Default topic filter</string>
+    <string name="pref_default_topic_filter_default">NONE</string>
+    <string-array name="pref_default_topic_filter_values">
+        <item>All</item>
+        <item>Favorites</item>
+        <item>Favorites &amp; Starred</item>
+        <item>Read</item>
+    </string-array>
+    <string-array name="pref_default_topic_filter_entries">
+        <item>NONE</item>
+        <item>FAVORITE</item>
+        <item>PARTICIPATED</item>
+        <item>READ</item>
+    </string-array>
+
+    <string name="pref_theme_title">Theme</string>
+    <string name="pref_theme_default">LIGHT</string>
+    <string-array name="pref_theme_values">
+        <item>Light</item>
+        <item>Dark</item>
+    </string-array>
+    <string-array name="pref_theme_entries">
+        <item>@string/pref_theme_default</item>
+        <item>DARK</item>
+    </string-array>
+
+    <!-- About page -->
+    <string name="menu_about">About</string>
+
+    <!-- Topic list -->
+    <string name="error_loading_topics">Error while loading topics</string>
+    <string name="error_loading_topics_page">Error while loading topics for page {page}</string>
+    <string name="prompt_go_to_page">Go to page…</string>
+
+    <!-- Post page -->
+    <string name="reload_page">Reload</string>
+    <string name="page_loading_error">Error loading page</string>
+
+    <!-- Login page -->
+    <string name="prompt_username">Username</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in</string>
+    <string name="title_activity_login">Log in</string>
+    <string name="login_username_empty">Username cannot be empty</string>
+    <string name="login_password_empty">Password cannot be empty</string>
+    <string name="login_failed">Failed to login, check username/password</string>
+
+    <!-- Reply dialog -->
+    <string name="action_reply_reply_dialog">Reply</string>
+    <string name="add_smiley_button_description">Add smiley</string>
+    <string name="make_text_bold_button_description">Make text bold</string>
+    <string name="make_text_italic_button_description">Make text italic</string>
+    <string name="underline_text_button_description">Underline text</string>
+    <string name="insert_quote_button_description">Insert quote</string>
+    <string name="insert_code_button_description">Insert code block</string>
+    <string name="insert_spoiler_button_description">Insert spoiler</string>
+    <string name="insert_link_button_description">Make text italic</string>
+
+    <string name="popular_smileys_button_description">Popular smileys</string>
+    <string name="recent_smileys_button_description">Recent smileys</string>
+    <string name="default_smileys_button_description">Default smileys</string>
+
+    <string name="reply_successfully_posted">Reply successfully posted</string>
+    <string name="reply_post_failure">Failed to post reply</string>
+    <string name="message_successfully_edited">Reply successfully posted</string>
+    <string name="message_edit_failure">Failed to edit message</string>
+    <string name="user_switch_sucessful">Changed active user to {username}</string>
+
+    <!-- Dialogs -->
+    <string name="dialog_go_to_page_positive_text">Go !</string>
+</resources>

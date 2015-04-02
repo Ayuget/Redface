@@ -1,0 +1,210 @@
+body {
+    font-family: Roboto, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+body.redface-dark {
+    /* background: #282828; */
+    background: #222222;
+    color: #ffffff;
+}
+
+.post {
+    word-wrap: break-word;
+}
+
+.post-toolbar {
+    font-family: 'Roboto Light', sans-serif-light;
+    padding: 3px 8px 3px 8px;
+    background: #cfcece;
+    color: #424242;
+    height: 36px;
+    overflow: auto;
+}
+
+.redface-dark .post-toolbar {
+    background: #404246;
+    color: #c2c2c4;
+    border-top: 1px solid #222222;
+    border-bottom: 1px solid #111111;
+}
+
+.profile-picture-container {
+    float: left;
+    display: table-cell;
+    vertical-align: middle;
+    padding-top: 2px;
+    height: 36px;
+}
+
+.profile-picture {
+    max-height: 32px;
+    padding-right: 7px;
+    display: block;
+}
+
+.post-details {
+    float: left;
+}
+
+.post-content {
+    padding: 8px;
+    font-size: 12px;
+}
+
+.post-author {
+    font-family: 'Roboto', sans-serif;
+}
+
+.post-date {
+    font-size: 0.84em;
+}
+
+.post-content p {
+    margin: 0 0 10px 0;
+}
+
+.post-actions {
+    float:right;
+    overflow: auto;
+}
+
+.post-action {
+    width: 36px;
+    height: 26px;
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+    float: left;
+    margin-right: 3px;
+    padding-top: 10px;
+}
+
+.redface-dark .post-content a {
+    color: #76a2fb;
+}
+
+.redface-light .post-content a {
+    color: #0D47A1;
+}
+
+img {
+    max-width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/*
+* Citations
+*/
+
+table.quote, table.spoiler {
+    transition: box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition-delay: 0.2s;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+}
+
+.quote, .spoiler {
+    border: 1px solid #d4d4d4;
+    background: #ffffff;
+    min-height: 40px;
+    width: 95%;
+    margin: 10px auto 10px auto;
+    padding: 0;
+}
+
+.quote br:nth-of-type(1), .quote br:nth-of-type(2) {
+    display: none;
+}
+
+.quote p, .spoiler p {
+    padding: 4px 10px 4px 10px;
+}
+
+.redface-dark .quote, .redface-dark .spoiler {
+    background: #181820;
+    border: 1px solid #3a3a41;
+    color: #ffffff;
+}
+
+.quote b.s1, .spoiler b.s1Topic {
+    display: block;
+    font-size: 0.9em;
+    color: #757575;
+    margin-bottom: 8px;
+    padding: 8px;
+    background: #e7e7e7;
+}
+
+.redface-dark .quote b.s1, .redface-dark .spoiler b.s1Topic {
+    background: #181820;
+    color: #a8a8ac;
+}
+
+.quote b.s1 a {
+    text-decoration: none;
+    color: #757575;
+    font-weight: bold;
+}
+
+
+.smiley {
+    display: inline-block;
+    min-width: 40px;
+    min-height: 30px;
+    margin: 6px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.smiley img {
+    min-width: 20px;
+}
+
+.Topic.masque {
+    visibility: hidden;
+}
+
+.extra-details-container {
+    overflow: auto;
+}
+
+.extra-details {
+    float: right;
+}
+
+.extra-details i {
+    margin-right: 4px;
+}
+
+
+/**
+* Material design ripple effect
+*/
+[material] { position: relative; overflow: hidden;  text-align: center; border: none; background: none; }
+[material][disabled] { background: rgb(234, 234, 234); }
+
+[material][primary] { background: #cecece; width: 56px; height: 56px; -webkit-clip-path: circle(32px at 32px 32px); clip-path: circle(32px at 32px 32px); line-height: 32px; border-radius: 50%; font-size: 24px; }
+[material][raised] { border-radius: 3px; }
+[material][raised]:not([disabled]) { box-shadow: 0 3px 3px rgba(0, 0, 0, 0.16), 0 3px 3px rgba(0, 0, 0, 0.23);
+transition: .3s all ease-in-out; background: #dfdfdf;
+}
+[material][raised]:not([disabled]):hover,
+[material][raised]:not([disabled]):active
+{ box-shadow: 0 14px 14px rgba(0, 0, 0, 0.25), 0 10px 5px rgba(0, 0, 0, 0.22); }
+
+[material][raised][colored] { color: #fff; background: #4285f4; }
+
+[material][secondary] { background: #cecece; width: 40px; height: 40px; -webkit-clip-path: circle(40px at 20px 20px); clip-path: circle(40px at 20px 20px); line-height: 16px; border-radius: 50%; font-size: 18px; }
+[material]:focus { outline: none; }
+
+.ripple { display: block; position: absolute; background: rgba(0,0,0,.1); border-radius: 100%; -webkit-transform: scale(0); transform: scale(0); }
+/*animation effect*/
+.ripple.animate { -webkit-animation: ripple 0.65s linear; animation: ripple 0.65s linear; }
+
+@-webkit-keyframes ripple {
+	100% {opacity: 0; -webkit-transform: scale(2.5); transform: scale(2.5);}
+}
+@keyframes ripple { 100% {opacity: 0; -webkit-transform: scale(2.5); transform: scale(2.5);}
+}

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--
+    <Preference
+        android:key="general_preferences"
+        android:icon="?attr/generalIconDrawable"
+        android:persistent="false"
+        android:title="@string/pref_general_title"
+        android:layout="@layout/preference_home"
+        android:summary="@string/pref_general_summary" />
+        -->
+
+    <Preference
+        android:key="appearance_preferences"
+        android:icon="?attr/appearanceIconDrawable"
+        android:persistent="false"
+        android:title="@string/pref_appearance_title"
+        android:layout="@layout/preference_home"
+        android:summary="@string/pref_appearance_summary" />
+
+    <Preference
+        android:key="network_preferences"
+        android:icon="?attr/networkIconDrawable"
+        android:persistent="false"
+        android:title="@string/pref_network_title"
+        android:layout="@layout/preference_home"
+        android:summary="@string/pref_network_summary" />
+</PreferenceScreen>

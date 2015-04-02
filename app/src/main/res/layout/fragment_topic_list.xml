@@ -1,0 +1,73 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:wheel="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clickable="true">
+
+    <!-- Loading indicator -->
+    <RelativeLayout
+        android:id="@+id/loading_indicator"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center">
+        <com.pnikosis.materialishprogress.ProgressWheel
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            wheel:matProg_barColor="@color/theme_primary"
+            wheel:matProg_progressIndeterminate="true" />
+    </RelativeLayout>
+
+    <!-- Error layout -->
+    <LinearLayout
+        android:id="@+id/error_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center_vertical|center"
+        android:visibility="gone">
+        <ImageView
+            android:id="@+id/error_image"
+            android:src="@drawable/sad_smiley"
+            android:contentDescription="@string/page_loading_error"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            />
+        <TextView
+            android:id="@+id/error_message"
+            android:textSize="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:gravity="center"
+            android:text="@string/page_loading_error"
+            />
+        <Button
+            android:id="@+id/error_reload_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/reload_page"
+            />
+    </LinearLayout>
+
+    <!-- Regular content (topic list) -->
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/topic_list_swipe_refresh_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+        <com.ayuget.redface.ui.view.ContextMenuRecyclerView
+            style="@style/ListWithDividers"
+            android:id="@+id/topics_list"
+            android:paddingTop="?attr/actionBarSize"
+            android:clipToPadding="false"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:scrollbars="vertical" />
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+    <!-- Primary toolbar -->
+    <include layout="@layout/toolbar_actionbar" />
+</FrameLayout>

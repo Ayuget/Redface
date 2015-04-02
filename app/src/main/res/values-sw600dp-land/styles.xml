@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="RedfaceTopicPagerStrip">
+        <item name="android:background">?attr/tabletLandscapePagerBackground</item>
+        <item name="android:textColor">?attr/textColorPrimary</item>
+    </style>
+</resources>

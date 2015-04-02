@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_go_to_first_page"
+        android:title="@string/action_go_to_first_page"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_go_to_specific_page"
+        android:title="@string/action_go_to_specific_page"
+        android:orderInCategory="150"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_go_to_last_page"
+        android:title="@string/action_go_to_last_page"
+        android:orderInCategory="200"
+        app:showAsAction="never" />
+</menu>

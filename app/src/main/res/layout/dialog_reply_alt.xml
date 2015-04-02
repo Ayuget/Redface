@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+    <RelativeLayout
+        android:id="@+id/main_reply_frame"
+        android:background="?attr/appBackgroundColor"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="16dp">
+        <android.support.v7.widget.Toolbar
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/toolbar_reply_actions"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:minHeight="?attr/actionBarSize"
+            style="@style/ReplyActionsToolbar"
+            />
+
+        <android.support.v7.widget.Toolbar
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/toolbar_reply_extra"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:minHeight="?attr/actionBarSize"
+            android:layout_alignParentBottom="true"
+            style="@style/ReplyOptionsToolbar">
+            <ImageButton
+                android:id="@+id/add_smiley_button"
+                android:contentDescription="@string/add_smiley_button_description"
+                style="@style/ReplyOptionsIcon"
+                android:src="@drawable/ic_action_insert_emoticon" />
+
+            <ImageButton
+                android:id="@+id/make_text_bold_button"
+                android:contentDescription="@string/make_text_bold_button_description"
+                style="@style/ReplyOptionsIcon"
+                android:src="@drawable/ic_action_format_bold" />
+
+            <ImageButton
+                android:id="@+id/make_text_italic_button"
+                android:contentDescription="@string/make_text_italic_button_description"
+                style="@style/ReplyOptionsIcon"
+                android:src="@drawable/ic_action_format_italic" />
+
+            <ImageButton
+                android:id="@+id/insert_link_button"
+                android:contentDescription="@string/insert_link_button_description"
+                style="@style/ReplyOptionsIcon"
+                android:src="@drawable/ic_action_insert_link" />
+
+        </android.support.v7.widget.Toolbar>
+
+        <EditText
+            android:id="@+id/reply_text"
+            android:layout_above="@id/toolbar_reply_extra"
+            android:layout_below="@id/toolbar_reply_actions"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:textSize="@dimen/text_size_default"
+            android:gravity="top"
+            android:inputType="textMultiLine|textCapSentences"
+            android:background="@null"
+            android:padding="@dimen/reply_edit_text_padding" />
+    </RelativeLayout>
+
+    <!-- Smiley selector -->
+    <include layout="@layout/smiley_selector" />
+</merge>

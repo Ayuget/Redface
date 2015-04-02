@@ -1,0 +1,25 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".TopicsActivity">
+    <item
+        android:title="@string/action_topics_filter_title"
+        android:id="@+id/action_topics_filter"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_flag_white_24dp">
+        <menu>
+            <item
+                android:title="@string/action_topics_filter_all"
+                android:id="@+id/action_topics_filter_all" />
+            <item
+                android:title="@string/action_topics_filter_favorites"
+                android:id="@+id/action_topics_filter_favorites" />
+            <item
+                android:title="@string/action_topics_filter_participated"
+                android:id="@+id/action_topics_filter_participated" />
+            <item
+                android:title="@string/action_topics_filter_read"
+                android:id="@+id/action_topics_filter_read" />
+        </menu>
+    </item>
+</menu>

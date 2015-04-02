@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.ayuget.redface" >
+
+    <!-- Necessary to connect to forum.hardware.fr -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
+
+    <application
+        android:name=".RedfaceApp"
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/Theme.Redface.Dark" >
+        <activity
+            android:name="com.ayuget.redface.ui.TopicsActivity"
+            android:windowSoftInputMode="adjustResize"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:host="forum.hardware.fr" android:scheme="http" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.ayuget.redface.ui.AccountActivity"
+            android:label="@string/title_activity_login"
+            android:parentActivityName="com.ayuget.redface.ui.BaseActivity"
+            android:windowSoftInputMode="adjustResize|stateVisible" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.ayuget.redface.ui.BaseActivity" />
+        </activity>
+
+        <activity android:name="com.ayuget.redface.ui.SettingsActivity" />
+        <activity android:name="com.ayuget.redface.ui.ReplyActivity" android:theme="@style/Theme.Redface.Transparent.Dark" android:windowSoftInputMode="adjustResize" />
+        <activity android:name="com.ayuget.redface.ui.EditPostActivity" android:theme="@style/Theme.Redface.Transparent.Dark" android:windowSoftInputMode="adjustResize" />
+
+        <service android:name=".account.RedfaceAuthenticatorService" android:enabled="true">
+            <intent-filter>
+                <action android:name="android.accounts.AccountAuthenticator"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/authenticator"/>
+        </service>
+
+        <meta-data android:name="com.crashlytics.ApiKey" android:value="b1f369fddd2fed6f71072ef7db728637b1c633bc"/>
+    </application>
+
+</manifest>
