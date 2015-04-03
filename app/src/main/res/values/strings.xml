@@ -59,14 +59,14 @@
     <string name="pref_appearance_summary">Change how the application looks</string>
 
     <string name="pref_default_topic_filter">Default topic filter</string>
-    <string name="pref_default_topic_filter_default">NONE</string>
+    <string name="pref_default_topic_filter_default" translatable="false">NONE</string>
     <string-array name="pref_default_topic_filter_values">
         <item>All</item>
         <item>Favorites</item>
         <item>Favorites &amp; Starred</item>
         <item>Read</item>
     </string-array>
-    <string-array name="pref_default_topic_filter_entries">
+    <string-array name="pref_default_topic_filter_entries" translatable="false">
         <item>NONE</item>
         <item>FAVORITE</item>
         <item>PARTICIPATED</item>
@@ -74,12 +74,12 @@
     </string-array>
 
     <string name="pref_theme_title">Theme</string>
-    <string name="pref_theme_default">LIGHT</string>
+    <string name="pref_theme_default" translatable="false">LIGHT</string>
     <string-array name="pref_theme_values">
         <item>Light</item>
         <item>Dark</item>
     </string-array>
-    <string-array name="pref_theme_entries">
+    <string-array name="pref_theme_entries" translatable="false">
         <item>@string/pref_theme_default</item>
         <item>DARK</item>
     </string-array>

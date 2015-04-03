@@ -53,7 +53,6 @@
     <string name="pref_appearance_summary">Changer l\'apparence de l\'application</string>
     <string name="pref_appearance_title">Apparence</string>
     <string name="pref_default_topic_filter">Filtres par défaut pour les sujets</string>
-    <string name="pref_default_topic_filter_default">NONE</string>
     <string name="pref_general_title">Général</string>
     <string name="pref_network_summary">Paramètres liés au réseau (proxy, …)</string>
     <string name="pref_network_title">Réseau</string>
@@ -92,9 +91,8 @@
     <string name="insert_spoiler_button_description">Insérer un spoiler</string>
     <string name="popular_smileys_button_description">Smileys populaires</string>
     <string name="pref_general_summary">Yes sir !</string>
-    <string name="pref_theme_default">LIGHT</string>
     <string name="pref_theme_title">Thème</string>
     <string name="recent_smileys_button_description">Smileys récents</string>
     <string name="underline_text_button_description">Souligner le texte</string>
-    <string name="user_switch_sucessful">Changer l'utilisateur courant à {username}</string>
+    <string name="user_switch_sucessful">Changer l\'utilisateur courant à {username}</string>
 </resources>
