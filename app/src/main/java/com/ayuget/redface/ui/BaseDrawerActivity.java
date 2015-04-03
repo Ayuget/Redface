@@ -189,6 +189,8 @@ public class BaseDrawerActivity extends BaseActivity {
         else {
             loadDefaultProfileImage();
         }
+
+        onUserSwitched(userManager.getActiveUser());
     }
 
     private void loadDefaultProfileImage() {
@@ -429,5 +431,8 @@ public class BaseDrawerActivity extends BaseActivity {
      * Called when categories for active user have been sucessfully loaded
      */
     public void onCategoriesLoaded() {
+    }
+
+    protected void onUserSwitched(User newUser) {
     }
 }

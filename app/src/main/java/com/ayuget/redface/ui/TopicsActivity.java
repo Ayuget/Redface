@@ -18,6 +18,7 @@ import com.ayuget.redface.data.api.hfr.HFRUrlParser;
 import com.ayuget.redface.data.api.model.Category;
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.api.model.TopicStatus;
+import com.ayuget.redface.data.api.model.User;
 import com.ayuget.redface.data.rx.EndlessObserver;
 import com.ayuget.redface.data.rx.SubscriptionHandler;
 import com.ayuget.redface.data.state.CategoriesStore;
@@ -77,6 +78,8 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
     HFRUrlParser urlParser;
 
     boolean restoredInstanceState = false;
+
+    private Category currentCategory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -157,6 +160,8 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
 
     @Override
     public void onCategoryClicked(Category category) {
+        currentCategory = category;
+
         Log.d(LOG_TAG, String.format("Loading category '%s', with topicFilter='%s'", category.getName(), getSettings().getDefaultTopicFilter().toString()));
         topicListFragment = new TopicListFragmentBuilder(category).topicFilter(getSettings().getDefaultTopicFilter()).build();
         topicListFragment.addOnTopicClickedListener(this);
@@ -248,6 +253,13 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
         transaction.replace(topicFragmentContainer, anonymousTopicFragment);
         transaction.addToBackStack(null);
         transaction.commit();
+    }
+
+    @Override
+    protected void onUserSwitched(User newUser) {
+        if (currentCategory != null) {
+            onCategoryClicked(currentCategory);
+        }
     }
 
     @Override
