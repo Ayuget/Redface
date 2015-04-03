@@ -51,6 +51,31 @@
             />
     </LinearLayout>
 
+    <!-- Empty layout -->
+    <LinearLayout
+        android:id="@+id/empty_content_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center_vertical|center"
+        android:visibility="gone">
+    <ImageView
+        android:id="@+id/empty_content_image"
+        android:src="@drawable/ic_action_mood_big"
+        android:contentDescription="@string/no_topics_found"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        />
+    <TextView
+        android:id="@+id/empty_content_message"
+        android:textSize="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:gravity="center"
+        android:text="@string/page_loading_error"
+        />
+    </LinearLayout>
+
     <!-- Regular content (topic list) -->
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/topic_list_swipe_refresh_layout"

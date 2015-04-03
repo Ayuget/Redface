@@ -71,4 +71,6 @@
     <color name="reply_toolbar_icons_color_light">#757575</color>
     <color name="reply_actions_toolbar_color_dark">#333333</color>
     <color name="reply_toolbar_icons_color_dark">#ffffff</color>
+
+    <color name="empty_view_image_color">#BDBDBD</color>
 </resources>

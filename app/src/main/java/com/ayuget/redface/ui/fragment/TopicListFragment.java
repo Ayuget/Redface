@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Spinner;
 
 import com.ayuget.redface.R;
@@ -100,6 +101,12 @@ public class TopicListFragment extends ToolbarFragment implements TopicsAdapter.
     @InjectView(R.id.error_reload_button)
     Button errorReloadButton;
 
+    @InjectView(R.id.empty_content_layout)
+    View emptyTopicsLayout;
+
+    @InjectView(R.id.empty_content_image)
+    ImageView emptyTopicsImage;
+
     @Inject
     UserManager userManager;
 
@@ -175,6 +182,8 @@ public class TopicListFragment extends ToolbarFragment implements TopicsAdapter.
                 loadTopics();
             }
         });
+
+        UiUtils.setDrawableColor(emptyTopicsImage.getDrawable(), getResources().getColor(R.color.empty_view_image_color));
 
         return rootView;
     }
@@ -414,24 +423,32 @@ public class TopicListFragment extends ToolbarFragment implements TopicsAdapter.
     }
 
     private void showLoadingIndicator() {
-        Log.d(LOG_TAG, "Showing loading indicator");
-        if (errorView != null) { errorView.setVisibility(View.GONE); }
-        if (loadingIndicator != null) { loadingIndicator.setVisibility(View.VISIBLE); }
-        if (swipeRefreshLayout != null) { swipeRefreshLayout.setVisibility(View.GONE); }
+        errorView.setVisibility(View.GONE);
+        loadingIndicator.setVisibility(View.VISIBLE);
+        swipeRefreshLayout.setVisibility(View.GONE);
+        emptyTopicsLayout.setVisibility(View.GONE);
     }
 
     private void showErrorView() {
-        Log.d(LOG_TAG, "Showing error layout");
-        if (errorView != null) { errorView.setVisibility(View.VISIBLE); }
-        if (loadingIndicator != null) { loadingIndicator.setVisibility(View.GONE); }
-        if (swipeRefreshLayout != null) { swipeRefreshLayout.setVisibility(View.GONE); }
+        errorView.setVisibility(View.VISIBLE);
+        loadingIndicator.setVisibility(View.GONE);
+        swipeRefreshLayout.setVisibility(View.GONE);
+        emptyTopicsLayout.setVisibility(View.GONE);
     }
 
     private void showTopics() {
-        Log.d(LOG_TAG, "Showing posts layout");
-        if (errorView != null) { errorView.setVisibility(View.GONE); }
-        if (loadingIndicator != null) { loadingIndicator.setVisibility(View.GONE); }
-        if (swipeRefreshLayout != null) { swipeRefreshLayout.setVisibility(View.VISIBLE); }
+        if (displayedTopics.size() > 0) {
+            errorView.setVisibility(View.GONE);
+            loadingIndicator.setVisibility(View.GONE);
+            swipeRefreshLayout.setVisibility(View.VISIBLE);
+            emptyTopicsLayout.setVisibility(View.GONE);
+        }
+        else {
+            errorView.setVisibility(View.GONE);
+            loadingIndicator.setVisibility(View.GONE);
+            swipeRefreshLayout.setVisibility(View.GONE);
+            emptyTopicsLayout.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override

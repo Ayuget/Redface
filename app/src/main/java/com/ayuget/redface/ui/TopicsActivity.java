@@ -146,15 +146,19 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
     @Override
     public void onCategoriesLoaded() {
         if (! restoredInstanceState) {
-            int defaultCatId = getSettings().getDefaultCategoryId();
+            loadDefaultCategory();
+        }
+    }
 
-            Category defaultCategory = categoriesStore.getCategoryById(defaultCatId);
+    public void loadDefaultCategory() {
+        int defaultCatId = getSettings().getDefaultCategoryId();
 
-            if (defaultCategory == null) {
-                Log.w(LOG_TAG, String.format("Category '%d' not found in cache", defaultCatId));
-            } else {
-                onCategoryClicked(defaultCategory);
-            }
+        Category defaultCategory = categoriesStore.getCategoryById(defaultCatId);
+
+        if (defaultCategory == null) {
+            Log.w(LOG_TAG, String.format("Category '%d' not found in cache", defaultCatId));
+        } else {
+            onCategoryClicked(defaultCategory);
         }
     }
 

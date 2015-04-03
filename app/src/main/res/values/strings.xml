@@ -95,6 +95,7 @@
     <!-- Post page -->
     <string name="reload_page">Reload</string>
     <string name="page_loading_error">Error loading page</string>
+    <string name="no_topics_found">No topics found</string>
 
     <!-- Login page -->
     <string name="prompt_username">Username</string>
