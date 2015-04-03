@@ -5,6 +5,7 @@ import com.ayuget.redface.account.AccountModule;
 import com.ayuget.redface.account.UserManager;
 import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.ui.fragment.DefaultFragment;
+import com.ayuget.redface.ui.fragment.DetailsDefaultFragment;
 import com.ayuget.redface.ui.fragment.HomePreferenceFragment;
 import com.ayuget.redface.ui.fragment.NestedPreferenceFragment;
 import com.ayuget.redface.ui.fragment.PostsFragment;
@@ -37,6 +38,7 @@ import dagger.Provides;
                 PostsFragment.class,
                 TopicFragment.class,
                 DefaultFragment.class,
+                DetailsDefaultFragment.class,
                 AccountActivity.class,
                 ReplyActivity.class,
                 SmileySelectorView.class,

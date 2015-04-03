@@ -1,0 +1,33 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clickable="true">
+
+    <!-- Empty layout -->
+    <LinearLayout
+        android:id="@+id/empty_content_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center_vertical|center">
+        <ImageView
+            android:id="@+id/empty_content_image"
+            android:src="@drawable/ic_action_mood_big"
+            android:contentDescription="@string/select_topic_message"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            />
+        <TextView
+            android:id="@+id/empty_content_message"
+            android:textSize="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:gravity="center"
+            android:text="@string/select_topic_message"
+            />
+    </LinearLayout>
+
+    <!-- Primary toolbar -->
+    <include layout="@layout/toolbar_actionbar" />
+</FrameLayout>

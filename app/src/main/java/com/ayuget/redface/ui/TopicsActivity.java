@@ -29,6 +29,7 @@ import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
 import com.ayuget.redface.ui.event.QuotePostEvent;
 import com.ayuget.redface.ui.event.TopicContextItemSelectedEvent;
 import com.ayuget.redface.ui.fragment.DefaultFragment;
+import com.ayuget.redface.ui.fragment.DetailsDefaultFragment;
 import com.ayuget.redface.ui.fragment.TopicFragment;
 import com.ayuget.redface.ui.fragment.TopicFragmentBuilder;
 import com.ayuget.redface.ui.fragment.TopicListFragment;
@@ -45,6 +46,8 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
     private static final String LOG_TAG = TopicsActivity.class.getSimpleName();
 
     private static final String DEFAULT_FRAGMENT_TAG = "default_fragment";
+
+    private static final String DETAILS_DEFAULT_FRAGMENT_TAG = "details_default_fragment";
 
     private static final String TOPICS_FRAGMENT_TAG = "topics_fragment";
 
@@ -124,9 +127,20 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
         Log.d(LOG_TAG, "Setting up initial state for TopicsActivity");
 
         defaultFragment = DefaultFragment.newInstance();
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container, defaultFragment, DEFAULT_FRAGMENT_TAG)
-                .commit();
+
+        if (twoPaneMode) {
+            DetailsDefaultFragment detailsDefaultFragment = DetailsDefaultFragment.newInstance();
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container, defaultFragment, DEFAULT_FRAGMENT_TAG)
+                    .replace(R.id.details_container, detailsDefaultFragment, DETAILS_DEFAULT_FRAGMENT_TAG)
+                    .commit();
+        }
+        else {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container, defaultFragment, DEFAULT_FRAGMENT_TAG)
+                    .commit();
+        }
     }
 
     @Override
