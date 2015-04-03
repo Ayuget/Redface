@@ -186,15 +186,15 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ViewHolder
         if (topic.isSticky()) {
             topicIcon = R.drawable.ic_action_pin;
         }
+        else if (topic.getStatus() == TopicStatus.FAVORITE_NEW_CONTENT) {
+            topicIcon = R.drawable.ic_action_star_10;
+        }
 
         return topicIcon;
     }
 
     int getTopicIconBackgroundColor(Topic topic) {
-        if (topic.isSticky()) {
-            return context.getResources().getColor(R.color.topic_icon_sticky_bg);
-        }
-        else if (topic.getStatus() == TopicStatus.FAVORITE_NEW_CONTENT) {
+        if (topic.getStatus() == TopicStatus.FAVORITE_NEW_CONTENT) {
             return context.getResources().getColor(R.color.topic_icon_favorite_bg);
         }
         else if (topic.getStatus() == TopicStatus.FLAGGED_NEW_CONTENT) {
@@ -202,6 +202,9 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ViewHolder
         }
         else if (topic.getStatus() == TopicStatus.READ_NEW_CONTENT) {
             return UiUtils.getReadTopicIconBackgroundColor(context);
+        }
+        else if (topic.isSticky()) {
+            return context.getResources().getColor(R.color.topic_icon_sticky_bg);
         }
         else {
             return UiUtils.getDefaultTopicIconBackgroundColor(context);
