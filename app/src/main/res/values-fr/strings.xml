@@ -85,4 +85,16 @@
 
     <!-- Dialogs -->
     <string name="dialog_go_to_page_positive_text">Aller !</string>
+    <string name="app_name">Redface</string>
+    <string name="default_smileys_button_description">Smileys par défaut</string>
+    <string name="insert_code_button_description">Insérer un bloc de code</string>
+    <string name="insert_quote_button_description">Insérer une citation</string>
+    <string name="insert_spoiler_button_description">Insérer un spoiler</string>
+    <string name="popular_smileys_button_description">Smileys populaires</string>
+    <string name="pref_general_summary">Yes sir !</string>
+    <string name="pref_theme_default">LIGHT</string>
+    <string name="pref_theme_title">Thème</string>
+    <string name="recent_smileys_button_description">Smileys récents</string>
+    <string name="underline_text_button_description">Souligner le texte</string>
+    <string name="user_switch_sucessful">Changer l'utilisateur courant à {username}</string>
 </resources>
