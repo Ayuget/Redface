@@ -20,6 +20,7 @@ import com.ayuget.redface.ui.TopicsActivity;
 import com.ayuget.redface.ui.adapter.TopicPageAdapter;
 import com.ayuget.redface.ui.event.GoToPostEvent;
 import com.ayuget.redface.ui.event.PageLoadedEvent;
+import com.ayuget.redface.ui.event.PageRefreshedEvent;
 import com.ayuget.redface.ui.event.PageSelectedEvent;
 import com.ayuget.redface.ui.event.ScrollToPostEvent;
 import com.ayuget.redface.ui.event.TopicPageCountUpdatedEvent;
@@ -143,8 +144,9 @@ public class TopicFragment extends ToolbarFragment {
     }
 
     /**
-     *
-     * @param event
+     * Event fired by the data layer when we detect that new pages have been added
+     * to a topic. It allows us to update the UI properly. This is completely mandatory
+     * for "hot" topics, when a lot of content is added in a short period of time.
      */
     @Subscribe
     public void onTopicPageCountUpdated(TopicPageCountUpdatedEvent event) {
@@ -156,23 +158,29 @@ public class TopicFragment extends ToolbarFragment {
 
     @Subscribe
     public void onGoToPost(GoToPostEvent event) {
-        Log.d(LOG_TAG, String.format("Received go to post event : %s", event));
-
         topicPositionsStack.add(new TopicPosition(currentPage, currentPagePosition));
 
         currentPagePosition = event.getPagePosition();
 
         if (currentPage == event.getPage()) {
-            Log.d(LOG_TAG, String.format("Event is for same page (%d), scrolling", currentPage));
             event.getTopicPageView().setPagePosition(currentPagePosition);
         }
         else {
-            Log.d(LOG_TAG, String.format("Event is for another page (current=%d, target=%d), changing page in ViewPager", currentPage, event.getPage()));
             currentPage = event.getPage();
 
             if (pager != null) {
                 pager.setCurrentItem(currentPage - 1);
             }
+        }
+    }
+
+    /**
+     * Event fired when a topics page has been refreshed.
+     */
+    @Subscribe
+    public void onPageRefreshed(PageRefreshedEvent event) {
+        if (topic == event.getTopic()) {
+            currentPagePosition = event.getTargetPagePosition();
         }
     }
 
@@ -243,6 +251,9 @@ public class TopicFragment extends ToolbarFragment {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Clears internal navigation stack
+     */
     @Override
     public void clearInternalStack() {
         topicPositionsStack.clear();

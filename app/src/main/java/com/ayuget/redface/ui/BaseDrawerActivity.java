@@ -149,7 +149,6 @@ public class BaseDrawerActivity extends BaseActivity {
         categoriesRequest = dataService.loadCategories(activeUser, new EndlessObserver<List<Category>>() {
             @Override
             public void onNext(List<Category> categories) {
-                Log.d(LOG_TAG, "onNext loadCategories ===");
                 populateNavDrawerCategories(categories);
                 onCategoriesLoaded();
             }
@@ -189,8 +188,6 @@ public class BaseDrawerActivity extends BaseActivity {
         else {
             loadDefaultProfileImage();
         }
-
-        onUserSwitched(userManager.getActiveUser());
     }
 
     private void loadDefaultProfileImage() {
@@ -301,6 +298,7 @@ public class BaseDrawerActivity extends BaseActivity {
             public void onClick(View v) {
                 userManager.setActiveUser(user);
                 updateActiveUser();
+                onUserSwitched(user);
 
                 accountBoxExpanded = false;
                 setupAccountBoxToggle();

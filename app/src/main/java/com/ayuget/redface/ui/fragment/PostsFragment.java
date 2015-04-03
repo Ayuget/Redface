@@ -22,6 +22,7 @@ import com.ayuget.redface.data.rx.EndlessObserver;
 import com.ayuget.redface.ui.ReplyActivity;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
+import com.ayuget.redface.ui.event.PageRefreshedEvent;
 import com.ayuget.redface.ui.event.PageSelectedEvent;
 import com.ayuget.redface.ui.event.ScrollToPostEvent;
 import com.ayuget.redface.ui.misc.PagePosition;
@@ -104,8 +105,6 @@ public class PostsFragment extends BaseFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Log.d(LOG_TAG, String.format("onCreate PostsFragment@%d", System.identityHashCode(this)));
-
         if (savedInstanceState == null) {
             currentPagePosition = new PagePosition(PagePosition.BOTTOM);
         }
@@ -116,8 +115,6 @@ public class PostsFragment extends BaseFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Log.d(LOG_TAG, String.format("onCreateView PostsFragment@%d", System.identityHashCode(this)));
-
         final View rootView = inflateRootView(R.layout.fragment_posts, inflater, container);
 
         // Restore the list of posts when the fragment is recreated by the framework
@@ -144,6 +141,7 @@ public class PostsFragment extends BaseFragment {
             public void onRefresh() {
                 Log.d(LOG_TAG, String.format("Refreshing topic page '%d' for topic %s", currentPage, topic));
                 currentPagePosition = new PagePosition(PagePosition.TOP);
+                bus.post(new PageRefreshedEvent(topic, currentPagePosition));
                 loadPage(currentPage);
             }
         });

@@ -52,6 +52,8 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
 
     private static final String ARG_TOPIC = "topic";
 
+    private static final String ARG_CURRENT_CATEGORY = "currentCategory";
+
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
@@ -63,6 +65,8 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
     TopicListFragment topicListFragment;
 
     TopicFragment topicFragment;
+
+    DefaultFragment defaultFragment;
 
     private SubscriptionHandler<Integer, Topic> topicDetailsSearchHandler = new SubscriptionHandler<>();
 
@@ -119,7 +123,7 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
     protected void onSetupUiState() {
         Log.d(LOG_TAG, "Setting up initial state for TopicsActivity");
 
-        DefaultFragment defaultFragment = DefaultFragment.newInstance();
+        defaultFragment = DefaultFragment.newInstance();
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container, defaultFragment, DEFAULT_FRAGMENT_TAG)
                 .commit();
@@ -133,6 +137,7 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
         // mess-up with the UI (unnecessary reload) when the activity is re-created from
         // a previous state (like rotating the phone...)
         restoredInstanceState = true;
+        currentCategory = savedInstanceState.getParcelable(ARG_CURRENT_CATEGORY);
 
         topicListFragment = (TopicListFragment) getSupportFragmentManager().findFragmentByTag(TOPICS_FRAGMENT_TAG);
         topicFragment = (TopicFragment) getSupportFragmentManager().findFragmentByTag(TOPIC_FRAGMENT_TAG);
@@ -144,12 +149,33 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
     }
 
     @Override
-    public void onCategoriesLoaded() {
-        if (! restoredInstanceState) {
-            loadDefaultCategory();
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        if (currentCategory != null) {
+            outState.putParcelable(ARG_CURRENT_CATEGORY, currentCategory);
         }
     }
 
+    /**
+     * Callback invoked when categories have been loaded from cache or network.
+     */
+    @Override
+    public void onCategoriesLoaded() {
+        Log.d(LOG_TAG, "Categories have been loaded");
+
+        if (currentCategory == null) {
+            Log.d(LOG_TAG, "Loading default category");
+            loadDefaultCategory();
+        }
+        else {
+            Log.d(LOG_TAG, "Ignoring categories loaded event, state has been restored");
+        }
+    }
+
+    /**
+     * Loads default category
+     */
     public void loadDefaultCategory() {
         int defaultCatId = getSettings().getDefaultCategoryId();
 
