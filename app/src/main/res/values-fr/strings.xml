@@ -19,6 +19,7 @@
     <string name="reload_page">Recharger</string>
     <string name="page_loading_error">Erreur de chargement de la page</string>
     <string name="no_topics_found">Aucun topic trouvé</string>
+    <string name="select_topic_message">Aucun topic de sélectionné !</string>
 
     <string name="action_reply_reply_dialog">Répondre</string>
     <string name="action_sign_in">Se connecter</string>

@@ -4,6 +4,15 @@ body {
     padding: 0;
 }
 
+.smileysView {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+
+  padding: 20px;
+}
+
 body.redface-dark {
     /* background: #282828; */
     background: #222222;
