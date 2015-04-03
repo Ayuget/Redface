@@ -92,6 +92,9 @@ public class BaseDrawerActivity extends BaseActivity {
     @InjectView(R.id.account_list)
     LinearLayout accountListContainer;
 
+    @InjectView(R.id.hfr_drawer_layout)
+    DrawerLayout drawerLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -125,18 +128,14 @@ public class BaseDrawerActivity extends BaseActivity {
         // Now retrieve the DrawerLayout so that we can set the status bar color.
         // This only takes effect on Lollipop, or when using translucentStatusBar
         // on KitKat.
-        DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.hfr_drawer_layout);
+        drawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.theme_primary_dark));
+        drawerLayout.setDrawerShadow(R.drawable.drawer_shadow, Gravity.START);
 
-        if (drawerLayout != null) {
-            drawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.theme_primary_dark));
-            drawerLayout.setDrawerShadow(R.drawable.drawer_shadow, Gravity.START);
+        // Initiate drawer with "static" items
+        initiateNavDrawer();
 
-            // Initiate drawer with "static" items
-            initiateNavDrawer();
-
-            // Setup user details and load categories for active user
-            updateActiveUser();
-        }
+        // Setup user details and load categories for active user
+        updateActiveUser();
     }
 
     private void updateActiveUser() {
@@ -416,6 +415,7 @@ public class BaseDrawerActivity extends BaseActivity {
         else if (drawerItem.isCategory()) {
             CategoryDrawerItem categoryDrawerItem = (CategoryDrawerItem) drawerItem;
             onCategoryClicked(categoryDrawerItem.getCategory());
+            drawerLayout.closeDrawers();
         }
     }
 

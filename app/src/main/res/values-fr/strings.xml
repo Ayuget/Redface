@@ -35,6 +35,7 @@
     <string name="login_failed">Connexion impossible, vérifiez le couple pseudo/mot de passe</string>
     <string name="login_password_empty">Le mot de passe ne peut pas être vide</string>
     <string name="login_username_empty">Le pseudo ne peut pas être vide</string>
+    <string name="connect_to_forum">Ajouter un compte</string>
     <string name="make_text_bold_button_description">Rendre le texte gras</string>
     <string name="make_text_italic_button_description">Rendre le texte italique</string>
     <string name="menu_about">A propos</string>
