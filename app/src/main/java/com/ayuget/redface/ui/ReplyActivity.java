@@ -306,7 +306,12 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
         super.onPause();
 
         if (replyEditText != null) {
-            responseStore.storeResponse(userManager.getActiveUser(), currentTopic, replyEditText.getText().toString());
+            if(replyEditText.getText().toString().length() > 0) {
+                responseStore.storeResponse(userManager.getActiveUser(), currentTopic, replyEditText.getText().toString());
+            }
+            else {
+                responseStore.removeResponse(userManager.getActiveUser(), currentTopic);
+            }
         }
     }
 
@@ -316,7 +321,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
 
         String storedResponse = responseStore.getResponse(userManager.getActiveUser(), currentTopic);
 
-        if (storedResponse != null) {
+        if (storedResponse != null && replyEditText.getText().length() == 0) {
             replyEditText.setText(storedResponse);
             replyEditText.setSelection(replyEditText.getText().length());
         }
