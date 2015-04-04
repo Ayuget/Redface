@@ -423,8 +423,8 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
      * Starts the reply activity with or without an initial content
      */
     private synchronized void startReplyActivity(Topic topic, String initialContent) {
-        if (canLaunchReplyActivity) {
-            canLaunchReplyActivity = false;
+        if (canLaunchReplyActivity()) {
+            setCanLaunchReplyActivity(false);
 
             Intent intent = new Intent(this, ReplyActivity.class);
             intent.putExtra(ARG_TOPIC, topic);
@@ -442,7 +442,7 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
      */
     private synchronized void startEditActivity(Topic topic, int postId, String actualContent) {
         if (canLaunchReplyActivity) {
-            canLaunchReplyActivity = false;
+            setCanLaunchReplyActivity(false);
 
             Intent intent = new Intent(this, EditPostActivity.class);
 
@@ -509,5 +509,13 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
 
     public boolean isTwoPaneMode() {
         return twoPaneMode;
+    }
+
+    public boolean canLaunchReplyActivity() {
+        return canLaunchReplyActivity;
+    }
+
+    public void setCanLaunchReplyActivity(boolean canLaunchReplyActivity) {
+        this.canLaunchReplyActivity = canLaunchReplyActivity;
     }
 }
