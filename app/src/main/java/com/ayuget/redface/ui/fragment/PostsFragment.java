@@ -254,6 +254,9 @@ public class PostsFragment extends BaseFragment {
             intent.putExtra(UIConstants.ARG_REPLY_CONTENT, initialContent);
         }
 
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
         getActivity().startActivityForResult(intent, UIConstants.REPLY_REQUEST_CODE);
     }
 

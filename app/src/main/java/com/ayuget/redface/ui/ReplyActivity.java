@@ -306,7 +306,11 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
         super.onPause();
 
         if (replyEditText != null) {
-            if(replyEditText.getText().toString().length() > 0) {
+            String actualReply = replyEditText.getText().toString();
+            boolean hasResponse = actualReply.length() > 0;
+            boolean textWasModified = (initialReplyContent == null) || !initialReplyContent.equals(actualReply);
+
+            if(hasResponse && textWasModified) {
                 responseStore.storeResponse(userManager.getActiveUser(), currentTopic, replyEditText.getText().toString());
             }
             else {

@@ -377,10 +377,12 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
         }
     }
 
-    @Subscribe public void onQustotePost(final QuotePostEvent event) {
+    @Subscribe public void onQuotePost(final QuotePostEvent event) {
+        Log.d(LOG_TAG, String.format("@%d : quote event received for topic '%s' (quoting)", System.identityHashCode(this), event.getTopic().getSubject()));
         subscribe(quoteHandler.load(event.getTopic(), mdService.getQuote(userManager.getActiveUser(), event.getTopic(), event.getPostId()), new EndlessObserver<String>() {
             @Override
             public void onNext(String quoteBBCode) {
+                Log.d(LOG_TAG, String.format("@%d : Starting reply activity for topic '%s' (quoting)", System.identityHashCode(TopicsActivity.this), event.getTopic().getSubject()));
                 startReplyActivity(event.getTopic(), quoteBBCode);
             }
         }));
@@ -390,6 +392,7 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
         subscribe(quoteHandler.load(event.getTopic(), mdService.getPostContent(userManager.getActiveUser(), event.getTopic(), event.getPostId()), new EndlessObserver<String>() {
             @Override
             public void onNext(String messageBBCode) {
+                Log.d(LOG_TAG, String.format("Starting reply activity for topic '%s' (editing)", event.getTopic().getSubject()));
                 startEditActivity(event.getTopic(), event.getPostId(), messageBBCode);
             }
         }));
@@ -406,6 +409,9 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
             intent.putExtra(UIConstants.ARG_REPLY_CONTENT, initialContent);
         }
 
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
         startActivityForResult(intent, UIConstants.REPLY_REQUEST_CODE);
     }
 
@@ -414,9 +420,12 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
      */
     private void startEditActivity(Topic topic, int postId, String actualContent) {
         Intent intent = new Intent(this, EditPostActivity.class);
+
         intent.putExtra(ARG_TOPIC, topic);
         intent.putExtra(UIConstants.ARG_EDITED_POST_ID, postId);
         intent.putExtra(UIConstants.ARG_REPLY_CONTENT, actualContent);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         startActivityForResult(intent, UIConstants.REPLY_REQUEST_CODE);
     }

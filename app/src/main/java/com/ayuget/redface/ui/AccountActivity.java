@@ -76,8 +76,11 @@ public class AccountActivity extends BaseActivity {
                    Log.d(LOG_TAG, "Login is successful !!");
                    accountManager.addAccount(user);
                    userManager.setActiveUser(user);
-
-                   startActivity(new Intent(AccountActivity.this, TopicsActivity.class));
+                   Intent intent = new Intent(AccountActivity.this, TopicsActivity.class);
+                   intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                   intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                   startActivity(intent);
+                   finish();
                }
                else {
                    Log.d(LOG_TAG, "Error while logging in");

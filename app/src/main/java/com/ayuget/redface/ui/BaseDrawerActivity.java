@@ -282,7 +282,10 @@ public class BaseDrawerActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 // Add account intent
-                startActivity(new Intent(BaseDrawerActivity.this, AccountActivity.class));
+                Intent intent = new Intent(BaseDrawerActivity.this, AccountActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
             }
         });
 
@@ -408,7 +411,10 @@ public class BaseDrawerActivity extends BaseActivity {
                 case NAVDRAWER_ITEM_SETTINGS:
                 case NAVDRAWER_ITEM_MY_TOPICS:
                 case NAVDRAWER_ITEM_PRIVATE_MESSAGES:
-                    startActivity(new Intent(this, SettingsActivity.class));
+                    Intent intent = new Intent(this, SettingsActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
                     break;
             }
         }
