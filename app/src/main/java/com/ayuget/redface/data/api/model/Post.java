@@ -142,7 +142,7 @@ public class Post implements Parcelable {
     }
 
     private Post(Parcel in) {
-        this.id = in.readInt();
+        this.id = in.readLong();
         this.author = in.readString();
         this.avatarUrl = in.readString();
         long tmpPostDate = in.readLong();
