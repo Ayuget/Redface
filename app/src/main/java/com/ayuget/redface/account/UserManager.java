@@ -48,7 +48,15 @@ public class UserManager {
             return guestUser;
         }
         else {
-            return accountManager.getAccountByName(activeUsername);
+            User foundUser =  accountManager.getAccountByName(activeUsername);
+
+            if (foundUser == null) {
+                Log.e(LOG_TAG, String.format("User '%s' was not found in accounts", activeUsername));
+                return guestUser;
+            }
+            else {
+                return foundUser;
+            }
         }
     }
 
