@@ -38,9 +38,6 @@ public class BaseFragment extends Fragment {
         RedfaceApp app = RedfaceApp.get(getActivity());
         app.inject(this);
 
-        // Register for events
-        bus.register(this);
-
         // Proper RxJava subscriptions management with CompositeSubscription
         subscriptions = new CompositeSubscription();
     }
@@ -49,8 +46,21 @@ public class BaseFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
 
-        bus.unregister(this);
         subscriptions.unsubscribe();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        bus.register(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        bus.unregister(this);
     }
 
     protected void emitEvent(Object o) {

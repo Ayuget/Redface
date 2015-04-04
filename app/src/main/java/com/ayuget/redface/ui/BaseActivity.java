@@ -45,7 +45,6 @@ public class BaseActivity extends ActionBarActivity {
 
         RedfaceApp app = RedfaceApp.get(this);
         app.inject(this);
-        bus.register(this);
 
         initializeTheme();
 
@@ -105,12 +104,11 @@ public class BaseActivity extends ActionBarActivity {
     protected void onDestroy() {
         super.onDestroy();
 
+        subscriptions.unsubscribe();
+
         if (BuildConfig.DEBUG) {
             ViewServer.get(this).removeWindow(this);
         }
-
-        bus.unregister(this);
-        subscriptions.unsubscribe();
     }
 
     protected void initializeTheme() {
@@ -126,6 +124,8 @@ public class BaseActivity extends ActionBarActivity {
     protected void onResume() {
         super.onResume();
 
+        bus.register(this);
+
         if (themeManager.isRefreshNeeded()) {
             themeManager.setRefreshNeeded(false);
             refreshTheme();
@@ -136,6 +136,13 @@ public class BaseActivity extends ActionBarActivity {
         }
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        bus.unregister(this);
+    }
+
     public void refreshTheme() {
         finish();
         Intent intent = new Intent(this, TopicsActivity.class);
@@ -143,6 +150,7 @@ public class BaseActivity extends ActionBarActivity {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+        finish();
     }
 
     public DrawerLayout getDrawerLayout() {
