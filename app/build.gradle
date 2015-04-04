@@ -32,7 +32,7 @@ android {
         applicationId "com.ayuget.redface"
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode 1
+        versionCode 101
         versionName "1.0.1"
     }
     buildTypes {
