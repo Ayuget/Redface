@@ -190,6 +190,12 @@ public class PostsFragment extends BaseFragment {
         return rootView;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(LOG_TAG, "onResume");
+    }
+
     private boolean isInitialPage() {
         return initialPage == currentPage;
     }
@@ -254,9 +260,6 @@ public class PostsFragment extends BaseFragment {
             intent.putExtra(UIConstants.ARG_REPLY_CONTENT, initialContent);
         }
 
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
         getActivity().startActivityForResult(intent, UIConstants.REPLY_REQUEST_CODE);
     }
 
@@ -274,6 +277,10 @@ public class PostsFragment extends BaseFragment {
     @Subscribe public void onPageRefreshRequestEvent(PageRefreshRequestEvent event) {
         if (event.getTopic().getId() == topic.getId()) {
             wasRefreshed = true;
+
+            currentPagePosition = new PagePosition(PagePosition.BOTTOM);
+            bus.post(new PageRefreshedEvent(topic, currentPagePosition));
+
             loadPage(currentPage);
         }
     }

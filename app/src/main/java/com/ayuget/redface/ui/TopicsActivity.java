@@ -26,6 +26,7 @@ import com.ayuget.redface.ui.event.EditPostEvent;
 import com.ayuget.redface.ui.event.GoToTopicEvent;
 import com.ayuget.redface.ui.event.InternalLinkClickedEvent;
 import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
+import com.ayuget.redface.ui.event.PageRefreshedEvent;
 import com.ayuget.redface.ui.event.QuotePostEvent;
 import com.ayuget.redface.ui.event.TopicContextItemSelectedEvent;
 import com.ayuget.redface.ui.fragment.DefaultFragment;
@@ -87,6 +88,10 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
     boolean restoredInstanceState = false;
 
     private Category currentCategory;
+
+    private PageRefreshRequestEvent refreshRequestEvent;
+
+    boolean canLaunchReplyActivity = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -171,6 +176,17 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
         }
     }
 
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+
+        if (refreshRequestEvent != null) {
+            Log.d(LOG_TAG, "Posting refreshRequestEvent");
+            bus.post(refreshRequestEvent);
+            refreshRequestEvent = null;
+        }
+    }
+
     /**
      * Callback invoked when categories have been loaded from cache or network.
      */
@@ -219,6 +235,8 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        canLaunchReplyActivity = true;
+
         if (requestCode == UIConstants.REPLY_REQUEST_CODE) {
             boolean wasEdit = (data != null) && data.getBooleanExtra(UIConstants.ARG_REPLY_WAS_EDIT, false);
 
@@ -237,7 +255,10 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
                 }
                 else {
                     Log.d(LOG_TAG, String.format("Requesting refresh for topic : %s", topic.getSubject()));
-                    bus.post(new PageRefreshRequestEvent(topic));
+
+                    // Deferring event posting until onResume() is called, otherwise inner fragments
+                    // won't get the event.
+                    refreshRequestEvent = new PageRefreshRequestEvent(topic);
                 }
             }
             else if (resultCode == UIConstants.REPLY_RESULT_KO) {
@@ -401,33 +422,36 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
     /**
      * Starts the reply activity with or without an initial content
      */
-    private void startReplyActivity(Topic topic, String initialContent) {
-        Intent intent = new Intent(this, ReplyActivity.class);
-        intent.putExtra(ARG_TOPIC, topic);
+    private synchronized void startReplyActivity(Topic topic, String initialContent) {
+        if (canLaunchReplyActivity) {
+            canLaunchReplyActivity = false;
 
-        if (initialContent != null) {
-            intent.putExtra(UIConstants.ARG_REPLY_CONTENT, initialContent);
+            Intent intent = new Intent(this, ReplyActivity.class);
+            intent.putExtra(ARG_TOPIC, topic);
+
+            if (initialContent != null) {
+                intent.putExtra(UIConstants.ARG_REPLY_CONTENT, initialContent);
+            }
+
+            startActivityForResult(intent, UIConstants.REPLY_REQUEST_CODE);
         }
-
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-        startActivityForResult(intent, UIConstants.REPLY_REQUEST_CODE);
     }
 
     /**
      * Starts the edit activity
      */
-    private void startEditActivity(Topic topic, int postId, String actualContent) {
-        Intent intent = new Intent(this, EditPostActivity.class);
+    private synchronized void startEditActivity(Topic topic, int postId, String actualContent) {
+        if (canLaunchReplyActivity) {
+            canLaunchReplyActivity = false;
 
-        intent.putExtra(ARG_TOPIC, topic);
-        intent.putExtra(UIConstants.ARG_EDITED_POST_ID, postId);
-        intent.putExtra(UIConstants.ARG_REPLY_CONTENT, actualContent);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            Intent intent = new Intent(this, EditPostActivity.class);
 
-        startActivityForResult(intent, UIConstants.REPLY_REQUEST_CODE);
+            intent.putExtra(ARG_TOPIC, topic);
+            intent.putExtra(UIConstants.ARG_EDITED_POST_ID, postId);
+            intent.putExtra(UIConstants.ARG_REPLY_CONTENT, actualContent);
+
+            startActivityForResult(intent, UIConstants.REPLY_REQUEST_CODE);
+        }
     }
 
     /**
