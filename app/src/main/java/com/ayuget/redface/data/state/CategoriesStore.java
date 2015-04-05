@@ -125,13 +125,18 @@ public class CategoriesStore {
             List<Category> userCategories = new LinkedList<>();
 
             for (String category : Splitter.on(PRIMARY_SEPARATOR).split(userMapping)) {
-                int categoryId = Integer.valueOf(category);
+                try {
+                    int categoryId = Integer.valueOf(category);
 
-                if (categoriesCache.containsKey(categoryId)) {
-                    userCategories.add(categoriesCache.get(categoryId));
+                    if (categoriesCache.containsKey(categoryId)) {
+                        userCategories.add(categoriesCache.get(categoryId));
+                    } else {
+                        Log.e(LOG_TAG, String.format("Error while associating category '%s' to user '%s' : unknown category", category, username));
+                    }
                 }
-                else {
-                    Log.e(LOG_TAG, String.format("Error while associating category '%s' to user '%s' : unknown category", category, username));
+                catch (NumberFormatException e) {
+                    // Don't crash the app if an invalid category is found
+                    Log.e(LOG_TAG, String.format("Error, deserializing category with non-int id : %s", category));
                 }
             }
 
