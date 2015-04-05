@@ -307,7 +307,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
     protected void onPause() {
         super.onPause();
 
-        if (!replyIsSuccessful && replyEditText != null) {
+        if (!isReplySuccessful() && replyEditText != null) {
             String actualReply = replyEditText.getText().toString();
             boolean hasResponse = actualReply.length() > 0;
             boolean textWasModified = (initialReplyContent == null) || !initialReplyContent.equals(actualReply);
@@ -655,7 +655,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
 
         // Flag that reply is successful to prevent it to be cached in the
         // response cache (onPause happens later in this activity lifecycle)
-        replyIsSuccessful = true;
+        setReplySuccessful(true);
 
         replyToActivity(RESULT_OK, false);
     }
@@ -732,6 +732,14 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
 
     protected String loadResponseFromCache(User user) {
         return responseStore.getResponse(user, currentTopic);
+    }
+
+    public boolean isReplySuccessful() {
+        return replyIsSuccessful;
+    }
+
+    public void setReplySuccessful(boolean replyIsSuccessful) {
+        this.replyIsSuccessful = replyIsSuccessful;
     }
 
     private static class UserViewHolder {

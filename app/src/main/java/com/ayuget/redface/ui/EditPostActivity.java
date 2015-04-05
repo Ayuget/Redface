@@ -56,6 +56,11 @@ public class EditPostActivity extends ReplyActivity {
 
     protected void onReplySuccess() {
         clearResponseFromCache(userManager.getActiveUser());
+
+        // Flag that reply is successful to prevent it to be cached in the
+        // response cache (onPause happens later in this activity lifecycle)
+        setReplySuccessful(true);
+
         replyToActivity(RESULT_OK, true);
     }
 
