@@ -91,6 +91,7 @@
     <string name="error_loading_topics">Error while loading topics</string>
     <string name="error_loading_topics_page">Error while loading topics for page {page}</string>
     <string name="prompt_go_to_page">Go to page…</string>
+    <string name="invalid_page_number">Invalid page number</string>
 
     <!-- Post page -->
     <string name="reload_page">Reload</string>

@@ -467,8 +467,18 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
                 .callback(new MaterialDialog.ButtonCallback() {
                     @Override
                     public void onPositive(MaterialDialog dialog) {
-                        int pageNumber = Integer.valueOf(goToPageEditText.getText().toString());
-                        loadTopic(topic, pageNumber, new PagePosition(PagePosition.TOP));
+                        try {
+                            int pageNumber = Integer.valueOf(goToPageEditText.getText().toString());
+                            loadTopic(topic, pageNumber, new PagePosition(PagePosition.TOP));
+                        } catch (NumberFormatException e) {
+                            Log.e(LOG_TAG, String.format("Invalid page number entered : %s", goToPageEditText.getText().toString()), e);
+
+                            SnackbarManager.show(
+                                    Snackbar.with(TopicsActivity.this)
+                                            .text(R.string.invalid_page_number)
+                                            .textColorResource(R.color.theme_primary_light)
+                            );
+                        }
                     }
 
                     @Override
@@ -489,8 +499,13 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (s.toString().trim().length() > 0) {
-                    int pageNumber = Integer.valueOf(s.toString());
-                    positiveAction.setEnabled(pageNumber >= 1 && pageNumber <= topic.getPagesCount());
+                    try {
+                        int pageNumber = Integer.valueOf(s.toString());
+                        positiveAction.setEnabled(pageNumber >= 1 && pageNumber <= topic.getPagesCount());
+                    }
+                    catch (NumberFormatException e) {
+                        positiveAction.setEnabled(false);
+                    }
                 }
                 else {
                     positiveAction.setEnabled(false);

@@ -95,4 +95,5 @@
     <string name="recent_smileys_button_description">Smileys récents</string>
     <string name="underline_text_button_description">Souligner le texte</string>
     <string name="user_switch_sucessful">Changer l\'utilisateur courant à {username}</string>
+    <string name="invalid_page_number">Numéro de page invalide</string>
 </resources>

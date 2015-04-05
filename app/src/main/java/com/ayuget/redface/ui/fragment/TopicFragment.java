@@ -28,12 +28,12 @@ import com.ayuget.redface.ui.misc.PagePosition;
 import com.ayuget.redface.ui.misc.PageSelectedListener;
 import com.ayuget.redface.ui.misc.TopicPosition;
 import com.hannesdorfmann.fragmentargs.annotation.Arg;
+import com.nispok.snackbar.Snackbar;
+import com.nispok.snackbar.SnackbarManager;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 
 import butterknife.InjectView;
 
@@ -268,8 +268,19 @@ public class TopicFragment extends ToolbarFragment {
                 .callback(new MaterialDialog.ButtonCallback() {
                     @Override
                     public void onPositive(MaterialDialog dialog) {
-                        int pageNumber = Integer.valueOf(goToPageEditText.getText().toString());
-                        pager.setCurrentItem(pageNumber - 1);
+                        try {
+                            int pageNumber = Integer.valueOf(goToPageEditText.getText().toString());
+                            pager.setCurrentItem(pageNumber - 1);
+                        }
+                        catch (NumberFormatException e) {
+                            Log.e(LOG_TAG, String.format("Invalid page number entered : %s", goToPageEditText.getText().toString()), e);
+
+                            SnackbarManager.show(
+                                    Snackbar.with(getActivity())
+                                            .text(R.string.invalid_page_number)
+                                            .textColorResource(R.color.theme_primary_light)
+                            );
+                        }
                     }
 
                     @Override
@@ -290,8 +301,13 @@ public class TopicFragment extends ToolbarFragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (s.toString().trim().length() > 0) {
-                    int pageNumber = Integer.valueOf(s.toString());
-                    positiveAction.setEnabled(pageNumber >= 1 && pageNumber <= topic.getPagesCount());
+                    try {
+                        int pageNumber = Integer.valueOf(s.toString());
+                        positiveAction.setEnabled(pageNumber >= 1 && pageNumber <= topic.getPagesCount());
+                    }
+                    catch (NumberFormatException e) {
+                        positiveAction.setEnabled(false);
+                    }
                 }
                 else {
                     positiveAction.setEnabled(false);
