@@ -200,8 +200,6 @@ public class TopicListFragment extends ToolbarFragment implements TopicsAdapter.
                 topicsAdapter.replaceWith(displayedTopics);
                 showTopics();
             }
-
-
         }
 
         if (displayedTopics == null) {
@@ -258,10 +256,15 @@ public class TopicListFragment extends ToolbarFragment implements TopicsAdapter.
         topicsRecyclerView.setOnScrollListener(new EndlessScrollListener(layoutManager, getToolbar(), true) {
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
-                int realPage = page + 1;
+                // When a topic filter is selected, all topics are displayed on one single page,
+                // and trying to load more will not result in a 404 error, but it will instead load
+                // the same topics over and over
+                if (topicFilter == TopicFilter.NONE) {
+                    int realPage = page + 1;
 
-                if (realPage > lastLoadedPage) {
-                    loadPage(realPage);
+                    if (realPage > lastLoadedPage) {
+                        loadPage(realPage);
+                    }
                 }
             }
         });
