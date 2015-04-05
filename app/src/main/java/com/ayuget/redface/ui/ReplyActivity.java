@@ -386,28 +386,31 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
                     case MotionEvent.ACTION_MOVE: {
                         if (smileyList.getScrollY() == 0) {
                             final int pointerIndex = MotionEventCompat.findPointerIndex(event, activePointerId);
-                            final float y = MotionEventCompat.getY(event, pointerIndex);
 
-                            // Distance
-                            float dy = y - lastTouchY;
-                            isUpwardMovement = dy < 0;
-                            float targetY = smileysSelector.getY() + dy;
+                            if (pointerIndex != -1) {
+                                final float y = MotionEventCompat.getY(event, pointerIndex);
 
-                            if (targetY < toolbarHeight) {
-                                float difference = toolbarHeight - targetY;
-                                dy += difference;
-                            } else if (targetY > smileySelectorTopOffset) {
-                                float difference = targetY - smileySelectorTopOffset;
-                                dy -= difference;
-                            }
+                                // Distance
+                                float dy = y - lastTouchY;
+                                isUpwardMovement = dy < 0;
+                                float targetY = smileysSelector.getY() + dy;
 
-                            smileysSelector.setY(smileysSelector.getY() + dy);
+                                if (targetY < toolbarHeight) {
+                                    float difference = toolbarHeight - targetY;
+                                    dy += difference;
+                                } else if (targetY > smileySelectorTopOffset) {
+                                    float difference = targetY - smileySelectorTopOffset;
+                                    dy -= difference;
+                                }
 
-                            // Show or hide the smileys toolbar based on current position
-                            if (isUpwardMovement && smileysSelector.getY() < replyWindowMaxHeight) {
-                                showSmileysToolbar();
-                            } else {
-                                hideSmileysToolbar();
+                                smileysSelector.setY(smileysSelector.getY() + dy);
+
+                                // Show or hide the smileys toolbar based on current position
+                                if (isUpwardMovement && smileysSelector.getY() < replyWindowMaxHeight) {
+                                    showSmileysToolbar();
+                                } else {
+                                    hideSmileysToolbar();
+                                }
                             }
 
                             break;
