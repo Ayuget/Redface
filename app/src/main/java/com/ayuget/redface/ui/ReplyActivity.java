@@ -209,6 +209,8 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
 
     private SubscriptionHandler<User, Response> replySubscriptionHandler = new SubscriptionHandler<>();
 
+    private boolean replyIsSuccessful = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -305,7 +307,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
     protected void onPause() {
         super.onPause();
 
-        if (replyEditText != null) {
+        if (!replyIsSuccessful && replyEditText != null) {
             String actualReply = replyEditText.getText().toString();
             boolean hasResponse = actualReply.length() > 0;
             boolean textWasModified = (initialReplyContent == null) || !initialReplyContent.equals(actualReply);
@@ -650,6 +652,11 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
 
     protected void onReplySuccess() {
         clearResponseFromCache(userManager.getActiveUser());
+
+        // Flag that reply is successful to prevent it to be cached in the
+        // response cache (onPause happens later in this activity lifecycle)
+        replyIsSuccessful = true;
+
         replyToActivity(RESULT_OK, false);
     }
 
