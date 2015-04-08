@@ -75,7 +75,9 @@ public class MDLink {
         }
 
         public MDLink build() {
-            Preconditions.checkNotNull(this.category, "Category cannot be null");
+            if (linkType != LinkType.INVALID) {
+                Preconditions.checkNotNull(this.category, "Category cannot be null");
+            }
             return new MDLink(this);
         }
     }
