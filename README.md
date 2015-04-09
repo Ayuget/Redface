@@ -8,7 +8,7 @@ goal is of course to provide a great and efficient way of browsing HFR's forum.
 
 Useful links :
 
-* HFR's forum : [forum.hardware.fr]
+* HFR's forum : http://forum.hardware.fr
 * [Redface topic](http://forum.hardware.fr/forum2.php?config=hfr.inc&cat=23&subcat=550&post=29332&page=1&p=1&sondage=0&owntopic=1&trash=0&trash_post=0&print=0&numreponse=0&quote_only=0&new=0&nojs=0)
 * [Bug tracker (Github issues)](https://github.com/Ayuget/Redface/issues)
 
