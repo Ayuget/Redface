@@ -114,6 +114,10 @@ table.quote, table.spoiler {
     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
 }
 
+.quote hr {
+    display: none;
+}
+
 .quote, .spoiler {
     border: 1px solid #d4d4d4;
     background: #ffffff;
