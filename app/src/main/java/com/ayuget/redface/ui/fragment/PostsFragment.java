@@ -304,6 +304,7 @@ public class PostsFragment extends BaseFragment {
             currentPagePosition = new PagePosition(PagePosition.BOTTOM);
             bus.post(new PageRefreshedEvent(topic, currentPagePosition));
 
+            showLoadingIndicator();
             loadPage(currentPage);
         }
     }
