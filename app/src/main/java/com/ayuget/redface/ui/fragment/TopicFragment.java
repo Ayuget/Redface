@@ -226,6 +226,13 @@ public class TopicFragment extends ToolbarFragment {
     }
 
     /**
+     * Returns current page position
+     */
+    public PagePosition getCurrentPagePosition() {
+        return currentPagePosition;
+    }
+
+    /**
      * Updates position of currently displayed topic page
      * @param position new position
      */
@@ -266,6 +273,8 @@ public class TopicFragment extends ToolbarFragment {
 
         return super.onOptionsItemSelected(item);
     }
+
+
 
     /**
      * Clears internal navigation stack

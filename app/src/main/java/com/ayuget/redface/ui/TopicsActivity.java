@@ -181,10 +181,18 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
             // Register the callbacks again
             topicListFragment.addOnTopicClickedListener(this);
         }
+
+        // Restore topic list fragment to the correct pane if we come from portrait mode
+        if (twoPaneMode && (topicListFragment != null && !topicListFragment.isVisible())) {
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.container, topicListFragment, TOPICS_FRAGMENT_TAG)
+                        .commit();
+        }
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState (Bundle outState) {
         super.onSaveInstanceState(outState);
 
         if (currentCategory != null) {
