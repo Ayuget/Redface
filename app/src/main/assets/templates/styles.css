@@ -28,8 +28,8 @@ body.redface-dark {
     padding: 3px 8px 3px 8px;
     background: #cfcece;
     color: #424242;
-    height: 36px;
-    overflow: auto;
+    height: 42px;
+    box-sizing: border-box;
 }
 
 .redface-dark .post-toolbar {
