@@ -588,12 +588,15 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
 
     protected void insertTag(String tag) {
         int selectionStart = replyEditText.getSelectionStart();
+        int selectionEnd = replyEditText.getSelectionEnd();
+
+        String selectedText =  (selectionEnd == - 1 || selectionEnd <= selectionStart) ? "" : replyEditText.getText().toString().substring(selectionStart, selectionEnd);
 
         String tagOpen = String.format("[%s]", tag);
         String tagClose = String.format("[/%s]", tag);
-        insertText(tagOpen + tagClose);
+        insertText(tagOpen + selectedText + tagClose);
 
-        replyEditText.setSelection(selectionStart + tagOpen.length());
+        replyEditText.setSelection(selectionStart + tagOpen.length() + selectedText.length());
     }
 
     @Override
