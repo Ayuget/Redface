@@ -62,6 +62,10 @@ public class RedfaceSettings {
         return TopicFilter.valueOf(topicFilterValue);
     }
 
+    public boolean showFullyReadTopics() {
+        return sharedPreferences.getBoolean(SettingsConstants.KEY_SHOW_FULLY_READ_TOPICS, true);
+    }
+
     /**
      * @todo ugly... Make it configurable
      */

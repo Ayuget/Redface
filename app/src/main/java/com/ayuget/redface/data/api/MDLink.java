@@ -20,7 +20,18 @@ import com.ayuget.redface.data.api.model.Category;
 import com.ayuget.redface.ui.misc.PagePosition;
 import com.google.common.base.Preconditions;
 
+/**
+ * Represents an internal link, that can be in two forms :
+ *
+ * <ul>
+ *     <li>Rewritten URLs : new kind of links, SEO optimized</li>
+ *     <li>Classic links</li>
+ * </ul>
+ */
 public class MDLink {
+    /**
+     * Type of links handled in the application
+     */
     private static enum LinkType {
         TOPIC,
         CATEGORY,

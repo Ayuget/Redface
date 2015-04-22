@@ -49,6 +49,8 @@ public class HFREndpoints implements MDEndpoints {
 
     private static final String EDIT_URL = "{base_url}/message.php?config=hfr.inc&cat={category_id}&post={topic_id}&numreponse={post_id}";
 
+    private static final String USER_FORUM_PREFERENCES_URL = "{base_url}/user/editprofil.php?config=hfr.inc&page=3";
+
     /**
      * Homepage URL (with the list of categories)
      */
@@ -207,5 +209,13 @@ public class HFREndpoints implements MDEndpoints {
                 .put("topic_id", topic.getId())
                 .put("post_id", postId)
                 .format().toString();
+    }
+
+    @Override
+    public String userForumPreferences() {
+        return Phrase.from(USER_FORUM_PREFERENCES_URL)
+                .put("base_url", USER_FORUM_PREFERENCES_URL)
+                .format()
+                .toString();
     }
 }

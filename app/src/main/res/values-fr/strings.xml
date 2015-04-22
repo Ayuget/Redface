@@ -112,4 +112,6 @@
     <string name="underline_text_button_description">Souligner le texte</string>
     <string name="user_switch_sucessful">Changer l\'utilisateur courant à {username}</string>
     <string name="invalid_page_number">Numéro de page invalide</string>
+    <string name="pref_show_fully_read_topics_summary">Cette option ne fonctionne que si vous n\'êtes pas dans la catégorie Meta</string>
+    <string name="pref_show_fully_read_topics_title">Afficher les sujets entièrement lus</string>
 </resources>

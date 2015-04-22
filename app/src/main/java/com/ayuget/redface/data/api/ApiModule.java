@@ -29,6 +29,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import retrofit.RestAdapter;
 
 @Module(
     complete = false,
@@ -53,5 +54,13 @@ public class ApiModule {
 
     @Provides @Singleton UrlParser provideUrlParser(MDEndpoints endpoints, MDService mdService, Bus bus, CategoriesStore categoriesStore) {
         return new HFRUrlParser(endpoints, mdService, bus, categoriesStore);
+    }
+
+    @Provides @Singleton SmileyService provideSmileyService(MDEndpoints endpoints) {
+        RestAdapter restAdapter = new RestAdapter.Builder()
+                .setEndpoint(endpoints.smileyApiHost())
+                .build();
+
+        return restAdapter.create(SmileyService.class);
     }
 }

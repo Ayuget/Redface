@@ -24,6 +24,7 @@ import com.ayuget.redface.data.api.MDAuthenticator;
 import com.ayuget.redface.data.api.MDEndpoints;
 import com.ayuget.redface.data.api.MDMessageSender;
 import com.ayuget.redface.data.api.MDService;
+import com.ayuget.redface.data.api.SmileyService;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToBBCode;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToPostList;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToTopic;
@@ -41,6 +42,7 @@ import com.ayuget.redface.data.api.model.misc.SmileyResponse;
 import com.ayuget.redface.data.state.CategoriesStore;
 import com.ayuget.redface.network.HTTPClientProvider;
 import com.ayuget.redface.network.PageFetcher;
+import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.event.TopicPageCountUpdatedEvent;
 import com.ayuget.redface.util.UserUtils;
@@ -63,54 +65,27 @@ import rx.functions.Func1;
 public class HFRForumService implements MDService {
     private static final String LOG_TAG = HFRForumService.class.getSimpleName();
 
-    private PageFetcher pageFetcher;
+    @Inject PageFetcher pageFetcher;
 
-    private PostsTweaker postsTweaker;
+    @Inject PostsTweaker postsTweaker;
 
-    private MDEndpoints mdEndpoints;
+    @Inject MDEndpoints mdEndpoints;
 
-    private MDAuthenticator mdAuthenticator;
+    @Inject MDAuthenticator mdAuthenticator;
 
-    private HTTPClientProvider httpClientProvider;
+    @Inject HTTPClientProvider httpClientProvider;
 
-    private SmileyService smileyService;
+    @Inject SmileyService smileyService;
 
-    private Bus bus;
+    @Inject Bus bus;
 
-    private CategoriesStore categoriesStore;
+    @Inject CategoriesStore categoriesStore;
 
-    private MDMessageSender mdMessageSender;
+    @Inject MDMessageSender mdMessageSender;
+
+    @Inject RedfaceSettings appSettings;
 
     private String currentHashcheck;
-
-    @Inject
-    public HFRForumService(PageFetcher pageFetcher, PostsTweaker postsTweaker, MDEndpoints mdEndpoints, MDAuthenticator mdAuthenticator, HTTPClientProvider httpClientProvider, Bus bus, CategoriesStore categoriesStore, MDMessageSender messageSender) {
-        this.pageFetcher = pageFetcher;
-        this.postsTweaker = postsTweaker;
-        this.mdEndpoints = mdEndpoints;
-        this.mdAuthenticator = mdAuthenticator;
-        this.httpClientProvider = httpClientProvider;
-
-        RestAdapter restAdapter = new RestAdapter.Builder()
-                .setEndpoint(mdEndpoints.smileyApiHost())
-                .build();
-
-        this.smileyService = restAdapter.create(SmileyService.class);
-        this.bus = bus;
-        this.categoriesStore = categoriesStore;
-        this.mdMessageSender = messageSender;
-    }
-
-    public static interface SmileyService {
-        @GET("/api/forum.hardware.fr/users/{user_id}/stickers/recent?locale=fr_formal&lim=50&off=0&_method=GET")
-        Observable<SmileyResponse> getUserSmileys(@Path("user_id") int userId);
-
-        @GET("/api/forum.hardware.fr/stickers/search/np=1_bc=0/{search_expression}?locale=fr_formal&lim=70&off=0&_method=GET")
-        Observable<SmileyResponse> searchSmileys(@Path("search_expression") String searchExpression);
-
-        @GET("/api/forum.hardware.fr/stickers/popular?locale=fr_formal&lim=&off=0&_method=GET")
-        Observable<SmileyResponse> getPopularSmileys();
-    }
 
     @Override
     public Observable<List<Category>> listCategories(final User user) {
@@ -165,15 +140,26 @@ public class HFRForumService implements MDService {
     public Observable<List<Topic>> listTopics(User user, final Category category, final Subcategory subcategory, int page, final TopicFilter filter) {
         return pageFetcher.fetchSource(user, getTopicListEndpoint(category, subcategory, page, filter))
                 .map(new HTMLToTopicList())
-                .map(new Func1<List<Topic>, List<Topic>>() {
+                .flatMap(new Func1<List<Topic>, Observable<Topic>>() {
                     @Override
-                    public List<Topic> call(List<Topic> topics) {
-                        for (Topic topic : topics) {
-                            topic.setCategory(category);
-                        }
-                        return topics;
+                    public Observable<Topic> call(List<Topic> topics) {
+                        return Observable.from(topics);
                     }
-                });
+                })
+                .filter(new Func1<Topic, Boolean>() {
+                    @Override
+                    public Boolean call(Topic topic) {
+                        return topic.hasUnreadPosts() || appSettings.showFullyReadTopics();
+                    }
+                })
+                .map(new Func1<Topic, Topic>() {
+                    @Override
+                    public Topic call(Topic topic) {
+                        topic.setCategory(category);
+                        return topic;
+                    }
+                })
+                .toList();
     }
 
     @Override

@@ -73,6 +73,8 @@
     <!-- Appearance preferences screen-->
     <string name="pref_appearance_title">Appearance</string>
     <string name="pref_appearance_summary">Change how the application looks</string>
+    <string name="pref_show_fully_read_topics_title">Show fully read topics</string>
+    <string name="pref_show_fully_read_topics_summary">This option only works If you are not in the Meta category</string>
 
     <string name="pref_default_topic_filter">Default topic filter</string>
     <string name="pref_default_topic_filter_default" translatable="false">NONE</string>
