@@ -21,6 +21,7 @@
     <!-- Text colors -->
     <attr name="textColorPrimary" format="reference|color" />
     <attr name="textColorSecondary" format="reference|color" />
+    <attr name="textColorRead" format="reference|color" />
 
     <!-- List dividers -->
     <attr name="listDividerColor" format="reference|color" />
@@ -31,6 +32,7 @@
     <attr name="unreadCountBackgroundColor" format="reference|color" />
     <attr name="readTopicIconBackgroundColor" format="reference|color" />
     <attr name="readTopicIconTextColor" format="reference|color" />
+    <attr name="fullyReadTopicIconBackgroundColor" format="reference|color" />
 
     <!-- Toolbar theme -->
     <attr name="toolbarTheme" format="reference" />

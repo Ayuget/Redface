@@ -53,6 +53,9 @@
     <color name="topic_subject_dark">#ffffff</color>
     <color name="topic_subject_light">#000000</color>
 
+    <color name="text_read_light">#b6b6b6</color>
+    <color name="text_read_dark">#706f6f</color>
+
     <color name="topic_additional_details">#ff747474</color>
     <color name="topic_icon_default_bg">#ffd1d1d1</color>
     <color name="topic_unread_count_bg_dark">#404246</color>
@@ -64,11 +67,14 @@
     <color name="topic_icon_flagged_bg">#00BCD4</color>
     <color name="topic_icon_flagged_color">#FFFFFF</color>
 
-    <!-- Read topics (red flag -->
+    <!-- Read topics (red flag) -->
     <color name="topic_icon_read_bg_dark">#B71C1C</color>
     <color name="topic_icon_read_bg_light">#EF5350</color>
     <color name="topic_icon_read_color_dark">#FFFFFF</color>
     <color name="topic_icon_read_color_light">#FFEBEE</color>
+
+    <color name="topic_icon_fully_read_bg_dark">#4a4949</color>
+    <color name="topic_icon_fully_read_bg_light">#dfdddd</color>
 
     <color name="topic_icon_default_bg_dark">#484949</color>
     <color name="topic_icon_default_bg_light">#ffd1d1d1</color>

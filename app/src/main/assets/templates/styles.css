@@ -120,7 +120,7 @@ img {
 
 .quote, .spoiler {
     border: 1px solid #d4d4d4;
-    background: #F5F5F5;
+    background: #FAFAFA;
     min-height: 40px;
     width: 95%;
     margin: 10px auto 10px auto;
@@ -147,7 +147,7 @@ img {
     color: #757575;
     margin-bottom: 8px;
     padding: 8px;
-    background: #F5F5F5;
+    background: #FAFAFA;
 }
 
 .redface-dark .quote b.s1, .redface-dark .spoiler b.s1Topic {

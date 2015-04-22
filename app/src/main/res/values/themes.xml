@@ -37,6 +37,7 @@
         <item name="appBackgroundColor">@color/app_background_dark</item>
         <item name="textColorPrimary">@color/text_primary_dark</item>
         <item name="textColorSecondary">@color/text_secondary_dark</item>
+        <item name="textColorRead">@color/text_read_dark</item>
 
         <item name="listDividerColor">@color/list_divider_dark</item>
 
@@ -46,6 +47,7 @@
         <item name="unreadCountBackgroundColor">@color/topic_unread_count_bg_dark</item>
         <item name="readTopicIconBackgroundColor">@color/topic_icon_read_bg_dark</item>
         <item name="readTopicIconTextColor">@color/topic_icon_read_color_dark</item>
+        <item name="fullyReadTopicIconBackgroundColor">@color/topic_icon_fully_read_bg_dark</item>
 
         <item name="toolbarTheme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
         <item name="toolbarPopupTheme">@style/ThemeOverlay.AppCompat.Dark</item>
@@ -77,6 +79,7 @@
         <item name="appBackgroundColor">@color/app_background_light</item>
         <item name="textColorPrimary">@color/text_primary_light</item>
         <item name="textColorSecondary">@color/text_secondary_light</item>
+        <item name="textColorRead">@color/text_read_light</item>
 
         <item name="listDividerColor">@color/list_divider_light</item>
 
@@ -86,6 +89,7 @@
         <item name="unreadCountBackgroundColor">@color/topic_unread_count_bg_light</item>
         <item name="readTopicIconBackgroundColor">@color/topic_icon_read_bg_light</item>
         <item name="readTopicIconTextColor">@color/topic_icon_read_color_light</item>
+        <item name="fullyReadTopicIconBackgroundColor">@color/topic_icon_fully_read_bg_light</item>
 
         <item name="toolbarTheme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
         <item name="toolbarPopupTheme">@style/ThemeOverlay.AppCompat.Light</item>

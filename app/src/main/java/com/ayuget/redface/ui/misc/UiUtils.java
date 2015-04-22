@@ -72,6 +72,10 @@ public class UiUtils {
         return resolveColorAttribute(context, R.attr.textColorSecondary);
     }
 
+    public static int getReadTextColor(Context context) {
+        return resolveColorAttribute(context, R.attr.textColorRead);
+    }
+
     public static int getDefaultTopicIconBackgroundColor(Context context) {
         return resolveColorAttribute(context, R.attr.defaultTopicIconBackgroundColor);
     }
@@ -90,5 +94,9 @@ public class UiUtils {
 
     public static int getReplyToolbarIconsColor(Context context) {
         return resolveColorAttribute(context, R.attr.replyToolbarIconsColor);
+    }
+
+    public static int getFullyReadTopicIconBackgroundColor(Context context) {
+        return resolveColorAttribute(context, R.attr.fullyReadTopicIconBackgroundColor);
     }
 }
