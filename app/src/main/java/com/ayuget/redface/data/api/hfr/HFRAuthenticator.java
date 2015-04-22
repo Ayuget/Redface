@@ -96,6 +96,8 @@ public class HFRAuthenticator implements MDAuthenticator {
                         subscriber.onNext(false);
                     }
 
+                    subscriber.onCompleted();
+
                 } catch (IOException e) {
                     subscriber.onError(e);
                 }

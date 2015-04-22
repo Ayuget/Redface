@@ -55,6 +55,7 @@ public class PageFetcher {
                 try {
                     Response response = client.newCall(request).execute();
                     subscriber.onNext(response.body().string());
+                    subscriber.onCompleted();
                 } catch (IOException e) {
                     subscriber.onError(e);
                 }

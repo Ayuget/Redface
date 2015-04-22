@@ -99,6 +99,8 @@ public class HFRMessageSender implements MDMessageSender {
                         Log.d(LOG_TAG, String.format("Error HTTP Code, response is : %s", response.body().string()));
                         subscriber.onNext(Response.buildFailure(ResponseCode.UNKNOWN_ERROR));
                     }
+
+                    subscriber.onCompleted();
                 }
                 catch (IOException e) {
                     Log.e(LOG_TAG, "Exception while posting response", e);
@@ -157,6 +159,8 @@ public class HFRMessageSender implements MDMessageSender {
                         Log.d(LOG_TAG, String.format("Error HTTP Code, response is : %s", response.body().string()));
                         subscriber.onNext(Response.buildFailure(ResponseCode.UNKNOWN_ERROR));
                     }
+
+                    subscriber.onCompleted();
                 }
                 catch (IOException e) {
                     Log.e(LOG_TAG, "Exception while posting response", e);
