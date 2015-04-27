@@ -1,3 +1,19 @@
+/*
+ * Copyright 2015 Ayuget
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.ayuget.redface.ui.fragment;
 
 import android.os.Bundle;
@@ -28,12 +44,12 @@ import com.ayuget.redface.ui.misc.PagePosition;
 import com.ayuget.redface.ui.misc.PageSelectedListener;
 import com.ayuget.redface.ui.misc.TopicPosition;
 import com.hannesdorfmann.fragmentargs.annotation.Arg;
+import com.nispok.snackbar.Snackbar;
+import com.nispok.snackbar.SnackbarManager;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 
 import butterknife.InjectView;
 
@@ -47,6 +63,10 @@ public class TopicFragment extends ToolbarFragment {
     private MaterialEditText goToPageEditText;
 
     private ArrayList<TopicPosition> topicPositionsStack;
+
+    private int previousViewPagerState = ViewPager.SCROLL_STATE_IDLE;
+
+    private boolean userScrolledViewPager = false;
 
     @InjectView(R.id.pager)
     ViewPager pager;
@@ -99,7 +119,26 @@ public class TopicFragment extends ToolbarFragment {
                 currentPage = position + 1;
                 bus.post(new PageSelectedEvent(topic, currentPage));
             }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                // Keep track of scroll state in order to detect if scrolling has been done
+                // manually by the user, or programatically. It allows us to disable some automatic
+                // scrolling behavior that can be annoying (and buggy) in some corner cases
+                if (previousViewPagerState == ViewPager.SCROLL_STATE_DRAGGING && state == ViewPager.SCROLL_STATE_SETTLING) {
+                    userScrolledViewPager = true;
+
+                    // Reset current page position because user triggered page change
+                    currentPagePosition = null;
+                }
+                else if (previousViewPagerState == ViewPager.SCROLL_STATE_SETTLING && state == ViewPager.SCROLL_STATE_IDLE) {
+                    userScrolledViewPager = false;
+                }
+
+                previousViewPagerState = state;
+            }
         });
+
         pager.setCurrentItem(currentPage - 1);
 
         return rootView;
@@ -137,7 +176,7 @@ public class TopicFragment extends ToolbarFragment {
     public void onTopicPageLoaded(PageLoadedEvent event) {
         Log.d(LOG_TAG, String.format("@%d -> Received topicPageLoaded event (topic='%s', page='%d'), current(topic='%s', page='%d', currentPagePosition='%s')", System.identityHashCode(this), event.getTopic().getSubject(), event.getPage(), topic.getSubject(), currentPage, currentPagePosition));
         if (event.getTopic().equals(topic) && event.getPage() == currentPage) {
-            if (currentPagePosition != null) {
+            if (currentPagePosition != null && !userScrolledViewPager) {
                 event.getTopicPageView().setPagePosition(currentPagePosition);
             }
         }
@@ -210,6 +249,13 @@ public class TopicFragment extends ToolbarFragment {
     }
 
     /**
+     * Returns current page position
+     */
+    public PagePosition getCurrentPagePosition() {
+        return currentPagePosition;
+    }
+
+    /**
      * Updates position of currently displayed topic page
      * @param position new position
      */
@@ -251,6 +297,8 @@ public class TopicFragment extends ToolbarFragment {
         return super.onOptionsItemSelected(item);
     }
 
+
+
     /**
      * Clears internal navigation stack
      */
@@ -268,8 +316,19 @@ public class TopicFragment extends ToolbarFragment {
                 .callback(new MaterialDialog.ButtonCallback() {
                     @Override
                     public void onPositive(MaterialDialog dialog) {
-                        int pageNumber = Integer.valueOf(goToPageEditText.getText().toString());
-                        pager.setCurrentItem(pageNumber - 1);
+                        try {
+                            int pageNumber = Integer.valueOf(goToPageEditText.getText().toString());
+                            pager.setCurrentItem(pageNumber - 1);
+                        }
+                        catch (NumberFormatException e) {
+                            Log.e(LOG_TAG, String.format("Invalid page number entered : %s", goToPageEditText.getText().toString()), e);
+
+                            SnackbarManager.show(
+                                    Snackbar.with(getActivity())
+                                            .text(R.string.invalid_page_number)
+                                            .textColorResource(R.color.theme_primary_light)
+                            );
+                        }
                     }
 
                     @Override
@@ -290,8 +349,13 @@ public class TopicFragment extends ToolbarFragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (s.toString().trim().length() > 0) {
-                    int pageNumber = Integer.valueOf(s.toString());
-                    positiveAction.setEnabled(pageNumber >= 1 && pageNumber <= topic.getPagesCount());
+                    try {
+                        int pageNumber = Integer.valueOf(s.toString());
+                        positiveAction.setEnabled(pageNumber >= 1 && pageNumber <= topic.getPagesCount());
+                    }
+                    catch (NumberFormatException e) {
+                        positiveAction.setEnabled(false);
+                    }
                 }
                 else {
                     positiveAction.setEnabled(false);

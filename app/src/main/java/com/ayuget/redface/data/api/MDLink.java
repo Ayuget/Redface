@@ -1,10 +1,37 @@
+/*
+ * Copyright 2015 Ayuget
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.ayuget.redface.data.api;
 
 import com.ayuget.redface.data.api.model.Category;
 import com.ayuget.redface.ui.misc.PagePosition;
 import com.google.common.base.Preconditions;
 
+/**
+ * Represents an internal link, that can be in two forms :
+ *
+ * <ul>
+ *     <li>Rewritten URLs : new kind of links, SEO optimized</li>
+ *     <li>Classic links</li>
+ * </ul>
+ */
 public class MDLink {
+    /**
+     * Type of links handled in the application
+     */
     private static enum LinkType {
         TOPIC,
         CATEGORY,
@@ -75,7 +102,9 @@ public class MDLink {
         }
 
         public MDLink build() {
-            Preconditions.checkNotNull(this.category, "Category cannot be null");
+            if (linkType != LinkType.INVALID) {
+                Preconditions.checkNotNull(this.category, "Category cannot be null");
+            }
             return new MDLink(this);
         }
     }

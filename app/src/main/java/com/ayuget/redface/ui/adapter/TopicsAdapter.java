@@ -1,3 +1,19 @@
+/*
+ * Copyright 2015 Ayuget
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.ayuget.redface.ui.adapter;
 
 import android.content.Context;
@@ -39,6 +55,8 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ViewHolder
     private final int primaryTextColor;
 
     private final int secondaryTextColor;
+
+    private final int readTextColor;
 
     private final ThemeManager themeManager;
 
@@ -88,6 +106,7 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ViewHolder
         this.context = context;
         this.primaryTextColor = UiUtils.getPrimaryTextColor(context);
         this.secondaryTextColor = UiUtils.getSecondaryTextColor(context);
+        this.readTextColor = UiUtils.getReadTextColor(context);
         this.themeManager = themeManager;
     }
 
@@ -150,10 +169,14 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ViewHolder
             viewHolder.unreadPagesCount.setVisibility(View.VISIBLE);
             viewHolder.unreadPagesCount.setText(getPrintableUnreadPagesCount(topic.getUnreadPagesCount()));
             viewHolder.topicSubject.setTextColor(primaryTextColor);
+            viewHolder.topicLastPostInfos.setTextColor(secondaryTextColor);
+            viewHolder.topicPagesCount.setTextColor(secondaryTextColor);
         }
         else {
             viewHolder.unreadPagesCount.setVisibility(View.INVISIBLE);
-            viewHolder.topicSubject.setTextColor(secondaryTextColor);
+            viewHolder.topicSubject.setTextColor(readTextColor);
+            viewHolder.topicLastPostInfos.setTextColor(readTextColor);
+            viewHolder.topicPagesCount.setTextColor(readTextColor);
         }
 
         viewHolder.unreadPagesCount.setBackground(context.getResources().getDrawable(themeManager.getTopicUnreadCountDrawable()));
@@ -181,16 +204,18 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ViewHolder
     }
 
     int getTopicIcon(Topic topic) {
-        int topicIcon = R.drawable.ic_flag_white_24dp;
-
         if (topic.isSticky()) {
-            topicIcon = R.drawable.ic_action_pin;
+            return R.drawable.ic_action_pin;
         }
         else if (topic.getStatus() == TopicStatus.FAVORITE_NEW_CONTENT) {
-            topicIcon = R.drawable.ic_action_star_10;
+            return R.drawable.ic_action_star_10;
         }
-
-        return topicIcon;
+        else if (topic.hasUnreadPosts()) {
+            return R.drawable.ic_flag_white_24dp;
+        }
+        else {
+            return R.drawable.ic_action_tick;
+        }
     }
 
     int getTopicIconBackgroundColor(Topic topic) {
@@ -206,8 +231,11 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ViewHolder
         else if (topic.isSticky()) {
             return context.getResources().getColor(R.color.topic_icon_sticky_bg);
         }
-        else {
+        else if (topic.hasUnreadPosts()) {
             return UiUtils.getDefaultTopicIconBackgroundColor(context);
+        }
+        else {
+            return UiUtils.getFullyReadTopicIconBackgroundColor(context);
         }
     }
 

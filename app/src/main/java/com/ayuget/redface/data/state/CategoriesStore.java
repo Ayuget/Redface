@@ -1,3 +1,19 @@
+/*
+ * Copyright 2015 Ayuget
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.ayuget.redface.data.state;
 
 import android.content.Context;
@@ -125,13 +141,18 @@ public class CategoriesStore {
             List<Category> userCategories = new LinkedList<>();
 
             for (String category : Splitter.on(PRIMARY_SEPARATOR).split(userMapping)) {
-                int categoryId = Integer.valueOf(category);
+                try {
+                    int categoryId = Integer.valueOf(category);
 
-                if (categoriesCache.containsKey(categoryId)) {
-                    userCategories.add(categoriesCache.get(categoryId));
+                    if (categoriesCache.containsKey(categoryId)) {
+                        userCategories.add(categoriesCache.get(categoryId));
+                    } else {
+                        Log.e(LOG_TAG, String.format("Error while associating category '%s' to user '%s' : unknown category", category, username));
+                    }
                 }
-                else {
-                    Log.e(LOG_TAG, String.format("Error while associating category '%s' to user '%s' : unknown category", category, username));
+                catch (NumberFormatException e) {
+                    // Don't crash the app if an invalid category is found
+                    Log.e(LOG_TAG, String.format("Error, deserializing category with non-int id : %s", category));
                 }
             }
 

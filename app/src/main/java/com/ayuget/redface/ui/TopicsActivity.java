@@ -1,3 +1,19 @@
+/*
+ * Copyright 2015 Ayuget
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.ayuget.redface.ui;
 
 import android.app.Activity;
@@ -165,10 +181,18 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
             // Register the callbacks again
             topicListFragment.addOnTopicClickedListener(this);
         }
+
+        // Restore topic list fragment to the correct pane if we come from portrait mode
+        if (twoPaneMode && (topicListFragment != null && !topicListFragment.isVisible())) {
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.container, topicListFragment, TOPICS_FRAGMENT_TAG)
+                        .commit();
+        }
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState (Bundle outState) {
         super.onSaveInstanceState(outState);
 
         if (currentCategory != null) {
@@ -467,8 +491,18 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
                 .callback(new MaterialDialog.ButtonCallback() {
                     @Override
                     public void onPositive(MaterialDialog dialog) {
-                        int pageNumber = Integer.valueOf(goToPageEditText.getText().toString());
-                        loadTopic(topic, pageNumber, new PagePosition(PagePosition.TOP));
+                        try {
+                            int pageNumber = Integer.valueOf(goToPageEditText.getText().toString());
+                            loadTopic(topic, pageNumber, new PagePosition(PagePosition.TOP));
+                        } catch (NumberFormatException e) {
+                            Log.e(LOG_TAG, String.format("Invalid page number entered : %s", goToPageEditText.getText().toString()), e);
+
+                            SnackbarManager.show(
+                                    Snackbar.with(TopicsActivity.this)
+                                            .text(R.string.invalid_page_number)
+                                            .textColorResource(R.color.theme_primary_light)
+                            );
+                        }
                     }
 
                     @Override
@@ -489,8 +523,13 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (s.toString().trim().length() > 0) {
-                    int pageNumber = Integer.valueOf(s.toString());
-                    positiveAction.setEnabled(pageNumber >= 1 && pageNumber <= topic.getPagesCount());
+                    try {
+                        int pageNumber = Integer.valueOf(s.toString());
+                        positiveAction.setEnabled(pageNumber >= 1 && pageNumber <= topic.getPagesCount());
+                    }
+                    catch (NumberFormatException e) {
+                        positiveAction.setEnabled(false);
+                    }
                 }
                 else {
                     positiveAction.setEnabled(false);

@@ -1,3 +1,19 @@
+/*
+ * Copyright 2015 Ayuget
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.ayuget.redface.ui;
 
 import android.content.Context;
@@ -209,6 +225,8 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
 
     private SubscriptionHandler<User, Response> replySubscriptionHandler = new SubscriptionHandler<>();
 
+    private boolean replyIsSuccessful = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -305,7 +323,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
     protected void onPause() {
         super.onPause();
 
-        if (replyEditText != null) {
+        if (!isReplySuccessful() && replyEditText != null) {
             String actualReply = replyEditText.getText().toString();
             boolean hasResponse = actualReply.length() > 0;
             boolean textWasModified = (initialReplyContent == null) || !initialReplyContent.equals(actualReply);
@@ -384,28 +402,31 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
                     case MotionEvent.ACTION_MOVE: {
                         if (smileyList.getScrollY() == 0) {
                             final int pointerIndex = MotionEventCompat.findPointerIndex(event, activePointerId);
-                            final float y = MotionEventCompat.getY(event, pointerIndex);
 
-                            // Distance
-                            float dy = y - lastTouchY;
-                            isUpwardMovement = dy < 0;
-                            float targetY = smileysSelector.getY() + dy;
+                            if (pointerIndex != -1) {
+                                final float y = MotionEventCompat.getY(event, pointerIndex);
 
-                            if (targetY < toolbarHeight) {
-                                float difference = toolbarHeight - targetY;
-                                dy += difference;
-                            } else if (targetY > smileySelectorTopOffset) {
-                                float difference = targetY - smileySelectorTopOffset;
-                                dy -= difference;
-                            }
+                                // Distance
+                                float dy = y - lastTouchY;
+                                isUpwardMovement = dy < 0;
+                                float targetY = smileysSelector.getY() + dy;
 
-                            smileysSelector.setY(smileysSelector.getY() + dy);
+                                if (targetY < toolbarHeight) {
+                                    float difference = toolbarHeight - targetY;
+                                    dy += difference;
+                                } else if (targetY > smileySelectorTopOffset) {
+                                    float difference = targetY - smileySelectorTopOffset;
+                                    dy -= difference;
+                                }
 
-                            // Show or hide the smileys toolbar based on current position
-                            if (isUpwardMovement && smileysSelector.getY() < replyWindowMaxHeight) {
-                                showSmileysToolbar();
-                            } else {
-                                hideSmileysToolbar();
+                                smileysSelector.setY(smileysSelector.getY() + dy);
+
+                                // Show or hide the smileys toolbar based on current position
+                                if (isUpwardMovement && smileysSelector.getY() < replyWindowMaxHeight) {
+                                    showSmileysToolbar();
+                                } else {
+                                    hideSmileysToolbar();
+                                }
                             }
 
                             break;
@@ -567,12 +588,15 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
 
     protected void insertTag(String tag) {
         int selectionStart = replyEditText.getSelectionStart();
+        int selectionEnd = replyEditText.getSelectionEnd();
+
+        String selectedText =  (selectionEnd == - 1 || selectionEnd <= selectionStart) ? "" : replyEditText.getText().toString().substring(selectionStart, selectionEnd);
 
         String tagOpen = String.format("[%s]", tag);
         String tagClose = String.format("[/%s]", tag);
-        insertText(tagOpen + tagClose);
+        insertText(tagOpen + selectedText + tagClose);
 
-        replyEditText.setSelection(selectionStart + tagOpen.length());
+        replyEditText.setSelection(selectionStart + tagOpen.length() + selectedText.length());
     }
 
     @Override
@@ -650,6 +674,11 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
 
     protected void onReplySuccess() {
         clearResponseFromCache(userManager.getActiveUser());
+
+        // Flag that reply is successful to prevent it to be cached in the
+        // response cache (onPause happens later in this activity lifecycle)
+        setReplySuccessful(true);
+
         replyToActivity(RESULT_OK, false);
     }
 
@@ -725,6 +754,14 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
 
     protected String loadResponseFromCache(User user) {
         return responseStore.getResponse(user, currentTopic);
+    }
+
+    public boolean isReplySuccessful() {
+        return replyIsSuccessful;
+    }
+
+    public void setReplySuccessful(boolean replyIsSuccessful) {
+        this.replyIsSuccessful = replyIsSuccessful;
     }
 
     private static class UserViewHolder {

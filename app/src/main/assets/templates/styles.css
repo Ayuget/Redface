@@ -28,8 +28,8 @@ body.redface-dark {
     padding: 3px 8px 3px 8px;
     background: #cfcece;
     color: #424242;
-    height: 36px;
-    overflow: auto;
+    height: 42px;
+    box-sizing: border-box;
 }
 
 .redface-dark .post-toolbar {
@@ -108,15 +108,19 @@ img {
 * Citations
 */
 
-table.quote, table.spoiler {
+.quote, .spoiler {
     transition: box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     transition-delay: 0.2s;
     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
 }
 
+.quote hr {
+    display: none;
+}
+
 .quote, .spoiler {
     border: 1px solid #d4d4d4;
-    background: #ffffff;
+    background: #FAFAFA;
     min-height: 40px;
     width: 95%;
     margin: 10px auto 10px auto;
@@ -143,7 +147,7 @@ table.quote, table.spoiler {
     color: #757575;
     margin-bottom: 8px;
     padding: 8px;
-    background: #e7e7e7;
+    background: #FAFAFA;
 }
 
 .redface-dark .quote b.s1, .redface-dark .spoiler b.s1Topic {

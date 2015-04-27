@@ -1,3 +1,19 @@
+/*
+ * Copyright 2015 Ayuget
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.ayuget.redface.data.api.hfr;
 
 import android.util.Log;
@@ -23,7 +39,7 @@ public final class PostsTweaker implements Func1<List<Post>, List<Post>> {
 
     private static final String REGULAR_LINK_REGEX = "<a\\s*href=\"(http://forum\\.hardware\\.fr.*?)\"\\s*target=\"_blank\"\\s*class=\"cLink\">";
     private static final CallbackMatcher SMILEYS_REGEX = new CallbackMatcher("<img\\s*src=\"(http://forum\\-images\\.hardware\\.fr.*?)\"\\s*alt=\"(.*?)\".*?/>");
-    private static final CallbackMatcher QUOTES_AND_SPOILERS = new CallbackMatcher("(?:<div class=\\\"container\\\"><table class=\\\")(citation|spoiler)(?:[^>]+)(?:>)(?:.*?)(?:<b class=\\\")(s1|s1Topic)(?:\\\">)(?:(?:<a href=\")([^\\\"]+)(?:\")(?:[^>]+)(?:>))?", Pattern.DOTALL);
+    private static final CallbackMatcher QUOTES_AND_SPOILERS = new CallbackMatcher("(?:<div class=\\\"container\\\"><table class=\\\")(oldcitation|citation|spoiler)(?:[^>]+)(?:>)(?:.*?)(?:<b class=\\\")(s1|s1Topic)(?:\\\">)(?:(?:<a href=\")([^\\\"]+)(?:\")(?:[^>]+)(?:>))?", Pattern.DOTALL);
     private static final CallbackMatcher END_OF_QUOTES = new CallbackMatcher("(?:</td></tr></tbody></table>)", Pattern.DOTALL);
 
     @Inject MDEndpoints mdEndpoints;
@@ -42,7 +58,7 @@ public final class PostsTweaker implements Func1<List<Post>, List<Post>> {
             htmlContent = QUOTES_AND_SPOILERS.replaceAll(htmlContent, new CallbackMatcher.Callback() {
                 @Override
                 public String foundMatch(MatchResult matchResult) {
-                    boolean isQuote = matchResult.group(1).equals("citation");
+                    boolean isQuote = matchResult.group(1).equals("citation") || matchResult.group(1).equals("oldcitation");
                     String onClickEvent = isQuote ? "" : " onClick=\"toggleSpoiler(this)\"";
 
                     String output = "<div class=\"" + (isQuote ? "quote" : "spoiler") + "\"" + onClickEvent + "><b class=\"" + (isQuote ? "s1": "s1Topic") +"\">";

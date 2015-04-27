@@ -1,3 +1,19 @@
+/*
+ * Copyright 2015 Ayuget
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.ayuget.redface.ui.fragment;
 
 import android.content.res.Configuration;
@@ -200,8 +216,6 @@ public class TopicListFragment extends ToolbarFragment implements TopicsAdapter.
                 topicsAdapter.replaceWith(displayedTopics);
                 showTopics();
             }
-
-
         }
 
         if (displayedTopics == null) {
@@ -258,10 +272,15 @@ public class TopicListFragment extends ToolbarFragment implements TopicsAdapter.
         topicsRecyclerView.setOnScrollListener(new EndlessScrollListener(layoutManager, getToolbar(), true) {
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
-                int realPage = page + 1;
+                // When a topic filter is selected, all topics are displayed on one single page,
+                // and trying to load more will not result in a 404 error, but it will instead load
+                // the same topics over and over
+                if (topicFilter == TopicFilter.NONE) {
+                    int realPage = page + 1;
 
-                if (realPage > lastLoadedPage) {
-                    loadPage(realPage);
+                    if (realPage > lastLoadedPage) {
+                        loadPage(realPage);
+                    }
                 }
             }
         });
