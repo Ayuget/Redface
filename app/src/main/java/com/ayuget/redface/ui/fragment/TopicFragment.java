@@ -127,6 +127,9 @@ public class TopicFragment extends ToolbarFragment {
                 // scrolling behavior that can be annoying (and buggy) in some corner cases
                 if (previousViewPagerState == ViewPager.SCROLL_STATE_DRAGGING && state == ViewPager.SCROLL_STATE_SETTLING) {
                     userScrolledViewPager = true;
+
+                    // Reset current page position because user triggered page change
+                    currentPagePosition = null;
                 }
                 else if (previousViewPagerState == ViewPager.SCROLL_STATE_SETTLING && state == ViewPager.SCROLL_STATE_IDLE) {
                     userScrolledViewPager = false;
