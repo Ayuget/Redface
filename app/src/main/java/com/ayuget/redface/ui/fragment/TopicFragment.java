@@ -64,6 +64,10 @@ public class TopicFragment extends ToolbarFragment {
 
     private ArrayList<TopicPosition> topicPositionsStack;
 
+    private int previousViewPagerState = ViewPager.SCROLL_STATE_IDLE;
+
+    private boolean userScrolledViewPager = false;
+
     @InjectView(R.id.pager)
     ViewPager pager;
 
@@ -115,7 +119,23 @@ public class TopicFragment extends ToolbarFragment {
                 currentPage = position + 1;
                 bus.post(new PageSelectedEvent(topic, currentPage));
             }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                // Keep track of scroll state in order to detect if scrolling has been done
+                // manually by the user, or programatically. It allows us to disable some automatic
+                // scrolling behavior that can be annoying (and buggy) in some corner cases
+                if (previousViewPagerState == ViewPager.SCROLL_STATE_DRAGGING && state == ViewPager.SCROLL_STATE_SETTLING) {
+                    userScrolledViewPager = true;
+                }
+                else if (previousViewPagerState == ViewPager.SCROLL_STATE_SETTLING && state == ViewPager.SCROLL_STATE_IDLE) {
+                    userScrolledViewPager = false;
+                }
+
+                previousViewPagerState = state;
+            }
         });
+
         pager.setCurrentItem(currentPage - 1);
 
         return rootView;
@@ -153,7 +173,7 @@ public class TopicFragment extends ToolbarFragment {
     public void onTopicPageLoaded(PageLoadedEvent event) {
         Log.d(LOG_TAG, String.format("@%d -> Received topicPageLoaded event (topic='%s', page='%d'), current(topic='%s', page='%d', currentPagePosition='%s')", System.identityHashCode(this), event.getTopic().getSubject(), event.getPage(), topic.getSubject(), currentPage, currentPagePosition));
         if (event.getTopic().equals(topic) && event.getPage() == currentPage) {
-            if (currentPagePosition != null) {
+            if (currentPagePosition != null && !userScrolledViewPager) {
                 event.getTopicPageView().setPagePosition(currentPagePosition);
             }
         }
