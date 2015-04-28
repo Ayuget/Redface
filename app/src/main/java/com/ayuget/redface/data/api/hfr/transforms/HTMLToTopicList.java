@@ -46,7 +46,7 @@ public class HTMLToTopicList implements Func1<String, List<Topic>> {
 
     private static final Pattern isLockedPattern = Pattern.compile("lock\\.gif");
 
-    private static final Pattern hasUnreadPostsPattern = Pattern.compile("closedb_new\\.gif");
+    private static final Pattern hasUnreadPostsPattern = Pattern.compile("(closedb_new|closedb)\\.gif");
 
     private boolean isTopicLocked(String value) {
         Matcher m = isLockedPattern.matcher(value);

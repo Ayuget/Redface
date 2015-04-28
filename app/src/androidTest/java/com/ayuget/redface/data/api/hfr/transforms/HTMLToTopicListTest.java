@@ -39,6 +39,7 @@ public class HTMLToTopicListTest extends BaseTestCase {
         assertThat(read.getStatus()).isEqualTo(TopicStatus.READ_NEW_CONTENT);
         assertThat(read.getLastReadPostPage()).isEqualTo(3);
         assertThat(read.getLastReadPostId()).isEqualTo(1888628);
+        assertThat(read.hasUnreadPosts()).isTrue();
 
         Topic favorite = topics.get(7);
         assertThat(favorite.getSubject()).isEqualTo("TPU | Samsung Galaxy S III GT-I9300 - XXDLJ2 (4.1.1) | ROMS STOCKS /!\\");
@@ -46,6 +47,7 @@ public class HTMLToTopicListTest extends BaseTestCase {
         assertThat(favorite.getStatus()).isEqualTo(TopicStatus.FAVORITE_NEW_CONTENT);
         assertThat(favorite.getLastReadPostPage()).isEqualTo(448);
         assertThat(favorite.getLastReadPostId()).isEqualTo(1260955);
+        assertThat(favorite.hasUnreadPosts()).isTrue();
 
         Topic flagged = topics.get(9);
         assertThat(flagged.getSubject()).isEqualTo("[topic MWC 2015] C'est parti ! Annonces, débats, ...");
@@ -53,5 +55,6 @@ public class HTMLToTopicListTest extends BaseTestCase {
         assertThat(flagged.getStatus()).isEqualTo(TopicStatus.FLAGGED_NEW_CONTENT);
         assertThat(flagged.getLastReadPostPage()).isEqualTo(24);
         assertThat(flagged.getLastReadPostId()).isEqualTo(1891678);
+        assertThat(flagged.hasUnreadPosts()).isTrue();
     }
 }
