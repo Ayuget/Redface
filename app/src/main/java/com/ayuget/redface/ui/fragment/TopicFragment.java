@@ -101,7 +101,7 @@ public class TopicFragment extends ToolbarFragment {
             topicPositionsStack = savedInstanceState.getParcelableArrayList(ARG_TOPIC_POSITIONS_STACK);
         }
 
-        if (savedInstanceState == null) {
+        if (topicPositionsStack == null) {
             topicPositionsStack = new ArrayList<>();
         }
 
