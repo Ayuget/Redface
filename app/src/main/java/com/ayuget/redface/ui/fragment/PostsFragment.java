@@ -30,6 +30,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.ayuget.redface.R;
+import com.ayuget.redface.RedfaceApp;
 import com.ayuget.redface.account.UserManager;
 import com.ayuget.redface.data.DataService;
 import com.ayuget.redface.data.api.model.Post;
@@ -47,6 +48,7 @@ import com.ayuget.redface.ui.misc.UiUtils;
 import com.ayuget.redface.ui.view.TopicPageView;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.hannesdorfmann.fragmentargs.annotation.Arg;
+import com.squareup.leakcanary.RefWatcher;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
@@ -110,11 +112,16 @@ public class PostsFragment extends BaseFragment {
     private boolean replyButtonIsHidden = false;
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+    public void onDestroy() {
+        super.onDestroy();
 
         if (topicPageView != null) {
+            topicPageView.setOnScrollListener(null);
+            topicPageView.removeAllViews();
             topicPageView.destroy();
+
+            RefWatcher refWatcher = RedfaceApp.getRefWatcher(getActivity());
+            refWatcher.watch(topicPageView);
         }
     }
 

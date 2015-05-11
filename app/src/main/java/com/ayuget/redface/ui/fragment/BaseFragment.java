@@ -27,6 +27,7 @@ import android.view.ViewGroup;
 import com.ayuget.redface.RedfaceApp;
 import com.ayuget.redface.ui.misc.ThemeManager;
 import com.hannesdorfmann.fragmentargs.FragmentArgs;
+import com.squareup.leakcanary.RefWatcher;
 import com.squareup.otto.Bus;
 
 import javax.inject.Inject;
@@ -63,6 +64,9 @@ public class BaseFragment extends Fragment {
         super.onDestroy();
 
         subscriptions.unsubscribe();
+
+        RefWatcher refWatcher = RedfaceApp.getRefWatcher(getActivity());
+        refWatcher.watch(this);
     }
 
     @Override

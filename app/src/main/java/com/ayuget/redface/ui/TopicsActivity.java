@@ -86,8 +86,6 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
 
     TopicFragment topicFragment;
 
-    DefaultFragment defaultFragment;
-
     private SubscriptionHandler<Integer, Topic> topicDetailsSearchHandler = new SubscriptionHandler<>();
 
     private SubscriptionHandler<Topic, String> quoteHandler = new SubscriptionHandler<>();
@@ -147,7 +145,7 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
     protected void onSetupUiState() {
         Log.d(LOG_TAG, "Setting up initial state for TopicsActivity");
 
-        defaultFragment = DefaultFragment.newInstance();
+        DefaultFragment defaultFragment = DefaultFragment.newInstance();
 
         if (twoPaneMode) {
             DetailsDefaultFragment detailsDefaultFragment = DetailsDefaultFragment.newInstance();

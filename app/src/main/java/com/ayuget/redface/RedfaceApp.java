@@ -21,11 +21,15 @@ import android.content.Context;
 import com.ayuget.redface.account.AccountModule;
 import com.ayuget.redface.network.NetworkModule;
 import com.ayuget.redface.settings.RedfaceSettings;
+import com.squareup.leakcanary.LeakCanary;
+import com.squareup.leakcanary.RefWatcher;
 
 import dagger.ObjectGraph;
 
 public class RedfaceApp extends Application {
     private ObjectGraph objectGraph;
+
+    private RefWatcher refWatcher;
 
     @Override
     public void onCreate() {
@@ -34,6 +38,8 @@ public class RedfaceApp extends Application {
         buildObjectGraphAndInject();
 
         initActiveUser();
+
+        refWatcher = LeakCanary.install(this);
     }
 
     private void initActiveUser() {
@@ -60,6 +66,11 @@ public class RedfaceApp extends Application {
 
     public static RedfaceApp get(Context context) {
         return (RedfaceApp) context.getApplicationContext();
+    }
+
+    public static RefWatcher getRefWatcher(Context context) {
+        RedfaceApp application = (RedfaceApp) context.getApplicationContext();
+        return application.refWatcher;
     }
 
     public RedfaceSettings getSettings() {
