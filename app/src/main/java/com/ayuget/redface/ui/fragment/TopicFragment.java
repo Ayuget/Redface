@@ -145,15 +145,6 @@ public class TopicFragment extends ToolbarFragment {
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        if (topicPageAdapter != null) {
-
-        }
-    }
-
-    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 

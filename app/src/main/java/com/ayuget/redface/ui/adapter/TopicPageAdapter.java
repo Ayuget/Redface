@@ -48,6 +48,4 @@ public class TopicPageAdapter extends FragmentStatePagerAdapter {
     public CharSequence getPageTitle(int position) {
         return "Page " + String.valueOf(position + 1);
     }
-
-
 }
