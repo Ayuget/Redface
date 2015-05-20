@@ -43,9 +43,11 @@ import java.util.List;
 public class MetaPageFragment extends TopicListFragment {
     private static final String LOG_TAG = TopicListFragment.class.getSimpleName();
 
+    private static final String ARG_META_PAGE_SORTED_BY_DATE = "meta_page_ordering";
+
     private  StickyRecyclerHeadersDecoration headerDecoration;
 
-    private static enum MetaPageOrdering {
+    private enum MetaPageOrdering {
         SORT_BY_DATE,
         GROUP_BY_CATS
     }
@@ -69,7 +71,15 @@ public class MetaPageFragment extends TopicListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        pageOrdering = MetaPageOrdering.GROUP_BY_CATS;
+        if (savedInstanceState == null) {
+            pageOrdering = MetaPageOrdering.GROUP_BY_CATS;
+        }
+        else {
+            boolean sortedByDate = savedInstanceState.getBoolean(ARG_META_PAGE_SORTED_BY_DATE, false);
+            pageOrdering = sortedByDate ? MetaPageOrdering.SORT_BY_DATE : MetaPageOrdering.GROUP_BY_CATS;
+        }
+
+        resetAdapterDetails();
     }
 
     @Override
@@ -86,6 +96,12 @@ public class MetaPageFragment extends TopicListFragment {
     public void onCreateOptionsMenu(Toolbar toolbar) {
         toolbar.inflateMenu(R.menu.menu_meta_page);
         toggleOrderingIcons(toolbar.getMenu());
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(ARG_META_PAGE_SORTED_BY_DATE, areTopicsSortedByDate());
     }
 
     private void toggleOrderingIcons(Menu menu) {
@@ -125,12 +141,21 @@ public class MetaPageFragment extends TopicListFragment {
 
         if (changedPageOrdering) {
             toggleOrderingIcons(getToolbar().getMenu());
+            resetAdapterDetails();
+            showLoadingIndicator();
             loadTopics();
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    private boolean areTopicsSortedByDate() {
+        return pageOrdering == MetaPageOrdering.SORT_BY_DATE;
+    }
+
+    private void resetAdapterDetails() {
+        ((MetaPageTopicsAdapter) topicsAdapter).setCategoryIconsAsTopicIcons(areTopicsSortedByDate());
+    }
 
     /**
      * Loads topics for a given category, replacing current topics. Only loads a single topic page,
@@ -140,10 +165,7 @@ public class MetaPageFragment extends TopicListFragment {
         Log.d(LOG_TAG, String.format("Loading meta category and replacing current topics (with filter='%s')", topicFilter == null ? "null" : topicFilter.toString()));
 
         // Load categories for active user
-        boolean sortByDate = pageOrdering == MetaPageOrdering.SORT_BY_DATE;
-        ((MetaPageTopicsAdapter) topicsAdapter).setCategoryIconsAsTopicIcons(sortByDate);
-
-        subscribe(dataService.loadMetaPageTopics(userManager.getActiveUser(), topicFilter, sortByDate, new EndlessObserver<List<Topic>>() {
+        subscribe(dataService.loadMetaPageTopics(userManager.getActiveUser(), topicFilter, areTopicsSortedByDate(), new EndlessObserver<List<Topic>>() {
             @Override
             public void onNext(List<Topic> loadedTopics) {
                 Log.d(LOG_TAG, String.format("Loading request completed, %d topics loaded", loadedTopics.size()));
