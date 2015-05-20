@@ -51,4 +51,12 @@
     <attr name="generalIconDrawable" format="reference" />
     <attr name="appearanceIconDrawable" format="reference" />
     <attr name="networkIconDrawable" format="reference" />
+
+    <!-- Font sizes -->
+    <declare-styleable name="FontStyle">
+        <attr name="font_small" format="dimension" />
+        <attr name="font_medium" format="dimension" />
+        <attr name="font_large" format="dimension" />
+        <attr name="font_xlarge" format="dimension" />
+    </declare-styleable>
 </resources>

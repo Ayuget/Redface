@@ -64,4 +64,6 @@ public interface MDEndpoints {
     public String editPost(Category category, Topic topic, int postId);
 
     public String userForumPreferences();
+
+    public String metaPage(TopicFilter topicFilter);
 }

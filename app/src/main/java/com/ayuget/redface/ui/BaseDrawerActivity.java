@@ -46,6 +46,7 @@ import com.ayuget.redface.ui.drawer.DrawerItem;
 import com.ayuget.redface.ui.drawer.SimpleDrawerItem;
 import com.ayuget.redface.ui.hfr.HFRIcons;
 import com.ayuget.redface.ui.misc.PaletteTransformation;
+import com.ayuget.redface.ui.misc.UiUtils;
 import com.ayuget.redface.util.UserUtils;
 import com.google.common.base.Optional;
 import com.squareup.picasso.Picasso;
@@ -342,11 +343,11 @@ public class BaseDrawerActivity extends BaseActivity {
             // initialDrawerItems.add(DrawerItem.simple(NAVDRAWER_ITEM_PRIVATE_MESSAGES, R.drawable.ic_action_monolog, R.string.navdrawer_item_private_messages));
 
             // My topics
-            // initialDrawerItems.add(DrawerItem.simple(NAVDRAWER_ITEM_MY_TOPICS, R.drawable.ic_action_news, R.string.navdrawer_item_my_topics));
+            initialDrawerItems.add(DrawerItem.simple(NAVDRAWER_ITEM_MY_TOPICS, R.drawable.ic_action_news, R.string.navdrawer_item_my_topics));
         }
 
         // Settings
-        initialDrawerItems.add(DrawerItem.simple(NAVDRAWER_ITEM_SETTINGS, R.drawable.ic_action_settings_grey, R.string.navdrawer_item_settings));
+        initialDrawerItems.add(DrawerItem.simple(NAVDRAWER_ITEM_SETTINGS, R.drawable.ic_action_settings, R.string.navdrawer_item_settings));
 
         // Separate static items from dynamic ones (categories)
         initialDrawerItems.add(DrawerItem.separator());
@@ -415,6 +416,12 @@ public class BaseDrawerActivity extends BaseActivity {
             return;
         }
 
+        ImageView itemIcon = (ImageView) view.findViewById(R.id.item_icon);
+
+        if (itemIcon != null) {
+            UiUtils.setDrawableColor(itemIcon.getDrawable(), UiUtils.getReplyToolbarIconsColor(this));
+        }
+
         // todo
     }
 
@@ -423,9 +430,11 @@ public class BaseDrawerActivity extends BaseActivity {
             SimpleDrawerItem simpleDrawerItem = (SimpleDrawerItem) drawerItem;
 
             switch (simpleDrawerItem.getItemId()) {
+                case NAVDRAWER_ITEM_MY_TOPICS:
+                    onMyTopicsClicked();
+                    break;
                 case NAVDRAWER_ITEM_PROFILE:
                 case NAVDRAWER_ITEM_SETTINGS:
-                case NAVDRAWER_ITEM_MY_TOPICS:
                 case NAVDRAWER_ITEM_PRIVATE_MESSAGES:
                     Intent intent = new Intent(this, SettingsActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -445,6 +454,9 @@ public class BaseDrawerActivity extends BaseActivity {
      * Called when an item is selected in the navigation drawer
      */
     public void onCategoryClicked(Category category) {
+    }
+
+    public void onMyTopicsClicked() {
     }
 
     /**

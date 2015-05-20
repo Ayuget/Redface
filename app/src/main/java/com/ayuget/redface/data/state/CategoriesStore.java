@@ -20,12 +20,14 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.ayuget.redface.R;
 import com.ayuget.redface.data.api.model.Category;
 import com.ayuget.redface.data.api.model.Subcategory;
 import com.ayuget.redface.data.api.model.User;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -57,11 +59,16 @@ public class CategoriesStore {
      */
     private Map<String, List<Category>> userCategoriesCache;
 
+    private Category metaCategory;
+
     public CategoriesStore(Context context) {
         this.userCategoriesCache = new HashMap<>();
         this.categoriesCache = new HashMap<>();
 
         this.categoriesPrefs = context.getSharedPreferences(CATEGORIES_PREFS, 0);
+
+        this.metaCategory = Category.create(0, context.getResources().getString(R.string.navdrawer_item_my_topics), "meta", Collections.<Subcategory>emptyList());
+
         loadFromSharedPreferences();
     }
 
@@ -72,6 +79,10 @@ public class CategoriesStore {
         else {
             return null;
         }
+    }
+
+    public Category getMetaCategory() {
+        return this.metaCategory;
     }
 
     public Category getCategoryById(int categoryId) {

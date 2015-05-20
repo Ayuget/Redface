@@ -139,7 +139,7 @@ public class HFRForumService implements MDService {
     @Override
     public Observable<List<Topic>> listTopics(User user, final Category category, final Subcategory subcategory, int page, final TopicFilter filter) {
         return pageFetcher.fetchSource(user, getTopicListEndpoint(category, subcategory, page, filter))
-                .map(new HTMLToTopicList())
+                .map(new HTMLToTopicList(categoriesStore))
                 .flatMap(new Func1<List<Topic>, Observable<Topic>>() {
                     @Override
                     public Observable<Topic> call(List<Topic> topics) {
@@ -157,6 +157,25 @@ public class HFRForumService implements MDService {
                     public Topic call(Topic topic) {
                         topic.setCategory(category);
                         return topic;
+                    }
+                })
+                .toList();
+    }
+
+    @Override
+    public Observable<List<Topic>> listMetaPageTopics(User user, TopicFilter filter) {
+        return pageFetcher.fetchSource(user, mdEndpoints.metaPage(filter))
+                .map(new HTMLToTopicList(categoriesStore))
+                .flatMap(new Func1<List<Topic>, Observable<Topic>>() {
+                    @Override
+                    public Observable<Topic> call(List<Topic> topics) {
+                        return Observable.from(topics);
+                    }
+                })
+                .filter(new Func1<Topic, Boolean>() {
+                    @Override
+                    public Boolean call(Topic topic) {
+                        return topic.hasUnreadPosts() || appSettings.showFullyReadTopics();
                     }
                 })
                 .toList();

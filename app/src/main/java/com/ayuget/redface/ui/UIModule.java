@@ -23,6 +23,7 @@ import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.ui.fragment.DefaultFragment;
 import com.ayuget.redface.ui.fragment.DetailsDefaultFragment;
 import com.ayuget.redface.ui.fragment.HomePreferenceFragment;
+import com.ayuget.redface.ui.fragment.MetaPageFragment;
 import com.ayuget.redface.ui.fragment.NestedPreferenceFragment;
 import com.ayuget.redface.ui.fragment.PostsFragment;
 import com.ayuget.redface.ui.fragment.TopicFragment;
@@ -61,7 +62,8 @@ import dagger.Provides;
                 NestedPreferenceFragment.class,
                 HomePreferenceFragment.class,
                 SettingsActivity.class,
-                EditPostActivity.class
+                EditPostActivity.class,
+                MetaPageFragment.class
         },
         library =  true,
         complete = false

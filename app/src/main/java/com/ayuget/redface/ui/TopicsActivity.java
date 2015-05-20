@@ -47,6 +47,8 @@ import com.ayuget.redface.ui.event.QuotePostEvent;
 import com.ayuget.redface.ui.event.TopicContextItemSelectedEvent;
 import com.ayuget.redface.ui.fragment.DefaultFragment;
 import com.ayuget.redface.ui.fragment.DetailsDefaultFragment;
+import com.ayuget.redface.ui.fragment.MetaPageFragment;
+import com.ayuget.redface.ui.fragment.MetaPageFragmentBuilder;
 import com.ayuget.redface.ui.fragment.TopicFragment;
 import com.ayuget.redface.ui.fragment.TopicFragmentBuilder;
 import com.ayuget.redface.ui.fragment.TopicListFragment;
@@ -246,6 +248,19 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
 
         Log.d(LOG_TAG, String.format("Loading category '%s', with topicFilter='%s'", category.getName(), getSettings().getDefaultTopicFilter().toString()));
         topicListFragment = new TopicListFragmentBuilder(category).topicFilter(getSettings().getDefaultTopicFilter()).build();
+        topicListFragment.addOnTopicClickedListener(this);
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.container, topicListFragment, TOPICS_FRAGMENT_TAG);
+        transaction.commit();
+    }
+
+    @Override
+    public void onMyTopicsClicked() {
+        currentCategory = categoriesStore.getMetaCategory();
+
+        Log.d(LOG_TAG, String.format("Loading meta category, with topicFilter='%s'", getSettings().getDefaultTopicFilter().toString()));
+        topicListFragment = new MetaPageFragmentBuilder(null).topicFilter(getSettings().getDefaultTopicFilter()).build();
         topicListFragment.addOnTopicClickedListener(this);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();

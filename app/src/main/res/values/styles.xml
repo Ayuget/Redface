@@ -38,6 +38,33 @@
         <item name="android:textColor">?attr/textColorPrimary</item>
     </style>
 
+    <style name="FontStyle">
+    </style>
+
+    <style name="FontStyle.Small">
+        <item name="font_small">10sp</item>
+        <item name="font_medium">11sp</item>
+        <item name="font_large">13sp</item>
+    </style>
+
+    <style name="FontStyle.Normal">
+        <item name="font_small">13sp</item>
+        <item name="font_medium">14sp</item>
+        <item name="font_large">15sp</item>
+    </style>
+
+    <style name="FontStyle.Large">
+        <item name="font_small">15sp</item>
+        <item name="font_medium">16sp</item>
+        <item name="font_large">17sp</item>
+    </style>
+
+    <style name="FontStyle.XLarge">
+        <item name="font_small">16sp</item>
+        <item name="font_medium">17sp</item>
+        <item name="font_large">18sp</item>
+    </style>
+
     <style name="ListWithDividers">
         <item name="android:divider">@drawable/list_divider_dark</item>
         <item name="android:dividerHeight">2dp</item>
@@ -132,6 +159,12 @@
     <!-- SearchView style for smiley selector -->
     <style name="RedfaceSearchView" parent="Widget.AppCompat.Light.SearchView">
         <item name="layout">@layout/redface_search_view</item>
+    </style>
+
+    <style name="RedfaceListHeader">
+        <item name="android:background">?attr/tabletLandscapePagerBackground</item>
+        <item name="android:textColor">?attr/textColorPrimary</item>
+        <item name="android:padding">8dp</item>
     </style>
 
 </resources>

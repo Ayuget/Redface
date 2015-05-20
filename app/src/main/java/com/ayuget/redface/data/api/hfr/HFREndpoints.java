@@ -51,6 +51,8 @@ public class HFREndpoints implements MDEndpoints {
 
     private static final String USER_FORUM_PREFERENCES_URL = "{base_url}/user/editprofil.php?config=hfr.inc&page=3";
 
+    private static final String META_PAGE_URL = "{base_url}/forum1f.php?config=hfr.inc&owntopic={filter_id}&new=0&nojs=0";
+
     /**
      * Homepage URL (with the list of categories)
      */
@@ -217,5 +219,20 @@ public class HFREndpoints implements MDEndpoints {
                 .put("base_url", USER_FORUM_PREFERENCES_URL)
                 .format()
                 .toString();
+    }
+
+    @Override
+    public String metaPage(TopicFilter topicFilter) {
+        Optional<Integer> filterId = getFilterId(topicFilter);
+
+        if (filterId.isPresent()) {
+            return Phrase.from(META_PAGE_URL)
+                    .put("base_url", FORUM_BASE_URL)
+                    .put("filter_id", filterId.get())
+                    .format().toString();
+        }
+        else {
+            throw new IllegalStateException("Invalid topic filter for meta page");
+        }
     }
 }
