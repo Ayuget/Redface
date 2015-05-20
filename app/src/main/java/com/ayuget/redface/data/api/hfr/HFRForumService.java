@@ -58,6 +58,7 @@ import retrofit.http.GET;
 import retrofit.http.Path;
 import rx.Observable;
 import rx.functions.Func1;
+import rx.functions.Func2;
 
 /**
  * Dedicated service to parse pages from HFR's forum
@@ -163,8 +164,9 @@ public class HFRForumService implements MDService {
     }
 
     @Override
-    public Observable<List<Topic>> listMetaPageTopics(User user, TopicFilter filter) {
-        return pageFetcher.fetchSource(user, mdEndpoints.metaPage(filter))
+    public Observable<List<Topic>> listMetaPageTopics(User user, TopicFilter filter, boolean sortByDate) {
+        Observable<Topic> metaPageTopics =
+                pageFetcher.fetchSource(user, mdEndpoints.metaPage(filter))
                 .map(new HTMLToTopicList(categoriesStore))
                 .flatMap(new Func1<List<Topic>, Observable<Topic>>() {
                     @Override
@@ -177,8 +179,19 @@ public class HFRForumService implements MDService {
                     public Boolean call(Topic topic) {
                         return topic.hasUnreadPosts() || appSettings.showFullyReadTopics();
                     }
-                })
-                .toList();
+                });
+
+        if (sortByDate) {
+            return metaPageTopics.toSortedList(new Func2<Topic, Topic, Integer>() {
+                @Override
+                public Integer call(Topic topic, Topic topic2) {
+                    return topic2.getLastPostDate().compareTo(topic.getLastPostDate());
+                }
+            });
+        }
+        else {
+            return metaPageTopics.toList();
+        }
     }
 
     @Override

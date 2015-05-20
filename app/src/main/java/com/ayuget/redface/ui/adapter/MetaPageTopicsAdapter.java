@@ -25,6 +25,8 @@ import android.widget.TextView;
 
 import com.ayuget.redface.R;
 import com.ayuget.redface.data.api.model.Category;
+import com.ayuget.redface.data.api.model.Topic;
+import com.ayuget.redface.ui.hfr.HFRIcons;
 import com.ayuget.redface.ui.misc.ThemeManager;
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersAdapter;
 
@@ -33,8 +35,11 @@ import java.util.List;
 public class MetaPageTopicsAdapter extends TopicsAdapter implements StickyRecyclerHeadersAdapter<RecyclerView.ViewHolder> {
     List<Category> categories;
 
+    boolean categoryIconsAsTopicIcons;
+
     public MetaPageTopicsAdapter(Context context, ThemeManager themeManager) {
         super(context, themeManager);
+        categoryIconsAsTopicIcons = false;
     }
 
     public void replaceCategories(List<Category> categories) {
@@ -43,7 +48,12 @@ public class MetaPageTopicsAdapter extends TopicsAdapter implements StickyRecycl
 
     @Override
     public long getHeaderId(int i) {
-        return getItem(i).getCategory().getId();
+        if (categoryIconsAsTopicIcons) {
+            return -1;
+        }
+        else {
+            return getItem(i).getCategory().getId();
+        }
     }
 
     @Override
@@ -58,6 +68,19 @@ public class MetaPageTopicsAdapter extends TopicsAdapter implements StickyRecycl
     public void onBindHeaderViewHolder(RecyclerView.ViewHolder holder, int position) {
         TextView textView = (TextView) holder.itemView;
         textView.setText(getItem(position).getCategory().getName());
+    }
 
+    public void setCategoryIconsAsTopicIcons(boolean categoryIconsAsTopicIcons) {
+        this.categoryIconsAsTopicIcons = categoryIconsAsTopicIcons;
+    }
+
+    @Override
+    int getTopicIcon(Topic topic) {
+        if (categoryIconsAsTopicIcons) {
+            return HFRIcons.getCategoryIcon(topic.getCategory());
+        }
+        else {
+            return super.getTopicIcon(topic);
+        }
     }
 }

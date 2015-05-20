@@ -114,4 +114,7 @@
     <string name="invalid_page_number">Numéro de page invalide</string>
     <string name="pref_show_fully_read_topics_summary">Cette option ne fonctionne que si vous n\'êtes pas dans la catégorie Meta</string>
     <string name="pref_show_fully_read_topics_title">Afficher les sujets entièrement lus</string>
+    <string name="action_meta_sort">Options de tri des sujets</string>
+    <string name="action_meta_group_by_cats">Grouper les sujets par catégories</string>
+    <string name="action_meta_sort_by_date">Trier les sujets par date décroissante</string>
 </resources>

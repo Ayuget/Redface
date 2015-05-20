@@ -94,8 +94,8 @@ public class DataService {
         return topicsSubscriptionHandler.load(new CategoryPageKey(category, subcategory, page), mdService.listTopics(user, category, subcategory, page, topicFilter), observer);
     }
 
-    public Subscription loadMetaPageTopics(final User user, final TopicFilter topicFilter, Observer<List<Topic>> observer) {
-        return metaPageSubscriptionHandler.load(user, mdService.listMetaPageTopics(user, topicFilter), observer);
+    public Subscription loadMetaPageTopics(final User user, final TopicFilter topicFilter, boolean sortByDate, Observer<List<Topic>> observer) {
+        return metaPageSubscriptionHandler.load(user, mdService.listMetaPageTopics(user, topicFilter, sortByDate), observer);
     }
 
     public Subscription loadPosts(final User user, final Topic topic, int page, Observer<List<Post>> observer) {

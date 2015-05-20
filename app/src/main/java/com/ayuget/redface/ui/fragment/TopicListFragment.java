@@ -311,20 +311,12 @@ public class TopicListFragment extends ToolbarFragment implements TopicsAdapter.
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_topics, menu);
-
-        MenuItem topicsFilterItem = menu.findItem(R.id.action_topics_filter);
-        topicsFilterItem.setVisible(true);
-        topicsFilterItem.setEnabled(true);
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+
         boolean changedTopicFilter = false;
 
         switch (id) {
@@ -348,7 +340,10 @@ public class TopicListFragment extends ToolbarFragment implements TopicsAdapter.
 
         if (changedTopicFilter) {
             loadTopics();
-            subcategoriesAdapter.setActiveTopicFilter(topicFilter);
+
+            if (subcategoriesAdapter != null) {
+                subcategoriesAdapter.setActiveTopicFilter(topicFilter);
+            }
         }
 
         return super.onOptionsItemSelected(item);
