@@ -72,10 +72,11 @@ public class RedfaceSettings {
         return sharedPreferences.getBoolean(SettingsConstants.KEY_SHOW_FULLY_READ_TOPICS, true);
     }
 
-    /**
-     * @todo ugly... Make it configurable
-     */
     public int getDefaultCategoryId() {
-        return 13; // Discussions
+        return Integer.valueOf(sharedPreferences.getString(SettingsConstants.KEY_DEFAULT_CATEGORY, "0"));
+    }
+
+    public int getNotLoggedInDefaultCategoryId() {
+        return 13; // fixme : ugly
     }
 }

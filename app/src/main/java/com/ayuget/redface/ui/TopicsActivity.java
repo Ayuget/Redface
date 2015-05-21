@@ -233,11 +233,21 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
     public void loadDefaultCategory() {
         int defaultCatId = getSettings().getDefaultCategoryId();
 
-        Category defaultCategory = categoriesStore.getCategoryById(defaultCatId);
+        // If current user is not logged in and if default category setting is on "My Topics", let's
+        // redirect the user the another accessible cat. "My topics" is necessary empty when user
+        // is not logged in, so having an empty landing screen is not the best user experience here
+        if (!userManager.activeUserIsLoggedIn() && defaultCatId == CategoriesStore.META_CATEGORY_ID) {
+            defaultCatId = getSettings().getNotLoggedInDefaultCategoryId();
+        }
 
+        Category defaultCategory = categoriesStore.getCategoryById(defaultCatId);
         if (defaultCategory == null) {
             Log.w(LOG_TAG, String.format("Category '%d' not found in cache", defaultCatId));
-        } else {
+        }
+        else if (defaultCategory.getId() == CategoriesStore.META_CATEGORY_ID) {
+            onMyTopicsClicked();
+        }
+        else {
             onCategoryClicked(defaultCategory);
         }
     }

@@ -23,6 +23,12 @@
         android:summary="@string/pref_notify_private_messages_summary"
         android:defaultValue="true" />
         -->
+    <ListPreference
+        android:key="default_category"
+        android:title="@string/pref_default_category"
+        android:defaultValue="@string/pref_default_category_default"
+        android:entries="@array/pref_default_category_values"
+        android:entryValues="@array/pref_default_category_entries" />
 
     <ListPreference
         android:key="default_topic_filter"

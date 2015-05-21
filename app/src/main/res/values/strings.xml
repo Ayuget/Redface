@@ -95,6 +95,16 @@
         <item>READ</item>
     </string-array>
 
+    <string name="pref_default_category">Default category</string>
+    <string name="pref_default_category_default" translatable="false">666</string>
+    <string-array name="pref_default_category_values">
+        <item>@string/navdrawer_item_my_topics</item>
+    </string-array>
+    <string-array name="pref_default_category_entries" translatable="false">
+        <item>@string/pref_default_category_default</item>
+    </string-array>
+
+
     <string name="pref_theme_title">Theme</string>
     <string name="pref_theme_default" translatable="false">LIGHT</string>
     <string-array name="pref_theme_values">

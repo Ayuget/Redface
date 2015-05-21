@@ -122,4 +122,5 @@
         <item>Par date décroissante</item>
         <item>Grouper par catégories</item>
     </string-array>
+    <string name="pref_default_category">Catégorie par défaut</string>
 </resources>

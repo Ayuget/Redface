@@ -27,12 +27,18 @@ import android.util.Log;
 
 import com.ayuget.redface.RedfaceApp;
 import com.ayuget.redface.R;
+import com.ayuget.redface.account.UserManager;
+import com.ayuget.redface.data.api.model.Category;
+import com.ayuget.redface.data.state.CategoriesStore;
 import com.ayuget.redface.settings.ProxySettingsChangedEvent;
 import com.ayuget.redface.settings.SettingsConstants;
 import com.ayuget.redface.ui.event.ThemeChangedEvent;
+import com.google.common.collect.ObjectArrays;
 import com.hannesdorfmann.fragmentargs.FragmentArgs;
 import com.hannesdorfmann.fragmentargs.annotation.Arg;
 import com.squareup.otto.Bus;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -41,6 +47,12 @@ public class NestedPreferenceFragment extends PreferenceFragment implements Shar
 
     @Inject
     Bus bus;
+
+    @Inject
+    CategoriesStore categoriesStore;
+
+    @Inject
+    UserManager userManager;
 
     @Arg
     String fragmentKey;
@@ -78,6 +90,7 @@ public class NestedPreferenceFragment extends PreferenceFragment implements Shar
         switch (fragmentKey) {
             case SettingsConstants.KEY_GENERAL_PREFERENCES:
                 addPreferencesFromResource(R.xml.general_preferences);
+                populateDefaultCategoriesPref();
                 break;
 
             case SettingsConstants.KEY_APPEARANCE_PREFERENCES:
@@ -88,6 +101,27 @@ public class NestedPreferenceFragment extends PreferenceFragment implements Shar
                 break;
             default:
                 break;
+        }
+    }
+
+    protected void populateDefaultCategoriesPref() {
+        ListPreference defaultCatPreference = (ListPreference) findPreference(SettingsConstants.KEY_DEFAULT_CATEGORY);
+
+        List<Category> guestCategories = categoriesStore.getCategories(userManager.getGuestUser());
+
+        if (guestCategories != null && defaultCatPreference != null) {
+            CharSequence entries[] = new String[guestCategories.size()];
+            CharSequence values[] = new String[guestCategories.size()];
+
+            int i = 0;
+            for (Category category : guestCategories) {
+                entries[i] = category.getName();
+                values[i] = Integer.toString(category.getId());
+                i++;
+            }
+
+            defaultCatPreference.setEntries(ObjectArrays.concat(defaultCatPreference.getEntries(), entries, CharSequence.class));
+            defaultCatPreference.setEntryValues(ObjectArrays.concat(defaultCatPreference.getEntryValues(), values, CharSequence.class));
         }
     }
 

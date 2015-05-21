@@ -37,6 +37,8 @@ import java.util.Map;
 public class CategoriesStore {
     private static final String LOG_TAG = CategoriesStore.class.getSimpleName();
 
+    public static final int META_CATEGORY_ID = 666;
+
     private static final String CATEGORIES_PREFS = "RedfaceCategories";
     private static final String CATEGORY_NAME_PREFIX = "category_";
     private static final String SUBCATEGORY_NAME_PREFIX = "subcategory_";
@@ -67,7 +69,7 @@ public class CategoriesStore {
 
         this.categoriesPrefs = context.getSharedPreferences(CATEGORIES_PREFS, 0);
 
-        this.metaCategory = Category.create(0, context.getResources().getString(R.string.navdrawer_item_my_topics), "meta", Collections.<Subcategory>emptyList());
+        this.metaCategory = Category.create(META_CATEGORY_ID, context.getResources().getString(R.string.navdrawer_item_my_topics), "meta", Collections.<Subcategory>emptyList());
 
         loadFromSharedPreferences();
     }
@@ -86,7 +88,12 @@ public class CategoriesStore {
     }
 
     public Category getCategoryById(int categoryId) {
-        return categoriesCache.get(categoryId);
+        if (categoryId == META_CATEGORY_ID) {
+            return this.metaCategory;
+        }
+        else {
+            return categoriesCache.get(categoryId);
+        }
     }
 
     public Category getCategoryBySlug(String categorySlug) {
