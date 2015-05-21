@@ -198,6 +198,9 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
     @InjectView(R.id.smileys_search)
     SearchView smileysSearch;
 
+    @InjectView(R.id.sending_message_spinner)
+    View sendingMessageSpinner;
+
     @Inject
     UserManager userManager;
 
@@ -381,6 +384,16 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
                 smileyList.setSmileys(smileys);
             }
         }));
+    }
+
+    protected void showSendingMessageSpinner() {
+        sendingMessageSpinner.setVisibility(View.VISIBLE);
+        actionsToolbar.getMenu().getItem(0).setVisible(false);
+    }
+
+    protected void hideSendingMessageSpinner() {
+        sendingMessageSpinner.setVisibility(View.GONE);
+        actionsToolbar.getMenu().getItem(0).setVisible(true);
     }
 
     /**
@@ -619,6 +632,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
                 // same reply multiple times. This could happen often because there is a small delay
                 // between the click and the activity being closed.
                 menuItem.setEnabled(false);
+                showSendingMessageSpinner();
                 postReply();
                 break;
         }
