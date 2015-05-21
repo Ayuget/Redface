@@ -432,6 +432,7 @@ public class BaseDrawerActivity extends BaseActivity {
             switch (simpleDrawerItem.getItemId()) {
                 case NAVDRAWER_ITEM_MY_TOPICS:
                     onMyTopicsClicked();
+                    drawerLayout.closeDrawers();
                     break;
                 case NAVDRAWER_ITEM_PROFILE:
                 case NAVDRAWER_ITEM_SETTINGS:

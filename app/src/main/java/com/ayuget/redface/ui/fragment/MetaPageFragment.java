@@ -22,7 +22,6 @@ import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,14 +29,17 @@ import android.view.ViewGroup;
 import com.ayuget.redface.R;
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.rx.EndlessObserver;
+import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.ui.adapter.MetaPageTopicsAdapter;
+import com.ayuget.redface.ui.misc.MetaPageOrdering;
 import com.hannesdorfmann.fragmentargs.annotation.FragmentArgsInherited;
 import com.nispok.snackbar.Snackbar;
 import com.nispok.snackbar.SnackbarManager;
-import com.squareup.phrase.Phrase;
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 @FragmentArgsInherited
 public class MetaPageFragment extends TopicListFragment {
@@ -47,12 +49,10 @@ public class MetaPageFragment extends TopicListFragment {
 
     private  StickyRecyclerHeadersDecoration headerDecoration;
 
-    private enum MetaPageOrdering {
-        SORT_BY_DATE,
-        GROUP_BY_CATS
-    }
-
     private MetaPageOrdering pageOrdering;
+
+    @Inject
+    RedfaceSettings settings;
 
     @Override
     protected void initializeAdapters() {
@@ -72,7 +72,7 @@ public class MetaPageFragment extends TopicListFragment {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
-            pageOrdering = MetaPageOrdering.GROUP_BY_CATS;
+            pageOrdering = settings.getDefaultMetaPageOrdering();
         }
         else {
             boolean sortedByDate = savedInstanceState.getBoolean(ARG_META_PAGE_SORTED_BY_DATE, false);

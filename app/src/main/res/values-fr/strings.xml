@@ -117,4 +117,9 @@
     <string name="action_meta_sort">Options de tri des sujets</string>
     <string name="action_meta_group_by_cats">Grouper les sujets par catégories</string>
     <string name="action_meta_sort_by_date">Trier les sujets par date décroissante</string>
+    <string name="pref_default_meta_ordering">Tri par défaut pour l\'écran \"Mes sujets\"</string>
+    <string-array name="pref_default_meta_ordering_values">
+        <item>Par date décroissante</item>
+        <item>Grouper par catégories</item>
+    </string-array>
 </resources>

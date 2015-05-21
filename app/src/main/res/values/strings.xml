@@ -106,6 +106,19 @@
         <item>DARK</item>
     </string-array>
 
+    <string name="pref_default_meta_ordering">Default ordering for \"My topics\" screen</string>
+    <string name="pref_default_meta_ordering_default" translatable="false">SORT_BY_DATE</string>
+    <string-array name="pref_default_meta_ordering_values">
+        <item>Order by descending date</item>
+        <item>Group by categories</item>
+    </string-array>
+    <string-array name="pref_default_meta_ordering_entries" translatable="false">
+        <item>@string/pref_default_meta_ordering_default</item>
+        <item>GROUP_BY_CATS</item>
+    </string-array>
+
+
+
     <!-- About page -->
     <string name="menu_about">About</string>
 

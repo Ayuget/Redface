@@ -16,9 +16,29 @@
   -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--
     <CheckBoxPreference
         android:key="private_messages_notifications"
         android:title="@string/pref_notify_private_messages_title"
         android:summary="@string/pref_notify_private_messages_summary"
         android:defaultValue="true" />
+        -->
+
+    <ListPreference
+        android:key="default_topic_filter"
+        android:title="@string/pref_default_topic_filter"
+        android:defaultValue="@string/pref_default_topic_filter_default"
+        android:entries="@array/pref_default_topic_filter_values"
+        android:entryValues="@array/pref_default_topic_filter_entries" />
+    <CheckBoxPreference
+        android:key="show_fully_read_topics"
+        android:title="@string/pref_show_fully_read_topics_title"
+        android:summary="@string/pref_show_fully_read_topics_title"
+        android:defaultValue="true" />
+    <ListPreference
+        android:key="meta_page_ordering"
+        android:title="@string/pref_default_meta_ordering"
+        android:defaultValue="@string/pref_default_meta_ordering_default"
+        android:entries="@array/pref_default_meta_ordering_values"
+        android:entryValues="@array/pref_default_meta_ordering_entries" />
 </PreferenceScreen>
