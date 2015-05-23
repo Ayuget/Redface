@@ -57,6 +57,12 @@
             android:layout_alignParentBottom="true"
             style="@style/ReplyOptionsToolbar">
             <ImageButton
+                android:id="@+id/show_smileys_picker"
+                android:contentDescription="@string/show_smileys_picker"
+                style="@style/ReplyOptionsIcon"
+                android:src="@drawable/ic_action_insert_emoticon" />
+
+            <ImageButton
                 android:id="@+id/make_text_bold_button"
                 android:contentDescription="@string/make_text_bold_button_description"
                 style="@style/ReplyOptionsIcon"

@@ -37,6 +37,7 @@ import android.view.ViewPropertyAnimator;
 import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -475,12 +476,35 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
 
                 if (smileysSelector.getY() != smileySelectorTopOffset) {
                     return (smileysSelector.getY() != toolbarHeight);
-                }
-                else {
+                } else {
                     return false;
                 }
             }
         });
+    }
+
+    /**
+     * Hides the soft keyboard
+     */
+    public void hideSoftKeyboard() {
+        if(getCurrentFocus()!=null) {
+            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        }
+    }
+
+    @OnClick(R.id.show_smileys_picker)
+    protected void showSmileyPicker() {
+        float neededTranslation = -(smileysSelector.getY() - toolbarHeight);
+        ViewPropertyAnimator viewPropertyAnimator = smileysSelector.animate();
+
+        viewPropertyAnimator
+                .translationYBy(neededTranslation)
+                .setDuration(150)
+                .start();
+
+        showSmileysToolbar();
+        hideSoftKeyboard();
     }
 
     /**
@@ -760,14 +784,6 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
 
     protected void clearResponseFromCache(User user) {
         responseStore.removeResponse(user, currentTopic);
-    }
-
-    protected void storeResponseInCache(User user, String message) {
-        responseStore.storeResponse(user, currentTopic, message);
-    }
-
-    protected String loadResponseFromCache(User user) {
-        return responseStore.getResponse(user, currentTopic);
     }
 
     public boolean isReplySuccessful() {

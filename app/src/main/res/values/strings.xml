@@ -169,6 +169,8 @@
     <string name="recent_smileys_button_description">Recent smileys</string>
     <string name="default_smileys_button_description">Default smileys</string>
 
+    <string name="show_smileys_picker">Show smileys picker</string>
+
     <string name="reply_successfully_posted">Reply successfully posted</string>
     <string name="reply_post_failure">Failed to post reply</string>
     <string name="message_successfully_edited">Reply successfully posted</string>

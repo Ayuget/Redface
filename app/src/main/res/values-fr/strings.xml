@@ -123,4 +123,5 @@
         <item>Grouper par catégories</item>
     </string-array>
     <string name="pref_default_category">Catégorie par défaut</string>
+    <string name="show_smileys_picker">Ouvrir le sélectionneur de smileys</string>
 </resources>
