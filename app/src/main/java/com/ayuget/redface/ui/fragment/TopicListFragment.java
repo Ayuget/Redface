@@ -405,7 +405,7 @@ public class TopicListFragment extends ToolbarFragment implements TopicsAdapter.
      * Loads a given topics page for the current category, subcategory and topic filter
      * @param page page to load (1..n)
      */
-    private void loadPage(final int page) {
+    protected void loadPage(final int page) {
         Log.d(LOG_TAG, String.format("Loading page '%d' for category '%s', subcategory '%s'", page, category, subcategory));
 
         if (category == null) {

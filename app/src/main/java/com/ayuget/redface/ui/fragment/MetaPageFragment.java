@@ -200,7 +200,8 @@ public class MetaPageFragment extends TopicListFragment {
         }));
     }
 
-    private void loadPage(final int page) {
-        // Everything fits on one page for meta category
+    @Override
+    protected void loadPage(int page) {
+        // no second page for meta page
     }
 }
