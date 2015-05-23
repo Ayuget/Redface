@@ -37,6 +37,8 @@ public class SettingsConstants {
 
     public static final String KEY_SHOW_FULLY_READ_TOPICS = "show_fully_read_topics";
 
+    public static final String KEY_SHOW_PREVIOUS_PAGE_LAST_POST = "show_previous_page_last_post";
+
     public static final String KEY_META_PAGE_ORDERING = "meta_page_ordering";
 
     public static final String KEY_DEFAULT_CATEGORY = "default_category";

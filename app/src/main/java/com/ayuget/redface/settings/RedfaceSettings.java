@@ -72,6 +72,10 @@ public class RedfaceSettings {
         return sharedPreferences.getBoolean(SettingsConstants.KEY_SHOW_FULLY_READ_TOPICS, true);
     }
 
+    public boolean showPreviousPageLastPost() {
+        return sharedPreferences.getBoolean(SettingsConstants.KEY_SHOW_PREVIOUS_PAGE_LAST_POST, true);
+    }
+
     public int getDefaultCategoryId() {
         return Integer.valueOf(sharedPreferences.getString(SettingsConstants.KEY_DEFAULT_CATEGORY, "0"));
     }

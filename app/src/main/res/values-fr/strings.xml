@@ -124,4 +124,6 @@
     </string-array>
     <string name="pref_default_category">Catégorie par défaut</string>
     <string name="show_smileys_picker">Ouvrir le sélectionneur de smileys</string>
+    <string name="pref_show_previous_page_last_post_title">Reprendre le dernier message</string>
+    <string name="pref_show_previous_page_last_post_summary">Afficher le dernier message de la page précédente en haut de page</string>
 </resources>

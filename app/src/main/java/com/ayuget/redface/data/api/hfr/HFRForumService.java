@@ -211,7 +211,7 @@ public class HFRForumService implements MDService {
                     public List<Post> call(List<Post> posts) {
                         // Last post of previous page is automatically put in first position of
                         // next page. This can be annoying...
-                        if (page > 1 && posts.size() > 1) {
+                        if (!appSettings.showPreviousPageLastPost() && page > 1 && posts.size() > 1) {
                             posts.remove(0);
                             return posts;
                         }

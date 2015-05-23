@@ -38,6 +38,7 @@ import com.ayuget.redface.data.api.UrlParser;
 import com.ayuget.redface.data.api.model.Category;
 import com.ayuget.redface.data.api.model.Post;
 import com.ayuget.redface.data.api.model.Topic;
+import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.event.EditPostEvent;
 import com.ayuget.redface.ui.event.GoToPostEvent;
@@ -100,6 +101,8 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
     @Inject Bus bus;
 
     @Inject ThemeManager themeManager;
+
+    @Inject RedfaceSettings appSettings;
 
     public interface OnScrollListener {
         public void onScrolled(int dx, int dy);
@@ -319,7 +322,7 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
 
                                 // Hack needed because we are hiding the first post of a page, which is equal
                                 // to the last post of previous page.
-                                if (destinationPage > 1 && posts.size() > 0 && topicPage == page && pagePosition.getPostId() < posts.get(0).getId()) {
+                                if (!appSettings.showPreviousPageLastPost() && destinationPage > 1 && posts.size() > 0 && topicPage == page && pagePosition.getPostId() < posts.get(0).getId()) {
                                     targetPagePosition = new PagePosition(PagePosition.BOTTOM);
                                     destinationPage -= 1;
                                 }

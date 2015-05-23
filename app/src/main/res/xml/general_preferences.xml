@@ -36,11 +36,19 @@
         android:defaultValue="@string/pref_default_topic_filter_default"
         android:entries="@array/pref_default_topic_filter_values"
         android:entryValues="@array/pref_default_topic_filter_entries" />
+
     <CheckBoxPreference
         android:key="show_fully_read_topics"
         android:title="@string/pref_show_fully_read_topics_title"
         android:summary="@string/pref_show_fully_read_topics_title"
         android:defaultValue="true" />
+
+    <CheckBoxPreference
+        android:key="show_previous_page_last_post"
+        android:title="@string/pref_show_previous_page_last_post_title"
+        android:summary="@string/pref_show_previous_page_last_post_summary"
+        android:defaultValue="true" />
+
     <ListPreference
         android:key="meta_page_ordering"
         android:title="@string/pref_default_meta_ordering"
