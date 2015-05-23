@@ -116,6 +116,9 @@ public class TopicListFragment extends ToolbarFragment implements TopicsAdapter.
     @InjectView(R.id.error_reload_button)
     Button errorReloadButton;
 
+    @InjectView(R.id.empty_reload_button)
+    Button emptyReloadButton;
+
     @InjectView(R.id.empty_content_layout)
     View emptyTopicsLayout;
 
@@ -195,9 +198,15 @@ public class TopicListFragment extends ToolbarFragment implements TopicsAdapter.
         errorReloadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(LOG_TAG, String.format("Refreshing topic list for category %s (reload)", category));
                 showLoadingIndicator();
+                loadTopics();
+            }
+        });
 
+        emptyReloadButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showLoadingIndicator();
                 loadTopics();
             }
         });
@@ -381,8 +390,7 @@ public class TopicListFragment extends ToolbarFragment implements TopicsAdapter.
 
                 if (displayedTopics.size() == 0) {
                     showErrorView();
-                }
-                else {
+                } else {
                     SnackbarManager.show(Snackbar.with(getActivity())
                                     .text(R.string.error_loading_topics)
                                     .colorResource(R.color.theme_primary_light)
@@ -399,6 +407,11 @@ public class TopicListFragment extends ToolbarFragment implements TopicsAdapter.
      */
     private void loadPage(final int page) {
         Log.d(LOG_TAG, String.format("Loading page '%d' for category '%s', subcategory '%s'", page, category, subcategory));
+
+        if (category == null) {
+            Log.e(LOG_TAG, "Category is null cannot load page");
+            return;
+        }
 
         subscribe(dataService.loadTopics(userManager.getActiveUser(), category, subcategory, page, topicFilter, new EndlessObserver<List<Topic>>() {
             @Override

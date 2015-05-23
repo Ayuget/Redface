@@ -270,7 +270,7 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
         currentCategory = categoriesStore.getMetaCategory();
 
         Log.d(LOG_TAG, String.format("Loading meta category, with topicFilter='%s'", getSettings().getDefaultTopicFilter().toString()));
-        topicListFragment = new MetaPageFragmentBuilder(null).topicFilter(getSettings().getDefaultTopicFilter()).build();
+        topicListFragment = new MetaPageFragmentBuilder(currentCategory).topicFilter(getSettings().getDefaultTopicFilter()).build();
         topicListFragment.addOnTopicClickedListener(this);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
