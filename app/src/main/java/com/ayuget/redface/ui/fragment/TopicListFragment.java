@@ -400,6 +400,11 @@ public class TopicListFragment extends ToolbarFragment implements TopicsAdapter.
     private void loadPage(final int page) {
         Log.d(LOG_TAG, String.format("Loading page '%d' for category '%s', subcategory '%s'", page, category, subcategory));
 
+        if (category == null) {
+            Log.e(LOG_TAG, "Category is null cannot load page");
+            return;
+        }
+
         subscribe(dataService.loadTopics(userManager.getActiveUser(), category, subcategory, page, topicFilter, new EndlessObserver<List<Topic>>() {
             @Override
             public void onNext(List<Topic> loadedTopics) {
