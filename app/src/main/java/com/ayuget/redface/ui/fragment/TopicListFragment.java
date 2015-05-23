@@ -339,6 +339,7 @@ public class TopicListFragment extends ToolbarFragment implements TopicsAdapter.
         }
 
         if (changedTopicFilter) {
+            showLoadingIndicator();
             loadTopics();
 
             if (subcategoriesAdapter != null) {

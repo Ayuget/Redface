@@ -223,6 +223,10 @@ public class HFREndpoints implements MDEndpoints {
 
     @Override
     public String metaPage(TopicFilter topicFilter) {
+        if (topicFilter == TopicFilter.NONE) {
+            topicFilter = TopicFilter.PARTICIPATED;
+        }
+
         Optional<Integer> filterId = getFilterId(topicFilter);
 
         if (filterId.isPresent()) {
