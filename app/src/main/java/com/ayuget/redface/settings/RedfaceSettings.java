@@ -77,7 +77,7 @@ public class RedfaceSettings {
     }
 
     public int getDefaultCategoryId() {
-        return Integer.valueOf(sharedPreferences.getString(SettingsConstants.KEY_DEFAULT_CATEGORY, "0"));
+        return Integer.valueOf(sharedPreferences.getString(SettingsConstants.KEY_DEFAULT_CATEGORY, context.getResources().getString(R.string.pref_default_category_default)));
     }
 
     public int getNotLoggedInDefaultCategoryId() {

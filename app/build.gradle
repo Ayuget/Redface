@@ -6,7 +6,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.0.0'
+        classpath 'com.android.tools.build:gradle:1.2.3'
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
 
         classpath 'com.jakewharton.hugo:hugo-plugin:1.1.0'
@@ -26,7 +26,7 @@ apply plugin: 'hugo'
 
 android {
     compileSdkVersion 22
-    buildToolsVersion "22"
+    buildToolsVersion "22.0.1"
 
     defaultConfig {
         applicationId "com.ayuget.redface"
@@ -48,7 +48,7 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
     // Support libraries
-    compile "com.android.support:appcompat-v7:22.0.0"
+    compile "com.android.support:appcompat-v7:22.1.1"
     compile "com.android.support:recyclerview-v7:21.0.0"
     compile "com.android.support:palette-v7:21.0.0"
     compile 'com.android.support:support-annotations:20.0.0'
