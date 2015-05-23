@@ -16,8 +16,10 @@
 
 package com.ayuget.redface.data.api.hfr.transforms;
 
+import com.ayuget.redface.data.api.model.Category;
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.api.model.TopicStatus;
+import com.ayuget.redface.data.state.CategoriesStore;
 import com.ayuget.redface.util.DateUtils;
 import com.ayuget.redface.util.HTMLUtils;
 
@@ -47,6 +49,12 @@ public class HTMLToTopicList implements Func1<String, List<Topic>> {
     private static final Pattern isLockedPattern = Pattern.compile("lock\\.gif");
 
     private static final Pattern hasUnreadPostsPattern = Pattern.compile("(closedb_new|closedb)\\.gif");
+
+    private CategoriesStore categoriesStore;
+
+    public HTMLToTopicList(CategoriesStore categoriesStore) {
+        this.categoriesStore = categoriesStore;
+    }
 
     private boolean isTopicLocked(String value) {
         Matcher m = isLockedPattern.matcher(value);
@@ -84,34 +92,48 @@ public class HTMLToTopicList implements Func1<String, List<Topic>> {
         List<Topic> topics = new ArrayList<>();
 
         Matcher m = TOPIC_PATTERN.matcher(source);
+        Category currentCategory = null;
 
         while (m.find()) {
-            int topicId = Integer.parseInt(m.group(7));
-            String subject = HTMLUtils.escapeHTML(m.group(8));
-            String author = m.group(13);
-            int pagesCount = m.group(9) != null ? Integer.parseInt(m.group(9)) : 1;
-            String lastPostAuthor = m.group(20);
-            Date lastPostDate = DateUtils.fromHTMLDate(m.group(17), m.group(16), m.group(15), m.group(18), m.group(19));
-            boolean isSticky = m.group(4) != null;
-            boolean isLocked = isTopicLocked(m.group(3));
-            TopicStatus status = isLocked ? TopicStatus.LOCKED : extractTopicStatusFromImageName(m.group(11) != null ? m.group(11) : m.group(5));
-            int lastReadPage = m.group(12) != null ? Integer.parseInt(m.group(12)) : -1;
-            long lastReadPostId = m.group(10) != null ? Long.parseLong(m.group(10)) : -1;
+            if (m.group(1) != null) {
+                int categoryId = Integer.parseInt(m.group(1));
 
-            Topic topic = new Topic(topicId);
-            topic.setSubject(subject);
-            topic.setPagesCount(pagesCount);
-            topic.setAuthor(author);
-            topic.setStatus(status);
-            topic.setLastPostAuthor(lastPostAuthor);
-            topic.setLastPostDate(lastPostDate);
-            topic.setSticky(isSticky);
-            topic.setLocked(isLocked);
-            topic.setLastReadPostPage(lastReadPage);
-            topic.setLastReadPostId(lastReadPostId);
-            topic.setHasUnreadPosts(hasUnreadPosts(m.group(3)));
+                if (categoriesStore != null) {
+                    currentCategory = categoriesStore.getCategoryById(categoryId);
+                }
+            }
+            else {
+                int topicId = Integer.parseInt(m.group(7));
+                String subject = HTMLUtils.escapeHTML(m.group(8));
+                String author = m.group(13);
+                int pagesCount = m.group(9) != null ? Integer.parseInt(m.group(9)) : 1;
+                String lastPostAuthor = m.group(20);
+                Date lastPostDate = DateUtils.fromHTMLDate(m.group(17), m.group(16), m.group(15), m.group(18), m.group(19));
+                boolean isSticky = m.group(4) != null;
+                boolean isLocked = isTopicLocked(m.group(3));
+                TopicStatus status = isLocked ? TopicStatus.LOCKED : extractTopicStatusFromImageName(m.group(11) != null ? m.group(11) : m.group(5));
+                int lastReadPage = m.group(12) != null ? Integer.parseInt(m.group(12)) : -1;
+                long lastReadPostId = m.group(10) != null ? Long.parseLong(m.group(10)) : -1;
 
-            topics.add(topic);
+                Topic topic = new Topic(topicId);
+                topic.setSubject(subject);
+                topic.setPagesCount(pagesCount);
+                topic.setAuthor(author);
+                topic.setStatus(status);
+                topic.setLastPostAuthor(lastPostAuthor);
+                topic.setLastPostDate(lastPostDate);
+                topic.setSticky(isSticky);
+                topic.setLocked(isLocked);
+                topic.setLastReadPostPage(lastReadPage);
+                topic.setLastReadPostId(lastReadPostId);
+                topic.setHasUnreadPosts(hasUnreadPosts(m.group(3)));
+
+                if (currentCategory != null) {
+                    topic.setCategory(currentCategory);
+                }
+
+                topics.add(topic);
+            }
         }
 
 

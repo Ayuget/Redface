@@ -18,12 +18,12 @@ package com.ayuget.redface.ui.adapter;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.ui.fragment.PostsFragmentBuilder;
 
-public class TopicPageAdapter extends FragmentPagerAdapter {
+public class TopicPageAdapter extends FragmentStatePagerAdapter {
     private final Topic topic;
     private final int initialPage;
 
@@ -48,6 +48,4 @@ public class TopicPageAdapter extends FragmentPagerAdapter {
     public CharSequence getPageTitle(int position) {
         return "Page " + String.valueOf(position + 1);
     }
-
-
 }

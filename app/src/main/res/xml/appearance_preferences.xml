@@ -22,15 +22,4 @@
         android:defaultValue="@string/pref_theme_default"
         android:entries="@array/pref_theme_values"
         android:entryValues="@array/pref_theme_entries" />
-    <ListPreference
-        android:key="default_topic_filter"
-        android:title="@string/pref_default_topic_filter"
-        android:defaultValue="@string/pref_default_topic_filter_default"
-        android:entries="@array/pref_default_topic_filter_values"
-        android:entryValues="@array/pref_default_topic_filter_entries" />
-    <CheckBoxPreference
-        android:key="show_fully_read_topics"
-        android:title="@string/pref_show_fully_read_topics_title"
-        android:summary="@string/pref_show_fully_read_topics_title"
-        android:defaultValue="true" />
 </PreferenceScreen>

@@ -37,6 +37,7 @@ import android.view.ViewPropertyAnimator;
 import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -197,6 +198,9 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
      */
     @InjectView(R.id.smileys_search)
     SearchView smileysSearch;
+
+    @InjectView(R.id.sending_message_spinner)
+    View sendingMessageSpinner;
 
     @Inject
     UserManager userManager;
@@ -383,6 +387,16 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
         }));
     }
 
+    protected void showSendingMessageSpinner() {
+        sendingMessageSpinner.setVisibility(View.VISIBLE);
+        actionsToolbar.getMenu().getItem(0).setVisible(false);
+    }
+
+    protected void hideSendingMessageSpinner() {
+        sendingMessageSpinner.setVisibility(View.GONE);
+        actionsToolbar.getMenu().getItem(0).setVisible(true);
+    }
+
     /**
      * Initializes both the smiley selector
      */
@@ -462,12 +476,35 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
 
                 if (smileysSelector.getY() != smileySelectorTopOffset) {
                     return (smileysSelector.getY() != toolbarHeight);
-                }
-                else {
+                } else {
                     return false;
                 }
             }
         });
+    }
+
+    /**
+     * Hides the soft keyboard
+     */
+    public void hideSoftKeyboard() {
+        if(getCurrentFocus()!=null) {
+            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        }
+    }
+
+    @OnClick(R.id.show_smileys_picker)
+    protected void showSmileyPicker() {
+        float neededTranslation = -(smileysSelector.getY() - toolbarHeight);
+        ViewPropertyAnimator viewPropertyAnimator = smileysSelector.animate();
+
+        viewPropertyAnimator
+                .translationYBy(neededTranslation)
+                .setDuration(150)
+                .start();
+
+        showSmileysToolbar();
+        hideSoftKeyboard();
     }
 
     /**
@@ -619,6 +656,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
                 // same reply multiple times. This could happen often because there is a small delay
                 // between the click and the activity being closed.
                 menuItem.setEnabled(false);
+                showSendingMessageSpinner();
                 postReply();
                 break;
         }
@@ -746,14 +784,6 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
 
     protected void clearResponseFromCache(User user) {
         responseStore.removeResponse(user, currentTopic);
-    }
-
-    protected void storeResponseInCache(User user, String message) {
-        responseStore.storeResponse(user, currentTopic, message);
-    }
-
-    protected String loadResponseFromCache(User user) {
-        return responseStore.getResponse(user, currentTopic);
     }
 
     public boolean isReplySuccessful() {

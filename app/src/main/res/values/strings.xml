@@ -34,6 +34,10 @@
     <string name="action_topics_filter_participated">Favorites &amp; Starred</string>
     <string name="action_topics_filter_read">Read</string>
 
+    <string name="action_meta_sort">Sorting options</string>
+    <string name="action_meta_sort_by_date">Sort topics by date</string>
+    <string name="action_meta_group_by_cats">Group topics by categories</string>
+
     <!-- Navigation drawer -->
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
@@ -74,6 +78,8 @@
     <string name="pref_appearance_title">Appearance</string>
     <string name="pref_appearance_summary">Change how the application looks</string>
     <string name="pref_show_fully_read_topics_title">Show fully read topics</string>
+    <string name="pref_show_previous_page_last_post_title">Show previous page last post</string>
+    <string name="pref_show_previous_page_last_post_summary">Display the last post of the previous page at the top of the page</string>
     <string name="pref_show_fully_read_topics_summary">This option only works If you are not in the Meta category</string>
 
     <string name="pref_default_topic_filter">Default topic filter</string>
@@ -91,6 +97,16 @@
         <item>READ</item>
     </string-array>
 
+    <string name="pref_default_category">Default category</string>
+    <string name="pref_default_category_default" translatable="false">666</string>
+    <string-array name="pref_default_category_values">
+        <item>@string/navdrawer_item_my_topics</item>
+    </string-array>
+    <string-array name="pref_default_category_entries" translatable="false">
+        <item>@string/pref_default_category_default</item>
+    </string-array>
+
+
     <string name="pref_theme_title">Theme</string>
     <string name="pref_theme_default" translatable="false">LIGHT</string>
     <string-array name="pref_theme_values">
@@ -101,6 +117,19 @@
         <item>@string/pref_theme_default</item>
         <item>DARK</item>
     </string-array>
+
+    <string name="pref_default_meta_ordering">Default ordering for \"My topics\" screen</string>
+    <string name="pref_default_meta_ordering_default" translatable="false">SORT_BY_DATE</string>
+    <string-array name="pref_default_meta_ordering_values">
+        <item>Order by descending date</item>
+        <item>Group by categories</item>
+    </string-array>
+    <string-array name="pref_default_meta_ordering_entries" translatable="false">
+        <item>@string/pref_default_meta_ordering_default</item>
+        <item>GROUP_BY_CATS</item>
+    </string-array>
+
+
 
     <!-- About page -->
     <string name="menu_about">About</string>
@@ -141,6 +170,8 @@
     <string name="popular_smileys_button_description">Popular smileys</string>
     <string name="recent_smileys_button_description">Recent smileys</string>
     <string name="default_smileys_button_description">Default smileys</string>
+
+    <string name="show_smileys_picker">Show smileys picker</string>
 
     <string name="reply_successfully_posted">Reply successfully posted</string>
     <string name="reply_post_failure">Failed to post reply</string>

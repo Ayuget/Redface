@@ -17,7 +17,6 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!--
     <Preference
         android:key="general_preferences"
         android:icon="?attr/generalIconDrawable"
@@ -25,7 +24,6 @@
         android:title="@string/pref_general_title"
         android:layout="@layout/preference_home"
         android:summary="@string/pref_general_summary" />
-        -->
 
     <Preference
         android:key="appearance_preferences"

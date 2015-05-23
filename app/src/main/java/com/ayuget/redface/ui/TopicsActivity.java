@@ -47,6 +47,8 @@ import com.ayuget.redface.ui.event.QuotePostEvent;
 import com.ayuget.redface.ui.event.TopicContextItemSelectedEvent;
 import com.ayuget.redface.ui.fragment.DefaultFragment;
 import com.ayuget.redface.ui.fragment.DetailsDefaultFragment;
+import com.ayuget.redface.ui.fragment.MetaPageFragment;
+import com.ayuget.redface.ui.fragment.MetaPageFragmentBuilder;
 import com.ayuget.redface.ui.fragment.TopicFragment;
 import com.ayuget.redface.ui.fragment.TopicFragmentBuilder;
 import com.ayuget.redface.ui.fragment.TopicListFragment;
@@ -85,8 +87,6 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
     TopicListFragment topicListFragment;
 
     TopicFragment topicFragment;
-
-    DefaultFragment defaultFragment;
 
     private SubscriptionHandler<Integer, Topic> topicDetailsSearchHandler = new SubscriptionHandler<>();
 
@@ -147,7 +147,7 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
     protected void onSetupUiState() {
         Log.d(LOG_TAG, "Setting up initial state for TopicsActivity");
 
-        defaultFragment = DefaultFragment.newInstance();
+        DefaultFragment defaultFragment = DefaultFragment.newInstance();
 
         if (twoPaneMode) {
             DetailsDefaultFragment detailsDefaultFragment = DetailsDefaultFragment.newInstance();
@@ -233,11 +233,21 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
     public void loadDefaultCategory() {
         int defaultCatId = getSettings().getDefaultCategoryId();
 
-        Category defaultCategory = categoriesStore.getCategoryById(defaultCatId);
+        // If current user is not logged in and if default category setting is on "My Topics", let's
+        // redirect the user the another accessible cat. "My topics" is necessary empty when user
+        // is not logged in, so having an empty landing screen is not the best user experience here
+        if (!userManager.activeUserIsLoggedIn() && defaultCatId == CategoriesStore.META_CATEGORY_ID) {
+            defaultCatId = getSettings().getNotLoggedInDefaultCategoryId();
+        }
 
+        Category defaultCategory = categoriesStore.getCategoryById(defaultCatId);
         if (defaultCategory == null) {
             Log.w(LOG_TAG, String.format("Category '%d' not found in cache", defaultCatId));
-        } else {
+        }
+        else if (defaultCategory.getId() == CategoriesStore.META_CATEGORY_ID) {
+            onMyTopicsClicked();
+        }
+        else {
             onCategoryClicked(defaultCategory);
         }
     }
@@ -248,6 +258,19 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
 
         Log.d(LOG_TAG, String.format("Loading category '%s', with topicFilter='%s'", category.getName(), getSettings().getDefaultTopicFilter().toString()));
         topicListFragment = new TopicListFragmentBuilder(category).topicFilter(getSettings().getDefaultTopicFilter()).build();
+        topicListFragment.addOnTopicClickedListener(this);
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.container, topicListFragment, TOPICS_FRAGMENT_TAG);
+        transaction.commit();
+    }
+
+    @Override
+    public void onMyTopicsClicked() {
+        currentCategory = categoriesStore.getMetaCategory();
+
+        Log.d(LOG_TAG, String.format("Loading meta category, with topicFilter='%s'", getSettings().getDefaultTopicFilter().toString()));
+        topicListFragment = new MetaPageFragmentBuilder(null).topicFilter(getSettings().getDefaultTopicFilter()).build();
         topicListFragment.addOnTopicClickedListener(this);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();

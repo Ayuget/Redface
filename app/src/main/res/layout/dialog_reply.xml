@@ -20,7 +20,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/app_background_semi_transparent"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:wheel="http://schemas.android.com/apk/res-auto">
     <RelativeLayout
         android:id="@+id/main_reply_frame"
         android:background="?attr/appBackgroundColor"
@@ -34,7 +35,18 @@
             android:layout_width="match_parent"
             android:minHeight="?attr/actionBarSize"
             style="@style/ReplyActionsToolbar"
-            />
+            >
+            <com.pnikosis.materialishprogress.ProgressWheel
+                android:id="@+id/sending_message_spinner"
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="8dp"
+                android:layout_gravity="right"
+                wheel:matProg_barColor="?attr/replyToolbarIconsColor"
+                wheel:matProg_progressIndeterminate="true" />
+
+            </android.support.v7.widget.Toolbar>
 
         <android.support.v7.widget.Toolbar
             xmlns:android="http://schemas.android.com/apk/res/android"
@@ -44,6 +56,12 @@
             android:minHeight="?attr/actionBarSize"
             android:layout_alignParentBottom="true"
             style="@style/ReplyOptionsToolbar">
+            <ImageButton
+                android:id="@+id/show_smileys_picker"
+                android:contentDescription="@string/show_smileys_picker"
+                style="@style/ReplyOptionsIcon"
+                android:src="@drawable/ic_action_insert_emoticon" />
+
             <ImageButton
                 android:id="@+id/make_text_bold_button"
                 android:contentDescription="@string/make_text_bold_button_description"

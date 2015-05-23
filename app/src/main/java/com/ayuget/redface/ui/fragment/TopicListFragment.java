@@ -18,7 +18,6 @@ package com.ayuget.redface.ui.fragment;
 
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.DrawerLayout;
@@ -96,9 +95,9 @@ public class TopicListFragment extends ToolbarFragment implements TopicsAdapter.
     /**
      * List of topics displayed in the fragment
      */
-    private ArrayList<Topic> displayedTopics;
+    protected ArrayList<Topic> displayedTopics;
 
-    private TopicsAdapter topicsAdapter;
+    protected TopicsAdapter topicsAdapter;
 
     private SubcategoriesAdapter subcategoriesAdapter;
 
@@ -153,14 +152,18 @@ public class TopicListFragment extends ToolbarFragment implements TopicsAdapter.
             topicFilter = TopicFilter.NONE;
         }
 
+        initializeAdapters();
+
+        setHasOptionsMenu(true);
+    }
+
+    protected void initializeAdapters() {
         subcategoriesAdapter = new SubcategoriesAdapter(getActivity(), topicFilter);
         subcategoriesAdapter.replaceWith(category);
 
         topicsAdapter = new TopicsAdapter(new ContextThemeWrapper(getActivity(), themeManager.getActiveThemeStyle()), themeManager);
         topicsAdapter.setOnTopicClickedListener(this);
         topicsAdapter.setOnTopicLongClickListener(this);
-
-        setHasOptionsMenu(true);
     }
 
     @Override
@@ -238,6 +241,34 @@ public class TopicListFragment extends ToolbarFragment implements TopicsAdapter.
 
     @Override
     public void onToolbarInitialized(Toolbar toolbar) {
+        initializeToolbarTitle(toolbar);
+
+        // Deal with endless scrolling & toolbar hide toolbar on scroll
+        topicsRecyclerView.setOnScrollListener(new EndlessScrollListener(layoutManager, getToolbar(), true) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount) {
+                // When a topic filter is selected, all topics are displayed on one single page,
+                // and trying to load more will not result in a 404 error, but it will instead load
+                // the same topics over and over
+                if (topicFilter == TopicFilter.NONE) {
+                    int realPage = page + 1;
+
+                    if (realPage > lastLoadedPage) {
+                        loadPage(realPage);
+                    }
+                }
+            }
+        });
+
+        int progressBarStartMargin = getResources().getDimensionPixelSize(
+                R.dimen.swipe_refresh_progress_bar_start_margin);
+        int progressBarEndMargin = getResources().getDimensionPixelSize(
+                R.dimen.swipe_refresh_progress_bar_end_margin);
+
+        swipeRefreshLayout.setProgressViewOffset(false, progressBarStartMargin, progressBarEndMargin);
+    }
+
+    protected void initializeToolbarTitle(Toolbar toolbar) {
         View spinnerContainer = LayoutInflater.from(getActivity()).inflate(R.layout.actionbar_spinner, toolbar, false);
         ActionBar.LayoutParams lp = new ActionBar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         toolbar.addView(spinnerContainer, 0, lp);
@@ -266,31 +297,6 @@ public class TopicListFragment extends ToolbarFragment implements TopicsAdapter.
             public void onNothingSelected(AdapterView<?> adapterView) {
             }
         });
-
-
-        // Deal with endless scrolling & toolbar hide toolbar on scroll
-        topicsRecyclerView.setOnScrollListener(new EndlessScrollListener(layoutManager, getToolbar(), true) {
-            @Override
-            public void onLoadMore(int page, int totalItemsCount) {
-                // When a topic filter is selected, all topics are displayed on one single page,
-                // and trying to load more will not result in a 404 error, but it will instead load
-                // the same topics over and over
-                if (topicFilter == TopicFilter.NONE) {
-                    int realPage = page + 1;
-
-                    if (realPage > lastLoadedPage) {
-                        loadPage(realPage);
-                    }
-                }
-            }
-        });
-
-        int progressBarStartMargin = getResources().getDimensionPixelSize(
-                R.dimen.swipe_refresh_progress_bar_start_margin);
-        int progressBarEndMargin = getResources().getDimensionPixelSize(
-                R.dimen.swipe_refresh_progress_bar_end_margin);
-
-        swipeRefreshLayout.setProgressViewOffset(false, progressBarStartMargin, progressBarEndMargin);
     }
 
     @Override
@@ -305,20 +311,12 @@ public class TopicListFragment extends ToolbarFragment implements TopicsAdapter.
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_topics, menu);
-
-        MenuItem topicsFilterItem = menu.findItem(R.id.action_topics_filter);
-        topicsFilterItem.setVisible(true);
-        topicsFilterItem.setEnabled(true);
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+
         boolean changedTopicFilter = false;
 
         switch (id) {
@@ -341,8 +339,12 @@ public class TopicListFragment extends ToolbarFragment implements TopicsAdapter.
         }
 
         if (changedTopicFilter) {
+            showLoadingIndicator();
             loadTopics();
-            subcategoriesAdapter.setActiveTopicFilter(topicFilter);
+
+            if (subcategoriesAdapter != null) {
+                subcategoriesAdapter.setActiveTopicFilter(topicFilter);
+            }
         }
 
         return super.onOptionsItemSelected(item);
@@ -441,21 +443,21 @@ public class TopicListFragment extends ToolbarFragment implements TopicsAdapter.
         }
     }
 
-    private void showLoadingIndicator() {
+    protected void showLoadingIndicator() {
         errorView.setVisibility(View.GONE);
         loadingIndicator.setVisibility(View.VISIBLE);
         swipeRefreshLayout.setVisibility(View.GONE);
         emptyTopicsLayout.setVisibility(View.GONE);
     }
 
-    private void showErrorView() {
+    protected void showErrorView() {
         errorView.setVisibility(View.VISIBLE);
         loadingIndicator.setVisibility(View.GONE);
         swipeRefreshLayout.setVisibility(View.GONE);
         emptyTopicsLayout.setVisibility(View.GONE);
     }
 
-    private void showTopics() {
+    protected void showTopics() {
         if (displayedTopics.size() > 0) {
             errorView.setVisibility(View.GONE);
             loadingIndicator.setVisibility(View.GONE);

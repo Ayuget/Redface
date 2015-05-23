@@ -58,6 +58,7 @@ import retrofit.http.GET;
 import retrofit.http.Path;
 import rx.Observable;
 import rx.functions.Func1;
+import rx.functions.Func2;
 
 /**
  * Dedicated service to parse pages from HFR's forum
@@ -139,7 +140,7 @@ public class HFRForumService implements MDService {
     @Override
     public Observable<List<Topic>> listTopics(User user, final Category category, final Subcategory subcategory, int page, final TopicFilter filter) {
         return pageFetcher.fetchSource(user, getTopicListEndpoint(category, subcategory, page, filter))
-                .map(new HTMLToTopicList())
+                .map(new HTMLToTopicList(categoriesStore))
                 .flatMap(new Func1<List<Topic>, Observable<Topic>>() {
                     @Override
                     public Observable<Topic> call(List<Topic> topics) {
@@ -163,6 +164,37 @@ public class HFRForumService implements MDService {
     }
 
     @Override
+    public Observable<List<Topic>> listMetaPageTopics(User user, TopicFilter filter, boolean sortByDate) {
+        Observable<Topic> metaPageTopics =
+                pageFetcher.fetchSource(user, mdEndpoints.metaPage(filter))
+                .map(new HTMLToTopicList(categoriesStore))
+                .flatMap(new Func1<List<Topic>, Observable<Topic>>() {
+                    @Override
+                    public Observable<Topic> call(List<Topic> topics) {
+                        return Observable.from(topics);
+                    }
+                })
+                .filter(new Func1<Topic, Boolean>() {
+                    @Override
+                    public Boolean call(Topic topic) {
+                        return topic.hasUnreadPosts() || appSettings.showFullyReadTopics();
+                    }
+                });
+
+        if (sortByDate) {
+            return metaPageTopics.toSortedList(new Func2<Topic, Topic, Integer>() {
+                @Override
+                public Integer call(Topic topic, Topic topic2) {
+                    return topic2.getLastPostDate().compareTo(topic.getLastPostDate());
+                }
+            });
+        }
+        else {
+            return metaPageTopics.toList();
+        }
+    }
+
+    @Override
     public Observable<List<Post>> listPosts(User user, final Topic topic, final int page) {
         return pageFetcher.fetchSource(user, mdEndpoints.topic(topic, page))
                 .map(new Func1<String, String>() {
@@ -179,7 +211,7 @@ public class HFRForumService implements MDService {
                     public List<Post> call(List<Post> posts) {
                         // Last post of previous page is automatically put in first position of
                         // next page. This can be annoying...
-                        if (page > 1 && posts.size() > 1) {
+                        if (!appSettings.showPreviousPageLastPost() && page > 1 && posts.size() > 1) {
                             posts.remove(0);
                             return posts;
                         }

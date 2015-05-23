@@ -114,4 +114,16 @@
     <string name="invalid_page_number">Numéro de page invalide</string>
     <string name="pref_show_fully_read_topics_summary">Cette option ne fonctionne que si vous n\'êtes pas dans la catégorie Meta</string>
     <string name="pref_show_fully_read_topics_title">Afficher les sujets entièrement lus</string>
+    <string name="action_meta_sort">Options de tri des sujets</string>
+    <string name="action_meta_group_by_cats">Grouper les sujets par catégories</string>
+    <string name="action_meta_sort_by_date">Trier les sujets par date décroissante</string>
+    <string name="pref_default_meta_ordering">Tri par défaut pour l\'écran \"Mes sujets\"</string>
+    <string-array name="pref_default_meta_ordering_values">
+        <item>Par date décroissante</item>
+        <item>Grouper par catégories</item>
+    </string-array>
+    <string name="pref_default_category">Catégorie par défaut</string>
+    <string name="show_smileys_picker">Ouvrir le sélectionneur de smileys</string>
+    <string name="pref_show_previous_page_last_post_title">Reprendre le dernier message</string>
+    <string name="pref_show_previous_page_last_post_summary">Afficher le dernier message de la page précédente en haut de page</string>
 </resources>

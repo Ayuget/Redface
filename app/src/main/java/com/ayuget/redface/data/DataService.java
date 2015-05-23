@@ -44,6 +44,7 @@ public class DataService {
 
     private SubscriptionHandler<User, List<Category>> categoriesSubscriptionHandler = new SubscriptionHandler<>();
     private SubscriptionHandler<CategoryPageKey, List<Topic>> topicsSubscriptionHandler = new SubscriptionHandler<>();
+    private SubscriptionHandler<User, List<Topic>> metaPageSubscriptionHandler = new SubscriptionHandler<>();
     private SubscriptionHandler<Topic, List<Post>> postsSubscriptionHandler = new SubscriptionHandler<>();
     private SubscriptionHandler<User, List<Smiley>> recentSmileysHandler = new SubscriptionHandler<>();
     private SubscriptionHandler<String, List<Smiley>> smileysSearchHandler = new SubscriptionHandler<>();
@@ -91,6 +92,10 @@ public class DataService {
 
     public Subscription loadTopics(final User user, final Category category, final Subcategory subcategory, int page, final TopicFilter topicFilter, Observer<List<Topic>> observer) {
         return topicsSubscriptionHandler.load(new CategoryPageKey(category, subcategory, page), mdService.listTopics(user, category, subcategory, page, topicFilter), observer);
+    }
+
+    public Subscription loadMetaPageTopics(final User user, final TopicFilter topicFilter, boolean sortByDate, Observer<List<Topic>> observer) {
+        return metaPageSubscriptionHandler.load(user, mdService.listMetaPageTopics(user, topicFilter, sortByDate), observer);
     }
 
     public Subscription loadPosts(final User user, final Topic topic, int page, Observer<List<Post>> observer) {

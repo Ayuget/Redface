@@ -22,6 +22,7 @@ import android.content.SharedPreferences;
 import com.ayuget.redface.R;
 import com.ayuget.redface.data.api.model.TopicFilter;
 import com.ayuget.redface.ui.RedfaceTheme;
+import com.ayuget.redface.ui.misc.MetaPageOrdering;
 
 public class RedfaceSettings {
     private final Context context;
@@ -62,14 +63,24 @@ public class RedfaceSettings {
         return TopicFilter.valueOf(topicFilterValue);
     }
 
+    public MetaPageOrdering getDefaultMetaPageOrdering() {
+        String metaPageOrderingValue = sharedPreferences.getString(SettingsConstants.KEY_META_PAGE_ORDERING, context.getResources().getString(R.string.pref_default_meta_ordering_default));
+        return MetaPageOrdering.valueOf(metaPageOrderingValue);
+    }
+
     public boolean showFullyReadTopics() {
         return sharedPreferences.getBoolean(SettingsConstants.KEY_SHOW_FULLY_READ_TOPICS, true);
     }
 
-    /**
-     * @todo ugly... Make it configurable
-     */
+    public boolean showPreviousPageLastPost() {
+        return sharedPreferences.getBoolean(SettingsConstants.KEY_SHOW_PREVIOUS_PAGE_LAST_POST, true);
+    }
+
     public int getDefaultCategoryId() {
-        return 13; // Discussions
+        return Integer.valueOf(sharedPreferences.getString(SettingsConstants.KEY_DEFAULT_CATEGORY, context.getResources().getString(R.string.pref_default_category_default)));
+    }
+
+    public int getNotLoggedInDefaultCategoryId() {
+        return 13; // fixme : ugly
     }
 }

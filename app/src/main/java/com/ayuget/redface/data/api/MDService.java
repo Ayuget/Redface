@@ -50,6 +50,14 @@ public interface MDService {
     public Observable<List<Topic>> listTopics(User user, final Category category, final Subcategory subcategory, int page, final TopicFilter filter);
 
     /**
+     * Lists all topics for the meta page
+     * @param filter filter to apply
+     * @param sortByDate sort topics by date (desc) or group them by categories
+     * @return topics list
+     */
+    public Observable<List<Topic>> listMetaPageTopics(User user, final TopicFilter filter, boolean sortByDate);
+
+    /**
      * Returns a specific topic page
      */
     public Observable<List<Post>> listPosts(User user, Topic topic, int page);
