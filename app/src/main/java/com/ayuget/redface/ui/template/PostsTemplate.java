@@ -17,10 +17,10 @@
 package com.ayuget.redface.ui.template;
 
 import android.content.Context;
-import android.text.TextUtils;
 
 import com.ayuget.redface.data.api.model.Post;
 import com.ayuget.redface.ui.misc.ThemeManager;
+import com.squareup.phrase.Phrase;
 
 import java.util.List;
 
@@ -40,25 +40,25 @@ public class PostsTemplate extends HTMLTemplate<List<Post>> {
     }
 
     @Override
-    public String compile(String templateContent) {
-        return TextUtils.replace(
-                templateContent,
-                new String[]{"{css}", "{js}"},
-                new String[]{readAssetFile("styles.css"), readAssetFile("hfr.js")}
-        ).toString();
+    public Phrase compile(String templateContent) {
+        return Phrase.from(templateContent)
+                .put("css", readAssetFile("styles.css"))
+                .put("js", readAssetFile("hfr.js"));
     }
 
     @Override
-    protected void render(List<Post> content, String templateContent, StringBuilder stream) {
+    protected void render(List<Post> content, Phrase templateContent, StringBuilder stream) {
         StringBuilder postsBuffer = new StringBuilder();
         for(Post post : content) {
             postTemplate.render(post, postsBuffer);
         }
 
-        stream.append(TextUtils.replace(
-                templateContent,
-                new String[]{"{posts}", "{theme_class}"},
-                new String[]{postsBuffer.toString(), themeManager.getActiveThemeCssClass()}
-        ));
+        stream.append(
+                templateContent
+                        .put("posts", postsBuffer.toString())
+                        .put("theme_class", themeManager.getActiveThemeCssClass())
+                        .format()
+                        .toString()
+        );
     }
 }

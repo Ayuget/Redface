@@ -20,6 +20,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.ayuget.redface.util.DateUtils;
+import com.squareup.phrase.Phrase;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -34,7 +35,7 @@ public abstract class HTMLTemplate<T> {
 
     private final String templateFile;
 
-    private String templateContent;
+    private Phrase templateContent;
 
     protected HTMLTemplate(Context context, String templateFile) {
         this.context = context;
@@ -99,8 +100,8 @@ public abstract class HTMLTemplate<T> {
      * Compiles the template, resolving static dependencies (includes external javascript files,
      * stylesheets, ...)
      */
-    public String compile(String templateContent) {
-        return templateContent;
+    public Phrase compile(String templateContent) {
+        return Phrase.from(templateContent);
     }
 
     /**
@@ -110,7 +111,7 @@ public abstract class HTMLTemplate<T> {
         this.templateContent = compile(readAssetFile(templateFile));
     }
 
-    protected abstract void render(T content, String templateContent, StringBuilder stream);
+    protected abstract void render(T content, Phrase templateContent, StringBuilder stream);
 
     /**
      * Renders the template into a stream

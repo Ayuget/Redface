@@ -20,6 +20,7 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.ayuget.redface.data.api.model.Post;
+import com.squareup.phrase.Phrase;
 
 
 public class PostTemplate extends HTMLTemplate<Post> {
@@ -41,11 +42,22 @@ public class PostTemplate extends HTMLTemplate<Post> {
     }
 
     @Override
-    protected void render(Post post, String templateContent, StringBuilder stream) {
-        String[] variables = {"{author}", "{content}", "{avatar}", "{postedOn}", "{author_id}", "{post_id}", "{post_id_quote}", "{edit_icon}", "{extra_details}"};
+    protected void render(Post post, Phrase templateContent, StringBuilder stream) {
         String postId = String.valueOf(post.getId());
-        String[] values = {post.getAuthor(), post.getHtmlContent(), avatarTemplate.render(post), formatDate(post.getPostDate()), post.getAuthor(), postId, postId, editIconTemplate.render(post), extraDetailsTemplate.render(post)};
 
-        stream.append(TextUtils.replace(templateContent, variables, values));
+        stream.append(
+                templateContent
+                        .put("author", post.getAuthor())
+                        .put("content", post.getHtmlContent())
+                        .put("avatar", avatarTemplate.render(post))
+                        .put("posted_on", formatDate(post.getPostDate()))
+                        .put("author_id", post.getAuthor())
+                        .put("post_id", postId)
+                        .put("post_id_quote", postId)
+                        .put("edit_icon", editIconTemplate.render(post))
+                        .put("extra_details", extraDetailsTemplate.render(post))
+                        .format()
+                        .toString()
+        );
     }
 }

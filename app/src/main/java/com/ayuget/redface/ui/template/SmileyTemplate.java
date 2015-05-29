@@ -20,6 +20,7 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.ayuget.redface.data.api.model.Smiley;
+import com.squareup.phrase.Phrase;
 
 public class SmileyTemplate extends HTMLTemplate<Smiley> {
     private static final String LOG_TAG = SmileyTemplate.class.getSimpleName();
@@ -31,11 +32,13 @@ public class SmileyTemplate extends HTMLTemplate<Smiley> {
     }
 
     @Override
-    protected void render(Smiley smiley, String templateContent, StringBuilder stream) {
-        stream.append(TextUtils.replace(
-                templateContent,
-                new String[]{"{smileyCode}", "{smileyUrl}"},
-                new String[]{smiley.getCode(), smiley.getImageUrl()}
-        ));
+    protected void render(Smiley smiley, Phrase templateContent, StringBuilder stream) {
+        stream.append(
+                templateContent
+                        .put("smiley_code", smiley.getCode())
+                        .put("smiley_url", smiley.getImageUrl())
+                        .format()
+                        .toString()
+        );
     }
 }

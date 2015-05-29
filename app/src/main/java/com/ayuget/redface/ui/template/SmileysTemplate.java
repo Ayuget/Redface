@@ -21,6 +21,7 @@ import android.text.TextUtils;
 
 import com.ayuget.redface.data.api.model.Smiley;
 import com.ayuget.redface.ui.misc.ThemeManager;
+import com.squareup.phrase.Phrase;
 
 import java.util.List;
 
@@ -40,25 +41,25 @@ public class SmileysTemplate extends HTMLTemplate<List<Smiley>> {
     }
 
     @Override
-    public String compile(String templateContent) {
-        return TextUtils.replace(
-                templateContent,
-                new String[]{"{css}", "{js}"},
-                new String[]{readAssetFile("styles.css"), readAssetFile("hfr.js")}
-        ).toString();
+    public Phrase compile(String templateContent) {
+        return Phrase.from(templateContent)
+                .put("css", readAssetFile("styles.css"))
+                .put("js", readAssetFile("hfr.js"));
     }
 
     @Override
-    protected void render(List<Smiley> smileys, String templateContent, StringBuilder stream) {
+    protected void render(List<Smiley> smileys, Phrase templateContent, StringBuilder stream) {
         StringBuilder smileysBuffer = new StringBuilder();
         for(Smiley smiley : smileys) {
             smileyTemplate.render(smiley, smileysBuffer);
         }
 
-        stream.append(TextUtils.replace(
-                templateContent,
-                new String[]{"{smileys}",  "{theme_class}"},
-                new String[]{smileysBuffer.toString(), themeManager.getActiveThemeCssClass()}
-        ));
+        stream.append(
+                templateContent
+                        .put("smileys", smileysBuffer.toString())
+                        .put("theme_class", themeManager.getActiveThemeCssClass())
+                        .format()
+                        .toString()
+        );
     }
 }

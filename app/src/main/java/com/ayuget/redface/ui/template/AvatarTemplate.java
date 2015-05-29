@@ -20,6 +20,7 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.ayuget.redface.data.api.model.Post;
+import com.squareup.phrase.Phrase;
 
 
 public class AvatarTemplate extends HTMLTemplate<Post> {
@@ -32,16 +33,14 @@ public class AvatarTemplate extends HTMLTemplate<Post> {
     }
 
     @Override
-    protected void render(Post post, String templateContent, StringBuilder stream) {
+    protected void render(Post post, Phrase templateContent, StringBuilder stream) {
         if (post.getAvatarUrl() == null) {
             stream.append("");
         }
         else {
-            stream.append(TextUtils.replace(
-                    templateContent,
-                    new String[]{"{avatarUrl}"},
-                    new String[]{post.getAvatarUrl()}
-            ));
+            stream.append(
+                    templateContent.put("avatar_url", post.getAvatarUrl()).format().toString()
+            );
         }
     }
 }

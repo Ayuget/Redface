@@ -21,6 +21,7 @@ import android.text.TextUtils;
 
 import com.ayuget.redface.account.UserManager;
 import com.ayuget.redface.data.api.model.Post;
+import com.squareup.phrase.Phrase;
 
 public class EditIconTemplate extends HTMLTemplate<Post> {
     private static final String EDIT_ICON_TEMPLATE = "edit_icon.html";
@@ -33,13 +34,11 @@ public class EditIconTemplate extends HTMLTemplate<Post> {
     }
 
     @Override
-    protected void render(Post post, String templateContent, StringBuilder stream) {
+    protected void render(Post post, Phrase templateContent, StringBuilder stream) {
         if (post.getAuthor().equals(userManager.getActiveUser().getUsername())) {
-            stream.append(TextUtils.replace(
-                    templateContent,
-                    new String[]{"{post_id}"},
-                    new String[]{String.valueOf(post.getId())}
-            ));
+            stream.append(
+                    templateContent.put("post_id", String.valueOf(post.getId())).format().toString()
+            );
         }
         else {
             stream.append("");
