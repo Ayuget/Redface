@@ -44,7 +44,7 @@
     <attr name="replyToolbarIconsColor" format="reference|color" />
 
     <declare-styleable name="ScrimInsetsView">
-        <attr name="insetForeground" format="reference|color" />
+        <attr name="insetForegroundCompat" format="reference|color" />
     </declare-styleable>
 
     <!-- Settings icons -->
