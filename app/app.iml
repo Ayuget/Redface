@@ -96,14 +96,14 @@
     <orderEntry type="library" exported="" scope="TEST" name="assertj-core-1.6.1" level="project" />
     <orderEntry type="library" exported="" name="picasso-2.4.0" level="project" />
     <orderEntry type="library" exported="" name="library-0.4.0" level="project" />
-    <orderEntry type="library" exported="" name="support-annotations-22.1.1" level="project" />
+    <orderEntry type="library" exported="" name="support-annotations-22.2.0" level="project" />
     <orderEntry type="library" exported="" name="recyclerview-v7-22.0.0" level="project" />
     <orderEntry type="library" exported="" name="floatingactionbutton-1.8.0" level="project" />
     <orderEntry type="library" exported="" name="leakcanary-analyzer-1.3" level="project" />
     <orderEntry type="library" exported="" name="retrofit-1.9.0" level="project" />
     <orderEntry type="library" exported="" name="material-dialogs-0.6.4.0" level="project" />
     <orderEntry type="library" exported="" name="hugo-runtime-1.1.0" level="project" />
-    <orderEntry type="library" exported="" name="appcompat-v7-22.1.1" level="project" />
+    <orderEntry type="library" exported="" name="appcompat-v7-22.2.0" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="assertj-android-1.0.0" level="project" />
     <orderEntry type="library" exported="" name="library-1.8.2" level="project" />
     <orderEntry type="library" exported="" name="butterknife-6.0.0" level="project" />
@@ -119,7 +119,7 @@
     <orderEntry type="library" exported="" name="guava-18.0" level="project" />
     <orderEntry type="library" exported="" name="rxandroid-0.23.0" level="project" />
     <orderEntry type="library" exported="" name="dagger-1.2.2" level="project" />
-    <orderEntry type="library" exported="" name="support-v4-22.1.1" level="project" />
+    <orderEntry type="library" exported="" name="support-v4-22.2.0" level="project" />
     <orderEntry type="library" exported="" name="materialish-progress-1.4" level="project" />
     <orderEntry type="library" exported="" name="javax.inject-1" level="project" />
     <orderEntry type="library" exported="" name="rxjava-1.0.2" level="project" />
@@ -128,5 +128,6 @@
     <orderEntry type="library" exported="" name="snackbar-2.7.3" level="project" />
     <orderEntry type="library" exported="" name="phrase-1.0.3" level="project" />
     <orderEntry type="library" exported="" name="okhttp-urlconnection-2.2.0" level="project" />
+    <orderEntry type="library" exported="" name="design-22.2.0" level="project" />
   </component>
 </module>
