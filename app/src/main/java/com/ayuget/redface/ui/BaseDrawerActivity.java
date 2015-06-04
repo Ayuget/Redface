@@ -62,10 +62,6 @@ import rx.Subscription;
 public class BaseDrawerActivity extends BaseActivity {
     private static final String LOG_TAG = BaseDrawerActivity.class.getSimpleName();
 
-    private Subscription categoriesRequest;
-
-    private TextView activeUserNameTextView;
-
     private List<View> drawerItemsViews;
 
     boolean accountBoxExpanded = false;
@@ -146,7 +142,7 @@ public class BaseDrawerActivity extends BaseActivity {
         // This only takes effect on Lollipop, or when using translucentStatusBar
         // on KitKat.
         drawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.theme_primary_dark));
-        drawerLayout.setDrawerShadow(R.drawable.drawer_shadow, Gravity.START);
+        drawerLayout.setDrawerShadow(R.drawable.drawer_shadow, Gravity.LEFT);
 
         // Initiate drawer with "static" items
         initiateNavDrawer();
@@ -163,7 +159,7 @@ public class BaseDrawerActivity extends BaseActivity {
         initiateNavDrawer();
 
         // Load categories for active user
-        categoriesRequest = dataService.loadCategories(activeUser, new EndlessObserver<List<Category>>() {
+        subscribe(dataService.loadCategories(activeUser, new EndlessObserver<List<Category>>() {
             @Override
             public void onNext(List<Category> categories) {
                 populateNavDrawerCategories(categories);
@@ -174,7 +170,7 @@ public class BaseDrawerActivity extends BaseActivity {
             public void onError(Throwable throwable) {
                 Log.e(LOG_TAG, String.format("Error on retrieving categories for user '%s'", activeUser), throwable);
             }
-        });
+        }));
 
         activeUserName.setText(activeUser.getDisplayUsername(this));
 
