@@ -27,8 +27,7 @@ import com.ayuget.redface.data.api.hfr.HFRAuthenticator;
 import com.ayuget.redface.data.api.model.User;
 import com.ayuget.redface.data.rx.EndlessObserver;
 import com.ayuget.redface.data.rx.SubscriptionHandler;
-import com.nispok.snackbar.Snackbar;
-import com.nispok.snackbar.SnackbarManager;
+import com.ayuget.redface.ui.misc.SnackbarHelper;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
 import javax.inject.Inject;
@@ -100,12 +99,7 @@ public class AccountActivity extends BaseActivity {
                }
                else {
                    Log.d(LOG_TAG, "Error while logging in");
-                   SnackbarManager.show(
-                           Snackbar.with(AccountActivity.this)
-                                   .text(R.string.login_failed)
-                                   .colorResource(R.color.theme_primary_light)
-                                   .textColorResource(R.color.tabs_text_color)
-                   );
+                   SnackbarHelper.make(AccountActivity.this, R.string.login_failed).show();
                }
            }
 

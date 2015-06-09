@@ -125,7 +125,6 @@
     <orderEntry type="library" exported="" name="rxjava-1.0.2" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="support-annotations-20.0.0" level="project" />
     <orderEntry type="library" exported="" name="pagerslidingtabstrip-1.0.1" level="project" />
-    <orderEntry type="library" exported="" name="snackbar-2.7.3" level="project" />
     <orderEntry type="library" exported="" name="phrase-1.0.3" level="project" />
     <orderEntry type="library" exported="" name="okhttp-urlconnection-2.2.0" level="project" />
     <orderEntry type="library" exported="" name="design-22.2.0" level="project" />

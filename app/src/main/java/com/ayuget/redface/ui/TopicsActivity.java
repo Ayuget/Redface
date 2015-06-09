@@ -42,20 +42,17 @@ import com.ayuget.redface.ui.event.EditPostEvent;
 import com.ayuget.redface.ui.event.GoToTopicEvent;
 import com.ayuget.redface.ui.event.InternalLinkClickedEvent;
 import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
-import com.ayuget.redface.ui.event.PageRefreshedEvent;
 import com.ayuget.redface.ui.event.QuotePostEvent;
 import com.ayuget.redface.ui.event.TopicContextItemSelectedEvent;
 import com.ayuget.redface.ui.fragment.DefaultFragment;
 import com.ayuget.redface.ui.fragment.DetailsDefaultFragment;
-import com.ayuget.redface.ui.fragment.MetaPageFragment;
 import com.ayuget.redface.ui.fragment.MetaPageFragmentBuilder;
 import com.ayuget.redface.ui.fragment.TopicFragment;
 import com.ayuget.redface.ui.fragment.TopicFragmentBuilder;
 import com.ayuget.redface.ui.fragment.TopicListFragment;
 import com.ayuget.redface.ui.fragment.TopicListFragmentBuilder;
+import com.ayuget.redface.ui.misc.SnackbarHelper;
 import com.ayuget.redface.ui.misc.PagePosition;
-import com.nispok.snackbar.Snackbar;
-import com.nispok.snackbar.SnackbarManager;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.squareup.otto.Subscribe;
 
@@ -288,11 +285,7 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
             boolean wasEdit = (data != null) && data.getBooleanExtra(UIConstants.ARG_REPLY_WAS_EDIT, false);
 
             if (data != null && resultCode == Activity.RESULT_OK) {
-                SnackbarManager.show(
-                        Snackbar.with(this)
-                                .text(wasEdit ? R.string.message_successfully_edited : R.string.reply_successfully_posted)
-                                .textColorResource(R.color.tabs_text_color)
-                );
+                SnackbarHelper.make(this, wasEdit ? R.string.message_successfully_edited : R.string.reply_successfully_posted).show();
 
                 // Refresh page
                 Topic topic = data.getParcelableExtra(UIConstants.ARG_REPLY_TOPIC);
@@ -309,12 +302,7 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
                 }
             }
             else if (resultCode == UIConstants.REPLY_RESULT_KO) {
-                SnackbarManager.show(
-                        Snackbar.with(this)
-                                .text(wasEdit? R.string.message_edit_failure : R.string.reply_post_failure)
-                                .colorResource(R.color.theme_primary_light)
-                                .textColorResource(R.color.tabs_text_color)
-                );
+                SnackbarHelper.makeError(this, wasEdit? R.string.message_edit_failure : R.string.reply_post_failure).show();
             }
         }
     }
@@ -519,12 +507,7 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
                             loadTopic(topic, pageNumber, new PagePosition(PagePosition.TOP));
                         } catch (NumberFormatException e) {
                             Log.e(LOG_TAG, String.format("Invalid page number entered : %s", goToPageEditText.getText().toString()), e);
-
-                            SnackbarManager.show(
-                                    Snackbar.with(TopicsActivity.this)
-                                            .text(R.string.invalid_page_number)
-                                            .textColorResource(R.color.theme_primary_light)
-                            );
+                            SnackbarHelper.makeError(TopicsActivity.this, R.string.invalid_page_number).show();
                         }
                     }
 

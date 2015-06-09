@@ -66,7 +66,6 @@ dependencies {
     // UI-related dependencies
     compile 'com.getbase:floatingactionbutton:1.8.0'
     compile 'com.squareup.picasso:picasso:2.4.0'
-    compile 'com.nispok:snackbar:2.7.3'
     compile 'com.astuetz:pagerslidingtabstrip:1.0.1'
     compile 'com.pnikosis:materialish-progress:1.4'
     compile 'com.rengwuxian.materialedittext:library:1.8.2'

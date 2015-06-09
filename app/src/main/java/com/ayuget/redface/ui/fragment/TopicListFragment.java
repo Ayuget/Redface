@@ -30,8 +30,6 @@ import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,11 +53,10 @@ import com.ayuget.redface.ui.adapter.TopicsAdapter;
 import com.ayuget.redface.ui.event.TopicContextItemSelectedEvent;
 import com.ayuget.redface.ui.misc.DividerItemDecoration;
 import com.ayuget.redface.ui.misc.EndlessScrollListener;
+import com.ayuget.redface.ui.misc.SnackbarHelper;
 import com.ayuget.redface.ui.misc.UiUtils;
 import com.ayuget.redface.ui.view.ContextMenuRecyclerView;
 import com.hannesdorfmann.fragmentargs.annotation.Arg;
-import com.nispok.snackbar.Snackbar;
-import com.nispok.snackbar.SnackbarManager;
 import com.squareup.phrase.Phrase;
 
 import java.util.ArrayList;
@@ -390,12 +387,9 @@ public class TopicListFragment extends ToolbarFragment implements TopicsAdapter.
 
                 if (displayedTopics.size() == 0) {
                     showErrorView();
-                } else {
-                    SnackbarManager.show(Snackbar.with(getActivity())
-                                    .text(R.string.error_loading_topics)
-                                    .colorResource(R.color.theme_primary_light)
-                                    .textColorResource(R.color.tabs_text_color)
-                    );
+                }
+                else {
+                    SnackbarHelper.make(TopicListFragment.this, R.string.error_loading_topics).show();
                 }
             }
         }));
@@ -433,11 +427,10 @@ public class TopicListFragment extends ToolbarFragment implements TopicsAdapter.
                 swipeRefreshLayout.setRefreshing(false);
 
                 // Do not display error view because topics are displayed (we are "just" loading additional content)
-                SnackbarManager.show(Snackbar.with(getActivity())
-                                .text(Phrase.from(getActivity(), R.string.error_loading_topics_page).put("page", page).format())
-                                .colorResource(R.color.theme_primary_light)
-                                .textColorResource(R.color.tabs_text_color)
-                );
+                SnackbarHelper.make(
+                        TopicListFragment.this,
+                        Phrase.from(getActivity(), R.string.error_loading_topics_page).put("page", page).format()
+                ).show();
             }
         }));
     }

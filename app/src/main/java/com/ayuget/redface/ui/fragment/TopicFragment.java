@@ -42,10 +42,9 @@ import com.ayuget.redface.ui.event.ScrollToPostEvent;
 import com.ayuget.redface.ui.event.TopicPageCountUpdatedEvent;
 import com.ayuget.redface.ui.misc.PagePosition;
 import com.ayuget.redface.ui.misc.PageSelectedListener;
+import com.ayuget.redface.ui.misc.SnackbarHelper;
 import com.ayuget.redface.ui.misc.TopicPosition;
 import com.hannesdorfmann.fragmentargs.annotation.Arg;
-import com.nispok.snackbar.Snackbar;
-import com.nispok.snackbar.SnackbarManager;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.squareup.otto.Subscribe;
 
@@ -322,12 +321,7 @@ public class TopicFragment extends ToolbarFragment {
                         }
                         catch (NumberFormatException e) {
                             Log.e(LOG_TAG, String.format("Invalid page number entered : %s", goToPageEditText.getText().toString()), e);
-
-                            SnackbarManager.show(
-                                    Snackbar.with(getActivity())
-                                            .text(R.string.invalid_page_number)
-                                            .textColorResource(R.color.theme_primary_light)
-                            );
+                            SnackbarHelper.make(TopicFragment.this, R.string.invalid_page_number).show();
                         }
                     }
 
