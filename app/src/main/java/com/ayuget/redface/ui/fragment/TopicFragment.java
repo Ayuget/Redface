@@ -52,7 +52,7 @@ import java.util.ArrayList;
 
 import butterknife.InjectView;
 
-public class TopicFragment extends ToolbarFragment {
+public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageChangeListener {
     private static final String LOG_TAG = TopicFragment.class.getSimpleName();
 
     private static final String ARG_TOPIC_POSITIONS_STACK = "topicPositionsStack";
@@ -109,38 +109,23 @@ public class TopicFragment extends ToolbarFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        ViewGroup rootView = inflateRootView(R.layout.fragment_topic, inflater, container);
+        return inflateRootView(R.layout.fragment_topic, inflater, container);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
 
         pager.setAdapter(topicPageAdapter);
-        pager.setOnPageChangeListener(new PageSelectedListener() {
-            @Override
-            public void onPageSelected(int position) {
-                currentPage = position + 1;
-                bus.post(new PageSelectedEvent(topic, currentPage));
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-                // Keep track of scroll state in order to detect if scrolling has been done
-                // manually by the user, or programatically. It allows us to disable some automatic
-                // scrolling behavior that can be annoying (and buggy) in some corner cases
-                if (previousViewPagerState == ViewPager.SCROLL_STATE_DRAGGING && state == ViewPager.SCROLL_STATE_SETTLING) {
-                    userScrolledViewPager = true;
-
-                    // Reset current page position because user triggered page change
-                    currentPagePosition = null;
-                }
-                else if (previousViewPagerState == ViewPager.SCROLL_STATE_SETTLING && state == ViewPager.SCROLL_STATE_IDLE) {
-                    userScrolledViewPager = false;
-                }
-
-                previousViewPagerState = state;
-            }
-        });
-
+        pager.addOnPageChangeListener(this);
         pager.setCurrentItem(currentPage - 1);
+    }
 
-        return rootView;
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        pager.removeOnPageChangeListener(this);
     }
 
     @Override
@@ -148,6 +133,35 @@ public class TopicFragment extends ToolbarFragment {
         super.onSaveInstanceState(outState);
 
         outState.putParcelableArrayList(ARG_TOPIC_POSITIONS_STACK, topicPositionsStack);
+    }
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+        // Ignore event
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+        currentPage = position + 1;
+        bus.post(new PageSelectedEvent(topic, currentPage));
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+        // Keep track of scroll state in order to detect if scrolling has been done
+        // manually by the user, or programatically. It allows us to disable some automatic
+        // scrolling behavior that can be annoying (and buggy) in some corner cases
+        if (previousViewPagerState == ViewPager.SCROLL_STATE_DRAGGING && state == ViewPager.SCROLL_STATE_SETTLING) {
+            userScrolledViewPager = true;
+
+            // Reset current page position because user triggered page change
+            currentPagePosition = null;
+        }
+        else if (previousViewPagerState == ViewPager.SCROLL_STATE_SETTLING && state == ViewPager.SCROLL_STATE_IDLE) {
+            userScrolledViewPager = false;
+        }
+
+        previousViewPagerState = state;
     }
 
     @Override
