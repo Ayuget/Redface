@@ -1,7 +1,14 @@
+/**
+* Scrolls to the bottom of the page
+*/
 function scrollToBottom() {
     window.scrollTo(0,document.body.scrollHeight);
 }
 
+/**
+* Scrolls to a particular element
+* @param id element id
+*/
 function scrollToElement(id) {
     var elem = document.getElementById(id);
     var x = 0;
@@ -16,6 +23,9 @@ function scrollToElement(id) {
     window.scrollTo(x, y);
 }
 
+/**
+* Toggles inner child spoiler visibility
+*/
 function toggleSpoiler(obj){
 	var div = obj.getElementsByTagName('div');
 	if (div[0]) {
@@ -24,6 +34,22 @@ function toggleSpoiler(obj){
 		}
 		else if (div[0].style.visibility == "hidden" || !div[0].style.visibility) {
 			div[0].style.visibility = 'visible';
+		}
+	}
+}
+
+/**
+* Toggles overflow menu for a certain post
+* @param id post id
+*/
+function toggleOverflowMenu(id){
+	var overflowList = document.getElementById(id);
+	if (overflowList != null) {
+		if (overflowList.style.display == "block") {
+			overflowList.style.display = 'none';
+		}
+		else if (overflowList.style.display == "none" || !overflowList.style.display) {
+			overflowList.style.display = 'block';
 		}
 	}
 }

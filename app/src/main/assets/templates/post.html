@@ -8,8 +8,16 @@
         <div class="post-actions">
             <a class="post-action" material onClick="Android.quotePost({post_id_quote})"><i class="fa fa-quote-right fa-3"></i></a>
             {edit_icon}
+            {overflow_icon}
         </div>
     </div>
+    <ul class="post-overflow-icons" id="overflow{post_id}">
+        <li><a material onclick="Android.editPost({post_id})"><i class="fa fa-edit fa-3"></i></a></li>
+        <li><a material onclick="Android.deletePost({post_id})"><i class="fa fa-trash fa-3"></i></a></li>
+        <li><a material onclick="Android.favoritePost({post_id})"><i class="fa fa-star fa-3"></i></a></li>
+        <li><a material onclick="Android.reportPost({post_id})"><i class="fa fa-exclamation-triangle fa-3"></i></a></li>
+        <li><a material onclick="Android.writePrivateMessage('{author}')"><i class="fa fa-envelope fa-3"></i></a></li>
+    </ul>
     <div class="post-content">
         {content}
         {extra_details}

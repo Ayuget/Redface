@@ -17,7 +17,6 @@
 package com.ayuget.redface.ui.template;
 
 import android.content.Context;
-import android.text.TextUtils;
 
 import com.ayuget.redface.data.api.model.Post;
 import com.squareup.phrase.Phrase;
@@ -34,11 +33,14 @@ public class PostTemplate extends HTMLTemplate<Post> {
 
     private PostExtraDetailsTemplate extraDetailsTemplate;
 
-    public PostTemplate(Context context, AvatarTemplate avatarTemplate, EditIconTemplate editIconTemplate, PostExtraDetailsTemplate extraDetailsTemplate) {
+    private OverflowIconTemplate overflowIconTemplate;
+
+    public PostTemplate(Context context, AvatarTemplate avatarTemplate, EditIconTemplate editIconTemplate, PostExtraDetailsTemplate extraDetailsTemplate, OverflowIconTemplate overflowIconTemplate) {
         super(context, POST_TEMPLATE);
         this.avatarTemplate = avatarTemplate;
         this.editIconTemplate = editIconTemplate;
         this.extraDetailsTemplate = extraDetailsTemplate;
+        this.overflowIconTemplate = overflowIconTemplate;
     }
 
     @Override
@@ -56,6 +58,7 @@ public class PostTemplate extends HTMLTemplate<Post> {
                         .put("post_id_quote", postId)
                         .put("edit_icon", editIconTemplate.render(post))
                         .put("extra_details", extraDetailsTemplate.render(post))
+                        .put("overflow_icon", overflowIconTemplate.render(post))
                         .format()
                         .toString()
         );

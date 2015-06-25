@@ -31,6 +31,7 @@ import com.ayuget.redface.ui.fragment.TopicListFragment;
 import com.ayuget.redface.ui.misc.ThemeManager;
 import com.ayuget.redface.ui.template.AvatarTemplate;
 import com.ayuget.redface.ui.template.EditIconTemplate;
+import com.ayuget.redface.ui.template.OverflowIconTemplate;
 import com.ayuget.redface.ui.template.PostExtraDetailsTemplate;
 import com.ayuget.redface.ui.template.PostTemplate;
 import com.ayuget.redface.ui.template.PostsTemplate;
@@ -77,8 +78,8 @@ public class UIModule {
         return new SmileyTemplate(app.getApplicationContext());
     }
 
-    @Provides @Singleton PostTemplate providePostTemplate(RedfaceApp app, AvatarTemplate avatarTemplate, EditIconTemplate editIconTemplate, PostExtraDetailsTemplate extraDetailsTemplate) {
-        return new PostTemplate(app.getApplicationContext(), avatarTemplate, editIconTemplate, extraDetailsTemplate);
+    @Provides @Singleton PostTemplate providePostTemplate(RedfaceApp app, AvatarTemplate avatarTemplate, EditIconTemplate editIconTemplate, PostExtraDetailsTemplate extraDetailsTemplate, OverflowIconTemplate overflowIconTemplate) {
+        return new PostTemplate(app.getApplicationContext(), avatarTemplate, editIconTemplate, extraDetailsTemplate, overflowIconTemplate);
     }
 
     @Provides @Singleton PostsTemplate providePostsTemplate(RedfaceApp app, PostTemplate postTemplate, ThemeManager themeManager) {
@@ -89,9 +90,13 @@ public class UIModule {
         return new SmileysTemplate(app.getApplicationContext(), smileyTemplate, themeManager);
     }
 
-    @Provides @Singleton
-    EditIconTemplate provideEditIconTemplate(RedfaceApp app, UserManager userManager) {
+    @Provides @Singleton EditIconTemplate provideEditIconTemplate(RedfaceApp app, UserManager userManager) {
         return new EditIconTemplate(app.getApplicationContext(), userManager);
+    }
+
+    @Provides @Singleton
+    OverflowIconTemplate provideOverflowTemplate(RedfaceApp app, UserManager userManager) {
+        return new OverflowIconTemplate(app.getApplicationContext(), userManager);
     }
 
     @Provides @Singleton

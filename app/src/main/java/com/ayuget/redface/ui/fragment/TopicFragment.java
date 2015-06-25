@@ -41,7 +41,6 @@ import com.ayuget.redface.ui.event.PageSelectedEvent;
 import com.ayuget.redface.ui.event.ScrollToPostEvent;
 import com.ayuget.redface.ui.event.TopicPageCountUpdatedEvent;
 import com.ayuget.redface.ui.misc.PagePosition;
-import com.ayuget.redface.ui.misc.PageSelectedListener;
 import com.ayuget.redface.ui.misc.SnackbarHelper;
 import com.ayuget.redface.ui.misc.TopicPosition;
 import com.hannesdorfmann.fragmentargs.annotation.Arg;

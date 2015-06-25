@@ -14,7 +14,6 @@ body {
 }
 
 body.redface-dark {
-    /* background: #282828; */
     background: #222222;
     color: #ffffff;
 }
@@ -191,6 +190,40 @@ img {
     margin-right: 4px;
 }
 
+/**
+* Overflow icons
+*/
+.post-overflow-icons {
+    overflow: auto;
+    list-style-type: none;
+    background: #424242;
+    color: #ffffff;
+    height: 42px;
+    margin: 0;
+    padding-left: 10px;
+
+    display: none;
+}
+
+.redface-dark .post-overflow-icons {
+
+}
+
+.post-overflow-icons li {
+    float: left;
+    height: 42px;
+}
+
+.post-overflow-icons li a {
+    width: 52px;
+    height: 42px;
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+    float: left;
+    margin-right: 3px;
+    padding-top: 11px;
+}
 
 /**
 * Material design ripple effect
