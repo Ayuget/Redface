@@ -49,6 +49,7 @@ public class HFRMessageSender implements MDMessageSender {
     private static final Pattern INVALID_PASSWORD_PATTERN = Pattern.compile("(.*)((Mot de passe incorrect !)|((.*)(Votre mot de passe ou nom d'utilisateur n'est pas valide)(.*)))(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private static final Pattern POST_FLOOD_PATTERN = Pattern.compile("(.*)(réponses consécutives)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private static final Pattern TOPIC_FLOOD_PATTERN = Pattern.compile("(.*)(nouveaux sujets consécutifs)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private static final Pattern FAVORITE_SUCCESFULLY_ADDED = Pattern.compile("(.*)(Favori positionné avec succès)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
 
     private final HTTPClientProvider httpClientProvider;
@@ -164,6 +165,42 @@ public class HFRMessageSender implements MDMessageSender {
                 }
                 catch (IOException e) {
                     Log.e(LOG_TAG, "Exception while posting response", e);
+                    subscriber.onError(e);
+                }
+            }
+        });
+    }
+
+    @Override
+    public Observable<Boolean> markPostAsFavorite(final User user, final Topic topic, final int postId) {
+        return Observable.create(new Observable.OnSubscribe<Boolean>() {
+            @Override
+            public void call(Subscriber<? super Boolean> subscriber) {
+                Log.d(LOG_TAG, String.format("Marking message '%d' as favorite for user '%s' in topic '%s'", postId, user.getUsername(), topic.getSubject()));
+
+                OkHttpClient httpClient = httpClientProvider.getClientForUser(user);
+
+                Request request = new Request.Builder()
+                        .url(mdEndpoints.favorite(topic.getCategory(), topic, postId))
+                        .build();
+
+                try {
+                    com.squareup.okhttp.Response response = httpClient.newCall(request).execute();
+
+                    if (response.isSuccessful()) {
+                        final String responseBody = response.body().string();
+                        boolean success = matchesPattern(FAVORITE_SUCCESFULLY_ADDED, responseBody);
+                        subscriber.onNext(success);
+                    }
+                    else {
+                        Log.d(LOG_TAG, String.format("Error HTTP Code, response is : %s", response.body().string()));
+                        subscriber.onNext(false);
+                    }
+
+                    subscriber.onCompleted();
+                }
+                catch (IOException e) {
+                    Log.e(LOG_TAG, "Exception while marking post as favorite", e);
                     subscriber.onError(e);
                 }
             }

@@ -53,6 +53,8 @@ public class HFREndpoints implements MDEndpoints {
 
     private static final String META_PAGE_URL = "{base_url}/forum1f.php?config=hfr.inc&owntopic={filter_id}&new=0&nojs=0";
 
+    private static final String FAVORITE_URL = "{base_url}/user/addflag.php?config=hfr.inc&cat={category_id}&post={topic_id}&numreponse={post_id}";
+
     /**
      * Homepage URL (with the list of categories)
      */
@@ -238,5 +240,15 @@ public class HFREndpoints implements MDEndpoints {
         else {
             throw new IllegalStateException("Invalid topic filter for meta page");
         }
+    }
+
+    @Override
+    public String favorite(Category category, Topic topic, int postId) {
+        return Phrase.from(FAVORITE_URL)
+                .put("base_url", FORUM_BASE_URL)
+                .put("category_id", category.getId())
+                .put("topic_id", topic.getId())
+                .put("post_id", postId)
+                .format().toString();
     }
 }

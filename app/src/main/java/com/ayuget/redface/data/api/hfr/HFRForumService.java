@@ -47,6 +47,7 @@ import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.event.TopicPageCountUpdatedEvent;
 import com.ayuget.redface.util.UserUtils;
 import com.google.common.base.Optional;
+import com.google.common.primitives.Ints;
 import com.squareup.otto.Bus;
 
 import java.util.List;
@@ -322,5 +323,10 @@ public class HFRForumService implements MDService {
     @Override
     public String getHashcheck() {
         return currentHashcheck;
+    }
+
+    @Override
+    public Observable<Boolean> markPostAsFavorite(User user, Topic topic, int postId) {
+        return mdMessageSender.markPostAsFavorite(user, topic, postId);
     }
 }

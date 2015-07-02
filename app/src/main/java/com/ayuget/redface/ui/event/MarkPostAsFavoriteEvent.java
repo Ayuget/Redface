@@ -14,18 +14,25 @@
  * limitations under the License.
  */
 
-package com.ayuget.redface.data.api;
+package com.ayuget.redface.ui.event;
 
-import com.ayuget.redface.data.api.model.Response;
 import com.ayuget.redface.data.api.model.Topic;
-import com.ayuget.redface.data.api.model.User;
 
-import rx.Observable;
+public class MarkPostAsFavoriteEvent {
+    private final Topic topic;
 
-public interface MDMessageSender {
-    Observable<Response> replyToTopic(User user, Topic topic, String message, String hashcheck, boolean includeSignature);
+    private final int postId;
 
-    Observable<Response> editPost(User user, Topic topic, int postId, String newContent, String hashcheck, boolean includeSignature);
+    public MarkPostAsFavoriteEvent(Topic topic, int postId) {
+        this.topic = topic;
+        this.postId = postId;
+    }
 
-    Observable<Boolean> markPostAsFavorite(User user, Topic topic, int postId);
+    public Topic getTopic() {
+        return topic;
+    }
+
+    public int getPostId() {
+        return postId;
+    }
 }

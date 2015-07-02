@@ -44,6 +44,7 @@ import com.ayuget.redface.ui.event.EditPostEvent;
 import com.ayuget.redface.ui.event.GoToPostEvent;
 import com.ayuget.redface.ui.event.GoToTopicEvent;
 import com.ayuget.redface.ui.event.InternalLinkClickedEvent;
+import com.ayuget.redface.ui.event.MarkPostAsFavoriteEvent;
 import com.ayuget.redface.ui.event.PageLoadedEvent;
 import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
 import com.ayuget.redface.ui.event.QuotePostEvent;
@@ -290,6 +291,17 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
                 @Override
                 public void run() {
                     bus.post(new EditPostEvent(topic, postId));
+                }
+            });
+        }
+
+        @JavascriptInterface
+        public void markPostAsFavorite(final int postId) {
+            Log.d(LOG_TAG, String.format("Marking post '%d' as favorite", postId));
+            TopicPageView.this.post(new Runnable() {
+                @Override
+                public void run() {
+                    bus.post(new MarkPostAsFavoriteEvent(topic, postId));
                 }
             });
         }

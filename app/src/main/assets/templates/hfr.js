@@ -49,9 +49,23 @@ function toggleOverflowMenu(id){
 			overflowList.style.display = 'none';
 		}
 		else if (overflowList.style.display == "none" || !overflowList.style.display) {
+		    closeAllOverflowMenus();
 			overflowList.style.display = 'block';
 		}
 	}
+}
+
+function closeAllOverflowMenus() {
+    var menus = document.getElementsByClassName("post-overflow-icons");
+    var i;
+    for (i = 0; i < menus.length; i++) {
+        menus[i].style.display = "none";
+    }
+}
+
+function favoritePost(postId) {
+    Android.markPostAsFavorite(postId);
+    toggleOverflowMenu(postId);
 }
 
 /**

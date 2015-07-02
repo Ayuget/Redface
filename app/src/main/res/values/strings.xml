@@ -140,6 +140,11 @@
     <string name="prompt_go_to_page">Go to page…</string>
     <string name="invalid_page_number">Invalid page number</string>
 
+    <!-- Post actions -->
+    <string name="marking_as_favorite_in_progress">Marking as favorite…</string>
+    <string name="mark_as_favorite_failed">Failed to mark as favorite</string>
+    <string name="mark_as_favorite_success">Successfully marked as favorite !</string>
+
     <!-- Post page -->
     <string name="reload_page">Reload</string>
     <string name="page_loading_error">Error loading page</string>

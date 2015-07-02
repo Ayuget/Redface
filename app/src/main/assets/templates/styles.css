@@ -194,7 +194,7 @@ img {
 * Overflow icons
 */
 .post-overflow-icons {
-    overflow: auto;
+    overflow: none;
     list-style-type: none;
     background: #424242;
     color: #ffffff;

@@ -41,6 +41,7 @@ import com.ayuget.redface.data.state.CategoriesStore;
 import com.ayuget.redface.ui.event.EditPostEvent;
 import com.ayuget.redface.ui.event.GoToTopicEvent;
 import com.ayuget.redface.ui.event.InternalLinkClickedEvent;
+import com.ayuget.redface.ui.event.MarkPostAsFavoriteEvent;
 import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
 import com.ayuget.redface.ui.event.QuotePostEvent;
 import com.ayuget.redface.ui.event.TopicContextItemSelectedEvent;
@@ -57,6 +58,9 @@ import com.rengwuxian.materialedittext.MaterialEditText;
 import com.squareup.otto.Subscribe;
 
 import javax.inject.Inject;
+
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class TopicsActivity extends BaseDrawerActivity implements TopicListFragment.OnTopicClickedListener {
     private static final String LOG_TAG = TopicsActivity.class.getSimpleName();
@@ -452,6 +456,26 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
                 startEditActivity(event.getTopic(), event.getPostId(), messageBBCode);
             }
         }));
+    }
+
+    @Subscribe public void onMarkPostAsFavorite(final MarkPostAsFavoriteEvent event) {
+        SnackbarHelper.make(TopicsActivity.this, R.string.marking_as_favorite_in_progress).show();
+
+        subscribe(mdService.markPostAsFavorite(userManager.getActiveUser(), event.getTopic(), event.getPostId())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new EndlessObserver<Boolean>() {
+                    @Override
+                    public void onNext(Boolean aBoolean) {
+                        SnackbarHelper.make(TopicsActivity.this, R.string.mark_as_favorite_success).show();
+                    }
+
+                    @Override
+                    public void onError(Throwable throwable) {
+                        Log.e(LOG_TAG, "Unexpected error while marking a post as favorite", throwable);
+                        SnackbarHelper.makeError(TopicsActivity.this, R.string.mark_as_favorite_failed).show();
+                    }
+                }));
     }
 
     /**

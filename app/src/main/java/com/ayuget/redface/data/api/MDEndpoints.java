@@ -66,4 +66,6 @@ public interface MDEndpoints {
     public String userForumPreferences();
 
     public String metaPage(TopicFilter topicFilter);
+
+    public String favorite(Category category, Topic topic, int postId);
 }

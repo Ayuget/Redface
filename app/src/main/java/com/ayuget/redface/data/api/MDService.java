@@ -34,12 +34,12 @@ public interface MDService {
      * Lists all categories for a given user (some categories are
      * hidden / not available for some users, for example moderators forum, ...)
      */
-    public Observable<List<Category>> listCategories(User user);
+    Observable<List<Category>> listCategories(User user);
 
     /**
      * Returns details about a particular category
      */
-    public Observable<Category> getCategoryById(User user, int categoryId);
+    Observable<Category> getCategoryById(User user, int categoryId);
 
     /**
      * Lists all topics for a given category
@@ -47,7 +47,7 @@ public interface MDService {
      * @param filter filter to apply
      * @return topics list
      */
-    public Observable<List<Topic>> listTopics(User user, final Category category, final Subcategory subcategory, int page, final TopicFilter filter);
+    Observable<List<Topic>> listTopics(User user, final Category category, final Subcategory subcategory, int page, final TopicFilter filter);
 
     /**
      * Lists all topics for the meta page
@@ -55,62 +55,67 @@ public interface MDService {
      * @param sortByDate sort topics by date (desc) or group them by categories
      * @return topics list
      */
-    public Observable<List<Topic>> listMetaPageTopics(User user, final TopicFilter filter, boolean sortByDate);
+    Observable<List<Topic>> listMetaPageTopics(User user, final TopicFilter filter, boolean sortByDate);
 
     /**
      * Returns a specific topic page
      */
-    public Observable<List<Post>> listPosts(User user, Topic topic, int page);
+    Observable<List<Post>> listPosts(User user, Topic topic, int page);
 
     /**
      * Returns basic informations (subject and pages count) about a topic
      */
-    public Observable<Topic> getTopic(User user, Category category, int topicId);
+    Observable<Topic> getTopic(User user, Category category, int topicId);
 
     /**
      * Logs in the given user
      */
-    public Observable<Boolean> login(User user);
+    Observable<Boolean> login(User user);
 
     /**
      * Returns quote BBCode for a given post
      */
-    public Observable<String> getQuote(User user, Topic topic, int postId);
+    Observable<String> getQuote(User user, Topic topic, int postId);
 
     /**
      * Returns post BBCode
      */
-    public Observable<String> getPostContent(User user, Topic topic, int postId);
+    Observable<String> getPostContent(User user, Topic topic, int postId);
 
     /**
      * Returns a list of the smileys the most recently used by the user
      */
-    public Observable<List<Smiley>> getRecentlyUsedSmileys(User user);
+    Observable<List<Smiley>> getRecentlyUsedSmileys(User user);
 
     /**
      * Returns a list of popular smileys
      */
-    public Observable<List<Smiley>> getPopularSmileys();
+    Observable<List<Smiley>> getPopularSmileys();
 
     /**
      * Search for smileys
      * @param searchExpression search criteria
      * @return list of smileys matching the expression
      */
-    public Observable<List<Smiley>> searchSmileys(String searchExpression);
+    Observable<List<Smiley>> searchSmileys(String searchExpression);
 
     /**
      * Reply to a topic
      */
-    public Observable<Response> replyToTopic(User user, Topic topic, String message, boolean includeSignature);
+    Observable<Response> replyToTopic(User user, Topic topic, String message, boolean includeSignature);
 
     /**
      * Edit a post
      */
-    public Observable<Response> editPost(User user, Topic topic, int postId, String newMessage, boolean includeSignature);
+    Observable<Response> editPost(User user, Topic topic, int postId, String newMessage, boolean includeSignature);
 
     /**
      * Returns current hashcheck, needed for certain actions (like reply to a topic, ...)
      */
-    public String getHashcheck();
+    String getHashcheck();
+
+    /**
+     * Marks a certain post in a topic as favorite (will set the topic as favorite in the process)
+     */
+    Observable<Boolean> markPostAsFavorite(User user, Topic topic, int postId);
 }

@@ -126,4 +126,7 @@
     <string name="show_smileys_picker">Ouvrir le sélectionneur de smileys</string>
     <string name="pref_show_previous_page_last_post_title">Reprendre le dernier message</string>
     <string name="pref_show_previous_page_last_post_summary">Afficher le dernier message de la page précédente en haut de page</string>
+    <string name="mark_as_favorite_failed">Erreur lors de l\'ajout du favori</string>
+    <string name="mark_as_favorite_success">Favori correctement ajouté</string>
+    <string name="marking_as_favorite_in_progress">Ajout du favori en cours…</string>
 </resources>
