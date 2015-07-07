@@ -250,7 +250,7 @@ public class TopicListFragment extends ToolbarFragment implements TopicsAdapter.
         initializeToolbarTitle(toolbar);
 
         // Deal with endless scrolling
-        topicsRecyclerView.setOnScrollListener(new EndlessScrollListener(layoutManager) {
+        topicsRecyclerView.addOnScrollListener(new EndlessScrollListener(layoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
                 // When a topic filter is selected, all topics are displayed on one single page,
