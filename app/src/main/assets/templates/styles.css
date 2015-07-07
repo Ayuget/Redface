@@ -24,10 +24,9 @@ body.redface-dark {
 
 .post-toolbar {
     font-family: 'Roboto Light', sans-serif-light;
-    padding: 3px 8px 3px 8px;
     background: #cfcece;
     color: #424242;
-    height: 42px;
+    height: 48px;
     box-sizing: border-box;
 }
 
@@ -39,21 +38,28 @@ body.redface-dark {
 }
 
 .profile-picture-container {
+    padding: 0px 4px 0px 8px;
     float: left;
-    display: table-cell;
+    white-space: nowrap;
+    height: 48px;
+    box-sizing: border-box;
+}
+
+.profile-picture-helper {
+    display: inline-block;
+    height: 100%;
     vertical-align: middle;
-    padding-top: 2px;
-    height: 36px;
 }
 
 .profile-picture {
     max-height: 32px;
-    padding-right: 7px;
-    display: block;
+    max-width: 48px;
+    vertical-align: middle;
 }
 
 .post-details {
     float: left;
+    padding: 8px 4px 0px 4px;
 }
 
 .post-content {
@@ -75,18 +81,19 @@ body.redface-dark {
 
 .post-actions {
     float:right;
-    overflow: auto;
+    overflow: none;
+    height: 48px;
 }
 
 .post-action {
-    width: 36px;
+    width: 48px;
     height: 26px;
     display: table-cell;
     vertical-align: middle;
     text-align: center;
     float: left;
     margin-right: 3px;
-    padding-top: 10px;
+    padding-top: 16px;
 }
 
 .redface-dark .post-content a {
@@ -198,7 +205,7 @@ img {
     list-style-type: none;
     background: #424242;
     color: #ffffff;
-    height: 42px;
+    height: 48px;
     margin: 0;
     padding-left: 10px;
 
@@ -211,18 +218,18 @@ img {
 
 .post-overflow-icons li {
     float: left;
-    height: 42px;
+    height: 48px;
 }
 
 .post-overflow-icons li a {
     width: 52px;
-    height: 42px;
+    height: 48px;
     display: table-cell;
     vertical-align: middle;
     text-align: center;
     float: left;
     margin-right: 3px;
-    padding-top: 11px;
+    padding-top: 15px;
 }
 
 /**
