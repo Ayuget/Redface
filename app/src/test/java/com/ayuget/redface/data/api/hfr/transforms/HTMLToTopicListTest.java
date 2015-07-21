@@ -16,16 +16,28 @@
 
 package com.ayuget.redface.data.api.hfr.transforms;
 
+import android.os.Build;
+
 import com.ayuget.redface.BaseTestCase;
+import com.ayuget.redface.BuildConfig;
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.api.model.TopicStatus;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 import static org.assertj.core.api.Assertions.*;
 
 import java.io.IOException;
 import java.util.List;
 
+@RunWith(RobolectricGradleTestRunner.class)
+@Config(constants = BuildConfig.class, sdk = Build.VERSION_CODES.LOLLIPOP)
 public class HTMLToTopicListTest extends BaseTestCase {
+    @Test
     public void test_parseProgrammingCategory() throws IOException {
         HTMLToTopicList htmlToTopicList = new HTMLToTopicList(null);
 

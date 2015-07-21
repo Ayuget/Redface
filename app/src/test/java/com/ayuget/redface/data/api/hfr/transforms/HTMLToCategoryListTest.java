@@ -16,17 +16,29 @@
 
 package com.ayuget.redface.data.api.hfr.transforms;
 
+import android.os.Build;
+
 import com.ayuget.redface.BaseTestCase;
+import com.ayuget.redface.BuildConfig;
 import com.ayuget.redface.data.api.model.Category;
 import com.ayuget.redface.data.api.model.Subcategory;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
+
 import static org.assertj.core.api.Assertions.*;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-
+@RunWith(RobolectricGradleTestRunner.class)
+@Config(constants = BuildConfig.class, sdk = Build.VERSION_CODES.LOLLIPOP)
 public class HTMLToCategoryListTest extends BaseTestCase {
+    @Test
     public void test_parseHFRCategories() throws IOException {
         HTMLToCategoryList htmlToCategoryList = new HTMLToCategoryList();
 

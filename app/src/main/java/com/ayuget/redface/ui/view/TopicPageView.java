@@ -29,8 +29,10 @@ import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
 
 import com.ayuget.redface.BuildConfig;
+import com.ayuget.redface.R;
 import com.ayuget.redface.RedfaceApp;
 import com.ayuget.redface.data.api.MDEndpoints;
 import com.ayuget.redface.data.api.MDLink;
@@ -187,7 +189,6 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
                 public boolean shouldOverrideUrlLoading(WebView view, String url) {
                     if (url != null && url.startsWith(mdEndpoints.baseurl())) {
                         Log.d(LOG_TAG, String.format("Clicked on internal url = '%s'", url));
-                        urlParser.parseUrl(url);
                         return true;
                     }
                     else {
@@ -312,7 +313,7 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
         }
 
         @JavascriptInterface
-        public void handleUrl(final int postId, String url) {
+        public void handleUrl(final int postId, final String url) {
             Log.d(LOG_TAG, String.format("Clicked on internal url = '%s' (postId = %d)", url, postId));
 
             TopicPageView.this.post(new Runnable() {
@@ -328,6 +329,10 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
                     TopicPageView.this.post(new Runnable() {
                         @Override
                         public void run() {
+                            // Action can take a few seconds to process, depending on target and on network quality,
+                            // we need to do something to user to show that we handled the event
+                            Toast.makeText(getContext(), R.string.topic_loading_message, Toast.LENGTH_SHORT).show();
+
                             if (topic.getId() == topicId) {
                                 int destinationPage = topicPage;
                                 PagePosition targetPagePosition = pagePosition;
@@ -346,6 +351,11 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
                             }
                         }
                     });
+                }
+            }).ifInvalid(new MDLink.IfIsInvalidLink() {
+                @Override
+                public void call() {
+                    getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
                 }
             });
         }

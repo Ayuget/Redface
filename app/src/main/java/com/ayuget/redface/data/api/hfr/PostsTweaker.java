@@ -52,7 +52,7 @@ public final class PostsTweaker implements Func1<List<Post>, List<Post>> {
             // Adds callbacks to directly handle all links (internal and external) within the app.
 
             // Regular links (within posts)
-            htmlContent = htmlContent.replaceAll(REGULAR_LINK_REGEX, "<a onclick=\"Android.handleUrl(" + post.getId() + ", '$1');\" class=\"cLink\">");
+            htmlContent = htmlContent.replaceAll(REGULAR_LINK_REGEX, "<a onclick=\"handleUrl(event, " + post.getId() + ", '$1');\" class=\"cLink\">");
 
             // Simplify quotes HTML
             htmlContent = QUOTES_AND_SPOILERS.replaceAll(htmlContent, new CallbackMatcher.Callback() {
@@ -64,7 +64,7 @@ public final class PostsTweaker implements Func1<List<Post>, List<Post>> {
                     String output = "<div class=\"" + (isQuote ? "quote" : "spoiler") + "\"" + onClickEvent + "><b class=\"" + (isQuote ? "s1": "s1Topic") +"\">";
 
                     if (isQuote) {
-                        output += "<a onclick=\"Android.handleUrl(" + post.getId() + ", '" + mdEndpoints.baseurl() + matchResult.group(3) + "')\">";
+                        output += "<a onclick=\"handleUrl(event, " + post.getId() + ", '" + mdEndpoints.baseurl() + matchResult.group(3) + "')\">";
                     }
 
                     return output;

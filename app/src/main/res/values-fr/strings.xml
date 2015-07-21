@@ -129,4 +129,5 @@
     <string name="mark_as_favorite_failed">Erreur lors de l\'ajout du favori</string>
     <string name="mark_as_favorite_success">Favori correctement ajouté</string>
     <string name="marking_as_favorite_in_progress">Ajout du favori en cours…</string>
+    <string name="topic_loading_message">Chargement du sujet</string>
 </resources>

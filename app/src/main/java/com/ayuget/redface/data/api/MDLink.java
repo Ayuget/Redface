@@ -32,18 +32,22 @@ public class MDLink {
     /**
      * Type of links handled in the application
      */
-    private static enum LinkType {
+    private enum LinkType {
         TOPIC,
         CATEGORY,
         INVALID
     }
 
-    public static interface IfIsTopicLink {
+    public interface IfIsTopicLink {
         void call(Category category, int topicId, int topicPage, PagePosition pagePosition);
     }
 
-    public static interface IfIsCategoryLink {
+    public interface IfIsCategoryLink {
         void call(Category category);
+    }
+
+    public interface IfIsInvalidLink {
+        void call();
     }
 
     private final LinkType linkType;
@@ -135,5 +139,41 @@ public class MDLink {
         }
 
         return this;
+    }
+
+    public MDLink ifInvalid(IfIsInvalidLink callback) {
+        if (linkType == LinkType.INVALID) {
+            callback.call();
+        }
+
+        return this;
+    }
+
+    public boolean isCategory() {
+        return linkType == LinkType.CATEGORY;
+    }
+
+    public boolean isTopic() {
+        return linkType == LinkType.TOPIC;
+    }
+
+    public boolean isInvalid() {
+        return linkType == LinkType.INVALID;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public int getTopicId() {
+        return topicId;
+    }
+
+    public int getTopicPage() {
+        return topicPage;
+    }
+
+    public PagePosition getPagePosition() {
+        return pagePosition;
     }
 }

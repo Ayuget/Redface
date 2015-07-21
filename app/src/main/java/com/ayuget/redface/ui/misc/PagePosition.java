@@ -70,4 +70,32 @@ public class PagePosition implements Parcelable {
     public String toString() {
         return "PagePosition{" + "postId=" + postId + '}';
     }
+
+    public static PagePosition top() {
+        return new PagePosition(PagePosition.TOP);
+    }
+
+    public static PagePosition bottom() {
+        return new PagePosition(PagePosition.BOTTOM);
+    }
+
+    public static PagePosition at(long postId) {
+        return new PagePosition(postId);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        PagePosition that = (PagePosition) o;
+
+        return postId == that.postId;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) (postId ^ (postId >>> 32));
+    }
 }

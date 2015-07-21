@@ -150,6 +150,7 @@
     <string name="page_loading_error">Error loading page</string>
     <string name="no_topics_found">No topics found</string>
     <string name="select_topic_message">Please select a topic</string>
+    <string name="topic_loading_message">Loading topic</string>
 
     <!-- Login page -->
     <string name="prompt_username">Username</string>

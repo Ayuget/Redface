@@ -39,6 +39,19 @@ function toggleSpoiler(obj){
 }
 
 /**
+* Deal with the clicked URL by calling the Java callback defined
+* in the Javascript interface of the webview.
+*
+* Stops the event propagation to avoid issues with spoilers
+*/
+function handleUrl(event, postId, url) {
+    event = event || window.event;
+    Android.handleUrl(postId, url);
+
+    event.stopPropagation();
+}
+
+/**
 * Toggles overflow menu for a certain post
 * @param id post id
 */

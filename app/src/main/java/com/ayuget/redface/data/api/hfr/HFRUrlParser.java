@@ -16,20 +16,15 @@
 
 package com.ayuget.redface.data.api.hfr;
 
+import android.net.Uri;
 import android.util.Log;
 
 import com.ayuget.redface.data.api.MDEndpoints;
 import com.ayuget.redface.data.api.MDLink;
-import com.ayuget.redface.data.api.MDService;
 import com.ayuget.redface.data.api.UrlParser;
 import com.ayuget.redface.data.api.model.Category;
-import com.ayuget.redface.data.api.model.Response;
-import com.ayuget.redface.data.api.model.Topic;
-import com.ayuget.redface.data.api.model.User;
-import com.ayuget.redface.data.rx.SubscriptionHandler;
 import com.ayuget.redface.data.state.CategoriesStore;
 import com.ayuget.redface.ui.misc.PagePosition;
-import com.squareup.otto.Bus;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -51,23 +46,23 @@ public class HFRUrlParser implements UrlParser {
 
     private final Pattern standardTopicPattern;
 
+    private final String baseRewrittenUrlRegex;
+
+    private final String baseStandardUrlRegex;
+
     private final MDEndpoints mdEndpoints;
-
-    private final MDService mdService;
-
-    private final Bus bus;
 
     private final CategoriesStore categoriesStore;
 
     @Inject
-    public HFRUrlParser(MDEndpoints mdEndpoints, MDService mdService, Bus bus, CategoriesStore categoriesStore) {
+    public HFRUrlParser(MDEndpoints mdEndpoints, CategoriesStore categoriesStore) {
         this.mdEndpoints = mdEndpoints;
-        this.mdService = mdService;
-        this.bus = bus;
         this.categoriesStore = categoriesStore;
 
         String baseRewrittenRegex = "(?:" + Pattern.quote(mdEndpoints.baseurl() + "/hfr/") + ")";
+        baseRewrittenUrlRegex = Pattern.quote(mdEndpoints.baseurl()) + "/hfr/.*";
         String baseStandardRegex = "(?:" + Pattern.quote(mdEndpoints.baseurl()) + ")";
+        baseStandardUrlRegex = Pattern.quote(mdEndpoints.baseurl()) + "/forum.*";
 
         rewrittenTopicListPattern = Pattern.compile(baseRewrittenRegex + REWRITTEN_TOPIC_LIST_REGEX);
         rewrittenTopicPattern = Pattern.compile(baseRewrittenRegex + REWRITTEN_TOPIC_REGEX);
@@ -76,18 +71,27 @@ public class HFRUrlParser implements UrlParser {
 
     @Override
     public MDLink parseUrl(String url) {
+        if (url.matches(baseRewrittenUrlRegex)) {
+            return parseRewrittenUrl(url);
+        }
+        else if (url.matches(baseStandardUrlRegex)){
+            return parseStandardUrl(url);
+        }
+        else {
+            return MDLink.invalid();
+        }
+    }
+
+    public MDLink parseRewrittenUrl(String url) {
+        Log.d(LOG_TAG, String.format("Parsing rewritten topic URL : %s", url));
+
         // Split url and anchor
         String[] urlParts = url.split("#");
         url = urlParts[0];
         String anchor = urlParts.length >= 2 ? urlParts[1] : null;
 
-        Matcher rewrittenTopicListMatcher = rewrittenTopicListPattern.matcher(url);
-        if (rewrittenTopicListMatcher.matches()) {
-            Log.d(LOG_TAG, String.format("Rewritten topic list URL : %s", url));
-            return MDLink.invalid();
-        }
-
         Matcher rewrittenTopicMatcher = rewrittenTopicPattern.matcher(url);
+
         if (rewrittenTopicMatcher.matches()) {
             boolean hasSubCat = rewrittenTopicMatcher.groupCount() == 4;
             int subcatOffset = hasSubCat ? 1 : 0;
@@ -113,13 +117,43 @@ public class HFRUrlParser implements UrlParser {
                         .build();
             }
         }
+        else {
+            return MDLink.invalid();
+        }
+    }
 
-        Matcher standardTopicMatcher = standardTopicPattern.matcher(url);
-        if (standardTopicMatcher.matches()) {
-            Log.d(LOG_TAG, String.format("Standard topic URL : %s", url));
+    public MDLink parseStandardUrl(String url) {
+        Log.d(LOG_TAG, String.format("Parsing standard topic URL : %s", url));
+
+        Uri parsedUri = Uri.parse(url);
+
+        String categoryId = parsedUri.getQueryParameter("cat");
+        String pageNumber = parsedUri.getQueryParameter("page");
+        String topicId = parsedUri.getQueryParameter("post");
+        String anchor = parsedUri.getFragment();
+
+        if (categoryId == null || pageNumber == null || topicId == null) {
+            Log.e(LOG_TAG, "Invalid standard URL, category, page number or topic id not found");
+            return MDLink.invalid();
         }
 
-        return MDLink.invalid();
+        try {
+            Category topicCategory = categoriesStore.getCategoryById(Integer.parseInt(categoryId));
+            if (topicCategory == null) {
+                Log.e(LOG_TAG, String.format("Category with id '%s' is unknown", categoryId));
+                return MDLink.invalid();
+            } else {
+                Log.d(LOG_TAG, String.format("Link is for category '%s'", topicCategory.getName()));
+                return MDLink.forTopic(topicCategory, Integer.parseInt(topicId))
+                        .atPage(Integer.parseInt(pageNumber))
+                        .atPost(parseAnchor(anchor))
+                        .build();
+            }
+        }
+        catch (NumberFormatException e) {
+            Log.e(LOG_TAG, "Error while parsing standard URL", e);
+            return MDLink.invalid();
+        }
     }
 
     public PagePosition parseAnchor(String anchor) {
