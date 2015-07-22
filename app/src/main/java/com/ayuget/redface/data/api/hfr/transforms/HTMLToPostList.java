@@ -29,6 +29,12 @@ import java.util.regex.Pattern;
 import rx.functions.Func1;
 
 public class HTMLToPostList implements Func1<String, List<Post>> {
+    /**
+     * Default number of posts per topic page. Used to initialize default capacity
+     * for the list of posts (small performance improvement ?)
+     */
+    private static final int DEFAULT_POSTS_COUNT = 40;
+
     private static final Pattern descriptionPattern = Pattern.compile(
             "(?:<meta name=\"Description\" content=\")(?:.*)(?:Pages : )(\\d+)(?:[^\"])"
     );
@@ -47,7 +53,7 @@ public class HTMLToPostList implements Func1<String, List<Post>> {
 
     @Override
     public List<Post> call(String source) {
-        List<Post> posts = new ArrayList<>();
+        List<Post> posts = new ArrayList<>(DEFAULT_POSTS_COUNT);
 
         // Description tag parsing to find the total number of pages. If
         int topicPagesCount = UIConstants.UNKNOWN_PAGES_COUNT;

@@ -32,6 +32,12 @@ import java.util.regex.Pattern;
 import rx.functions.Func1;
 
 public class HTMLToTopicList implements Func1<String, List<Topic>> {
+    /**
+     * Default number of topics per page. Used to initialize default capacity
+     * for the list of topics (small performance improvement ?)
+     */
+    private static final int DEFAULT_TOPICS_COUNT = 50;
+
     private static final Pattern TOPIC_PATTERN = Pattern.compile(
             "(?:(?:<th\\s*class=\"padding\".*?<a\\s*href=\"/forum1\\.php\\?config=hfr\\.inc&amp;cat=([0-9]+).*?\"\\s*class=\"cHeader\">(.*?)</a></th>)" +
                     "|(<tr\\s*class=\"sujet\\s*ligne_booleen.*?(ligne_sticky)?\".*?" +
@@ -89,7 +95,7 @@ public class HTMLToTopicList implements Func1<String, List<Topic>> {
 
     @Override
     public List<Topic> call(String source) {
-        List<Topic> topics = new ArrayList<>();
+        List<Topic> topics = new ArrayList<>(DEFAULT_TOPICS_COUNT);
 
         Matcher m = TOPIC_PATTERN.matcher(source);
         Category currentCategory = null;
