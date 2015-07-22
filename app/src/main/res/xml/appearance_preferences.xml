@@ -22,4 +22,10 @@
         android:defaultValue="@string/pref_theme_default"
         android:entries="@array/pref_theme_values"
         android:entryValues="@array/pref_theme_entries" />
+
+    <CheckBoxPreference
+        android:key="topic_list_compact_mode"
+        android:title="@string/pref_topic_list_compact_mode_title"
+        android:summary="@string/pref_topic_list_compact_mode_summary"
+        android:defaultValue="false" />
 </PreferenceScreen>

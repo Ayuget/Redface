@@ -60,6 +60,8 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ViewHolder
 
     private final ThemeManager themeManager;
 
+    private final boolean isCompactMode;
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final View parent;
         public ImageView topicIcon;
@@ -102,12 +104,13 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ViewHolder
         void onTopicLongClick(int position);
     }
 
-    public TopicsAdapter(Context context, ThemeManager themeManager) {
+    public TopicsAdapter(Context context, ThemeManager themeManager, boolean isCompactMode) {
         this.context = context;
         this.primaryTextColor = UiUtils.getPrimaryTextColor(context);
         this.secondaryTextColor = UiUtils.getSecondaryTextColor(context);
         this.readTextColor = UiUtils.getReadTextColor(context);
         this.themeManager = themeManager;
+        this.isCompactMode = isCompactMode;
     }
 
     public void setOnTopicClickedListener(OnTopicClickedListener onTopicClickedListener) {
@@ -121,7 +124,7 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ViewHolder
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         Context context = viewGroup.getContext();
-        View parent = LayoutInflater.from(context).inflate(R.layout.list_item_topic, viewGroup, false);
+        View parent = LayoutInflater.from(context).inflate(isCompactMode ? R.layout.list_item_topic_compact : R.layout.list_item_topic, viewGroup, false);
         return new ViewHolder(parent);
     }
 
@@ -139,8 +142,11 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ViewHolder
         final Topic topic = topics.get(i);
 
         viewHolder.topicSubject.setText(topic.getSubject());
-        viewHolder.topicLastPostInfos.setText(topic.getLastPostAuthor() + " - " + formatLastPostDate(topic));
-        viewHolder.topicPagesCount.setText(String.valueOf(topic.getPagesCount()) + " p");
+
+        if (! isCompactMode) {
+            viewHolder.topicLastPostInfos.setText(topic.getLastPostAuthor() + " - " + formatLastPostDate(topic));
+            viewHolder.topicPagesCount.setText(String.valueOf(topic.getPagesCount()) + " p");
+        }
 
         GradientDrawable topicIconCircle = (GradientDrawable) viewHolder.topicIcon.getBackground();
         topicIconCircle.setColor(getTopicIconBackgroundColor(topic));
@@ -169,14 +175,20 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ViewHolder
             viewHolder.unreadPagesCount.setVisibility(View.VISIBLE);
             viewHolder.unreadPagesCount.setText(getPrintableUnreadPagesCount(topic.getUnreadPagesCount()));
             viewHolder.topicSubject.setTextColor(primaryTextColor);
-            viewHolder.topicLastPostInfos.setTextColor(secondaryTextColor);
-            viewHolder.topicPagesCount.setTextColor(secondaryTextColor);
+
+            if (! isCompactMode) {
+                viewHolder.topicLastPostInfos.setTextColor(secondaryTextColor);
+                viewHolder.topicPagesCount.setTextColor(secondaryTextColor);
+            }
         }
         else {
             viewHolder.unreadPagesCount.setVisibility(View.INVISIBLE);
             viewHolder.topicSubject.setTextColor(readTextColor);
-            viewHolder.topicLastPostInfos.setTextColor(readTextColor);
-            viewHolder.topicPagesCount.setTextColor(readTextColor);
+
+            if (! isCompactMode) {
+                viewHolder.topicLastPostInfos.setTextColor(readTextColor);
+                viewHolder.topicPagesCount.setTextColor(readTextColor);
+            }
         }
 
         viewHolder.unreadPagesCount.setBackground(context.getResources().getDrawable(themeManager.getTopicUnreadCountDrawable()));

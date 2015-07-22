@@ -42,4 +42,6 @@ public class SettingsConstants {
     public static final String KEY_META_PAGE_ORDERING = "meta_page_ordering";
 
     public static final String KEY_DEFAULT_CATEGORY = "default_category";
+
+    public static final String KEY_ENABLE_COMPACT_MODE = "topic_list_compact_mode";
 }

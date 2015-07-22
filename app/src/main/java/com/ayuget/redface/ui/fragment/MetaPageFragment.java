@@ -55,7 +55,7 @@ public class MetaPageFragment extends TopicListFragment {
 
     @Override
     protected void initializeAdapters() {
-        topicsAdapter = new MetaPageTopicsAdapter(new ContextThemeWrapper(getActivity(), themeManager.getActiveThemeStyle()), themeManager);
+        topicsAdapter = new MetaPageTopicsAdapter(new ContextThemeWrapper(getActivity(), themeManager.getActiveThemeStyle()), themeManager, settings.isCompactModeEnabled());
         topicsAdapter.setOnTopicClickedListener(this);
         topicsAdapter.setOnTopicLongClickListener(this);
     }

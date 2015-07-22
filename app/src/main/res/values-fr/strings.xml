@@ -130,4 +130,6 @@
     <string name="mark_as_favorite_success">Favori correctement ajouté</string>
     <string name="marking_as_favorite_in_progress">Ajout du favori en cours…</string>
     <string name="topic_loading_message">Chargement du sujet</string>
+    <string name="pref_topic_list_compact_mode_title">Mode compact</string>
+    <string name="pref_topic_list_compact_mode_summary">Afficher la liste des sujets de manière compacte</string>
 </resources>

@@ -46,6 +46,7 @@ import com.ayuget.redface.data.api.model.Subcategory;
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.api.model.TopicFilter;
 import com.ayuget.redface.data.rx.EndlessObserver;
+import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.ui.BaseActivity;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.adapter.SubcategoriesAdapter;
@@ -140,6 +141,9 @@ public class TopicListFragment extends ToolbarFragment implements TopicsAdapter.
 
     @Inject DataService dataService;
 
+    @Inject
+    RedfaceSettings settings;
+
     public TopicListFragment() {
         onTopicClickedListeners = new ArrayList<>();
     }
@@ -161,7 +165,7 @@ public class TopicListFragment extends ToolbarFragment implements TopicsAdapter.
         subcategoriesAdapter = new SubcategoriesAdapter(getActivity(), topicFilter);
         subcategoriesAdapter.replaceWith(category);
 
-        topicsAdapter = new TopicsAdapter(new ContextThemeWrapper(getActivity(), themeManager.getActiveThemeStyle()), themeManager);
+        topicsAdapter = new TopicsAdapter(new ContextThemeWrapper(getActivity(), themeManager.getActiveThemeStyle()), themeManager, settings.isCompactModeEnabled());
         topicsAdapter.setOnTopicClickedListener(this);
         topicsAdapter.setOnTopicLongClickListener(this);
     }

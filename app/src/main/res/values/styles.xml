@@ -24,6 +24,10 @@
         <item name="android:fontFamily" tools:targetApi="jelly_bean">sans-serif</item>
     </style>
 
+    <style name="TextAppearance.Compact" parent="TextAppearance">
+        <item name="android:textSize">@dimen/text_size_details</item>
+    </style>
+
     <style name="TextAppearance.Light">
         <item name="android:fontFamily" tools:targetApi="jelly_bean">sans-serif-light</item>
     </style>

@@ -83,4 +83,8 @@ public class RedfaceSettings {
     public int getNotLoggedInDefaultCategoryId() {
         return 13; // fixme : ugly
     }
+
+    public boolean isCompactModeEnabled() {
+        return sharedPreferences.getBoolean(SettingsConstants.KEY_ENABLE_COMPACT_MODE, false);
+    }
 }
