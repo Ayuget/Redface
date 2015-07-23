@@ -44,4 +44,14 @@ public class HTMLToPostListTest extends BaseTestCase {
         // 40 posts per page
         assertThat(posts.size()).isEqualTo(40);
     }
+
+    @Test
+    public void test_parsePrivateMessages() throws IOException {
+        HTMLToPostList htmlToPostList = new HTMLToPostList();
+
+        List<Post> posts = htmlToPostList.call(readAssetFile("hfr_private_message_page.html"));
+
+        assertThat(posts.size()).isEqualTo(6);
+    }
+
 }
