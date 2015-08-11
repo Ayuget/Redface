@@ -45,6 +45,7 @@ public class HTMLToPrivateMessageList extends TopicTransform implements Func1<St
             String lastResponseAuthor = m.group(20);
             Date lastResponseDate = DateUtils.fromHTMLDate(m.group(17), m.group(16), m.group(15), m.group(18), m.group(19));
             int totalMessages = Integer.parseInt(m.group(14));
+            int pagesCount = m.group(9) != null ? Integer.parseInt(m.group(9)) : 1;
 
             PrivateMessage privateMessage = new PrivateMessage.Builder()
                     .forRecipient(recipient)
@@ -54,11 +55,11 @@ public class HTMLToPrivateMessageList extends TopicTransform implements Func1<St
                     .withTotalMessages(totalMessages)
                     .withUnreadMessages(hasNewMessages(m.group(11) != null ? m.group(11) : m.group(5)))
                     .asReadByRecipient(m.group(6) == null)
+                    .withPagesCount(pagesCount)
                     .build();
 
             privateMessages.add(privateMessage);
         }
-
 
         return privateMessages;
     }

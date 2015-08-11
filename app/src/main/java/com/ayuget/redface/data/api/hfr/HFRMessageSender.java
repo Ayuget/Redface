@@ -26,6 +26,7 @@ import com.ayuget.redface.data.api.model.ResponseCode;
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.api.model.User;
 import com.ayuget.redface.network.HTTPClientProvider;
+import com.ayuget.redface.ui.UIConstants;
 import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -71,10 +72,16 @@ public class HFRMessageSender implements MDMessageSender {
 
                 OkHttpClient httpClient = httpClientProvider.getClientForUser(user);
 
+                boolean isPrivateMessage = topic.getCategory().getId() == UIConstants.PRIVATE_MESSAGE_CAT_ID;
+
+                if (isPrivateMessage) {
+                    Log.d(LOG_TAG, "Replying to private message");
+                }
+
                 RequestBody formBody = new FormEncodingBuilder()
                         .add("hash_check", hashcheck)
                         .add("post", String.valueOf(topic.getId()))
-                        .add("cat", String.valueOf(topic.getCategory().getId()))
+                        .add("cat", isPrivateMessage ? "prive" : String.valueOf(topic.getCategory().getId()))
                         .add("verifrequet", "1100")
                         .add("MsgIcon", "20")
                         .add("page", String.valueOf(topic.getPagesCount()))
@@ -116,7 +123,7 @@ public class HFRMessageSender implements MDMessageSender {
         return Observable.create(new Observable.OnSubscribe<Response>() {
             @Override
             public void call(Subscriber<? super Response> subscriber) {
-                Log.d(LOG_TAG, String.format("Posting message for user '%s' in topic '%s'", user.getUsername(), topic.getSubject()));
+                Log.d(LOG_TAG, String.format("Editing message for user '%s' in topic '%s' (category id : %d)", user.getUsername(), topic.getSubject(), topic.getCategory().getId()));
 
                 StringBuilder parents = new StringBuilder();
                 Matcher m = Pattern.compile("\\[quotemsg=([0-9]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL).matcher(newContent);
@@ -129,10 +136,16 @@ public class HFRMessageSender implements MDMessageSender {
 
                 OkHttpClient httpClient = httpClientProvider.getClientForUser(user);
 
+                boolean isPrivateMessage = topic.getCategory().getId() == UIConstants.PRIVATE_MESSAGE_CAT_ID;
+
+                if (isPrivateMessage) {
+                    Log.d(LOG_TAG, "Editing private message");
+                }
+
                 FormEncodingBuilder formEncodingBuilder = new FormEncodingBuilder();
                 formEncodingBuilder.add("hash_check", hashcheck);
                 formEncodingBuilder.add("post", String.valueOf(topic.getId()));
-                formEncodingBuilder.add("cat", String.valueOf(topic.getCategory().getId()));
+                formEncodingBuilder.add("cat",  isPrivateMessage ? "prive" : String.valueOf(topic.getCategory().getId()));
                 formEncodingBuilder.add("verifrequet", "1100");
                 formEncodingBuilder.add("pseudo", user.getUsername());
                 formEncodingBuilder.add("sujet", topic.getSubject());
@@ -208,6 +221,8 @@ public class HFRMessageSender implements MDMessageSender {
     }
 
     private Response buildResponse(String response) {
+        Log.d(LOG_TAG, response);
+
         if (matchesPattern(POST_SUCCESSFULLY_ADDED_PATTERN, response)) {
             return Response.buildSuccess(ResponseCode.POST_SUCCESSFULLY_ADDED);
         }

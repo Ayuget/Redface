@@ -18,16 +18,24 @@ package com.ayuget.redface.ui;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 
 import com.ayuget.redface.R;
 import com.ayuget.redface.data.api.model.PrivateMessage;
+import com.ayuget.redface.data.api.model.Topic;
+import com.ayuget.redface.data.state.CategoriesStore;
 import com.ayuget.redface.ui.fragment.DefaultFragment;
 import com.ayuget.redface.ui.fragment.DetailsDefaultFragment;
 import com.ayuget.redface.ui.fragment.PrivateMessageListFragment;
+import com.ayuget.redface.ui.fragment.TopicFragment;
+import com.ayuget.redface.ui.fragment.TopicFragmentBuilder;
 import com.ayuget.redface.ui.fragment.TopicListFragment;
+import com.ayuget.redface.ui.misc.PagePosition;
 
-public class PrivateMessagesActivity extends BaseDrawerActivity implements PrivateMessageListFragment.OnPrivateMessageClickedListener {
+import javax.inject.Inject;
+
+public class PrivateMessagesActivity extends MultiPaneActivity implements PrivateMessageListFragment.OnPrivateMessageClickedListener {
     private static final String LOG_TAG = PrivateMessagesActivity.class.getSimpleName();
 
     private static final String DEFAULT_FRAGMENT_TAG = "default_fragment";
@@ -38,11 +46,8 @@ public class PrivateMessagesActivity extends BaseDrawerActivity implements Priva
 
     private static final String PM_FRAGMENT_TAG = "private_message_fragment";
 
-    /**
-     * Whether or not the activity is in two-pane mode, i.e. running on a tablet
-     * device.
-     */
-    private boolean twoPaneMode = false;
+    @Inject
+    CategoriesStore categoriesStore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,25 +57,13 @@ public class PrivateMessagesActivity extends BaseDrawerActivity implements Priva
     }
 
     @Override
-    protected void onInitUiState() {
-        Log.d(LOG_TAG, "Initializing state");
-
-        if (findViewById(R.id.details_container) != null) {
-            // The detail container view will be present only in the
-            // large-screen layouts (res/values-large and
-            // res/values-sw600dp). If this view is present, then the
-            // activity should be in two-pane mode.
-            twoPaneMode = true;
-        }
-    }
-
-    @Override
     protected void onSetupUiState() {
         Log.d(LOG_TAG, "Setting up initial state");
 
         PrivateMessageListFragment pmListFragment = PrivateMessageListFragment.newInstance();
+        pmListFragment.setOnPrivateMessageClickedListener(this);
 
-        if (twoPaneMode) {
+        if (isTwoPaneMode()) {
             DetailsDefaultFragment detailsDefaultFragment = DetailsDefaultFragment.newInstance();
 
             getSupportFragmentManager().beginTransaction()
@@ -97,6 +90,44 @@ public class PrivateMessagesActivity extends BaseDrawerActivity implements Priva
 
     @Override
     public void onPrivateMessageClicked(PrivateMessage privateMessage) {
-        // TODO
+        int pageToLoad;
+        PagePosition pagePosition;
+
+        if (privateMessage.hasUnreadMessages()) {
+            pageToLoad = privateMessage.getPagesCount();
+            pagePosition = new PagePosition(PagePosition.BOTTOM);
+        }
+        else {
+            pageToLoad = 1;
+            pagePosition = new PagePosition(PagePosition.BOTTOM);
+        }
+
+        loadPrivateMessage(privateMessage, pageToLoad, pagePosition);
+    }
+
+    /**
+     * Loads a private message in the appropriate pane.
+     */
+    private void loadPrivateMessage(PrivateMessage privateMessage, int page, PagePosition pagePosition) {
+        Log.d(LOG_TAG, String.format("Loading private message '%s' at page '%d'", privateMessage.getSubject(), page));
+
+        // Mask private message as a regular topic (kinda ugly, btw...)
+        Topic pmAsTopic = privateMessage.asTopic();
+        pmAsTopic.setCategory(categoriesStore.getPrivateMessagesCategory());
+
+        TopicFragment topicFragment = new TopicFragmentBuilder(page, pmAsTopic).currentPagePosition(pagePosition).build();
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+        int topicFragmentContainer = isTwoPaneMode() ? R.id.details_container : R.id.container;
+
+        if (!isTwoPaneMode()) {
+            Log.d(LOG_TAG, "Setting slide animation for topicFragment (private message)");
+            transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.exit_to_right);
+        }
+
+        transaction.replace(topicFragmentContainer, topicFragment, PM_FRAGMENT_TAG);
+        transaction.addToBackStack(PM_FRAGMENT_TAG);
+        transaction.commit();
     }
 }

@@ -168,6 +168,8 @@ public class PrivateMessageListFragment extends ToggleToolbarFragment implements
             }
         });
 
+        // Style refresh indicator and empty content view
+        swipeRefreshLayout.setColorSchemeResources(R.color.theme_primary, R.color.theme_primary_dark);
         UiUtils.setDrawableColor(noPrivateMessagesImage.getDrawable(), getResources().getColor(R.color.empty_view_image_color));
 
         return rootView;

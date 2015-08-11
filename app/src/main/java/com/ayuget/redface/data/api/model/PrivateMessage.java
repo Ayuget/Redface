@@ -39,7 +39,9 @@ public class PrivateMessage implements Parcelable {
 
     private final boolean hasBeenReadByRecipient;
 
-    private PrivateMessage(long id, String recipient, String subject, int totalMessages, boolean hasUnreadMessages, Date lastResponseDate, String lastResponseAuthor, boolean hasBeenReadByRecipient) {
+    private final int pagesCount;
+
+    private PrivateMessage(long id, String recipient, String subject, int totalMessages, boolean hasUnreadMessages, Date lastResponseDate, String lastResponseAuthor, boolean hasBeenReadByRecipient, int pagesCount) {
         this.id = id;
         this.recipient = recipient;
         this.totalMessages = totalMessages;
@@ -48,6 +50,7 @@ public class PrivateMessage implements Parcelable {
         this.lastResponseDate = lastResponseDate;
         this.lastResponseAuthor = lastResponseAuthor;
         this.hasBeenReadByRecipient = hasBeenReadByRecipient;
+        this.pagesCount = pagesCount;
     }
 
     public long getId() {
@@ -82,6 +85,10 @@ public class PrivateMessage implements Parcelable {
         return subject;
     }
 
+    public int getPagesCount() {
+        return pagesCount;
+    }
+
     public static class Builder {
         private long id;
 
@@ -98,6 +105,8 @@ public class PrivateMessage implements Parcelable {
         private String lastResponseAuthor;
 
         private boolean hasBeenReadByRecipient;
+
+        private int pagesCount;
 
         public Builder() {
             this.hasUnreadMessages = false;
@@ -116,6 +125,11 @@ public class PrivateMessage implements Parcelable {
 
         public Builder withId(long id) {
             this.id = id;
+            return this;
+        }
+
+        public Builder withPagesCount(int pagesCount) {
+            this.pagesCount = pagesCount;
             return this;
         }
 
@@ -147,7 +161,7 @@ public class PrivateMessage implements Parcelable {
             Preconditions.checkNotNull(lastResponseDate);
             Preconditions.checkNotNull(subject);
             Preconditions.checkNotNull(recipient);
-            return new PrivateMessage(id, recipient, subject, totalMessages, hasUnreadMessages, lastResponseDate, lastResponseAuthor, hasBeenReadByRecipient);
+            return new PrivateMessage(id, recipient, subject, totalMessages, hasUnreadMessages, lastResponseDate, lastResponseAuthor, hasBeenReadByRecipient, pagesCount);
         }
     }
 
@@ -170,6 +184,7 @@ public class PrivateMessage implements Parcelable {
         dest.writeLong(lastResponseDate != null ? lastResponseDate.getTime() : -1);
         dest.writeString(this.lastResponseAuthor);
         dest.writeByte(hasBeenReadByRecipient ? (byte) 1 : (byte) 0);
+        dest.writeInt(this.pagesCount);
     }
 
     private PrivateMessage(Parcel in) {
@@ -182,6 +197,7 @@ public class PrivateMessage implements Parcelable {
         this.lastResponseDate = tmpLastResponseDate == -1 ? null : new Date(tmpLastResponseDate);
         this.lastResponseAuthor = in.readString();
         this.hasBeenReadByRecipient = in.readByte() != 0;
+        this.pagesCount = in.readInt();
     }
 
     public static final Parcelable.Creator<PrivateMessage> CREATOR = new Parcelable.Creator<PrivateMessage>() {
@@ -208,6 +224,7 @@ public class PrivateMessage implements Parcelable {
         if (!recipient.equals(that.recipient)) return false;
         if (!subject.equals(that.subject)) return false;
         if (!lastResponseDate.equals(that.lastResponseDate)) return false;
+        if (pagesCount != that.pagesCount) return false;
         return lastResponseAuthor.equals(that.lastResponseAuthor);
 
     }
@@ -222,6 +239,15 @@ public class PrivateMessage implements Parcelable {
         result = 31 * result + lastResponseDate.hashCode();
         result = 31 * result + lastResponseAuthor.hashCode();
         result = 31 * result + (hasBeenReadByRecipient ? 1 : 0);
+        result = 31 * result + pagesCount;
         return result;
+    }
+
+    public Topic asTopic() {
+        Topic topic = new Topic((int) getId());
+        topic.setSubject(subject);
+        topic.setPagesCount(pagesCount);
+
+        return topic;
     }
 }

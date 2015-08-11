@@ -32,6 +32,7 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.ayuget.redface.R;
 import com.ayuget.redface.data.api.model.Topic;
+import com.ayuget.redface.ui.MultiPaneActivity;
 import com.ayuget.redface.ui.TopicsActivity;
 import com.ayuget.redface.ui.adapter.TopicPageAdapter;
 import com.ayuget.redface.ui.event.GoToPostEvent;
@@ -170,7 +171,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
     @Override
     public void onToolbarInitialized(Toolbar toolbar) {
-        TopicsActivity hostActivity = (TopicsActivity) getActivity();
+        MultiPaneActivity hostActivity = (MultiPaneActivity) getActivity();
 
         if (! hostActivity.isTwoPaneMode()) {
             showUpButton();

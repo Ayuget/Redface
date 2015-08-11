@@ -62,7 +62,7 @@ import javax.inject.Inject;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class TopicsActivity extends BaseDrawerActivity implements TopicListFragment.OnTopicClickedListener {
+public class TopicsActivity extends MultiPaneActivity implements TopicListFragment.OnTopicClickedListener {
     private static final String LOG_TAG = TopicsActivity.class.getSimpleName();
 
     private static final String DEFAULT_FRAGMENT_TAG = "default_fragment";
@@ -76,12 +76,6 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
     private static final String ARG_TOPIC = "topic";
 
     private static final String ARG_CURRENT_CATEGORY = "currentCategory";
-
-    /**
-     * Whether or not the activity is in two-pane mode, i.e. running on a tablet
-     * device.
-     */
-    private boolean twoPaneMode = false;
 
     private MaterialEditText goToPageEditText;
 
@@ -105,10 +99,6 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
     boolean restoredInstanceState = false;
 
     private Category currentCategory;
-
-    private PageRefreshRequestEvent refreshRequestEvent;
-
-    boolean canLaunchReplyActivity = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,25 +132,12 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
     }
 
     @Override
-    protected void onInitUiState() {
-        Log.d(LOG_TAG, "Initializing state for TopicsActivity");
-
-        if (findViewById(R.id.details_container) != null) {
-            // The detail container view will be present only in the
-            // large-screen layouts (res/values-large and
-            // res/values-sw600dp). If this view is present, then the
-            // activity should be in two-pane mode.
-            twoPaneMode = true;
-        }
-    }
-
-    @Override
     protected void onSetupUiState() {
         Log.d(LOG_TAG, "Setting up initial state for TopicsActivity");
 
         DefaultFragment defaultFragment = DefaultFragment.newInstance();
 
-        if (twoPaneMode) {
+        if (isTwoPaneMode()) {
             DetailsDefaultFragment detailsDefaultFragment = DetailsDefaultFragment.newInstance();
 
             getSupportFragmentManager().beginTransaction()
@@ -194,7 +171,7 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
         }
 
         // Restore topic list fragment to the correct pane if we come from portrait mode
-        if (twoPaneMode && (topicListFragment != null && !topicListFragment.isVisible())) {
+        if (isTwoPaneMode() && (topicListFragment != null && !topicListFragment.isVisible())) {
                 getSupportFragmentManager()
                         .beginTransaction()
                         .replace(R.id.container, topicListFragment, TOPICS_FRAGMENT_TAG)
@@ -208,17 +185,6 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
 
         if (currentCategory != null) {
             outState.putParcelable(ARG_CURRENT_CATEGORY, currentCategory);
-        }
-    }
-
-    @Override
-    protected void onPostResume() {
-        super.onPostResume();
-
-        if (refreshRequestEvent != null) {
-            Log.d(LOG_TAG, "Posting refreshRequestEvent");
-            bus.post(refreshRequestEvent);
-            refreshRequestEvent = null;
         }
     }
 
@@ -290,38 +256,6 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        canLaunchReplyActivity = true;
-
-        if (requestCode == UIConstants.REPLY_REQUEST_CODE) {
-            boolean wasEdit = (data != null) && data.getBooleanExtra(UIConstants.ARG_REPLY_WAS_EDIT, false);
-
-            if (data != null && resultCode == Activity.RESULT_OK) {
-                SnackbarHelper.make(this, wasEdit ? R.string.message_successfully_edited : R.string.reply_successfully_posted).show();
-
-                // Refresh page
-                Topic topic = data.getParcelableExtra(UIConstants.ARG_REPLY_TOPIC);
-
-                if (topic == null) {
-                    Log.e(LOG_TAG, "topic is null in onActivityResult");
-                }
-                else {
-                    Log.d(LOG_TAG, String.format("Requesting refresh for topic : %s", topic.getSubject()));
-
-                    // Deferring event posting until onResume() is called, otherwise inner fragments
-                    // won't get the event.
-                    refreshRequestEvent = new PageRefreshRequestEvent(topic);
-                }
-            }
-            else if (resultCode == UIConstants.REPLY_RESULT_KO) {
-                SnackbarHelper.makeError(this, wasEdit? R.string.message_edit_failure : R.string.reply_post_failure).show();
-            }
-        }
-    }
-
-    @Override
     public void onTopicClicked(Topic topic) {
         int pageToLoad;
         PagePosition pagePosition;
@@ -347,9 +281,9 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
-        int topicFragmentContainer = twoPaneMode ? R.id.details_container : R.id.container;
+        int topicFragmentContainer = isTwoPaneMode() ? R.id.details_container : R.id.container;
 
-        if (!twoPaneMode) {
+        if (!isTwoPaneMode()) {
             Log.d(LOG_TAG, "Setting slide animation for topicFragment");
             transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.exit_to_right);
         }
@@ -361,7 +295,7 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
 
     protected void loadAnonymousTopic(Topic topic, int page, PagePosition pagePosition) {
         TopicFragment anonymousTopicFragment = new TopicFragmentBuilder(page, topic).currentPagePosition(pagePosition).build();
-        int topicFragmentContainer = twoPaneMode ? R.id.details_container : R.id.container;
+        int topicFragmentContainer = isTwoPaneMode() ? R.id.details_container : R.id.container;
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(topicFragmentContainer, anonymousTopicFragment);
@@ -584,17 +518,5 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
 
         dialog.show();
         positiveAction.setEnabled(false);
-    }
-
-    public boolean isTwoPaneMode() {
-        return twoPaneMode;
-    }
-
-    public boolean canLaunchReplyActivity() {
-        return canLaunchReplyActivity;
-    }
-
-    public void setCanLaunchReplyActivity(boolean canLaunchReplyActivity) {
-        this.canLaunchReplyActivity = canLaunchReplyActivity;
     }
 }

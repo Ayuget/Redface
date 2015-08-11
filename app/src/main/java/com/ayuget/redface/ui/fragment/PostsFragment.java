@@ -36,8 +36,8 @@ import com.ayuget.redface.data.DataService;
 import com.ayuget.redface.data.api.model.Post;
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.rx.EndlessObserver;
+import com.ayuget.redface.ui.MultiPaneActivity;
 import com.ayuget.redface.ui.ReplyActivity;
-import com.ayuget.redface.ui.TopicsActivity;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
 import com.ayuget.redface.ui.event.PageRefreshedEvent;
@@ -277,10 +277,10 @@ public class PostsFragment extends BaseFragment {
     }
 
     private void startReplyActivity(String initialContent) {
-        TopicsActivity topicsActivity = (TopicsActivity) getActivity();
+        MultiPaneActivity hostActivity = (MultiPaneActivity) getActivity();
 
-        if (topicsActivity.canLaunchReplyActivity()) {
-            topicsActivity.setCanLaunchReplyActivity(false);
+        if (hostActivity.canLaunchReplyActivity()) {
+            hostActivity.setCanLaunchReplyActivity(false);
 
             Intent intent = new Intent(getActivity(), ReplyActivity.class);
             intent.putExtra(ARG_TOPIC, topic);

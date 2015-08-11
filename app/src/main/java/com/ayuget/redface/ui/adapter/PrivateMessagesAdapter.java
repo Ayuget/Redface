@@ -155,6 +155,15 @@ public class PrivateMessagesAdapter extends RecyclerView.Adapter<PrivateMessages
         GradientDrawable pmIconCircle = (GradientDrawable) viewHolder.pmIcon.getBackground();
         pmIconCircle.setColor(getPMIconBackgroundColor(privateMessage));
 
+        if (privateMessage.hasUnreadMessages()) {
+            viewHolder.pmTitle.setTextColor(primaryTextColor);
+            viewHolder.pmLastPostInfos.setTextColor(secondaryTextColor);
+        }
+        else {
+            viewHolder.pmTitle.setTextColor(secondaryTextColor);
+            viewHolder.pmLastPostInfos.setTextColor(secondaryTextColor);
+        }
+
         if (privateMessage.hasBeenReadByRecipient()) {
             Log.d(LOG_TAG, String.format("Private message [%s] has been read by recipient", privateMessage.getSubject()));
             viewHolder.pmUnreadByRecipientIndicator.setVisibility(View.INVISIBLE);

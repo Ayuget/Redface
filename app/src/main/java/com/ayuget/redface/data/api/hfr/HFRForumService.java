@@ -309,6 +309,14 @@ public class HFRForumService implements MDService {
     @Override
     public Observable<List<PrivateMessage>> listPrivateMessages(User user, int page) {
         return pageFetcher.fetchSource(user, mdEndpoints.privateMessages(page))
+                .map(new Func1<String, String>() {
+                    @Override
+                    public String call(String htmlSource) {
+                        // Hashcheck is needed by the server to post new content
+                        currentHashcheck = HashcheckExtractor.extract(htmlSource);
+                        return htmlSource;
+                    }
+                })
                 .map(new HTMLToPrivateMessageList());
     }
 
