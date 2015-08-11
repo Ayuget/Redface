@@ -21,12 +21,22 @@ import android.content.Intent;
 import android.util.Log;
 
 import com.ayuget.redface.R;
+import com.ayuget.redface.data.api.MDService;
 import com.ayuget.redface.data.api.model.Topic;
+import com.ayuget.redface.data.rx.EndlessObserver;
+import com.ayuget.redface.data.rx.SubscriptionHandler;
+import com.ayuget.redface.ui.event.EditPostEvent;
 import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
+import com.ayuget.redface.ui.event.QuotePostEvent;
 import com.ayuget.redface.ui.misc.SnackbarHelper;
+import com.squareup.otto.Subscribe;
+
+import javax.inject.Inject;
 
 public class MultiPaneActivity extends BaseDrawerActivity {
     private static final String LOG_TAG = MultiPaneActivity.class.getSimpleName();
+
+    private static final String ARG_TOPIC = "topic";
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
@@ -41,7 +51,13 @@ public class MultiPaneActivity extends BaseDrawerActivity {
      */
     boolean canLaunchReplyActivity = true;
 
+    /**
+     * Event which will be fired once a reply / edit is successfully posted to the server
+     */
     private PageRefreshRequestEvent refreshRequestEvent;
+
+    @Inject
+    MDService mdService;
 
     @Override
     protected void onInitUiState() {
@@ -96,6 +112,41 @@ public class MultiPaneActivity extends BaseDrawerActivity {
             else if (resultCode == UIConstants.REPLY_RESULT_KO) {
                 SnackbarHelper.makeError(this, wasEdit? R.string.message_edit_failure : R.string.reply_post_failure).show();
             }
+        }
+    }
+
+    /**
+     * Starts the reply activity with or without an initial content
+     */
+    protected synchronized void startReplyActivity(Topic topic, String initialContent) {
+        if (canLaunchReplyActivity()) {
+            setCanLaunchReplyActivity(false);
+
+            Intent intent = new Intent(this, ReplyActivity.class);
+            intent.putExtra(ARG_TOPIC, topic);
+
+            if (initialContent != null) {
+                intent.putExtra(UIConstants.ARG_REPLY_CONTENT, initialContent);
+            }
+
+            startActivityForResult(intent, UIConstants.REPLY_REQUEST_CODE);
+        }
+    }
+
+    /**
+     * Starts the edit activity
+     */
+    protected synchronized void startEditActivity(Topic topic, int postId, String actualContent) {
+        if (canLaunchReplyActivity) {
+            setCanLaunchReplyActivity(false);
+
+            Intent intent = new Intent(this, EditPostActivity.class);
+
+            intent.putExtra(ARG_TOPIC, topic);
+            intent.putExtra(UIConstants.ARG_EDITED_POST_ID, postId);
+            intent.putExtra(UIConstants.ARG_REPLY_CONTENT, actualContent);
+
+            startActivityForResult(intent, UIConstants.REPLY_REQUEST_CODE);
         }
     }
 

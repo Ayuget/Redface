@@ -91,9 +91,6 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
     CategoriesStore categoriesStore;
 
     @Inject
-    MDService mdService;
-
-    @Inject
     HFRUrlParser urlParser;
 
     boolean restoredInstanceState = false;
@@ -381,12 +378,11 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
         }
     }
 
-    @Subscribe public void onQuotePost(final QuotePostEvent event) {
-        Log.d(LOG_TAG, String.format("@%d : quote event received for topic '%s' (quoting)", System.identityHashCode(this), event.getTopic().getSubject()));
+    @Subscribe
+    public void onQuotePost(final QuotePostEvent event) {
         subscribe(quoteHandler.load(event.getTopic(), mdService.getQuote(userManager.getActiveUser(), event.getTopic(), event.getPostId()), new EndlessObserver<String>() {
             @Override
             public void onNext(String quoteBBCode) {
-                Log.d(LOG_TAG, String.format("@%d : Starting reply activity for topic '%s' (quoting)", System.identityHashCode(TopicsActivity.this), event.getTopic().getSubject()));
                 startReplyActivity(event.getTopic(), quoteBBCode);
             }
         }));
@@ -396,7 +392,6 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
         subscribe(quoteHandler.load(event.getTopic(), mdService.getPostContent(userManager.getActiveUser(), event.getTopic(), event.getPostId()), new EndlessObserver<String>() {
             @Override
             public void onNext(String messageBBCode) {
-                Log.d(LOG_TAG, String.format("Starting reply activity for topic '%s' (editing)", event.getTopic().getSubject()));
                 startEditActivity(event.getTopic(), event.getPostId(), messageBBCode);
             }
         }));
@@ -420,41 +415,6 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
                         SnackbarHelper.makeError(TopicsActivity.this, R.string.mark_as_favorite_failed).show();
                     }
                 }));
-    }
-
-    /**
-     * Starts the reply activity with or without an initial content
-     */
-    private synchronized void startReplyActivity(Topic topic, String initialContent) {
-        if (canLaunchReplyActivity()) {
-            setCanLaunchReplyActivity(false);
-
-            Intent intent = new Intent(this, ReplyActivity.class);
-            intent.putExtra(ARG_TOPIC, topic);
-
-            if (initialContent != null) {
-                intent.putExtra(UIConstants.ARG_REPLY_CONTENT, initialContent);
-            }
-
-            startActivityForResult(intent, UIConstants.REPLY_REQUEST_CODE);
-        }
-    }
-
-    /**
-     * Starts the edit activity
-     */
-    private synchronized void startEditActivity(Topic topic, int postId, String actualContent) {
-        if (canLaunchReplyActivity) {
-            setCanLaunchReplyActivity(false);
-
-            Intent intent = new Intent(this, EditPostActivity.class);
-
-            intent.putExtra(ARG_TOPIC, topic);
-            intent.putExtra(UIConstants.ARG_EDITED_POST_ID, postId);
-            intent.putExtra(UIConstants.ARG_REPLY_CONTENT, actualContent);
-
-            startActivityForResult(intent, UIConstants.REPLY_REQUEST_CODE);
-        }
     }
 
     /**

@@ -24,7 +24,11 @@ import android.util.Log;
 import com.ayuget.redface.R;
 import com.ayuget.redface.data.api.model.PrivateMessage;
 import com.ayuget.redface.data.api.model.Topic;
+import com.ayuget.redface.data.rx.EndlessObserver;
+import com.ayuget.redface.data.rx.SubscriptionHandler;
 import com.ayuget.redface.data.state.CategoriesStore;
+import com.ayuget.redface.ui.event.EditPostEvent;
+import com.ayuget.redface.ui.event.QuotePostEvent;
 import com.ayuget.redface.ui.fragment.DefaultFragment;
 import com.ayuget.redface.ui.fragment.DetailsDefaultFragment;
 import com.ayuget.redface.ui.fragment.PrivateMessageListFragment;
@@ -32,6 +36,7 @@ import com.ayuget.redface.ui.fragment.TopicFragment;
 import com.ayuget.redface.ui.fragment.TopicFragmentBuilder;
 import com.ayuget.redface.ui.fragment.TopicListFragment;
 import com.ayuget.redface.ui.misc.PagePosition;
+import com.squareup.otto.Subscribe;
 
 import javax.inject.Inject;
 
@@ -45,6 +50,8 @@ public class PrivateMessagesActivity extends MultiPaneActivity implements Privat
     private static final String PM_LIST_FRAGMENT_TAG = "private_messages_list_fragment";
 
     private static final String PM_FRAGMENT_TAG = "private_message_fragment";
+
+    private SubscriptionHandler<Topic, String> quoteHandler = new SubscriptionHandler<>();
 
     @Inject
     CategoriesStore categoriesStore;
@@ -103,6 +110,33 @@ public class PrivateMessagesActivity extends MultiPaneActivity implements Privat
         }
 
         loadPrivateMessage(privateMessage, pageToLoad, pagePosition);
+    }
+
+    /**
+     * Code is duplicated with TopicsActivity because Otto doesn't support settings @Subscribe annotations
+     * on base classes (pull request #135 still not merged)
+     */
+    @Subscribe
+    public void onQuotePost(final QuotePostEvent event) {
+        subscribe(quoteHandler.load(event.getTopic(), mdService.getQuote(userManager.getActiveUser(), event.getTopic(), event.getPostId()), new EndlessObserver<String>() {
+            @Override
+            public void onNext(String quoteBBCode) {
+                startReplyActivity(event.getTopic(), quoteBBCode);
+            }
+        }));
+    }
+
+    /**
+     * Code is duplicated with TopicsActivity because Otto doesn't support settings @Subscribe annotations
+     * on base classes (pull request #135 still not merged)
+     */
+    @Subscribe public void onEditPost(final EditPostEvent event) {
+        subscribe(quoteHandler.load(event.getTopic(), mdService.getPostContent(userManager.getActiveUser(), event.getTopic(), event.getPostId()), new EndlessObserver<String>() {
+            @Override
+            public void onNext(String messageBBCode) {
+                startEditActivity(event.getTopic(), event.getPostId(), messageBBCode);
+            }
+        }));
     }
 
     /**
