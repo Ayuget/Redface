@@ -41,6 +41,8 @@
         </activity>
 
         <activity android:name="com.ayuget.redface.ui.SettingsActivity" />
+        <activity android:name="com.ayuget.redface.ui.PrivateMessagesActivity" />
+
         <activity android:name="com.ayuget.redface.ui.ReplyActivity" android:theme="@style/Theme.Redface.Transparent.Dark" android:windowSoftInputMode="adjustResize" />
         <activity android:name="com.ayuget.redface.ui.EditPostActivity" android:theme="@style/Theme.Redface.Transparent.Dark" android:windowSoftInputMode="adjustResize" />
 

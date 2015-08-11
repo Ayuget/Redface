@@ -18,6 +18,7 @@ package com.ayuget.redface.data.api;
 
 import com.ayuget.redface.data.api.model.Category;
 import com.ayuget.redface.data.api.model.Post;
+import com.ayuget.redface.data.api.model.PrivateMessage;
 import com.ayuget.redface.data.api.model.Response;
 import com.ayuget.redface.data.api.model.Smiley;
 import com.ayuget.redface.data.api.model.Subcategory;
@@ -37,11 +38,6 @@ public interface MDService {
     Observable<List<Category>> listCategories(User user);
 
     /**
-     * Returns details about a particular category
-     */
-    Observable<Category> getCategoryById(User user, int categoryId);
-
-    /**
      * Lists all topics for a given category
      * @param category category
      * @param filter filter to apply
@@ -58,6 +54,16 @@ public interface MDService {
     Observable<List<Topic>> listMetaPageTopics(User user, final TopicFilter filter, boolean sortByDate);
 
     /**
+     * Lists private messages for a given user
+     */
+    Observable<List<PrivateMessage>> listPrivateMessages(User user, int page);
+
+    /**
+     * Returns all private messages with unread messages
+     */
+    Observable<List<PrivateMessage>> getNewPrivateMessages(User user);
+
+    /**
      * Returns a specific topic page
      */
     Observable<List<Post>> listPosts(User user, Topic topic, int page);
@@ -66,11 +72,6 @@ public interface MDService {
      * Returns basic informations (subject and pages count) about a topic
      */
     Observable<Topic> getTopic(User user, Category category, int topicId);
-
-    /**
-     * Logs in the given user
-     */
-    Observable<Boolean> login(User user);
 
     /**
      * Returns quote BBCode for a given post
@@ -108,11 +109,6 @@ public interface MDService {
      * Edit a post
      */
     Observable<Response> editPost(User user, Topic topic, int postId, String newMessage, boolean includeSignature);
-
-    /**
-     * Returns current hashcheck, needed for certain actions (like reply to a topic, ...)
-     */
-    String getHashcheck();
 
     /**
      * Marks a certain post in a topic as favorite (will set the topic as favorite in the process)

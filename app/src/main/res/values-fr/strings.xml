@@ -132,4 +132,7 @@
     <string name="topic_loading_message">Chargement du sujet</string>
     <string name="pref_topic_list_compact_mode_title">Mode compact</string>
     <string name="pref_topic_list_compact_mode_summary">Afficher la liste des sujets de manière compacte</string>
+    <string name="no_private_messages_found">Aucun message privé trouvé</string>
+    <string name="error_loading_private_messages">Erreur de chargement des messages privés</string>
+    <string name="error_loading_private_messages_page">Erreur lors du chargement de la page {page} des MPs</string>
 </resources>

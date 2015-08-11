@@ -47,7 +47,7 @@ public class HTMLToPrivateMessageList extends TopicTransform implements Func1<St
             int totalMessages = Integer.parseInt(m.group(14));
 
             PrivateMessage privateMessage = new PrivateMessage.Builder()
-                    .addRecipient(recipient)
+                    .forRecipient(recipient)
                     .withId(privateMessageId)
                     .withSubject(subject)
                     .withLastResponse(lastResponseAuthor, lastResponseDate)

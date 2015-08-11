@@ -336,7 +336,7 @@ public class BaseDrawerActivity extends BaseActivity {
             // initialDrawerItems.add(DrawerItem.simple(NAVDRAWER_ITEM_PROFILE, R.drawable.ic_action_user, R.string.navdrawer_item_profile));
 
             // Private messages
-            // initialDrawerItems.add(DrawerItem.simple(NAVDRAWER_ITEM_PRIVATE_MESSAGES, R.drawable.ic_action_monolog, R.string.navdrawer_item_private_messages));
+            initialDrawerItems.add(DrawerItem.simple(NAVDRAWER_ITEM_PRIVATE_MESSAGES, R.drawable.ic_action_monolog, R.string.navdrawer_item_private_messages));
 
             // My topics
             initialDrawerItems.add(DrawerItem.simple(NAVDRAWER_ITEM_MY_TOPICS, R.drawable.ic_action_news, R.string.navdrawer_item_my_topics));
@@ -430,21 +430,36 @@ public class BaseDrawerActivity extends BaseActivity {
                     onMyTopicsClicked();
                     drawerLayout.closeDrawers();
                     break;
-                case NAVDRAWER_ITEM_PROFILE:
-                case NAVDRAWER_ITEM_SETTINGS:
-                case NAVDRAWER_ITEM_PRIVATE_MESSAGES:
-                    Intent intent = new Intent(this, SettingsActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                case NAVDRAWER_ITEM_PRIVATE_MESSAGES: {
+                    Intent intent = new Intent(this, PrivateMessagesActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                     break;
+                }
+                case NAVDRAWER_ITEM_PROFILE:
+                case NAVDRAWER_ITEM_SETTINGS: {
+                    Intent intent = new Intent(this, SettingsActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                    break;
+                }
             }
         }
         else if (drawerItem.isCategory()) {
             CategoryDrawerItem categoryDrawerItem = (CategoryDrawerItem) drawerItem;
-            onCategoryClicked(categoryDrawerItem.getCategory());
-            drawerLayout.closeDrawers();
+
+            if (this instanceof TopicsActivity) {
+                onCategoryClicked(categoryDrawerItem.getCategory());
+            }
+            else {
+                Intent intent = new Intent(this, TopicsActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtra(UIConstants.ARG_SELECTED_CATEGORY, categoryDrawerItem.getCategory());
+                startActivity(intent);
+            }
         }
+
+        drawerLayout.closeDrawers();
     }
 
     /**
@@ -453,6 +468,9 @@ public class BaseDrawerActivity extends BaseActivity {
     public void onCategoryClicked(Category category) {
     }
 
+    /**
+     * Called when the "My Topics" item in the navigation drawer has been called
+     */
     public void onMyTopicsClicked() {
     }
 

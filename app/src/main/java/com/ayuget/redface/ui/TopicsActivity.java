@@ -129,6 +129,16 @@ public class TopicsActivity extends BaseDrawerActivity implements TopicListFragm
                 }
             });
         }
+        else if (savedInstanceState == null) {
+            Bundle extras = getIntent().getExtras();
+
+            if (extras != null) {
+                Category savedCategory = extras.getParcelable(UIConstants.ARG_SELECTED_CATEGORY);
+                if (savedCategory != null) {
+                    onCategoryClicked(savedCategory);
+                }
+            }
+        }
     }
 
     @Override

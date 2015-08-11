@@ -141,7 +141,7 @@ public class MetaPageFragment extends TopicListFragment {
         if (changedPageOrdering) {
             toggleOrderingIcons(getToolbar().getMenu());
             resetAdapterDetails();
-            showLoadingIndicator();
+            dataPresenter.showLoadingView();
             loadTopics();
         }
 
@@ -187,7 +187,7 @@ public class MetaPageFragment extends TopicListFragment {
                 swipeRefreshLayout.setRefreshing(false);
 
                 if (displayedTopics.size() == 0) {
-                    showErrorView();
+                    dataPresenter.showErrorView();
                 } else {
                     SnackbarHelper.makeError(MetaPageFragment.this, R.string.error_loading_topics).show();
                 }

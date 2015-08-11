@@ -154,6 +154,11 @@
     <string name="select_topic_message">Please select a topic</string>
     <string name="topic_loading_message">Loading topic</string>
 
+    <!-- Private messages -->
+    <string name="no_private_messages_found">No private messages found</string>
+    <string name="error_loading_private_messages">Error while private messages</string>
+    <string name="error_loading_private_messages_page">Error while loading private messages for page {page}</string>
+
     <!-- Login page -->
     <string name="prompt_username">Username</string>
     <string name="prompt_password">Password</string>

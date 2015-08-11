@@ -27,10 +27,12 @@ import com.ayuget.redface.data.api.MDService;
 import com.ayuget.redface.data.api.SmileyService;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToBBCode;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToPostList;
+import com.ayuget.redface.data.api.hfr.transforms.HTMLToPrivateMessageList;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToTopic;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToTopicList;
 import com.ayuget.redface.data.api.model.Category;
 import com.ayuget.redface.data.api.model.Post;
+import com.ayuget.redface.data.api.model.PrivateMessage;
 import com.ayuget.redface.data.api.model.Response;
 import com.ayuget.redface.data.api.model.Smiley;
 import com.ayuget.redface.data.api.model.Subcategory;
@@ -120,22 +122,6 @@ public class HFRForumService implements MDService {
         else {
             return mdEndpoints.subcategory(category, subcategory, page, filter);
         }
-    }
-
-    @Override
-    public Observable<Category> getCategoryById(User user, final int categoryId) {
-        return listCategories(user).flatMap(new Func1<List<Category>, Observable<Category>>() {
-            @Override
-            public Observable<Category> call(List<Category> categories) {
-                return Observable.from(categories);
-            }
-        })
-        .filter(new Func1<Category, Boolean>() {
-            @Override
-            public Boolean call(Category category) {
-                return category.getId() == categoryId;
-            }
-        });
     }
 
     @Override
@@ -246,11 +232,6 @@ public class HFRForumService implements MDService {
     }
 
     @Override
-    public Observable<Boolean> login(User user) {
-        return mdAuthenticator.login(user);
-    }
-
-    @Override
     public Observable<String> getQuote(User user, Topic topic, int postId) {
         return pageFetcher.fetchSource(user, mdEndpoints.quote(topic.getCategory(), topic, postId))
                 .map(new HTMLToBBCode());
@@ -321,12 +302,31 @@ public class HFRForumService implements MDService {
     }
 
     @Override
-    public String getHashcheck() {
-        return currentHashcheck;
+    public Observable<Boolean> markPostAsFavorite(User user, Topic topic, int postId) {
+        return mdMessageSender.markPostAsFavorite(user, topic, postId);
     }
 
     @Override
-    public Observable<Boolean> markPostAsFavorite(User user, Topic topic, int postId) {
-        return mdMessageSender.markPostAsFavorite(user, topic, postId);
+    public Observable<List<PrivateMessage>> listPrivateMessages(User user, int page) {
+        return pageFetcher.fetchSource(user, mdEndpoints.privateMessages(page))
+                .map(new HTMLToPrivateMessageList());
+    }
+
+    @Override
+    public Observable<List<PrivateMessage>> getNewPrivateMessages(User user) {
+        return listPrivateMessages(user, 1)
+                .flatMap(new Func1<List<PrivateMessage>, Observable<PrivateMessage>>() {
+                    @Override
+                    public Observable<PrivateMessage> call(List<PrivateMessage> privateMessages) {
+                        return Observable.from(privateMessages);
+                    }
+                })
+                .filter(new Func1<PrivateMessage, Boolean>() {
+                    @Override
+                    public Boolean call(PrivateMessage privateMessage) {
+                        return privateMessage.hasUnreadMessages();
+                    }
+                })
+                .toList();
     }
 }

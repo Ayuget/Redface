@@ -33,6 +33,8 @@ public class HFREndpoints implements MDEndpoints {
 
     private static final String TOPIC_URL = "{base_url}/forum2.php?config=hfr.inc&cat={category_id}&post={topic_id}&page={page}";
 
+    private static final String PRIVATE_MESSAGES_URL = "{base_url}/forum1.php?config=hfr.inc&cat=prive&page={page}&subcat=&sondage=0&owntopic=0&trash=0&trash_post=0&moderation=0&new=0&nojs=0&subcatgroup=0";
+
     private static final String AUTH_FORM_URL = "{base_url}/login_validation.php?config=hfr.inc";
 
     private static final String FILTERED_URL = "{base_url}/forum1.php?config=hfr.inc&cat={category_id}&page={page}&subcat={subcategory_id}&sondage=0&owntopic={filter_id}&trash=0&trash_post=0&moderation=0&new=0&nojs=0&subcatgroup=0";
@@ -249,6 +251,19 @@ public class HFREndpoints implements MDEndpoints {
                 .put("category_id", category.getId())
                 .put("topic_id", topic.getId())
                 .put("post_id", postId)
+                .format().toString();
+    }
+
+    @Override
+    public String privateMessages() {
+        return privateMessages(1);
+    }
+
+    @Override
+    public String privateMessages(int page) {
+        return Phrase.from(PRIVATE_MESSAGES_URL)
+                .put("base_url", FORUM_BASE_URL)
+                .put("page", page)
                 .format().toString();
     }
 }

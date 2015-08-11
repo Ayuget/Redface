@@ -18,18 +18,14 @@ package com.ayuget.redface.data.api.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-
 import com.google.common.base.Preconditions;
-
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 
 public class PrivateMessage implements Parcelable {
     private final long id;
 
-    private final List<String> recipients;
+    private final String recipient;
 
     private final String subject;
 
@@ -41,22 +37,25 @@ public class PrivateMessage implements Parcelable {
 
     private final String lastResponseAuthor;
 
-    private PrivateMessage(long id, List<String> recipients, String subject, int totalMessages, boolean hasUnreadMessages, Date lastResponseDate, String lastResponseAuthor) {
+    private final boolean hasBeenReadByRecipient;
+
+    private PrivateMessage(long id, String recipient, String subject, int totalMessages, boolean hasUnreadMessages, Date lastResponseDate, String lastResponseAuthor, boolean hasBeenReadByRecipient) {
         this.id = id;
-        this.recipients = recipients;
+        this.recipient = recipient;
         this.totalMessages = totalMessages;
         this.subject = subject;
         this.hasUnreadMessages = hasUnreadMessages;
         this.lastResponseDate = lastResponseDate;
         this.lastResponseAuthor = lastResponseAuthor;
+        this.hasBeenReadByRecipient = hasBeenReadByRecipient;
     }
 
     public long getId() {
         return id;
     }
 
-    public List<String> getRecipients() {
-        return recipients;
+    public String getRecipient() {
+        return recipient;
     }
 
     public int getTotalMessages() {
@@ -65,6 +64,10 @@ public class PrivateMessage implements Parcelable {
 
     public boolean hasUnreadMessages() {
         return hasUnreadMessages;
+    }
+
+    public boolean hasBeenReadByRecipient() {
+        return hasBeenReadByRecipient;
     }
 
     public Date getLastResponseDate() {
@@ -82,7 +85,7 @@ public class PrivateMessage implements Parcelable {
     public static class Builder {
         private long id;
 
-        private final List<String> recipients;
+        private String recipient;
 
         private String subject;
 
@@ -94,13 +97,15 @@ public class PrivateMessage implements Parcelable {
 
         private String lastResponseAuthor;
 
+        private boolean hasBeenReadByRecipient;
+
         public Builder() {
-            this.recipients = new ArrayList<>();
             this.hasUnreadMessages = false;
+            this.hasBeenReadByRecipient = true;
         }
 
-        public Builder addRecipient(String recipient) {
-            this.recipients.add(recipient);
+        public Builder forRecipient(String recipient) {
+            this.recipient = recipient;
             return this;
         }
 
@@ -125,6 +130,11 @@ public class PrivateMessage implements Parcelable {
             return this;
         }
 
+        public Builder asReadByRecipient(boolean hasBeenReadByRecipient) {
+            this.hasBeenReadByRecipient = hasBeenReadByRecipient;
+            return this;
+        }
+
         public Builder withTotalMessages(int totalMessages) {
             this.totalMessages = totalMessages;
             return this;
@@ -136,7 +146,8 @@ public class PrivateMessage implements Parcelable {
             Preconditions.checkNotNull(lastResponseAuthor);
             Preconditions.checkNotNull(lastResponseDate);
             Preconditions.checkNotNull(subject);
-            return new PrivateMessage(id, recipients, subject, totalMessages, hasUnreadMessages, lastResponseDate, lastResponseAuthor);
+            Preconditions.checkNotNull(recipient);
+            return new PrivateMessage(id, recipient, subject, totalMessages, hasUnreadMessages, lastResponseDate, lastResponseAuthor, hasBeenReadByRecipient);
         }
     }
 
@@ -152,24 +163,25 @@ public class PrivateMessage implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeLong(this.id);
-        dest.writeStringList(this.recipients);
+        dest.writeString(this.recipient);
         dest.writeString(this.subject);
         dest.writeInt(this.totalMessages);
         dest.writeByte(hasUnreadMessages ? (byte) 1 : (byte) 0);
         dest.writeLong(lastResponseDate != null ? lastResponseDate.getTime() : -1);
         dest.writeString(this.lastResponseAuthor);
+        dest.writeByte(hasBeenReadByRecipient ? (byte) 1 : (byte) 0);
     }
 
     private PrivateMessage(Parcel in) {
         this.id = in.readLong();
-        this.recipients = new ArrayList<>();
-        in.readStringList(this.recipients);
+        this.recipient = in.readString();
         this.subject = in.readString();
         this.totalMessages = in.readInt();
         this.hasUnreadMessages = in.readByte() != 0;
         long tmpLastResponseDate = in.readLong();
         this.lastResponseDate = tmpLastResponseDate == -1 ? null : new Date(tmpLastResponseDate);
         this.lastResponseAuthor = in.readString();
+        this.hasBeenReadByRecipient = in.readByte() != 0;
     }
 
     public static final Parcelable.Creator<PrivateMessage> CREATOR = new Parcelable.Creator<PrivateMessage>() {
@@ -192,7 +204,8 @@ public class PrivateMessage implements Parcelable {
         if (id != that.id) return false;
         if (totalMessages != that.totalMessages) return false;
         if (hasUnreadMessages != that.hasUnreadMessages) return false;
-        if (!recipients.equals(that.recipients)) return false;
+        if (hasBeenReadByRecipient != that.hasBeenReadByRecipient) return false;
+        if (!recipient.equals(that.recipient)) return false;
         if (!subject.equals(that.subject)) return false;
         if (!lastResponseDate.equals(that.lastResponseDate)) return false;
         return lastResponseAuthor.equals(that.lastResponseAuthor);
@@ -202,12 +215,13 @@ public class PrivateMessage implements Parcelable {
     @Override
     public int hashCode() {
         int result = (int) (id ^ (id >>> 32));
-        result = 31 * result + recipients.hashCode();
+        result = 31 * result + recipient.hashCode();
         result = 31 * result + subject.hashCode();
         result = 31 * result + totalMessages;
         result = 31 * result + (hasUnreadMessages ? 1 : 0);
         result = 31 * result + lastResponseDate.hashCode();
         result = 31 * result + lastResponseAuthor.hashCode();
+        result = 31 * result + (hasBeenReadByRecipient ? 1 : 0);
         return result;
     }
 }
