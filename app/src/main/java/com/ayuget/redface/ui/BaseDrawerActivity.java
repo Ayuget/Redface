@@ -336,7 +336,7 @@ public class BaseDrawerActivity extends BaseActivity {
             // initialDrawerItems.add(DrawerItem.simple(NAVDRAWER_ITEM_PROFILE, R.drawable.ic_action_user, R.string.navdrawer_item_profile));
 
             // Private messages
-            initialDrawerItems.add(DrawerItem.simple(NAVDRAWER_ITEM_PRIVATE_MESSAGES, R.drawable.ic_action_monolog, R.string.navdrawer_item_private_messages));
+            initialDrawerItems.add(DrawerItem.simple(NAVDRAWER_ITEM_PRIVATE_MESSAGES, R.drawable.ic_action_inbox, R.string.navdrawer_item_private_messages));
 
             // My topics
             initialDrawerItems.add(DrawerItem.simple(NAVDRAWER_ITEM_MY_TOPICS, R.drawable.ic_action_news, R.string.navdrawer_item_my_topics));

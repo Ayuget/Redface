@@ -53,6 +53,7 @@ public class HTMLToPrivateMessageList extends TopicTransform implements Func1<St
                     .withLastResponse(lastResponseAuthor, lastResponseDate)
                     .withTotalMessages(totalMessages)
                     .withUnreadMessages(hasNewMessages(m.group(11) != null ? m.group(11) : m.group(5)))
+                    .asReadByRecipient(m.group(6) == null)
                     .build();
 
             privateMessages.add(privateMessage);

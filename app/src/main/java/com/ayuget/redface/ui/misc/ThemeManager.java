@@ -100,6 +100,17 @@ public class ThemeManager {
         }
     }
 
+    public int getPrivateMessageUnreadDrawable() {
+        RedfaceTheme activeTheme = settings.getTheme();
+
+        if (activeTheme == RedfaceTheme.LIGHT) {
+            return R.drawable.private_message_unread_light;
+        }
+        else {
+            return R.drawable.private_message_unread_dark;
+        }
+    }
+
     public boolean isRefreshNeeded() {
         return refreshNeeded;
     }

@@ -36,6 +36,7 @@
         <TextView
             android:id="@+id/pm_last_post_infos"
             android:layout_alignParentRight="true"
+            android:layout_below="@id/pm_title"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center_vertical|right"
@@ -52,5 +53,6 @@
         android:layout_marginRight="@dimen/topic_unread_count_margin"
         android:layout_marginLeft="@dimen/topic_unread_count_margin"
         android:layout_marginTop="@dimen/topic_unread_count_top_margin"
+        android:padding="4dp"
         />
 </LinearLayout>

@@ -47,7 +47,8 @@ public class HTMLToPMListTest extends BaseTestCase {
 
         assertThat(firstPM.getSubject()).isEqualTo("De-ban IP");
         assertThat(firstPM.hasUnreadMessages()).isFalse();
-        assertThat(firstPM.getRecipients()).contains("Sly Angel");
+        assertThat(firstPM.getRecipient()).isEqualTo("Sly Angel");
+        assertThat(firstPM.hasBeenReadByRecipient()).isFalse();
         assertThat(firstPM.getTotalMessages()).isEqualTo(1);
         assertThat(firstPM.getLastResponseAuthor()).isEqualTo("Sly Angel");
     }

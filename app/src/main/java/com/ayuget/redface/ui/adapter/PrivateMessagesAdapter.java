@@ -17,6 +17,7 @@
 package com.ayuget.redface.ui.adapter;
 
 import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.Spannable;
@@ -38,11 +39,12 @@ import com.squareup.phrase.Phrase;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class PrivateMessagesAdapter extends RecyclerView.Adapter<PrivateMessagesAdapter.ViewHolder>{
     private static final String LOG_TAG = PrivateMessagesAdapter.class.getSimpleName();
 
-    private static final Phrase PM_TITLE_FORMAT = Phrase.from("<string>@{recipient} :</strong> {subject}");
+    private static final Phrase PM_TITLE_FORMAT = Phrase.from("<strong>@{recipient} :</strong> {subject}");
 
     private List<PrivateMessage> privateMessages = Collections.emptyList();
 
@@ -123,6 +125,24 @@ public class PrivateMessagesAdapter extends RecyclerView.Adapter<PrivateMessages
         return DateUtils.getRelativeTimeSpanString(privateMessage.getLastResponseDate().getTime(), new Date().getTime(), 0, 0);
     }
 
+    private int getPrivateMessageIcon(PrivateMessage privateMessage) {
+        if (privateMessage.hasUnreadMessages()) {
+            return R.drawable.ic_action_mail;
+        }
+        else {
+            return R.drawable.ic_action_tick;
+        }
+    }
+
+    private int getPMIconBackgroundColor(PrivateMessage privateMessage) {
+        if (privateMessage.hasUnreadMessages()) {
+            return context.getResources().getColor(R.color.topic_icon_flagged_bg);
+        }
+        else {
+            return UiUtils.getFullyReadTopicIconBackgroundColor(context);
+        }
+    }
+
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
         final PrivateMessage privateMessage = privateMessages.get(position);
@@ -131,22 +151,21 @@ public class PrivateMessagesAdapter extends RecyclerView.Adapter<PrivateMessages
         viewHolder.pmTitle.setText(Html.fromHtml(title));
 
         viewHolder.pmLastPostInfos.setText(privateMessage.getLastResponseAuthor() + " - " + formatLastResponseDate(privateMessage));
-
-        if (privateMessage.hasUnreadMessages()) {
-            viewHolder.pmTitle.setTextColor(primaryTextColor);
-            viewHolder.pmLastPostInfos.setTextColor(secondaryTextColor);
-        }
-        else {
-            viewHolder.pmTitle.setTextColor(readTextColor);
-            viewHolder.pmLastPostInfos.setTextColor(readTextColor);
-        }
+        viewHolder.pmIcon.setImageResource(getPrivateMessageIcon(privateMessage));
+        GradientDrawable pmIconCircle = (GradientDrawable) viewHolder.pmIcon.getBackground();
+        pmIconCircle.setColor(getPMIconBackgroundColor(privateMessage));
 
         if (privateMessage.hasBeenReadByRecipient()) {
-            viewHolder.pmUnreadByRecipientIndicator.setVisibility(View.VISIBLE);
-        }
-        else {
+            Log.d(LOG_TAG, String.format("Private message [%s] has been read by recipient", privateMessage.getSubject()));
             viewHolder.pmUnreadByRecipientIndicator.setVisibility(View.INVISIBLE);
         }
+        else {
+            Log.d(LOG_TAG, String.format("Private message [%s] has not been read by recipient", privateMessage.getSubject()));
+            viewHolder.pmUnreadByRecipientIndicator.setVisibility(View.VISIBLE);
+        }
+
+        viewHolder.pmUnreadByRecipientIndicator.setBackground(context.getResources().getDrawable(themeManager.getPrivateMessageUnreadDrawable()));
+        viewHolder.pmUnreadByRecipientIndicator.setImageResource(R.drawable.ic_action_markunread_mailbox);
 
         viewHolder.setOnPMClickedListener(new View.OnClickListener() {
             @Override
