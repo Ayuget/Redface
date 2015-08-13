@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ayuget.redface.ui;
+package com.ayuget.redface.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -39,7 +39,6 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -61,6 +60,7 @@ import com.ayuget.redface.data.rx.EndlessObserver;
 import com.ayuget.redface.data.rx.SubscriptionHandler;
 import com.ayuget.redface.data.state.ResponseStore;
 import com.ayuget.redface.network.HTTPClientProvider;
+import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.event.SmileySelectedEvent;
 import com.ayuget.redface.ui.misc.BindableAdapter;
 import com.ayuget.redface.ui.misc.UiUtils;

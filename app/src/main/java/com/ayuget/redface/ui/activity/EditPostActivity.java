@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ayuget.redface.ui;
+package com.ayuget.redface.ui.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -24,6 +24,7 @@ import com.ayuget.redface.data.api.model.Response;
 import com.ayuget.redface.data.api.model.User;
 import com.ayuget.redface.data.rx.EndlessObserver;
 import com.ayuget.redface.data.rx.SubscriptionHandler;
+import com.ayuget.redface.ui.UIConstants;
 
 public class EditPostActivity extends ReplyActivity {
     private static final String LOG_TAG = EditPostActivity.class.getSimpleName();

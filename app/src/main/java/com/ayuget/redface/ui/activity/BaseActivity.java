@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-package com.ayuget.redface.ui;
+package com.ayuget.redface.ui.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
-import android.view.View;
 
 import com.ayuget.redface.BuildConfig;
 import com.ayuget.redface.RedfaceApp;

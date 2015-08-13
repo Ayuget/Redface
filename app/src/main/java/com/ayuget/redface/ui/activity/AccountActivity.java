@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ayuget.redface.ui;
+package com.ayuget.redface.ui.activity;
 
 import android.content.Intent;
 import android.os.Bundle;

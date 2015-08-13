@@ -21,7 +21,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 
 import com.ayuget.redface.R;
-import com.ayuget.redface.ui.BaseActivity;
+import com.ayuget.redface.ui.activity.BaseActivity;
 
 public class ToggleToolbarFragment extends ToolbarFragment {
     protected ActionBarDrawerToggle drawerToggle;

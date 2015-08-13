@@ -16,11 +16,10 @@
 
 package com.ayuget.redface.ui.misc;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
 import com.ayuget.redface.R;
 import com.ayuget.redface.settings.RedfaceSettings;
-import com.ayuget.redface.ui.RedfaceTheme;
+import com.ayuget.redface.ui.theme.RedfaceTheme;
 
 public class ThemeManager {
     private static final String LIGHT_THEME_CSS_CLASS = "redface-light";

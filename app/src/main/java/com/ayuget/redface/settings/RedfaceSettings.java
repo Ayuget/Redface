@@ -21,7 +21,7 @@ import android.content.SharedPreferences;
 
 import com.ayuget.redface.R;
 import com.ayuget.redface.data.api.model.TopicFilter;
-import com.ayuget.redface.ui.RedfaceTheme;
+import com.ayuget.redface.ui.theme.RedfaceTheme;
 import com.ayuget.redface.ui.misc.MetaPageOrdering;
 
 public class RedfaceSettings {

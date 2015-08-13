@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ayuget.redface.ui;
+package com.ayuget.redface.ui.activity;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -41,6 +41,7 @@ import com.ayuget.redface.data.api.model.Category;
 import com.ayuget.redface.data.api.model.User;
 import com.ayuget.redface.data.rx.EndlessObserver;
 import com.ayuget.redface.network.HTTPClientProvider;
+import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.drawer.CategoryDrawerItem;
 import com.ayuget.redface.ui.drawer.DrawerItem;
 import com.ayuget.redface.ui.drawer.SimpleDrawerItem;
@@ -57,7 +58,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import butterknife.InjectView;
-import rx.Subscription;
 
 public class BaseDrawerActivity extends BaseActivity {
     private static final String LOG_TAG = BaseDrawerActivity.class.getSimpleName();

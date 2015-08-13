@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package com.ayuget.redface.ui;
+package com.ayuget.redface.ui.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
@@ -29,7 +28,6 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.ayuget.redface.R;
 import com.ayuget.redface.data.api.MDLink;
-import com.ayuget.redface.data.api.MDService;
 import com.ayuget.redface.data.api.hfr.HFRUrlParser;
 import com.ayuget.redface.data.api.model.Category;
 import com.ayuget.redface.data.api.model.Topic;
@@ -38,11 +36,11 @@ import com.ayuget.redface.data.api.model.User;
 import com.ayuget.redface.data.rx.EndlessObserver;
 import com.ayuget.redface.data.rx.SubscriptionHandler;
 import com.ayuget.redface.data.state.CategoriesStore;
+import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.event.EditPostEvent;
 import com.ayuget.redface.ui.event.GoToTopicEvent;
 import com.ayuget.redface.ui.event.InternalLinkClickedEvent;
 import com.ayuget.redface.ui.event.MarkPostAsFavoriteEvent;
-import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
 import com.ayuget.redface.ui.event.QuotePostEvent;
 import com.ayuget.redface.ui.event.TopicContextItemSelectedEvent;
 import com.ayuget.redface.ui.fragment.DefaultFragment;

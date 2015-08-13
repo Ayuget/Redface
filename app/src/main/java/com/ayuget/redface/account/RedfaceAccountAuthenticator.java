@@ -26,7 +26,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 
-import com.ayuget.redface.ui.AccountActivity;
+import com.ayuget.redface.ui.activity.AccountActivity;
 
 public class RedfaceAccountAuthenticator extends AbstractAccountAuthenticator {
     private final Context context;

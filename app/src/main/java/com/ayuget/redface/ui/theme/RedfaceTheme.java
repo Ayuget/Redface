@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.ayuget.redface.ui;
+package com.ayuget.redface.ui.theme;
 
 public enum RedfaceTheme {
     LIGHT,

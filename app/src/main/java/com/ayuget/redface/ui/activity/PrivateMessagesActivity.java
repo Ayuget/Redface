@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package com.ayuget.redface.ui;
+package com.ayuget.redface.ui.activity;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 
@@ -29,12 +28,10 @@ import com.ayuget.redface.data.rx.SubscriptionHandler;
 import com.ayuget.redface.data.state.CategoriesStore;
 import com.ayuget.redface.ui.event.EditPostEvent;
 import com.ayuget.redface.ui.event.QuotePostEvent;
-import com.ayuget.redface.ui.fragment.DefaultFragment;
 import com.ayuget.redface.ui.fragment.DetailsDefaultFragment;
 import com.ayuget.redface.ui.fragment.PrivateMessageListFragment;
 import com.ayuget.redface.ui.fragment.TopicFragment;
 import com.ayuget.redface.ui.fragment.TopicFragmentBuilder;
-import com.ayuget.redface.ui.fragment.TopicListFragment;
 import com.ayuget.redface.ui.misc.PagePosition;
 import com.squareup.otto.Subscribe;
 
