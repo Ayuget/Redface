@@ -127,6 +127,8 @@ public class PostsFragment extends BaseFragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.d(LOG_TAG, String.format("@%d -> onCreate(page=%d)", System.identityHashCode(this), currentPage));
+
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
@@ -139,18 +141,27 @@ public class PostsFragment extends BaseFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        Log.d(LOG_TAG, String.format("@%d -> onCreateView(page=%d)", System.identityHashCode(this), currentPage));
+
         final View rootView = inflateRootView(R.layout.fragment_posts, inflater, container);
 
+        // Default view is the loading indicator
+        showLoadingIndicator();
+
         // Restore the list of posts when the fragment is recreated by the framework
+        boolean restoredPosts = false;
+
         if (savedInstanceState != null) {
+            Log.d(LOG_TAG, String.format("@%d -> trying to restore state (page=%d)", System.identityHashCode(this), currentPage));
             displayedPosts = savedInstanceState.getParcelableArrayList(ARG_POST_LIST);
             if (displayedPosts != null) {
-                Log.i(LOG_TAG, "Restored " + String.valueOf(displayedPosts.size()) + " posts to fragment");
+                Log.i(LOG_TAG, String.format("@%d -> Restored %d posts to fragment (page=%d)", System.identityHashCode(this), displayedPosts.size(), currentPage));
 
                 topicPageView.setTopic(topic);
                 topicPageView.setPage(currentPage);
                 topicPageView.setPosts(displayedPosts);
 
+                restoredPosts = displayedPosts.size() > 0;
                 showPosts();
             }
         }
@@ -203,7 +214,8 @@ public class PostsFragment extends BaseFragment {
 
         // Page is loaded instantly only if it's the initial page requested on topic load. Other
         // pages will be loaded once selected in the ViewPager
-        if (isInitialPage()) {
+        if (isInitialPage() && !restoredPosts) {
+            showLoadingIndicator();
             loadPage(currentPage);
         }
 
@@ -216,8 +228,8 @@ public class PostsFragment extends BaseFragment {
 
     @Override
     public void onResume() {
+        Log.d(LOG_TAG, String.format("@%d -> onResume(page=%d)", System.identityHashCode(this), currentPage));
         super.onResume();
-        Log.d(LOG_TAG, "onResume");
     }
 
     private boolean isInitialPage() {
