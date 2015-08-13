@@ -77,10 +77,6 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
 
     private MaterialEditText goToPageEditText;
 
-    TopicListFragment topicListFragment;
-
-    TopicFragment topicFragment;
-
     private SubscriptionHandler<Integer, Topic> topicDetailsSearchHandler = new SubscriptionHandler<>();
 
     private SubscriptionHandler<Topic, String> quoteHandler = new SubscriptionHandler<>();
@@ -157,8 +153,8 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
         restoredInstanceState = true;
         currentCategory = savedInstanceState.getParcelable(ARG_CURRENT_CATEGORY);
 
-        topicListFragment = (TopicListFragment) getSupportFragmentManager().findFragmentByTag(TOPICS_FRAGMENT_TAG);
-        topicFragment = (TopicFragment) getSupportFragmentManager().findFragmentByTag(TOPIC_FRAGMENT_TAG);
+        TopicListFragment topicListFragment = (TopicListFragment) getSupportFragmentManager().findFragmentByTag(TOPICS_FRAGMENT_TAG);
+        TopicFragment topicFragment = (TopicFragment) getSupportFragmentManager().findFragmentByTag(TOPIC_FRAGMENT_TAG);
 
         if (topicListFragment != null) {
             // Register the callbacks again
@@ -229,7 +225,8 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
         currentCategory = category;
 
         Log.d(LOG_TAG, String.format("Loading category '%s', with topicFilter='%s'", category.getName(), getSettings().getDefaultTopicFilter().toString()));
-        topicListFragment = new TopicListFragmentBuilder(category).topicFilter(getSettings().getDefaultTopicFilter()).build();
+
+        TopicListFragment topicListFragment = new TopicListFragmentBuilder(category).topicFilter(getSettings().getDefaultTopicFilter()).build();
         topicListFragment.addOnTopicClickedListener(this);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -242,7 +239,7 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
         currentCategory = categoriesStore.getMetaCategory();
 
         Log.d(LOG_TAG, String.format("Loading meta category, with topicFilter='%s'", getSettings().getDefaultTopicFilter().toString()));
-        topicListFragment = new MetaPageFragmentBuilder(currentCategory).topicFilter(getSettings().getDefaultTopicFilter()).build();
+        TopicListFragment topicListFragment = new MetaPageFragmentBuilder(currentCategory).topicFilter(getSettings().getDefaultTopicFilter()).build();
         topicListFragment.addOnTopicClickedListener(this);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -272,7 +269,7 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
      */
     protected void loadTopic(Topic topic, int page, PagePosition pagePosition) {
         Log.d(LOG_TAG, String.format("Loading topic '%s' (page %d)", topic.getSubject(), page));
-        topicFragment = new TopicFragmentBuilder(page, topic).currentPagePosition(pagePosition).build();
+        TopicFragment topicFragment = new TopicFragmentBuilder(page, topic).currentPagePosition(pagePosition).build();
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
@@ -310,6 +307,7 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
         Log.d(LOG_TAG, "On Back Pressed");
         boolean consumedEvent = false;
 
+        TopicFragment topicFragment = (TopicFragment) getSupportFragmentManager().findFragmentByTag(TOPIC_FRAGMENT_TAG);
         if (topicFragment != null) {
             consumedEvent = topicFragment.onBackPressed();
         }
@@ -371,6 +369,7 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
      */
     @Subscribe
     public void onInternalLinkClicked(InternalLinkClickedEvent event) {
+        TopicFragment topicFragment = (TopicFragment) getSupportFragmentManager().findFragmentByTag(TOPIC_FRAGMENT_TAG);
         if (topicFragment != null && event.getTopic() == topicFragment.getTopic() && event.getPage() == topicFragment.getCurrentPage()) {
             topicFragment.setCurrentPagePosition(event.getPagePosition());
         }
