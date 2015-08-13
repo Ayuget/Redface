@@ -81,6 +81,7 @@ dependencies {
     compile 'io.reactivex:rxandroid:0.23.0'
     compile 'com.squareup.phrase:phrase:1.0.3'
     compile 'com.google.guava:guava:18.+'
+    compile 'com.uwetrottmann:androidutils:2.0.0'
 
     // Test related dependencies
     testCompile('com.squareup.assertj:assertj-android:1.0.0') {

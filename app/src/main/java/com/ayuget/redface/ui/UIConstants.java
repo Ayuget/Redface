@@ -21,6 +21,8 @@ public class UIConstants {
 
     public static final String ARG_SELECTED_CATEGORY = "selectedCategory";
 
+    public static final String ARG_SELECTED_PM = "selectedPrivateMessage";
+
     public static final int PRIVATE_MESSAGE_CAT_ID = -1;
 
     /**

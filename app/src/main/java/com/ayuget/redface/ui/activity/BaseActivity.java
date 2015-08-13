@@ -38,8 +38,6 @@ import rx.subscriptions.CompositeSubscription;
 
 
 public class BaseActivity extends ActionBarActivity {
-    private static final String LOG_TAG = BaseActivity.class.getSimpleName();
-
     @Inject
     RedfaceSettings settings;
 
