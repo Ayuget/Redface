@@ -175,14 +175,16 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
             setWebViewClient(new WebViewClient() {
                 @Override
                 public void onPageFinished(WebView view, String url) {
-                    TopicPageView.this.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            // Triggerring the event will allow the fragment in which this webview
-                            // is contained to initiate page position events
-                            bus.post(new PageLoadedEvent(topic, page, TopicPageView.this));
-                        }
-                    });
+                    if (posts.size() > 0) {
+                        TopicPageView.this.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                // Triggerring the event will allow the fragment in which this webview
+                                // is contained to initiate page position events
+                                bus.post(new PageLoadedEvent(topic, page, TopicPageView.this));
+                            }
+                        });
+                    }
                 }
 
                 @Override
@@ -190,10 +192,9 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
                     if (url != null && url.startsWith(mdEndpoints.baseurl())) {
                         Log.d(LOG_TAG, String.format("Clicked on internal url = '%s'", url));
                         return true;
-                    }
-                    else {
-                         getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-                         return true;
+                    } else {
+                        getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                        return true;
                     }
                 }
             });
