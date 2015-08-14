@@ -47,6 +47,10 @@ import rx.subscriptions.CompositeSubscription;
 public class PrivateMessagesService extends IntentService {
     private static final String LOG_TAG = PrivateMessagesService.class.getSimpleName();
 
+    private static final long[] VIBRATION_PATTERN = new long[] {
+            0, 100, 200, 100, 100, 100
+    };
+
     @Inject
     UserManager userManager;
 
@@ -92,14 +96,19 @@ public class PrivateMessagesService extends IntentService {
                     for (PrivateMessage privateMessage : privateMessages) {
                         // Prepare intent to deal with clicks
                         Intent resultIntent = new Intent(PrivateMessagesService.this, PrivateMessagesActivity.class);
+                        resultIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         resultIntent.putExtra(UIConstants.ARG_SELECTED_PM, privateMessage);
                         PendingIntent resultPendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
                         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
-                                .setSmallIcon(R.drawable.ic_action_emo_cool)
+                                .setSmallIcon(R.drawable.ic_action_emo_wonder)
+                                .setColor(getResources().getColor(R.color.theme_primary))
                                 .setContentTitle(privateMessage.getRecipient())
                                 .setContentText(privateMessage.getSubject())
-                                .setContentIntent(resultPendingIntent);
+                                .setContentIntent(resultPendingIntent)
+                                .setAutoCancel(true);
+
+                        builder.setVibrate(VIBRATION_PATTERN);
 
                         notificationManager.notify((int) privateMessage.getId(), builder.build());
                     }

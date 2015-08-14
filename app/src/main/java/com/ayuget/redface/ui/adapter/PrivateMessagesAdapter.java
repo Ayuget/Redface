@@ -164,15 +164,7 @@ public class PrivateMessagesAdapter extends RecyclerView.Adapter<PrivateMessages
             viewHolder.pmLastPostInfos.setTextColor(secondaryTextColor);
         }
 
-        if (privateMessage.hasBeenReadByRecipient()) {
-            Log.d(LOG_TAG, String.format("Private message [%s] has been read by recipient", privateMessage.getSubject()));
-            viewHolder.pmUnreadByRecipientIndicator.setVisibility(View.INVISIBLE);
-        }
-        else {
-            Log.d(LOG_TAG, String.format("Private message [%s] has not been read by recipient", privateMessage.getSubject()));
-            viewHolder.pmUnreadByRecipientIndicator.setVisibility(View.VISIBLE);
-        }
-
+        viewHolder.pmUnreadByRecipientIndicator.setVisibility(privateMessage.hasBeenReadByRecipient() ? View.INVISIBLE : View.VISIBLE);
         viewHolder.pmUnreadByRecipientIndicator.setBackground(context.getResources().getDrawable(themeManager.getPrivateMessageUnreadDrawable()));
         viewHolder.pmUnreadByRecipientIndicator.setImageResource(R.drawable.ic_action_markunread_mailbox);
 

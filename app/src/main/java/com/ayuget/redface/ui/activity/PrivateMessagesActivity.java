@@ -16,6 +16,7 @@
 
 package com.ayuget.redface.ui.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
@@ -26,6 +27,7 @@ import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.rx.EndlessObserver;
 import com.ayuget.redface.data.rx.SubscriptionHandler;
 import com.ayuget.redface.data.state.CategoriesStore;
+import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.event.EditPostEvent;
 import com.ayuget.redface.ui.event.QuotePostEvent;
 import com.ayuget.redface.ui.fragment.DetailsDefaultFragment;
@@ -58,6 +60,27 @@ public class PrivateMessagesActivity extends MultiPaneActivity implements Privat
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_private_messages, savedInstanceState);
+
+        if (getIntent() != null) {
+            PrivateMessage privateMessage = getIntent().getParcelableExtra(UIConstants.ARG_SELECTED_PM);
+            if (privateMessage != null) {
+                loadPrivateMessage(privateMessage, privateMessage.getPagesCount(), PagePosition.bottom());
+            }
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        if (intent.getExtras() != null) {
+            Log.d(LOG_TAG, "Trying to display private message from intent");
+            PrivateMessage privateMessage = intent.getExtras().getParcelable(UIConstants.ARG_SELECTED_PM);
+
+            if (privateMessage != null) {
+                loadPrivateMessage(privateMessage, privateMessage.getPagesCount(), PagePosition.bottom());
+            }
+        }
     }
 
     @Override
