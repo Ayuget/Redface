@@ -40,6 +40,7 @@ import com.ayuget.redface.data.api.MDEndpoints;
 import com.ayuget.redface.data.api.model.Category;
 import com.ayuget.redface.data.api.model.User;
 import com.ayuget.redface.data.rx.EndlessObserver;
+import com.ayuget.redface.data.state.CategoriesStore;
 import com.ayuget.redface.network.HTTPClientProvider;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.drawer.CategoryDrawerItem;
@@ -83,6 +84,9 @@ public class BaseDrawerActivity extends BaseActivity {
 
     @Inject
     HTTPClientProvider httpClientProvider;
+
+    @Inject
+    CategoriesStore categoriesStore;
 
     @Inject
     MDEndpoints mdEndpoints;
@@ -335,11 +339,11 @@ public class BaseDrawerActivity extends BaseActivity {
             // Profile
             // initialDrawerItems.add(DrawerItem.simple(NAVDRAWER_ITEM_PROFILE, R.drawable.ic_action_user, R.string.navdrawer_item_profile));
 
-            // Private messages
-            initialDrawerItems.add(DrawerItem.simple(NAVDRAWER_ITEM_PRIVATE_MESSAGES, R.drawable.ic_action_inbox, R.string.navdrawer_item_private_messages));
-
             // My topics
             initialDrawerItems.add(DrawerItem.simple(NAVDRAWER_ITEM_MY_TOPICS, R.drawable.ic_action_news, R.string.navdrawer_item_my_topics));
+
+            // Private messages
+            initialDrawerItems.add(DrawerItem.simple(NAVDRAWER_ITEM_PRIVATE_MESSAGES, R.drawable.ic_action_mail, R.string.navdrawer_item_private_messages));
         }
 
         // Settings
@@ -427,7 +431,16 @@ public class BaseDrawerActivity extends BaseActivity {
 
             switch (simpleDrawerItem.getItemId()) {
                 case NAVDRAWER_ITEM_MY_TOPICS:
-                    onMyTopicsClicked();
+                    if (this instanceof TopicsActivity) {
+                        onMyTopicsClicked();
+                    }
+                    else {
+                        Intent intent = new Intent(this, TopicsActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent.putExtra(UIConstants.ARG_SELECTED_CATEGORY, categoriesStore.getMetaCategory());
+                        startActivity(intent);
+                    }
+
                     drawerLayout.closeDrawers();
                     break;
                 case NAVDRAWER_ITEM_PRIVATE_MESSAGES: {

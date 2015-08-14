@@ -116,7 +116,12 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
             if (extras != null) {
                 Category savedCategory = extras.getParcelable(UIConstants.ARG_SELECTED_CATEGORY);
                 if (savedCategory != null) {
-                    onCategoryClicked(savedCategory);
+                    if (savedCategory.getId() == categoriesStore.getMetaCategory().getId()) {
+                        onMyTopicsClicked();
+                    }
+                    else {
+                        onCategoryClicked(savedCategory);
+                    }
                 }
             }
         }
