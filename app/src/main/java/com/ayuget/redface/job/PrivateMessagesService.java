@@ -34,6 +34,7 @@ import com.ayuget.redface.data.api.MDService;
 import com.ayuget.redface.data.api.model.PrivateMessage;
 import com.ayuget.redface.data.api.model.User;
 import com.ayuget.redface.data.rx.EndlessObserver;
+import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.activity.PrivateMessagesActivity;
 import com.uwetrottmann.androidutils.AndroidUtils;
@@ -56,6 +57,9 @@ public class PrivateMessagesService extends IntentService {
 
     @Inject
     MDService mdService;
+
+    @Inject
+    RedfaceSettings settings;
 
     private CompositeSubscription subscriptions;
 
@@ -87,6 +91,10 @@ public class PrivateMessagesService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         Log.d(LOG_TAG, "Handling intent");
 
+        if (! settings.arePrivateMessagesNoticationsEnabled()) {
+            return;
+        }
+
         final NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
 
         for (User redfaceUser : userManager.getRealUsers()) {
@@ -117,7 +125,7 @@ public class PrivateMessagesService extends IntentService {
         }
 
         // Setup next alarm
-        long wakeUpTime = System.currentTimeMillis() + 1 * DateUtils.HOUR_IN_MILLIS;
+        long wakeUpTime = System.currentTimeMillis() + settings.getPrivateMessagesPollingFrequency() * DateUtils.MINUTE_IN_MILLIS;
         AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         Intent i = new Intent(this, PrivateMessagesService.class);
         PendingIntent pi = PendingIntent.getService(this, 0, i, 0);

@@ -87,4 +87,12 @@ public class RedfaceSettings {
     public boolean isCompactModeEnabled() {
         return sharedPreferences.getBoolean(SettingsConstants.KEY_ENABLE_COMPACT_MODE, false);
     }
+
+    public boolean arePrivateMessagesNoticationsEnabled() {
+        return sharedPreferences.getBoolean(SettingsConstants.KEY_ENABLE_PRIVATE_MESSAGES_NOTIFICATIONS, true);
+    }
+
+    public int getPrivateMessagesPollingFrequency() {
+        return Integer.valueOf(sharedPreferences.getString(SettingsConstants.KEY_PRIVATE_MESSAGES_POLLING_FREQUENCY, context.getResources().getString(R.string.pref_pm_notification_frequency_default)));
+    }
 }
