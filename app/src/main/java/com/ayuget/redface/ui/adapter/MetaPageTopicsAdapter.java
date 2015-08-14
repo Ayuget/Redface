@@ -52,7 +52,7 @@ public class MetaPageTopicsAdapter extends TopicsAdapter implements StickyRecycl
             return -1;
         }
         else {
-            return getItem(i).getCategory().getId();
+            return getItem(i).getCategory() == null ? -1 : getItem(i).getCategory().getId();
         }
     }
 
