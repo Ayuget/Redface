@@ -1,8 +1,7 @@
 buildscript {
     repositories {
         mavenCentral()
-        maven { url 'http://download.crashlytics.com/maven' }
-
+        maven { url 'https://maven.fabric.io/public' }
     }
 
     dependencies {
@@ -10,18 +9,18 @@ buildscript {
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
 
         classpath 'com.jakewharton.hugo:hugo-plugin:1.1.0'
-        classpath 'com.crashlytics.tools.gradle:crashlytics-gradle:1.+'
+        classpath 'io.fabric.tools:gradle:1.+'
     }
 }
 
 repositories {
     mavenCentral()
-    maven { url 'http://download.crashlytics.com/maven' }
+    maven { url 'https://maven.fabric.io/public' }
 }
 
 apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
-apply plugin: 'crashlytics'
+apply plugin: 'io.fabric'
 apply plugin: 'hugo'
 
 android {
@@ -50,8 +49,8 @@ dependencies {
     // Support libraries
     compile "com.android.support:appcompat-v7:22.2.0"
     compile "com.android.support:recyclerview-v7:22.2.0"
-    compile "com.android.support:palette-v7:21.0.0"
-    compile 'com.android.support:support-annotations:22.0.0'
+    compile "com.android.support:palette-v7:22.2.0"
+    compile 'com.android.support:support-annotations:22.2.0'
     compile 'com.android.support:design:22.2.0'
 
     // Dependency injection
@@ -90,10 +89,12 @@ dependencies {
         exclude module: 'support-annotations'
     }
 
-    compile 'com.crashlytics.android:crashlytics:1.+'
+    compile('com.crashlytics.sdk.android:crashlytics:2.5.1@aar') {
+        transitive = true
+    }
 
-    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.3'
-    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.3'
+    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.3.1'
+    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.3.1'
 
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:1.10.19'

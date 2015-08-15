@@ -27,6 +27,8 @@ import com.ayuget.redface.R;
 import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.ui.misc.ThemeManager;
 import com.ayuget.redface.util.ViewServer;
+import io.fabric.sdk.android.Fabric;
+
 import com.crashlytics.android.Crashlytics;
 import com.squareup.otto.Bus;
 
@@ -53,7 +55,7 @@ public class BaseActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Crashlytics.start(this);
+        Fabric.with(this, new Crashlytics());
 
         RedfaceApp app = RedfaceApp.get(this);
         app.inject(this);
