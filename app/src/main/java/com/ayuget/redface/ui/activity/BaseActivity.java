@@ -19,7 +19,7 @@ package com.ayuget.redface.ui.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 
 import com.ayuget.redface.BuildConfig;
 import com.ayuget.redface.RedfaceApp;
@@ -39,7 +39,7 @@ import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
 
 
-public class BaseActivity extends ActionBarActivity {
+public class BaseActivity extends AppCompatActivity {
     @Inject
     RedfaceSettings settings;
 
