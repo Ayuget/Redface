@@ -16,6 +16,7 @@
 
 package com.ayuget.redface.ui.fragment;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -212,6 +213,11 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
 
             lastLoadedPage = savedInstanceState.getInt(ARG_LAST_LOADED_PAGE, 0);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
 
         if (displayedTopics == null) {
             displayedTopics = new ArrayList<>();
@@ -220,8 +226,6 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
         else {
             showTopics();
         }
-
-
     }
 
     @Override

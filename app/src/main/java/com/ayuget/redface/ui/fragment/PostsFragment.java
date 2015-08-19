@@ -109,7 +109,7 @@ public class PostsFragment extends BaseFragment {
 
     ValueAnimator replyButtonAnimator;
 
-    private boolean replyButtonIsHidden = false;
+    private boolean restoredPosts = false;
 
     @Override
     public void onDestroy() {
@@ -149,7 +149,7 @@ public class PostsFragment extends BaseFragment {
         showLoadingIndicator();
 
         // Restore the list of posts when the fragment is recreated by the framework
-        boolean restoredPosts = false;
+        restoredPosts = false;
 
         if (savedInstanceState != null) {
             Log.d(LOG_TAG, String.format("@%d -> trying to restore state (page=%d)", System.identityHashCode(this), currentPage));
@@ -212,13 +212,6 @@ public class PostsFragment extends BaseFragment {
             }
         });
 
-        // Page is loaded instantly only if it's the initial page requested on topic load. Other
-        // pages will be loaded once selected in the ViewPager
-        if (isInitialPage() && !restoredPosts) {
-            showLoadingIndicator();
-            loadPage(currentPage);
-        }
-
         if (userManager.getActiveUser().isGuest()) {
             replyButton.setVisibility(View.INVISIBLE);
         }
@@ -230,6 +223,13 @@ public class PostsFragment extends BaseFragment {
     public void onResume() {
         Log.d(LOG_TAG, String.format("@%d -> onResume(page=%d)", System.identityHashCode(this), currentPage));
         super.onResume();
+
+        // Page is loaded instantly only if it's the initial page requested on topic load. Other
+        // pages will be loaded once selected in the ViewPager
+        if (isInitialPage() && !restoredPosts) {
+            showLoadingIndicator();
+            loadPage(currentPage);
+        }
     }
 
     private boolean isInitialPage() {
@@ -267,13 +267,11 @@ public class PostsFragment extends BaseFragment {
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     animationInProgress = false;
-                    replyButtonIsHidden = toTranslationY != 0;
                 }
 
                 @Override
                 public void onAnimationCancel(Animator animation) {
                     animationInProgress = false;
-                    replyButtonIsHidden = toTranslationY != 0;
                 }
             });
 

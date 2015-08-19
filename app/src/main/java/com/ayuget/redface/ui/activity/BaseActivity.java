@@ -65,8 +65,42 @@ public class BaseActivity extends AppCompatActivity {
         // Proper RxJava subscriptions management with CompositeSubscription
         subscriptions = new CompositeSubscription();
 
+        // Necessary to inspect view hierarchy
         if (BuildConfig.DEBUG) {
             ViewServer.get(this).addWindow(this);
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        // Proper RxJava subscriptions management with CompositeSubscription
+        subscriptions = new CompositeSubscription();
+
+        bus.register(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        bus.unregister(this);
+
+        subscriptions.unsubscribe();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (themeManager.isRefreshNeeded()) {
+            themeManager.setRefreshNeeded(false);
+            refreshTheme();
+        }
+
+        if (BuildConfig.DEBUG) {
+            ViewServer.get(this).setFocusedWindow(this);
         }
     }
 
@@ -118,8 +152,6 @@ public class BaseActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        subscriptions.unsubscribe();
-
         if (BuildConfig.DEBUG) {
             ViewServer.get(this).removeWindow(this);
         }
@@ -132,29 +164,6 @@ public class BaseActivity extends AppCompatActivity {
 
     protected void subscribe(Subscription s) {
         subscriptions.add(s);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        bus.register(this);
-
-        if (themeManager.isRefreshNeeded()) {
-            themeManager.setRefreshNeeded(false);
-            refreshTheme();
-        }
-
-        if (BuildConfig.DEBUG) {
-            ViewServer.get(this).setFocusedWindow(this);
-        }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        bus.unregister(this);
     }
 
     public void refreshTheme() {

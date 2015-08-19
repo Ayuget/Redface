@@ -211,6 +211,11 @@ public class PrivateMessageListFragment extends ToggleToolbarFragment implements
                 showPrivateMessages();
             }
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
 
         if (displayedPrivateMessages == null) {
             displayedPrivateMessages = new ArrayList<>();

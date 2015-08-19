@@ -331,8 +331,10 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
                         @Override
                         public void run() {
                             // Action can take a few seconds to process, depending on target and on network quality,
-                            // we need to do something to user to show that we handled the event
-                            Toast.makeText(getContext(), R.string.topic_loading_message, Toast.LENGTH_SHORT).show();
+                            // we need to do something to indicate that we handled the event
+                            if (topicId != topic.getId()) {
+                                Toast.makeText(getContext(), R.string.topic_loading_message, Toast.LENGTH_SHORT).show();
+                            }
 
                             if (topic.getId() == topicId) {
                                 int destinationPage = topicPage;
@@ -346,8 +348,7 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
                                 }
 
                                 bus.post(new GoToPostEvent(destinationPage, targetPagePosition, TopicPageView.this));
-                            }
-                            else {
+                            } else {
                                 bus.post(new GoToTopicEvent(category, topicId, topicPage, pagePosition));
                             }
                         }
