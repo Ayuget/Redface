@@ -302,6 +302,11 @@ public class HFRForumService implements MDService {
     }
 
     @Override
+    public Observable<Response> sendNewPrivateMessage(User user, String subject, String recipientUsername, String message, boolean includeSignature) {
+        return mdMessageSender.sendNewPrivateMessage(user, subject, recipientUsername, message, currentHashcheck, includeSignature);
+    }
+
+    @Override
     public Observable<Boolean> markPostAsFavorite(User user, Topic topic, int postId) {
         return mdMessageSender.markPostAsFavorite(user, topic, postId);
     }

@@ -147,4 +147,11 @@
         <item>2 heures</item>
         <item>6 heures</item>
     </string-array>
+    <string name="pm_recipient">Pseudo du destinataire</string>
+    <string name="action_new_private_message">Nouveau message privé</string>
+    <string name="pm_no_recipient">Veuillez entrer un destinataire</string>
+    <string name="pm_subject">Sujet du message</string>
+    <string name="pm_no_subject">Veuillez entrer un sujet</string>
+    <string name="pm_successfully_sent">Message privé envoyé avec succès</string>
+    <string name="error_sending_pm">Erreur d\'envoi du message privé</string>
 </resources>

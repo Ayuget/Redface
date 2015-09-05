@@ -108,6 +108,21 @@ public class MultiPaneActivity extends BaseDrawerActivity {
                 SnackbarHelper.makeError(this, wasEdit? R.string.message_edit_failure : R.string.reply_post_failure).show();
             }
         }
+        else if (requestCode == UIConstants.NEW_PM_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                SnackbarHelper.make(this, R.string.pm_successfully_sent).show();
+                requestMasterPaneRefresh();
+            }
+            else if (resultCode == UIConstants.REPLY_RESULT_KO) {
+                SnackbarHelper.makeError(this, R.string.error_sending_pm).show();
+            }
+        }
+    }
+
+    /**
+     * Request a data refresh for the master pane
+     */
+    protected void requestMasterPaneRefresh() {
     }
 
     /**

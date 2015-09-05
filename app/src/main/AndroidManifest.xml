@@ -53,6 +53,7 @@
 
         <activity android:name=".ui.activity.ReplyActivity" android:theme="@style/Theme.Redface.Transparent.Dark" android:windowSoftInputMode="adjustResize" />
         <activity android:name=".ui.activity.EditPostActivity" android:theme="@style/Theme.Redface.Transparent.Dark" android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".ui.activity.WritePrivateMessageActivity" android:theme="@style/Theme.Redface.Transparent.Dark" android:windowSoftInputMode="adjustResize" />
 
         <!-- Authentication -->
         <service android:name=".account.RedfaceAuthenticatorService" android:enabled="true">

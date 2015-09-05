@@ -16,6 +16,7 @@
 
 package com.ayuget.redface.ui.fragment;
 
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -25,6 +26,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -34,9 +36,14 @@ import com.ayuget.redface.R;
 import com.ayuget.redface.account.UserManager;
 import com.ayuget.redface.data.api.MDService;
 import com.ayuget.redface.data.api.model.PrivateMessage;
+import com.ayuget.redface.data.api.model.TopicFilter;
 import com.ayuget.redface.data.rx.EndlessObserver;
 import com.ayuget.redface.data.rx.SubscriptionHandler;
 import com.ayuget.redface.settings.RedfaceSettings;
+import com.ayuget.redface.ui.UIConstants;
+import com.ayuget.redface.ui.activity.MultiPaneActivity;
+import com.ayuget.redface.ui.activity.ReplyActivity;
+import com.ayuget.redface.ui.activity.WritePrivateMessageActivity;
 import com.ayuget.redface.ui.adapter.PrivateMessagesAdapter;
 import com.ayuget.redface.ui.misc.DataPresenter;
 import com.ayuget.redface.ui.misc.DividerItemDecoration;
@@ -176,6 +183,24 @@ public class PrivateMessageListFragment extends ToggleToolbarFragment implements
     }
 
     @Override
+    public void onCreateOptionsMenu(Toolbar toolbar) {
+        toolbar.inflateMenu(R.menu.menu_pm_list);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        switch (id) {
+            case R.id.action_new_private_message:
+                startNewPMActivity();
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onToolbarInitialized(Toolbar toolbar) {
         pmRecyclerView.addOnScrollListener(new EndlessScrollListener(layoutManager) {
             @Override
@@ -211,6 +236,13 @@ public class PrivateMessageListFragment extends ToggleToolbarFragment implements
                 showPrivateMessages();
             }
         }
+    }
+
+    /**
+     * Refresh private messages list
+     */
+    public void refreshData() {
+        loadPrivateMessages(1);
     }
 
     @Override
@@ -310,5 +342,16 @@ public class PrivateMessageListFragment extends ToggleToolbarFragment implements
 
     public void setOnPrivateMessageClickedListener(OnPrivateMessageClickedListener onPrivateMessageClickedListener) {
         this.onPrivateMessageClickedListener = onPrivateMessageClickedListener;
+    }
+
+    private void startNewPMActivity() {
+        MultiPaneActivity hostActivity = (MultiPaneActivity) getActivity();
+
+        if (hostActivity.canLaunchReplyActivity()) {
+            hostActivity.setCanLaunchReplyActivity(false);
+
+            Intent intent = new Intent(getActivity(), WritePrivateMessageActivity.class);
+            getActivity().startActivityForResult(intent, UIConstants.NEW_PM_REQUEST_CODE);
+        }
     }
 }

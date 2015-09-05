@@ -176,6 +176,7 @@
     <string name="no_private_messages_found">No private messages found</string>
     <string name="error_loading_private_messages">Error while private messages</string>
     <string name="error_loading_private_messages_page">Error while loading private messages for page {page}</string>
+    <string name="action_new_private_message">New private message</string>
 
     <!-- Login page -->
     <string name="prompt_username">Username</string>
@@ -209,6 +210,13 @@
     <string name="message_successfully_edited">Reply successfully posted</string>
     <string name="message_edit_failure">Failed to edit message</string>
     <string name="user_switch_sucessful">Changed active user to {username}</string>
+
+    <string name="pm_recipient">Recipient username</string>
+    <string name="pm_subject">Message subject</string>
+    <string name="pm_no_recipient">Please enter a recipient name</string>
+    <string name="pm_no_subject">Please enter a subject</string>
+    <string name="pm_successfully_sent">Private message successfully sent</string>
+    <string name="error_sending_pm">Failed to send private message</string>
 
     <!-- Dialogs -->
     <string name="dialog_go_to_page_positive_text">Go !</string>

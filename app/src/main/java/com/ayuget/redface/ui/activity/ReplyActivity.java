@@ -234,16 +234,12 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.dialog_reply);
+        setContentView(getLayoutResource());
 
         Intent intent = getIntent();
         if (intent != null) {
             currentTopic = intent.getParcelableExtra(ARG_TOPIC);
             initialReplyContent = intent.getStringExtra(UIConstants.ARG_REPLY_CONTENT);
-
-            if (currentTopic == null) {
-                throw new IllegalStateException("Current topic is null");
-            }
 
             if (initialReplyContent != null) {
                 replyEditText.setText(initialReplyContent);
@@ -323,11 +319,15 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
         loadDefaultSmileys();
     }
 
+    protected int getLayoutResource() {
+        return R.layout.dialog_reply;
+    }
+
     @Override
     protected void onPause() {
         super.onPause();
 
-        if (!isReplySuccessful() && replyEditText != null) {
+        if (!isReplySuccessful() && replyEditText != null && currentTopic != null) {
             String actualReply = replyEditText.getText().toString();
             boolean hasResponse = actualReply.length() > 0;
             boolean textWasModified = (initialReplyContent == null) || !initialReplyContent.equals(actualReply);
@@ -345,11 +345,13 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
     protected void onResume() {
         super.onResume();
 
-        String storedResponse = responseStore.getResponse(userManager.getActiveUser(), currentTopic);
+        if (currentTopic != null) {
+            String storedResponse = responseStore.getResponse(userManager.getActiveUser(), currentTopic);
 
-        if (storedResponse != null && replyEditText.getText().length() == 0) {
-            replyEditText.setText(storedResponse);
-            replyEditText.setSelection(replyEditText.getText().length());
+            if (storedResponse != null && replyEditText.getText().length() == 0) {
+                replyEditText.setText(storedResponse);
+                replyEditText.setSelection(replyEditText.getText().length());
+            }
         }
     }
 

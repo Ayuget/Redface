@@ -111,6 +111,11 @@ public interface MDService {
     Observable<Response> editPost(User user, Topic topic, int postId, String newMessage, boolean includeSignature);
 
     /**
+     * New private message
+     */
+    Observable<Response> sendNewPrivateMessage(User user, String subject, String recipientUsername, String message, boolean includeSignature);
+
+    /**
      * Marks a certain post in a topic as favorite (will set the topic as favorite in the process)
      */
     Observable<Boolean> markPostAsFavorite(User user, Topic topic, int postId);

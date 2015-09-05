@@ -184,4 +184,12 @@ public class PrivateMessagesActivity extends MultiPaneActivity implements Privat
         transaction.addToBackStack(PM_FRAGMENT_TAG);
         transaction.commit();
     }
+
+    @Override
+    protected void requestMasterPaneRefresh() {
+        PrivateMessageListFragment privateMessageListFragment = (PrivateMessageListFragment) getSupportFragmentManager().findFragmentByTag(PM_LIST_FRAGMENT_TAG);
+        if (privateMessageListFragment != null) {
+            privateMessageListFragment.refreshData();
+        }
+    }
 }

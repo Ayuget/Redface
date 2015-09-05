@@ -26,6 +26,7 @@ import com.ayuget.redface.ui.activity.PrivateMessagesActivity;
 import com.ayuget.redface.ui.activity.ReplyActivity;
 import com.ayuget.redface.ui.activity.SettingsActivity;
 import com.ayuget.redface.ui.activity.TopicsActivity;
+import com.ayuget.redface.ui.activity.WritePrivateMessageActivity;
 import com.ayuget.redface.ui.fragment.DefaultFragment;
 import com.ayuget.redface.ui.fragment.DetailsDefaultFragment;
 import com.ayuget.redface.ui.fragment.HomePreferenceFragment;
@@ -73,7 +74,8 @@ import dagger.Provides;
                 EditPostActivity.class,
                 MetaPageFragment.class,
                 PrivateMessagesActivity.class,
-                PrivateMessageListFragment.class
+                PrivateMessageListFragment.class,
+                WritePrivateMessageActivity.class
         },
         library =  true,
         complete = false

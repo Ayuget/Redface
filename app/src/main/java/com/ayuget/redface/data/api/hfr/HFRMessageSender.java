@@ -185,6 +185,54 @@ public class HFRMessageSender implements MDMessageSender {
     }
 
     @Override
+    public Observable<Response> sendNewPrivateMessage(final User user, final String subject, final String recipientUsername, final String message, final String hashcheck, final boolean includeSignature) {
+        return Observable.create(new Observable.OnSubscribe<Response>() {
+            @Override
+            public void call(Subscriber<? super Response> subscriber) {
+                Log.d(LOG_TAG, String.format("Sending new private message from user '%s' to user '%s'", user.getUsername(), recipientUsername));
+
+                OkHttpClient httpClient = httpClientProvider.getClientForUser(user);
+
+                FormEncodingBuilder formEncodingBuilder = new FormEncodingBuilder();
+                formEncodingBuilder.add("hash_check", hashcheck);
+                formEncodingBuilder.add("cat", "prive");
+                formEncodingBuilder.add("verifrequet", "1100");
+                formEncodingBuilder.add("pseudo", user.getUsername());
+                formEncodingBuilder.add("dest", recipientUsername);
+                formEncodingBuilder.add("signature", includeSignature ? "1" : "0");
+                formEncodingBuilder.add("content_form", message);
+                formEncodingBuilder.add("sujet", subject);
+                formEncodingBuilder.add("emaill", "0");
+                formEncodingBuilder.add("MsgIcon", "20");
+                RequestBody formBody = formEncodingBuilder.build();
+
+                Request request = new Request.Builder()
+                        .url(mdEndpoints.replyUrl())
+                        .post(formBody)
+                        .build();
+
+                try {
+                    com.squareup.okhttp.Response response = httpClient.newCall(request).execute();
+
+                    if (response.isSuccessful()) {
+                        subscriber.onNext(buildResponse(response.body().string()));
+                    }
+                    else {
+                        Log.d(LOG_TAG, String.format("Error HTTP Code, response is : %s", response.body().string()));
+                        subscriber.onNext(Response.buildFailure(ResponseCode.UNKNOWN_ERROR));
+                    }
+
+                    subscriber.onCompleted();
+                }
+                catch (IOException e) {
+                    Log.e(LOG_TAG, "Exception while sending new private message", e);
+                    subscriber.onError(e);
+                }
+            }
+        });
+    }
+
+    @Override
     public Observable<Boolean> markPostAsFavorite(final User user, final Topic topic, final int postId) {
         return Observable.create(new Observable.OnSubscribe<Boolean>() {
             @Override

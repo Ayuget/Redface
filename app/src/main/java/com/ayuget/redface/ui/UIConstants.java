@@ -50,6 +50,7 @@ public class UIConstants {
      * Reply intent
      */
     public static final int REPLY_REQUEST_CODE = 1;
+    public static final int NEW_PM_REQUEST_CODE = 2;
     public static final int REPLY_RESULT_KO = 1;
     public static final String ARG_REPLY_TOPIC = "TOPIC";
     public static final String ARG_REPLY_WAS_EDIT = "EDITED";
