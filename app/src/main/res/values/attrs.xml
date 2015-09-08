@@ -20,6 +20,7 @@
 
     <!-- Text colors -->
     <attr name="textColorPrimary" format="reference|color" />
+    <attr name="textColorInverse" format="reference|color" />
     <attr name="textColorSecondary" format="reference|color" />
     <attr name="textColorRead" format="reference|color" />
 

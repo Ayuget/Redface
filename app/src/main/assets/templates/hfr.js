@@ -86,9 +86,34 @@ function toggleQuoteStatus(link, postId) {
 
     var icon = link.getElementsByTagName("i")[1];
 
-    link.classList.toggle('selected');
-    icon.classList.toggle('fa-minus');
-    icon.classList.toggle('fa-plus');
+    if (icon.classList.contains('fa-minus')) {
+        icon.classList.remove('fa-minus');
+        link.classList.remove('action-selected');
+        icon.classList.add('fa-plus');
+    }
+    else {
+        icon.classList.remove('fa-plus');
+        icon.classList.add('fa-minus');
+        link.classList.add('action-selected');
+    }
+}
+
+function clearQuotedMessages() {
+    var icons = document.getElementsByClassName("fa-minus");
+    var i;
+
+    console.log(icons);
+    for (i = icons.length - 1; i >= 0; i--) {
+        var item = icons[i];
+        item.classList.remove('fa-minus');
+        item.classList.add('fa-plus');
+    }
+
+    var links = document.getElementsByClassName("action-selected");
+    console.log(links);
+    for (i = links.length - 1; i >= 0; i--) {
+        links[i].classList.remove('action-selected');
+    }
 }
 
 /**

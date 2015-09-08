@@ -171,4 +171,13 @@
         <item name="android:padding">8dp</item>
     </style>
 
+    <!-- Contextual action bar -->
+    <style name="TextAppearance.ActionMode" parent="@android:style/TextAppearance">
+        <item name="android:textColor">?attr/textColorInverse</item>
+    </style>
+
+    <style name="Redface.ActionMode" parent="@style/Widget.AppCompat.ActionMode">
+        <item name="android:background">@color/theme_primary</item>
+        <item name="titleTextStyle">@style/TextAppearance.ActionMode</item>
+    </style>
 </resources>

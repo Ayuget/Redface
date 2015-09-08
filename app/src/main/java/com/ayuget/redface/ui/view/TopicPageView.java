@@ -23,7 +23,11 @@ import android.net.Uri;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.ActionMode;
 import android.view.GestureDetector;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.JavascriptInterface;
@@ -57,7 +61,9 @@ import com.ayuget.redface.ui.misc.UiUtils;
 import com.ayuget.redface.ui.template.PostsTemplate;
 import com.ayuget.redface.util.JsExecutor;
 import com.squareup.otto.Bus;
+import com.squareup.phrase.Phrase;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -94,6 +100,16 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
      * here to detect double-tab.
      */
     private GestureDetector doubleTapGestureDetector;
+
+    /**
+     * List of quoted messages, used for multi-quote feature
+     */
+    private ArrayList<Long> quotedMessages;
+
+    /**
+     * Used to display a contextual action bar when multi-quote mode is enabled
+     */
+    private ActionMode quoteActionMode;
 
     @Inject PostsTemplate postsTemplate;
 
@@ -138,6 +154,8 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
             throw new IllegalStateException("View is already initialized");
         }
         else {
+            quotedMessages = new ArrayList<>();
+
             // Deal with double-tap to refresh
             doubleTapGestureDetector = new GestureDetector(context, new DummyGestureListener());
             doubleTapGestureDetector.setOnDoubleTapListener(new GestureDetector.OnDoubleTapListener() {
@@ -205,6 +223,12 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
 
     public void setOnScrollListener(OnScrollListener onScrollListener) {
         this.onScrollListener = onScrollListener;
+    }
+
+    private void updateActionModeTitle() {
+        if (quoteActionMode != null) {
+            quoteActionMode.setTitle(Phrase.from(getContext(), R.string.quoted_messages_plural).put("count", quotedMessages.size()).format());
+        }
     }
 
     @Override
@@ -287,8 +311,81 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
         }
 
         @JavascriptInterface
-        public void toggleQuoteStatus(final int postId) {
+        public void toggleQuoteStatus(final long postId) {
             Log.d(LOG_TAG, String.format("Toggling quote status for post '%d'", postId));
+
+            if (quotedMessages.contains(postId)) {
+                quotedMessages.remove(postId);
+            }
+            else {
+                quotedMessages.add(postId);
+
+            }
+
+            if (quotedMessages.size() == 0 && quoteActionMode != null) {
+                TopicPageView.this.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        quoteActionMode.finish();
+                        quoteActionMode = null;
+                    }
+                });
+            }
+            else {
+                if (quoteActionMode == null) {
+                    TopicPageView.this.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            quoteActionMode = startActionMode(new ActionMode.Callback() {
+                                @Override
+                                public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                                    if (quotedMessages.size() > 1) {
+                                        mode.setTitle(Phrase.from(getContext(), R.string.quoted_messages_plural).put("count", quotedMessages.size()).format());
+                                    } else {
+                                        mode.setTitle(R.string.quoted_messages);
+                                    }
+
+                                    MenuInflater inflater = mode.getMenuInflater();
+                                    inflater.inflate(R.menu.menu_multi_quote, menu);
+                                    return true;
+                                }
+
+                                @Override
+                                public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                                    return false;
+                                }
+
+                                @Override
+                                public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                                    switch (item.getItemId()) {
+                                        case R.id.action_multiquote:
+                                            Log.d(LOG_TAG, "Multiquote !!!");
+                                            return true;
+                                        default:
+                                            return false;
+                                    }
+                                }
+
+                                @Override
+                                public void onDestroyActionMode(ActionMode mode) {
+                                    quotedMessages.clear();
+                                    quoteActionMode = null;
+                                    JsExecutor.execute(TopicPageView.this, "clearQuotedMessages()");
+                                }
+                            });
+                        }
+                    });
+                }
+                else {
+                    TopicPageView.this.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateActionModeTitle();
+                            }
+
+                    });
+                }
+            }
         }
 
         @JavascriptInterface

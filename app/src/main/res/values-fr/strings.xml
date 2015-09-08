@@ -154,4 +154,7 @@
     <string name="pm_no_subject">Veuillez entrer un sujet</string>
     <string name="pm_successfully_sent">Message privé envoyé avec succès</string>
     <string name="error_sending_pm">Erreur d\'envoi du message privé</string>
+    <string name="action_multiquote">Citer ces messages</string>
+    <string name="quoted_messages">1 message cité</string>
+    <string name="quoted_messages_plural">{count} messages cités</string>
 </resources>

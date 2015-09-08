@@ -31,11 +31,14 @@
         <item name="windowActionModeOverlay">true</item>
         <item name="actionBarStyle">@style/RedfaceToolbar</item>
         <item name="actionModeBackground">@color/theme_primary</item>
+        <item name="actionModeStyle">@style/Redface.ActionMode</item>
+        <item name="actionModeCloseDrawable">@drawable/ic_action_clear</item>
 
         <!-- Theme main colors -->
         <item name="android:windowBackground">@color/app_background_dark</item>
         <item name="appBackgroundColor">@color/app_background_dark</item>
         <item name="textColorPrimary">@color/text_primary_dark</item>
+        <item name="textColorInverse">@android:color/white</item>
         <item name="textColorSecondary">@color/text_secondary_dark</item>
         <item name="textColorRead">@color/text_read_dark</item>
 
@@ -73,11 +76,14 @@
         <item name="windowActionModeOverlay">true</item>
         <item name="actionBarStyle">@style/RedfaceToolbar</item>
         <item name="actionModeBackground">@color/theme_primary</item>
+        <item name="actionModeStyle">@style/Redface.ActionMode</item>
+        <item name="actionModeCloseDrawable">@drawable/ic_action_clear</item>
 
         <!-- Theme main colors -->
         <item name="android:windowBackground">@color/app_background_light</item>
         <item name="appBackgroundColor">@color/app_background_light</item>
         <item name="textColorPrimary">@color/text_primary_light</item>
+        <item name="textColorInverse">@android:color/white</item>
         <item name="textColorSecondary">@color/text_secondary_light</item>
         <item name="textColorRead">@color/text_read_light</item>
 

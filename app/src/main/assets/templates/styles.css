@@ -270,7 +270,7 @@ img {
     line-height: 1.9em;
 }
 
-.post-action.selected {
+.post-action.action-selected {
     background: #b3afaf;
 }
 
