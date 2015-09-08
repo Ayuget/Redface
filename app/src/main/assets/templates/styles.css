@@ -86,8 +86,8 @@ body.redface-dark {
 }
 
 .post-action {
-    width: 48px;
-    height: 26px;
+    width: 44px;
+    height: 31px;
     display: table-cell;
     vertical-align: middle;
     text-align: center;
@@ -250,6 +250,28 @@ img {
 .code li {
     overflow: auto;
     word-wrap: break-word;
+}
+
+.post-action.action-lg {
+    padding-top: 14px;
+    height: 33px;
+}
+
+.post-actions .fa-stack {
+    vertical-align: -50%;
+}
+
+.post-actions .fa-stack-1x {
+    line-height: normal;
+}
+
+.post-actions .fa-sm {
+    font-size: 0.5em;
+    line-height: 1.9em;
+}
+
+.post-action.selected {
+    background: #b3afaf;
 }
 
 /**

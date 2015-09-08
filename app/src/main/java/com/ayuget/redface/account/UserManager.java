@@ -76,6 +76,15 @@ public class UserManager {
         }
     }
 
+    public boolean isActiveUser(String username) {
+        if (getActiveUser() == null) {
+            return false;
+        }
+        else {
+            return username.toLowerCase().equals(getActiveUser().getUsername().toLowerCase());
+        }
+    }
+
     public void setActiveUser(User user) {
         Log.d(LOG_TAG, String.format("Updating active user to '%s'", user.getUsername()));
         settings.updateActiveUsername(user.getUsername());

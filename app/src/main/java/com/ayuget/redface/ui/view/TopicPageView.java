@@ -108,7 +108,7 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
     @Inject RedfaceSettings appSettings;
 
     public interface OnScrollListener {
-        public void onScrolled(int dx, int dy);
+        void onScrolled(int dx, int dy);
     }
 
     private OnScrollListener onScrollListener;
@@ -284,6 +284,11 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
                     bus.post(new QuotePostEvent(topic, postId));
                 }
             });
+        }
+
+        @JavascriptInterface
+        public void toggleQuoteStatus(final int postId) {
+            Log.d(LOG_TAG, String.format("Toggling quote status for post '%d'", postId));
         }
 
         @JavascriptInterface

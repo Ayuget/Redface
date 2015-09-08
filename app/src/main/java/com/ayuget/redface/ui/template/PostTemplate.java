@@ -33,14 +33,14 @@ public class PostTemplate extends HTMLTemplate<Post> {
 
     private PostExtraDetailsTemplate extraDetailsTemplate;
 
-    private OverflowIconTemplate overflowIconTemplate;
+    private PostActionsTemplate postActionsTemplate;
 
-    public PostTemplate(Context context, AvatarTemplate avatarTemplate, EditIconTemplate editIconTemplate, PostExtraDetailsTemplate extraDetailsTemplate, OverflowIconTemplate overflowIconTemplate) {
+    public PostTemplate(Context context, AvatarTemplate avatarTemplate, EditIconTemplate editIconTemplate, PostExtraDetailsTemplate extraDetailsTemplate, PostActionsTemplate postActionsTemplate) {
         super(context, POST_TEMPLATE);
         this.avatarTemplate = avatarTemplate;
         this.editIconTemplate = editIconTemplate;
         this.extraDetailsTemplate = extraDetailsTemplate;
-        this.overflowIconTemplate = overflowIconTemplate;
+        this.postActionsTemplate = postActionsTemplate;
     }
 
     @Override
@@ -58,7 +58,7 @@ public class PostTemplate extends HTMLTemplate<Post> {
                         .put("post_id_quote", postId)
                         .put("edit_icon", editIconTemplate.render(post))
                         .put("extra_details", extraDetailsTemplate.render(post))
-                        .put("overflow_icon", overflowIconTemplate.render(post))
+                        .put("post_actions", postActionsTemplate.render(post))
                         .format()
                         .toString()
         );

@@ -6,17 +6,22 @@
             <div class="post-date">{posted_on}</div>
         </div>
         <div class="post-actions">
-            <a class="post-action" material onClick="Android.quotePost({post_id_quote})"><i class="fa fa-quote-right fa-3"></i></a>
+            <a class="post-action action-lg" material onClick="Android.quotePost({post_id_quote})"><i class="fa fa-lg fa-commenting-o"></i></a>
+
+            <a class="post-action action-lg" material onClick="toggleQuoteStatus(this, {post_id_quote})">
+                <span class="fa-stack fa-lg">
+                    <i class="fa fa-comment-o fa-stack-1x"></i>
+                    <i class="fa fa-plus fa-sm fa-stack-1x"></i>
+                </span>
+             </a>
             {edit_icon}
-            {overflow_icon}
+
+            <!-- Overflow button which triggers the dropdown -->
+            <a class="post-action" onclick="toggleOverflowMenu('overflow{post_id}')" material><i class="fa fa-ellipsis-v"></i></a>
         </div>
     </div>
     <ul class="post-overflow-icons" id="overflow{post_id}">
-        <li><a material onclick="Android.editPost({post_id})"><i class="fa fa-edit fa-3"></i></a></li>
-        <li><a material onclick="Android.deletePost({post_id})"><i class="fa fa-trash fa-3"></i></a></li>
-        <li><a material onclick="favoritePost({post_id})"><i class="fa fa-star fa-3"></i></a></li>
-        <li><a material onclick="Android.reportPost({post_id})"><i class="fa fa-exclamation-triangle fa-3"></i></a></li>
-        <li><a material onclick="Android.writePrivateMessage('{author}')"><i class="fa fa-envelope fa-3"></i></a></li>
+        {post_actions}
     </ul>
     <div class="post-content">
         {content}

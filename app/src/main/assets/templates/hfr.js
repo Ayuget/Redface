@@ -81,6 +81,16 @@ function favoritePost(postId) {
     toggleOverflowMenu(postId);
 }
 
+function toggleQuoteStatus(link, postId) {
+    Android.toggleQuoteStatus(postId);
+
+    var icon = link.getElementsByTagName("i")[1];
+
+    link.classList.toggle('selected');
+    icon.classList.toggle('fa-minus');
+    icon.classList.toggle('fa-plus');
+}
+
 /**
  *
  * Kindly provided by : http://codepen.io/fronterweb/pen/jcwgx
