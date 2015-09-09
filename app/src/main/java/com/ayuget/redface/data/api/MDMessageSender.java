@@ -30,4 +30,8 @@ public interface MDMessageSender {
     Observable<Response> sendNewPrivateMessage(User user, String subject, String recipientUsername, String message, String hashcheck, boolean includeSignature);
 
     Observable<Boolean> markPostAsFavorite(User user, Topic topic, int postId);
+
+    Observable<Boolean> deletePost(User user, Topic topic, int postId, final String hashcheck);
+
+    Observable<Boolean> reportPost(User user, Topic topic, int postId);
 }

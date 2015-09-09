@@ -164,6 +164,9 @@
     <string name="marking_as_favorite_in_progress">Marking as favorite…</string>
     <string name="mark_as_favorite_failed">Failed to mark as favorite</string>
     <string name="mark_as_favorite_success">Successfully marked as favorite !</string>
+    <string name="delete_post_in_progress">Deleting post…</string>
+    <string name="delete_post_failed">Failed to delete post</string>
+    <string name="delete_post_success">Successfully deleted post !</string>
     <string name="action_multiquote">Quote those messages</string>
     <string name="quoted_messages">1 quoted message</string>
     <string name="quoted_messages_plural">{count} quoted messages</string>

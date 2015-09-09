@@ -51,6 +51,7 @@ public class HFRMessageSender implements MDMessageSender {
     private static final Pattern POST_FLOOD_PATTERN = Pattern.compile("(.*)(réponses consécutives)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private static final Pattern TOPIC_FLOOD_PATTERN = Pattern.compile("(.*)(nouveaux sujets consécutifs)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private static final Pattern FAVORITE_SUCCESFULLY_ADDED = Pattern.compile("(.*)(Favori positionné avec succès)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private static final Pattern MESSAGE_SUCCESSFULLY_DELETED = Pattern.compile("(.*)(Message effacé avec succès)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
 
     private final HTTPClientProvider httpClientProvider;
@@ -266,6 +267,58 @@ public class HFRMessageSender implements MDMessageSender {
                 }
             }
         });
+    }
+
+    @Override
+    public Observable<Boolean> deletePost(final User user, final Topic topic, final int postId, final String hashcheck) {
+        return Observable.create(new Observable.OnSubscribe<Boolean>() {
+            @Override
+            public void call(Subscriber<? super Boolean> subscriber) {
+                Log.d(LOG_TAG, String.format("Deleting post '%d' as user '%s' in topic '%s'", postId, user.getUsername(), topic.getSubject()));
+
+                OkHttpClient httpClient = httpClientProvider.getClientForUser(user);
+
+                FormEncodingBuilder formEncodingBuilder = new FormEncodingBuilder();
+                formEncodingBuilder.add("hash_check", hashcheck);
+                formEncodingBuilder.add("cat", String.valueOf(topic.getCategory().getId()));
+                formEncodingBuilder.add("pseudo", user.getUsername());
+                formEncodingBuilder.add("numreponse", String.valueOf(postId));
+                formEncodingBuilder.add("post", String.valueOf(topic.getId()));
+                formEncodingBuilder.add("delete", "1");
+
+                RequestBody formBody = formEncodingBuilder.build();
+
+                Request request = new Request.Builder()
+                        .url(mdEndpoints.deletePost())
+                        .post(formBody)
+                        .build();
+
+                try {
+                    com.squareup.okhttp.Response response = httpClient.newCall(request).execute();
+
+                    if (response.isSuccessful()) {
+                        final String responseBody = response.body().string();
+                        boolean success = matchesPattern(MESSAGE_SUCCESSFULLY_DELETED, responseBody);
+                        subscriber.onNext(success);
+                    }
+                    else {
+                        Log.d(LOG_TAG, String.format("Error HTTP Code, response is : %s", response.body().string()));
+                        subscriber.onNext(false);
+                    }
+
+                    subscriber.onCompleted();
+                }
+                catch (IOException e) {
+                    Log.e(LOG_TAG, "Exception while deleteing post", e);
+                    subscriber.onError(e);
+                }
+            }
+        });
+    }
+
+    @Override
+    public Observable<Boolean> reportPost(User user, Topic topic, int postId) {
+        return null;
     }
 
     private Response buildResponse(String response) {

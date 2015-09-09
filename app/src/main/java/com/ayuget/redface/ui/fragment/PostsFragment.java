@@ -384,6 +384,7 @@ public class PostsFragment extends BaseFragment {
 
     @Subscribe public void onPageRefreshRequestEvent(PageRefreshRequestEvent event) {
         if (event.getTopic().getId() == topic.getId()) {
+            Log.d(LOG_TAG, "Refresh requested event");
             wasRefreshed = true;
 
             currentPagePosition = new PagePosition(PagePosition.BOTTOM);

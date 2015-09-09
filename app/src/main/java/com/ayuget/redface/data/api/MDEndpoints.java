@@ -69,6 +69,10 @@ public interface MDEndpoints {
 
     public String favorite(Category category, Topic topic, int postId);
 
+    public String deletePost();
+
+    public String reportPost();
+
     public String privateMessages();
 
     public String privateMessages(int page);

@@ -262,6 +262,19 @@ public class HFREndpoints implements MDEndpoints {
     }
 
     @Override
+    public String deletePost() {
+        return Phrase.from(EDIT_FORM_URL)
+                .put("base_url", FORUM_BASE_URL)
+                .format()
+                .toString();
+    }
+
+    @Override
+    public String reportPost() {
+        return null;
+    }
+
+    @Override
     public String privateMessages() {
         return privateMessages(1);
     }

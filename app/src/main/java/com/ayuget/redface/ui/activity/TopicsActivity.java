@@ -23,6 +23,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -33,6 +34,7 @@ import com.ayuget.redface.data.api.model.Category;
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.api.model.TopicStatus;
 import com.ayuget.redface.data.api.model.User;
+import com.ayuget.redface.data.api.model.misc.PostAction;
 import com.ayuget.redface.data.rx.EndlessObserver;
 import com.ayuget.redface.data.rx.SubscriptionHandler;
 import com.ayuget.redface.data.state.CategoriesStore;
@@ -41,6 +43,8 @@ import com.ayuget.redface.ui.event.EditPostEvent;
 import com.ayuget.redface.ui.event.GoToTopicEvent;
 import com.ayuget.redface.ui.event.InternalLinkClickedEvent;
 import com.ayuget.redface.ui.event.MarkPostAsFavoriteEvent;
+import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
+import com.ayuget.redface.ui.event.PostActionEvent;
 import com.ayuget.redface.ui.event.QuotePostEvent;
 import com.ayuget.redface.ui.event.TopicContextItemSelectedEvent;
 import com.ayuget.redface.ui.fragment.DefaultFragment;
@@ -399,22 +403,69 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
         }));
     }
 
-    @Subscribe public void onMarkPostAsFavorite(final MarkPostAsFavoriteEvent event) {
-        SnackbarHelper.make(TopicsActivity.this, R.string.marking_as_favorite_in_progress).show();
+    @Subscribe public void onPostActionEvent(final PostActionEvent event) {
+        switch (event.getPostAction()) {
+            case FAVORITE:
+                markPostAsFavorite(event.getTopic(), event.getPostId());
+                break;
+            case DELETE:
+                deletePost(event.getTopic(), event.getPostId());
+                break;
+            default:
+                Log.e(LOG_TAG, "Action not handled");
+                break;
+        }
+    }
 
-        subscribe(mdService.markPostAsFavorite(userManager.getActiveUser(), event.getTopic(), event.getPostId())
+    /**
+     * Marks a given post as favorite
+     */
+    public void markPostAsFavorite(Topic topic, int postId) {
+        Toast.makeText(TopicsActivity.this, R.string.marking_as_favorite_in_progress, Toast.LENGTH_SHORT).show();
+
+        subscribe(mdService.markPostAsFavorite(userManager.getActiveUser(), topic, postId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new EndlessObserver<Boolean>() {
                     @Override
-                    public void onNext(Boolean aBoolean) {
-                        SnackbarHelper.make(TopicsActivity.this, R.string.mark_as_favorite_success).show();
+                    public void onNext(Boolean success) {
+                        if (! success) {
+                            Toast.makeText(TopicsActivity.this, R.string.mark_as_favorite_failed, Toast.LENGTH_SHORT).show();
+                        }
                     }
 
                     @Override
                     public void onError(Throwable throwable) {
                         Log.e(LOG_TAG, "Unexpected error while marking a post as favorite", throwable);
-                        SnackbarHelper.makeError(TopicsActivity.this, R.string.mark_as_favorite_failed).show();
+                        Toast.makeText(TopicsActivity.this, R.string.mark_as_favorite_failed, Toast.LENGTH_SHORT).show();
+                    }
+                }));
+    }
+
+    /**
+     * Deletes a post
+     */
+    public void deletePost(final Topic topic, int postId) {
+        Toast.makeText(TopicsActivity.this, R.string.delete_post_in_progress, Toast.LENGTH_SHORT).show();
+
+        subscribe(mdService.deletePost(userManager.getActiveUser(), topic, postId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new EndlessObserver<Boolean>() {
+                    @Override
+                    public void onNext(Boolean success) {
+                        if (success) {
+                            bus.post(new PageRefreshRequestEvent(topic));
+                        }
+                        else {
+                            Toast.makeText(TopicsActivity.this, R.string.delete_post_failed, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable throwable) {
+                        Log.e(LOG_TAG, "Unexpected error while deleting post", throwable);
+                        Toast.makeText(TopicsActivity.this, R.string.delete_post_failed, Toast.LENGTH_SHORT).show();
                     }
                 }));
     }

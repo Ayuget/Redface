@@ -342,4 +342,14 @@ public class HFRForumService implements MDService {
                 })
                 .toList();
     }
+
+    @Override
+    public Observable<Boolean> reportPost(User user, Topic topic, int postId) {
+        return null;
+    }
+
+    @Override
+    public Observable<Boolean> deletePost(User user, Topic topic, int postId) {
+        return mdMessageSender.deletePost(user, topic, postId, currentHashcheck);
+    }
 }

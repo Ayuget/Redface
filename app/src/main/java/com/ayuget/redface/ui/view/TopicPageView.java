@@ -44,6 +44,7 @@ import com.ayuget.redface.data.api.UrlParser;
 import com.ayuget.redface.data.api.model.Category;
 import com.ayuget.redface.data.api.model.Post;
 import com.ayuget.redface.data.api.model.Topic;
+import com.ayuget.redface.data.api.model.misc.PostAction;
 import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.event.EditPostEvent;
@@ -53,6 +54,7 @@ import com.ayuget.redface.ui.event.InternalLinkClickedEvent;
 import com.ayuget.redface.ui.event.MarkPostAsFavoriteEvent;
 import com.ayuget.redface.ui.event.PageLoadedEvent;
 import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
+import com.ayuget.redface.ui.event.PostActionEvent;
 import com.ayuget.redface.ui.event.QuotePostEvent;
 import com.ayuget.redface.ui.misc.DummyGestureListener;
 import com.ayuget.redface.ui.misc.PagePosition;
@@ -456,7 +458,18 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
             TopicPageView.this.post(new Runnable() {
                 @Override
                 public void run() {
-                    bus.post(new MarkPostAsFavoriteEvent(topic, postId));
+                    bus.post(new PostActionEvent(PostAction.FAVORITE, topic, postId));
+                }
+            });
+        }
+
+        @JavascriptInterface
+        public void deletePost(final int postId) {
+            Log.d(LOG_TAG, String.format("Deleting post '%d'", postId));
+            TopicPageView.this.post(new Runnable() {
+                @Override
+                public void run() {
+                    bus.post(new PostActionEvent(PostAction.DELETE, topic, postId));
                 }
             });
         }

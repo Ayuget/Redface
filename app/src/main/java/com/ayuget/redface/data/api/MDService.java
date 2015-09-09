@@ -119,4 +119,14 @@ public interface MDService {
      * Marks a certain post in a topic as favorite (will set the topic as favorite in the process)
      */
     Observable<Boolean> markPostAsFavorite(User user, Topic topic, int postId);
+
+    /**
+     * Deletes a given post
+     */
+    Observable<Boolean> deletePost(User user, Topic topic, int postId);
+
+    /**
+     * Reports a given post to moderators
+     */
+    Observable<Boolean> reportPost(User user, Topic topic, int postId);
 }

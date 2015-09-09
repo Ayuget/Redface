@@ -159,4 +159,7 @@
     <string name="quoted_messages_plural">{count} messages cités</string>
     <string name="post_added_to_quote">Message correctement cité</string>
     <string name="post_failed_to_quote">Impossible de citer ce message</string>
+    <string name="delete_post_failed">Erreur de suppression du message</string>
+    <string name="delete_post_in_progress">Suppression en cours…</string>
+    <string name="delete_post_success">Message correctement supprimé</string>
 </resources>
