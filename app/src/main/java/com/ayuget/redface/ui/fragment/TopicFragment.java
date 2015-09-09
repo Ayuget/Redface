@@ -16,6 +16,7 @@
 
 package com.ayuget.redface.ui.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.PagerTitleStrip;
@@ -33,7 +34,9 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.ayuget.redface.R;
 import com.ayuget.redface.data.api.model.Topic;
+import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.activity.MultiPaneActivity;
+import com.ayuget.redface.ui.activity.WritePrivateMessageActivity;
 import com.ayuget.redface.ui.adapter.TopicPageAdapter;
 import com.ayuget.redface.ui.event.GoToPostEvent;
 import com.ayuget.redface.ui.event.PageLoadedEvent;
@@ -41,6 +44,7 @@ import com.ayuget.redface.ui.event.PageRefreshedEvent;
 import com.ayuget.redface.ui.event.PageSelectedEvent;
 import com.ayuget.redface.ui.event.ScrollToPostEvent;
 import com.ayuget.redface.ui.event.TopicPageCountUpdatedEvent;
+import com.ayuget.redface.ui.event.WritePrivateMessageEvent;
 import com.ayuget.redface.ui.misc.PagePosition;
 import com.ayuget.redface.ui.misc.SnackbarHelper;
 import com.ayuget.redface.ui.misc.TopicPosition;
@@ -226,6 +230,21 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
             topic.setPagesCount(event.getNewPageCount());
             topicPageAdapter.notifyDataSetChanged();
         }
+    }
+
+    @Subscribe
+    public void onWritePrivateMessage(WritePrivateMessageEvent event) {
+        MultiPaneActivity hostActivity = (MultiPaneActivity) getActivity();
+
+        if (hostActivity.canLaunchReplyActivity()) {
+            hostActivity.setCanLaunchReplyActivity(false);
+
+            Intent intent = new Intent(getActivity(), WritePrivateMessageActivity.class);
+            intent.putExtra(UIConstants.ARG_PM_RECIPIENT, event.getRecipient());
+
+            getActivity().startActivityForResult(intent, UIConstants.NEW_PM_REQUEST_CODE);
+        }
+
     }
 
     @Subscribe

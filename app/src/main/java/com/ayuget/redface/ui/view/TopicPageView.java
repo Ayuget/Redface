@@ -56,6 +56,7 @@ import com.ayuget.redface.ui.event.PageLoadedEvent;
 import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
 import com.ayuget.redface.ui.event.PostActionEvent;
 import com.ayuget.redface.ui.event.QuotePostEvent;
+import com.ayuget.redface.ui.event.WritePrivateMessageEvent;
 import com.ayuget.redface.ui.misc.DummyGestureListener;
 import com.ayuget.redface.ui.misc.PagePosition;
 import com.ayuget.redface.ui.misc.ThemeManager;
@@ -472,6 +473,20 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
                     bus.post(new PostActionEvent(PostAction.DELETE, topic, postId));
                 }
             });
+        }
+
+        @JavascriptInterface
+        public void writePrivateMessage(final int postId) {
+            for (final Post post : posts) {
+                if (post.getId() == postId) {
+                    TopicPageView.this.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            bus.post(new WritePrivateMessageEvent(post.getAuthor()));
+                        }
+                    });
+                }
+            }
         }
 
         @JavascriptInterface

@@ -44,7 +44,9 @@ public class PostActionsTemplate extends HTMLTemplate<Post> {
         POST_ACTIONS_MAPPING.put(PostAction.EDIT, Pair.create("editPost", "edit"));
         POST_ACTIONS_MAPPING.put(PostAction.DELETE, Pair.create("deletePost", "trash"));
         POST_ACTIONS_MAPPING.put(PostAction.FAVORITE, Pair.create("markPostAsFavorite", "star"));
-        POST_ACTIONS_MAPPING.put(PostAction.REPORT, Pair.create("reportPost", "exclamation-triangle"));
+
+        // SOON :O
+        // POST_ACTIONS_MAPPING.put(PostAction.REPORT, Pair.create("reportPost", "exclamation-triangle"));
         POST_ACTIONS_MAPPING.put(PostAction.WRITE_PRIVATE_MESSAGE, Pair.create("writePrivateMessage", "envelope"));
     }
 
@@ -62,6 +64,7 @@ public class PostActionsTemplate extends HTMLTemplate<Post> {
         Pair<String, String> details = POST_ACTIONS_MAPPING.get(action);
         stream.append(String.format(POST_ACTION_HTML, details.first, postId, details.second));
     }
+
     @Override
     protected void render(Post post, Phrase templateContent, StringBuilder stream) {
         if (userManager.isActiveUser(post.getAuthor())) {
@@ -69,7 +72,6 @@ public class PostActionsTemplate extends HTMLTemplate<Post> {
             renderAction(PostAction.DELETE, post.getId(), stream);
         }
 
-        renderAction(PostAction.REPORT, post.getId(), stream);
         renderAction(PostAction.FAVORITE, post.getId(), stream);
         renderAction(PostAction.WRITE_PRIVATE_MESSAGE, post.getId(), stream);
     }

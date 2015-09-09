@@ -16,6 +16,8 @@
 
 package com.ayuget.redface.ui.activity;
 
+import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,6 +39,19 @@ public class WritePrivateMessageActivity extends ReplyActivity {
     private EditText pmSubject;
 
     private SubscriptionHandler<User, Response> newPMSubscriptionHandler = new SubscriptionHandler<>();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        Intent intent = getIntent();
+        if (intent != null) {
+            String initialRecipient = intent.getStringExtra(UIConstants.ARG_PM_RECIPIENT);
+            if (initialRecipient != null) {
+                recipientUsername.setText(initialRecipient);
+            }
+        }
+    }
 
     @Override
     protected boolean canSwitchUser() {
