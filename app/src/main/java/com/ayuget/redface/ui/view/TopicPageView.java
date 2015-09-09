@@ -21,6 +21,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.ActionMode;
@@ -73,6 +75,8 @@ import hugo.weaving.DebugLog;
 
 public class TopicPageView extends WebView implements View.OnTouchListener {
     private static final String LOG_TAG = TopicPageView.class.getSimpleName();
+
+    private static final String ARG_QUOTED_MESSAGES = "quoted_messages";
 
     /**
      * The post currently displayed in the webview. These posts will be encoded to HTML with
@@ -127,7 +131,13 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
         void onScrolled(int dx, int dy);
     }
 
+    public interface OnBatchOperationListener {
+        void onBatchOperation(boolean active);
+    }
+
     private OnScrollListener onScrollListener;
+
+    private OnBatchOperationListener onBatchOperationListener;
 
     @SuppressLint("SetJavaScriptEnabled")
     public TopicPageView(Context context) {
@@ -225,6 +235,10 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
         this.onScrollListener = onScrollListener;
     }
 
+    public void setOnBatchOperationListener(OnBatchOperationListener onBatchOperationListener) {
+        this.onBatchOperationListener = onBatchOperationListener;
+    }
+
     private void updateActionModeTitle() {
         if (quoteActionMode != null) {
             quoteActionMode.setTitle(Phrase.from(getContext(), R.string.quoted_messages_plural).put("count", quotedMessages.size()).format());
@@ -292,6 +306,55 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
         JsExecutor.execute(this, String.format("scrollToElement('post%d')", postId));
     }
 
+    private void startMultiQuoteMode() {
+        quoteActionMode = startActionMode(new ActionMode.Callback() {
+            @Override
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                if (quotedMessages.size() > 1) {
+                    mode.setTitle(Phrase.from(getContext(), R.string.quoted_messages_plural).put("count", quotedMessages.size()).format());
+                } else {
+                    mode.setTitle(R.string.quoted_messages);
+                }
+
+                MenuInflater inflater = mode.getMenuInflater();
+                inflater.inflate(R.menu.menu_multi_quote, menu);
+
+                if (onBatchOperationListener != null) {
+                    onBatchOperationListener.onBatchOperation(true);
+                }
+
+                return true;
+            }
+
+            @Override
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                return false;
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.action_multiquote:
+                        Log.d(LOG_TAG, "Multiquote !!!");
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+                quotedMessages.clear();
+                quoteActionMode = null;
+                JsExecutor.execute(TopicPageView.this, "clearQuotedMessages()");
+
+                if (onBatchOperationListener != null) {
+                    onBatchOperationListener.onBatchOperation(false);
+                }
+            }
+        });
+    }
+
     private class JsInterface {
         Context context;
 
@@ -328,6 +391,9 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
                     public void run() {
                         quoteActionMode.finish();
                         quoteActionMode = null;
+                        if (onBatchOperationListener != null) {
+                            onBatchOperationListener.onBatchOperation(false);
+                        }
                     }
                 });
             }
@@ -336,43 +402,7 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
                     TopicPageView.this.post(new Runnable() {
                         @Override
                         public void run() {
-                            quoteActionMode = startActionMode(new ActionMode.Callback() {
-                                @Override
-                                public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                                    if (quotedMessages.size() > 1) {
-                                        mode.setTitle(Phrase.from(getContext(), R.string.quoted_messages_plural).put("count", quotedMessages.size()).format());
-                                    } else {
-                                        mode.setTitle(R.string.quoted_messages);
-                                    }
-
-                                    MenuInflater inflater = mode.getMenuInflater();
-                                    inflater.inflate(R.menu.menu_multi_quote, menu);
-                                    return true;
-                                }
-
-                                @Override
-                                public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                                    return false;
-                                }
-
-                                @Override
-                                public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                                    switch (item.getItemId()) {
-                                        case R.id.action_multiquote:
-                                            Log.d(LOG_TAG, "Multiquote !!!");
-                                            return true;
-                                        default:
-                                            return false;
-                                    }
-                                }
-
-                                @Override
-                                public void onDestroyActionMode(ActionMode mode) {
-                                    quotedMessages.clear();
-                                    quoteActionMode = null;
-                                    JsExecutor.execute(TopicPageView.this, "clearQuotedMessages()");
-                                }
-                            });
+                            startMultiQuoteMode();
                         }
                     });
                 }

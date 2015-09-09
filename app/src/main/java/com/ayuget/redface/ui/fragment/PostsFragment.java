@@ -22,6 +22,7 @@ import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -117,6 +118,7 @@ public class PostsFragment extends BaseFragment {
 
         if (topicPageView != null) {
             topicPageView.setOnScrollListener(null);
+            topicPageView.setOnBatchOperationListener(null);
             topicPageView.removeAllViews();
             topicPageView.destroy();
 
@@ -205,12 +207,25 @@ public class PostsFragment extends BaseFragment {
             public void onScrolled(int dx, int dy) {
                 if (dy < 0) {
                     hideReplyButton();
-                }
-                else {
+                } else {
                     showReplyButton();
                 }
             }
         });
+
+        // Forward batch operation event to parent fragment. This will be used to style the
+        // PagerTitleStrip correctly
+        topicPageView.setOnBatchOperationListener(new TopicPageView.OnBatchOperationListener() {
+            @Override
+            public void onBatchOperation(boolean active) {
+                Fragment parent = getParentFragment();
+
+                if (parent != null) {
+                    ((TopicFragment) parent).onBatchOperation(active);
+                }
+            }
+        });
+
 
         if (userManager.getActiveUser().isGuest()) {
             replyButton.setVisibility(View.INVISIBLE);

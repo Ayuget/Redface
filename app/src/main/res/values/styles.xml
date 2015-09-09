@@ -96,7 +96,7 @@
     </style>
 
     <style name="RedfaceTopicPagerStrip">
-        <item name="android:background">@color/pager_strip_background</item>
+        <item name="android:background">?attr/pagerTitleStripBackground</item>
         <item name="android:textColor">@color/tabs_text_color</item>
     </style>
 
@@ -177,7 +177,6 @@
     </style>
 
     <style name="Redface.ActionMode" parent="@style/Widget.AppCompat.ActionMode">
-        <item name="android:background">@color/theme_primary</item>
         <item name="titleTextStyle">@style/TextAppearance.ActionMode</item>
     </style>
 </resources>

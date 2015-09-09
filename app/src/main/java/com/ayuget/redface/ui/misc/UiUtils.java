@@ -99,4 +99,12 @@ public class UiUtils {
     public static int getFullyReadTopicIconBackgroundColor(Context context) {
         return resolveColorAttribute(context, R.attr.fullyReadTopicIconBackgroundColor);
     }
+
+    public static int getRegularPagerTitleStripBackgroundColor(Context context) {
+        return resolveColorAttribute(context, R.attr.pagerTitleStripBackground);
+    }
+
+    public static int getActionModeBackgroundColor(Context context) {
+        return resolveColorAttribute(context, R.attr.actionModeBackground);
+    }
 }

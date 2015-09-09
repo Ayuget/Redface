@@ -18,6 +18,7 @@ package com.ayuget.redface.ui.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.view.PagerTitleStrip;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -43,6 +44,7 @@ import com.ayuget.redface.ui.event.TopicPageCountUpdatedEvent;
 import com.ayuget.redface.ui.misc.PagePosition;
 import com.ayuget.redface.ui.misc.SnackbarHelper;
 import com.ayuget.redface.ui.misc.TopicPosition;
+import com.ayuget.redface.ui.misc.UiUtils;
 import com.hannesdorfmann.fragmentargs.annotation.Arg;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.squareup.otto.Subscribe;
@@ -68,6 +70,9 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
     @InjectView(R.id.pager)
     ViewPager pager;
+
+    @InjectView(R.id.titlestrip)
+    PagerTitleStrip pagerTitleStrip;
 
     /**
      * Topic currently displayed
@@ -177,6 +182,22 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
         }
 
         toolbar.setTitle(topic.getSubject());
+    }
+
+    /**
+     * Method to be invoked by child fragments when a batch operation on Posts has started.
+     */
+    public void onBatchOperation(boolean active) {
+        MultiPaneActivity hostActivity = (MultiPaneActivity) getActivity();
+
+        if (! hostActivity.isTwoPaneMode()) {
+            if (active) {
+                pagerTitleStrip.setBackgroundColor(UiUtils.getActionModeBackgroundColor(getActivity()));
+            }
+            else {
+                pagerTitleStrip.setBackgroundColor(UiUtils.getRegularPagerTitleStripBackgroundColor(getActivity()));
+            }
+        }
     }
 
     /**

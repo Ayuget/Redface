@@ -38,6 +38,7 @@
     <!-- Toolbar theme -->
     <attr name="toolbarTheme" format="reference" />
     <attr name="toolbarPopupTheme" format="reference" />
+    <attr name="pagerTitleStripBackground" format="reference|color" />
     <attr name="tabletLandscapePagerBackground" format="reference|color" />
 
     <!-- Reply toolbars -->
