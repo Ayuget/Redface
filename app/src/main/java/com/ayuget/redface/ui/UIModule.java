@@ -43,6 +43,7 @@ import com.ayuget.redface.ui.template.PostActionsTemplate;
 import com.ayuget.redface.ui.template.PostExtraDetailsTemplate;
 import com.ayuget.redface.ui.template.PostTemplate;
 import com.ayuget.redface.ui.template.PostsTemplate;
+import com.ayuget.redface.ui.template.QuickActionsTemplate;
 import com.ayuget.redface.ui.template.SmileyTemplate;
 import com.ayuget.redface.ui.template.SmileysTemplate;
 import com.ayuget.redface.ui.view.SmileySelectorView;
@@ -89,8 +90,12 @@ public class UIModule {
         return new SmileyTemplate(app.getApplicationContext());
     }
 
-    @Provides @Singleton PostTemplate providePostTemplate(RedfaceApp app, AvatarTemplate avatarTemplate, EditIconTemplate editIconTemplate, PostExtraDetailsTemplate extraDetailsTemplate, PostActionsTemplate postActionsTemplate) {
-        return new PostTemplate(app.getApplicationContext(), avatarTemplate, editIconTemplate, extraDetailsTemplate, postActionsTemplate);
+    @Provides @Singleton QuickActionsTemplate provideQuickActions(RedfaceApp app, UserManager userManager) {
+        return new QuickActionsTemplate(app.getApplicationContext(), userManager);
+    }
+
+    @Provides @Singleton PostTemplate providePostTemplate(RedfaceApp app, UserManager userManager, AvatarTemplate avatarTemplate, PostExtraDetailsTemplate extraDetailsTemplate, PostActionsTemplate postActionsTemplate, QuickActionsTemplate quickActionsTemplate) {
+        return new PostTemplate(app.getApplicationContext(), userManager, avatarTemplate, extraDetailsTemplate, postActionsTemplate, quickActionsTemplate);
     }
 
     @Provides @Singleton PostsTemplate providePostsTemplate(RedfaceApp app, PostTemplate postTemplate, ThemeManager themeManager) {
@@ -99,10 +104,6 @@ public class UIModule {
 
     @Provides @Singleton SmileysTemplate provideSmileysTemplate(RedfaceApp app, SmileyTemplate smileyTemplate, ThemeManager themeManager) {
         return new SmileysTemplate(app.getApplicationContext(), smileyTemplate, themeManager);
-    }
-
-    @Provides @Singleton EditIconTemplate provideEditIconTemplate(RedfaceApp app, UserManager userManager) {
-        return new EditIconTemplate(app.getApplicationContext(), userManager);
     }
 
     @Provides @Singleton PostActionsTemplate providePostActionsTemplate(RedfaceApp app, UserManager userManager) {

@@ -253,8 +253,8 @@ img {
 }
 
 .post-action.action-lg {
-    padding-top: 14px;
-    height: 33px;
+    padding-top: 12px;
+    height: 34px;
 }
 
 .post-actions .fa-stack {
@@ -272,6 +272,10 @@ img {
 
 .post-action.action-selected {
     background: #b3afaf;
+}
+
+.redface-dark .post-action.action-selected {
+    background: #27292b;
 }
 
 /**

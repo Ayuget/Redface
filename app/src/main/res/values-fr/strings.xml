@@ -157,4 +157,6 @@
     <string name="action_multiquote">Citer ces messages</string>
     <string name="quoted_messages">1 message cité</string>
     <string name="quoted_messages_plural">{count} messages cités</string>
+    <string name="post_added_to_quote">Message correctement cité</string>
+    <string name="post_failed_to_quote">Impossible de citer ce message</string>
 </resources>

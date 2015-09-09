@@ -29,14 +29,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.ayuget.redface.R;
 import com.ayuget.redface.RedfaceApp;
 import com.ayuget.redface.account.UserManager;
 import com.ayuget.redface.data.DataService;
+import com.ayuget.redface.data.api.MDService;
 import com.ayuget.redface.data.api.model.Post;
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.rx.EndlessObserver;
+import com.ayuget.redface.data.rx.SubscriptionHandler;
 import com.ayuget.redface.ui.activity.MultiPaneActivity;
 import com.ayuget.redface.ui.activity.ReplyActivity;
 import com.ayuget.redface.ui.UIConstants;
@@ -48,12 +51,15 @@ import com.ayuget.redface.ui.misc.PagePosition;
 import com.ayuget.redface.ui.misc.UiUtils;
 import com.ayuget.redface.ui.view.TopicPageView;
 import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.google.common.base.Joiner;
 import com.hannesdorfmann.fragmentargs.annotation.Arg;
 import com.squareup.leakcanary.RefWatcher;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -99,8 +105,9 @@ public class PostsFragment extends BaseFragment {
 
     @Inject DataService dataService;
 
-    @Inject
-    UserManager userManager;
+    @Inject UserManager userManager;
+
+    @Inject MDService mdService;
 
     boolean wasRefreshed = false;
 
@@ -112,13 +119,21 @@ public class PostsFragment extends BaseFragment {
 
     private boolean restoredPosts = false;
 
+    private SubscriptionHandler<Long, String> quoteHandler = new SubscriptionHandler<>();
+
+    /**
+     * Map of currently quoted messages and their corresponding content,
+     * used for multi-quote feature
+     */
+    private Map<Long, String> quotedMessages;
+
     @Override
     public void onDestroy() {
         super.onDestroy();
 
         if (topicPageView != null) {
             topicPageView.setOnScrollListener(null);
-            topicPageView.setOnBatchOperationListener(null);
+            topicPageView.setOnMultiQuoteModeListener(null);
             topicPageView.removeAllViews();
             topicPageView.destroy();
 
@@ -139,6 +154,16 @@ public class PostsFragment extends BaseFragment {
         else {
             currentPagePosition = savedInstanceState.getParcelable(ARG_SAVED_PAGE_POSITION);
         }
+
+        quotedMessages = new HashMap<>();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        // Disable batch actions because, for now, we are unable to save them properly
+        topicPageView.disableBatchActions();
     }
 
     @Override
@@ -213,16 +238,44 @@ public class PostsFragment extends BaseFragment {
             }
         });
 
-        // Forward batch operation event to parent fragment. This will be used to style the
-        // PagerTitleStrip correctly
-        topicPageView.setOnBatchOperationListener(new TopicPageView.OnBatchOperationListener() {
+        topicPageView.setOnMultiQuoteModeListener(new TopicPageView.OnMultiQuoteModeListener() {
             @Override
-            public void onBatchOperation(boolean active) {
+            public void onMultiQuoteModeToggled(boolean active) {
                 Fragment parent = getParentFragment();
 
                 if (parent != null) {
+                    // Multi-quote event is forwarded to parent fragment as a batch operation
                     ((TopicFragment) parent).onBatchOperation(active);
                 }
+            }
+
+            @Override
+            public void onPostAdded(final long postId) {
+              subscribe(quoteHandler.load(postId, mdService.getQuote(userManager.getActiveUser(), topic, (int) postId), new EndlessObserver<String>() {
+                  @Override
+                  public void onNext(String quoteBBCode) {
+                      Toast.makeText(getActivity(), R.string.post_added_to_quote, Toast.LENGTH_SHORT).show();
+                      quotedMessages.put(postId, quoteBBCode);
+                  }
+
+                  @Override
+                  public void onError(Throwable throwable) {
+                      Log.e(LOG_TAG, "Failed to add post to quoted list", throwable);
+                      Toast.makeText(getActivity(), R.string.post_failed_to_quote, Toast.LENGTH_SHORT).show();
+                  }
+              }));
+            }
+
+            @Override
+            public void onPostRemoved(long postId) {
+                quotedMessages.remove(postId);
+            }
+
+            @Override
+            public void onQuote() {
+                Joiner joiner = Joiner.on("\n");
+                topicPageView.disableBatchActions();
+                startReplyActivity(joiner.join(quotedMessages.values()));
             }
         });
 
