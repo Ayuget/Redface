@@ -25,6 +25,8 @@ import com.ayuget.redface.data.api.model.User;
 import com.ayuget.redface.data.rx.EndlessObserver;
 import com.ayuget.redface.data.rx.SubscriptionHandler;
 import com.ayuget.redface.ui.UIConstants;
+import com.ayuget.redface.ui.event.SmileySelectedEvent;
+import com.squareup.otto.Subscribe;
 
 public class EditPostActivity extends ReplyActivity {
     private static final String LOG_TAG = EditPostActivity.class.getSimpleName();
@@ -69,6 +71,18 @@ public class EditPostActivity extends ReplyActivity {
                 onReplyFailure();
             }
         }));
+    }
+
+    /**
+     * Duplicated from ReplyActivity because Otto subscriptions don't play
+     * well with inheritance
+     */
+    @Subscribe
+    public void smileySelected(SmileySelectedEvent event) {
+        insertText(String.format(" %s ", event.getSmileyCode()));
+
+        replaceSmileySelector();
+        hideSmileysToolbar();
     }
 
     protected void onReplySuccess() {

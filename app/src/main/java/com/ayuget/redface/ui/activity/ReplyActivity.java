@@ -476,11 +476,15 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
                     }
                 }
 
+                boolean touchConsumed;
                 if (smileysSelector.getY() != smileySelectorTopOffset) {
-                    return (smileysSelector.getY() != toolbarHeight);
-                } else {
-                    return false;
+                    touchConsumed = (smileysSelector.getY() != toolbarHeight);
                 }
+                else {
+                    touchConsumed = false;
+                }
+
+                return touchConsumed;
             }
         });
     }
@@ -581,7 +585,8 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
         return userView;
     }
 
-    @Subscribe public void smileySelected(SmileySelectedEvent event) {
+    @Subscribe
+    public void smileySelected(SmileySelectedEvent event) {
         insertText(String.format(" %s ", event.getSmileyCode()));
 
         replaceSmileySelector();
@@ -735,7 +740,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
     /**
      * Animates the smiley selector back to its original position
      */
-    private void replaceSmileySelector() {
+    public void replaceSmileySelector() {
         smileysSelector.animate()
                 .translationYBy(smileySelectorTopOffset - smileysSelector.getY())
                 .setDuration(150)
