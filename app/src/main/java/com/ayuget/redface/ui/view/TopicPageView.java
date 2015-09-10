@@ -51,7 +51,6 @@ import com.ayuget.redface.ui.event.EditPostEvent;
 import com.ayuget.redface.ui.event.GoToPostEvent;
 import com.ayuget.redface.ui.event.GoToTopicEvent;
 import com.ayuget.redface.ui.event.InternalLinkClickedEvent;
-import com.ayuget.redface.ui.event.MarkPostAsFavoriteEvent;
 import com.ayuget.redface.ui.event.PageLoadedEvent;
 import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
 import com.ayuget.redface.ui.event.PostActionEvent;

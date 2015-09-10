@@ -266,7 +266,6 @@ public class PostsFragment extends BaseFragment {
               subscribe(quoteHandler.load(postId, mdService.getQuote(userManager.getActiveUser(), topic, (int) postId), new EndlessObserver<String>() {
                   @Override
                   public void onNext(String quoteBBCode) {
-                      Toast.makeText(getActivity(), R.string.post_added_to_quote, Toast.LENGTH_SHORT).show();
                       quotedMessages.put(postId, quoteBBCode);
                   }
 
