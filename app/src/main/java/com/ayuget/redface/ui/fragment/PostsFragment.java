@@ -138,6 +138,7 @@ public class PostsFragment extends BaseFragment {
             topicPageView.destroy();
 
             swipeRefreshLayout.setOnRefreshListener(null);
+            replyButton.setOnClickListener(null);
 
             RefWatcher refWatcher = RedfaceApp.getRefWatcher(getActivity());
             refWatcher.watch(topicPageView);
