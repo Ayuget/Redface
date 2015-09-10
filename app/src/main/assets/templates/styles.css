@@ -92,7 +92,10 @@ body.redface-dark {
 }
 
 .post-actions {
-    float:right;
+    position: absolute;
+    right: 0;
+    z-index: 1000;
+
     overflow: none;
     height: 48px;
 }
