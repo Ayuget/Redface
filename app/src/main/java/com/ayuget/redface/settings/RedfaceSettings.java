@@ -95,4 +95,8 @@ public class RedfaceSettings {
     public int getPrivateMessagesPollingFrequency() {
         return Integer.valueOf(sharedPreferences.getString(SettingsConstants.KEY_PRIVATE_MESSAGES_POLLING_FREQUENCY, context.getResources().getString(R.string.pref_pm_notification_frequency_default)));
     }
+
+    public boolean isDoubleTapToRefreshEnabled() {
+        return sharedPreferences.getBoolean(SettingsConstants.KEY_DOUBLE_TAP_TO_REFRESH_ENABLED, true);
+    }
 }

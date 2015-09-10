@@ -162,4 +162,7 @@
     <string name="delete_post_failed">Erreur de suppression du message</string>
     <string name="delete_post_in_progress">Suppression en cours…</string>
     <string name="delete_post_success">Message correctement supprimé</string>
+    <string name="pref_double_tap_to_refresh_summary">Lors de la lecture d\'un sujet, pouvoir effectuer un double tap pour rafraîchir la page</string>
+    <string name="pref_double_tap_to_refresh_title">Activer le double tap pour rafraîchir</string>
+    <string name="action_refresh_topic">Rafraîchir</string>
 </resources>

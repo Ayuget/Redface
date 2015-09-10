@@ -28,4 +28,10 @@
         android:title="@string/pref_topic_list_compact_mode_title"
         android:summary="@string/pref_topic_list_compact_mode_summary"
         android:defaultValue="false" />
+
+    <CheckBoxPreference
+        android:key="double_tap_to_refresh_enabled"
+        android:title="@string/pref_double_tap_to_refresh_title"
+        android:summary="@string/pref_double_tap_to_refresh_summary"
+        android:defaultValue="true" />
 </PreferenceScreen>

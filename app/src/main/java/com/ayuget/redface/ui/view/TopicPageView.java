@@ -180,7 +180,9 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
 
                 @Override
                 public boolean onDoubleTap(MotionEvent e) {
-                    bus.post(new PageRefreshRequestEvent(topic));
+                    if (appSettings.isDoubleTapToRefreshEnabled()) {
+                        bus.post(new PageRefreshRequestEvent(topic));
+                    }
                     return true;
                 }
 
