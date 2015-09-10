@@ -19,14 +19,19 @@ package com.ayuget.redface.ui.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 
 import com.ayuget.redface.R;
 import com.ayuget.redface.account.RedfaceAccountManager;
 import com.ayuget.redface.account.UserManager;
 import com.ayuget.redface.data.api.hfr.HFRAuthenticator;
+import com.ayuget.redface.data.api.model.PrivateMessage;
 import com.ayuget.redface.data.api.model.User;
 import com.ayuget.redface.data.rx.EndlessObserver;
 import com.ayuget.redface.data.rx.SubscriptionHandler;
+import com.ayuget.redface.ui.UIConstants;
+import com.ayuget.redface.ui.misc.PagePosition;
 import com.ayuget.redface.ui.misc.SnackbarHelper;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
@@ -44,6 +49,9 @@ public class AccountActivity extends BaseActivity {
     @InjectView(R.id.password)
     MaterialEditText passwordTextView;
 
+    @InjectView(R.id.relogin_instructions)
+    TextView reloginInstructions;
+
     @Inject
     HFRAuthenticator authenticator;
 
@@ -55,10 +63,22 @@ public class AccountActivity extends BaseActivity {
 
     private SubscriptionHandler<User, Boolean> loginSubscriptionHandler = new SubscriptionHandler<>();
 
+    private boolean isReloginMode;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account);
+
+        if (getIntent() != null) {
+            Log.d(LOG_TAG, "Got some intent data");
+            isReloginMode = getIntent().getBooleanExtra(UIConstants.ARG_RELOGIN_MODE, false);
+        }
+
+        if (isReloginMode) {
+            Log.d(LOG_TAG, "Relogin mode");
+            reloginInstructions.setVisibility(View.VISIBLE);
+        }
     }
 
    @OnClick(R.id.sign_in_button)
@@ -89,7 +109,13 @@ public class AccountActivity extends BaseActivity {
 
                if (loginWorked) {
                    Log.d(LOG_TAG, "Login is successful !!");
-                   accountManager.addAccount(user);
+
+                   // If we are logging in again (change of credentials for example), do
+                   // not add a new account
+                   if (! accountManager.hasAccount(user)) {
+                       accountManager.addAccount(user);
+                   }
+
                    userManager.setActiveUser(user);
                    Intent intent = new Intent(AccountActivity.this, TopicsActivity.class);
                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

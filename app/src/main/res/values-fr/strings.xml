@@ -54,14 +54,14 @@
     <string name="login_failed">Connexion impossible, vérifiez le couple pseudo/mot de passe</string>
     <string name="login_password_empty">Le mot de passe ne peut pas être vide</string>
     <string name="login_username_empty">Le pseudo ne peut pas être vide</string>
-    <string name="connect_to_forum">Ajouter un compte</string>
+    <string name="connect_to_forum">Se connecter au forum</string>
     <string name="make_text_bold_button_description">Rendre le texte gras</string>
     <string name="make_text_italic_button_description">Rendre le texte italique</string>
     <string name="menu_about">A propos</string>
     <string name="navdrawer_add_account">Ajouter un compte</string>
     <string name="navdrawer_item_my_topics">Mes sujets</string>
     <string name="navdrawer_item_private_messages">Messages privés</string>
-    <string name="navdrawer_item_profile">Profils</string>
+    <string name="navdrawer_item_profile">Profil</string>
     <string name="navdrawer_item_settings">Paramètres</string>
     <string name="navdrawer_profile_picture">Image de profil</string>
     <string name="pref_activate_proxy_summary">Utiliser un proxy pour se connecter au forum</string>
@@ -174,5 +174,6 @@
         <item>Grosse</item>
         <item>Enorme</item>
     </string-array>
+    <string name="relogin_instructions">Si vos identifiants ont changés ou que vous souhaitez vous ré-authentifier, vous pouvez le faire en remplissant le formulaire ci-dessous</string>
 
 </resources>

@@ -337,7 +337,7 @@ public class BaseDrawerActivity extends BaseActivity {
 
         if (userManager.activeUserIsLoggedIn()) {
             // Profile
-            // initialDrawerItems.add(DrawerItem.simple(NAVDRAWER_ITEM_PROFILE, R.drawable.ic_action_user, R.string.navdrawer_item_profile));
+            initialDrawerItems.add(DrawerItem.simple(NAVDRAWER_ITEM_PROFILE, R.drawable.ic_action_user, R.string.navdrawer_item_profile));
 
             // My topics
             initialDrawerItems.add(DrawerItem.simple(NAVDRAWER_ITEM_MY_TOPICS, R.drawable.ic_action_news, R.string.navdrawer_item_my_topics));
@@ -449,7 +449,13 @@ public class BaseDrawerActivity extends BaseActivity {
                     startActivity(intent);
                     break;
                 }
-                case NAVDRAWER_ITEM_PROFILE:
+                case NAVDRAWER_ITEM_PROFILE: {
+                    Intent intent = new Intent(this, AccountActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.putExtra(UIConstants.ARG_RELOGIN_MODE, true);
+                    startActivity(intent);
+                    break;
+                }
                 case NAVDRAWER_ITEM_SETTINGS: {
                     Intent intent = new Intent(this, SettingsActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);

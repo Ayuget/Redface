@@ -245,6 +245,8 @@
     <string name="pm_successfully_sent">Private message successfully sent</string>
     <string name="error_sending_pm">Failed to send private message</string>
 
+    <string name="relogin_instructions">If your login credentials have changed, or if you wish to re-login, please fill-in the following form</string>
+
     <!-- Dialogs -->
     <string name="dialog_go_to_page_positive_text">Go !</string>
 </resources>

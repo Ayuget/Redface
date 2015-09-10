@@ -57,4 +57,5 @@ public class UIConstants {
     public static final String ARG_REPLY_CONTENT = "replyContent";
     public static final String ARG_EDITED_POST_ID = "editedPostId";
     public static final String ARG_PM_RECIPIENT = "pmRecipient";
+    public static final String ARG_RELOGIN_MODE = "reloginMode";
 }
