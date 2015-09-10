@@ -128,6 +128,8 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
 
     @Inject RedfaceSettings appSettings;
 
+    boolean actionModeIsActive = false;
+
     public interface OnScrollListener {
         void onScrolled(int dx, int dy);
     }
@@ -316,6 +318,8 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
         quoteActionMode = startActionMode(new ActionMode.Callback() {
             @Override
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                actionModeIsActive = true;
+
                 if (quotedMessages.size() > 1) {
                     mode.setTitle(Phrase.from(getContext(), R.string.quoted_messages_plural).put("count", quotedMessages.size()).format());
                 } else {
@@ -328,6 +332,8 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
                 if (onMultiQuoteModeListener != null) {
                     onMultiQuoteModeListener.onMultiQuoteModeToggled(true);
                 }
+
+                inflater = null; // Force GC
 
                 return true;
             }
@@ -352,8 +358,8 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
 
             @Override
             public void onDestroyActionMode(ActionMode mode) {
+                actionModeIsActive = false;
                 quotedMessages.clear();
-                quoteActionMode = null;
                 JsExecutor.execute(TopicPageView.this, "clearQuotedMessages()");
 
                 if (onMultiQuoteModeListener != null) {
@@ -424,7 +430,7 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
                 });
             }
             else {
-                if (quoteActionMode == null) {
+                if (! actionModeIsActive) {
                     TopicPageView.this.post(new Runnable() {
                         @Override
                         public void run() {

@@ -137,6 +137,8 @@ public class PostsFragment extends BaseFragment {
             topicPageView.removeAllViews();
             topicPageView.destroy();
 
+            swipeRefreshLayout.setOnRefreshListener(null);
+
             RefWatcher refWatcher = RedfaceApp.getRefWatcher(getActivity());
             refWatcher.watch(topicPageView);
         }
@@ -241,6 +243,10 @@ public class PostsFragment extends BaseFragment {
         topicPageView.setOnMultiQuoteModeListener(new TopicPageView.OnMultiQuoteModeListener() {
             @Override
             public void onMultiQuoteModeToggled(boolean active) {
+                if (active) {
+                    quotedMessages.clear();
+                }
+
                 Fragment parent = getParentFragment();
 
                 if (parent != null) {
