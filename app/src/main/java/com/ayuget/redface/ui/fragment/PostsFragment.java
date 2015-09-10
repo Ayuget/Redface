@@ -137,11 +137,15 @@ public class PostsFragment extends BaseFragment {
             topicPageView.removeAllViews();
             topicPageView.destroy();
 
-            swipeRefreshLayout.setOnRefreshListener(null);
-            replyButton.setOnClickListener(null);
-
             RefWatcher refWatcher = RedfaceApp.getRefWatcher(getActivity());
             refWatcher.watch(topicPageView);
+        }
+
+        swipeRefreshLayout.setOnRefreshListener(null);
+        replyButton.setOnClickListener(null);
+
+        if (errorReloadButton != null) {
+            errorReloadButton.setOnClickListener(null);
         }
     }
 
@@ -226,7 +230,8 @@ public class PostsFragment extends BaseFragment {
         replyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startReplyActivity(null);
+                Joiner joiner = Joiner.on("\n");
+                startReplyActivity(joiner.join(quotedMessages.values()));
             }
         });
 
