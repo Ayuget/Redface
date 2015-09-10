@@ -513,7 +513,6 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
      * Smoothly hides the smileys toolbar
      */
     protected void  hideSmileysToolbar() {
-        Log.d(LOG_TAG, "Hiding smileys toolbar");
         smileysToolbar.animate().translationY(-toolbarHeight).setInterpolator(new AccelerateDecelerateInterpolator()).start();
     }
 
@@ -521,7 +520,6 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
      * Smoothly shows the smiley toolbar
      */
     protected void  showSmileysToolbar() {
-        Log.d(LOG_TAG, "Showing smileys toolbar");
         smileysToolbar.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
     }
 
