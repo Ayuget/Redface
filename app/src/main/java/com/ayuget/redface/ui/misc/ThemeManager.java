@@ -66,6 +66,10 @@ public class ThemeManager {
         }
     }
 
+    public String getFontSizeCssClass() {
+        return "font-" + settings.getFontSize().toString().toLowerCase();
+    }
+
     public Theme getMaterialDialogTheme() {
         RedfaceTheme activeTheme = settings.getTheme();
 

@@ -165,4 +165,14 @@
     <string name="pref_double_tap_to_refresh_summary">Lors de la lecture d\'un sujet, pouvoir effectuer un double tap pour rafraîchir la page</string>
     <string name="pref_double_tap_to_refresh_title">Activer le double tap pour rafraîchir</string>
     <string name="action_refresh_topic">Rafraîchir</string>
+    <string name="pref_font_size_summary">Personnaliser la taille de la police (uniquement au sein d\'un sujet pour l\'instant)</string>
+    <string name="pref_font_size_title">Taille de la police</string>
+
+    <string-array name="pref_font_size_values">
+        <item>Petite</item>
+        <item>Normale</item>
+        <item>Grosse</item>
+        <item>Enorme</item>
+    </string-array>
+
 </resources>

@@ -51,5 +51,5 @@ public class SettingsConstants {
 
     public static final String KEY_DOUBLE_TAP_TO_REFRESH_ENABLED = "double_tap_to_refresh_enabled";
 
-
+    public static final String KEY_FONT_SIZE = "font_size";
 }

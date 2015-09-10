@@ -67,6 +67,18 @@ body.redface-dark {
     font-size: 12px;
 }
 
+.font-small .post-content {
+    font-size: 10px;
+}
+
+.font-big .post-content {
+    font-size: 14px;
+}
+
+.font-huge .post-content {
+    font-size: 16px;
+}
+
 .post-author {
     font-family: 'Roboto', sans-serif;
 }

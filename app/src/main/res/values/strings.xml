@@ -123,6 +123,22 @@
         <item>DARK</item>
     </string-array>
 
+    <string name="pref_font_size_title">Font size</string>
+    <string name="pref_font_size_summary">Customize the font size (currently only inside a topic)</string>
+    <string name="pref_font_size_default" translatable="false">NORMAL</string>
+    <string-array name="pref_font_size_values">
+        <item>Small</item>
+        <item>Normal</item>
+        <item>Big</item>
+        <item>Huge</item>
+    </string-array>
+    <string-array name="pref_font_size_entries" translatable="false">
+        <item>SMALL</item>
+        <item>@string/pref_font_size_default</item>
+        <item>BIG</item>
+        <item>HUGE</item>
+    </string-array>
+
     <string name="pref_default_meta_ordering">Default ordering for \"My topics\" screen</string>
     <string name="pref_default_meta_ordering_default" translatable="false">SORT_BY_DATE</string>
     <string-array name="pref_default_meta_ordering_values">
