@@ -169,6 +169,8 @@ public class PostsFragment extends BaseFragment {
     public void onPause() {
         super.onPause();
 
+        Log.d(LOG_TAG, String.format("@%d -> onPause(page=%d)", System.identityHashCode(this), currentPage));
+
         // Disable batch actions because, for now, we are unable to save them properly
         topicPageView.disableBatchActions();
     }
@@ -387,22 +389,22 @@ public class PostsFragment extends BaseFragment {
      * forum's read/unread markers.
      */
     @Subscribe public void onPageSelectedEvent(PageSelectedEvent event) {
-        Log.d(LOG_TAG, String.format("@%d -> Fragment(currentPage=%d) received event for page %d selected", System.identityHashCode(this), currentPage, event.getPage()));
-        if (! isInitialPage() && event.getTopic() == topic && event.getPage() == currentPage) {
+        if (! isInitialPage() && event.getTopic() == topic && event.getPage() == currentPage && isVisible()) {
+            Log.d(LOG_TAG, String.format("@%d -> Fragment(currentPage=%d) received event for page %d selected", System.identityHashCode(this), currentPage, event.getPage()));
             loadPage(currentPage);
         }
     }
 
     @Subscribe public void onPageRefreshRequestEvent(PageRefreshRequestEvent event) {
-        if (event.getTopic().getId() == topic.getId()) {
-            Log.d(LOG_TAG, "Refresh requested event");
+        if (event.getTopic().getId() == topic.getId() && isVisible()) {
+            Log.d(LOG_TAG, String.format("@%d -> Refresh requested event (currentPage=%d)", System.identityHashCode(this), currentPage));
             wasRefreshed = true;
 
             currentPagePosition = new PagePosition(PagePosition.BOTTOM);
             bus.post(new PageRefreshedEvent(topic, currentPagePosition));
 
             showLoadingIndicator();
-            loadPage(currentPage);
+            loadPage(topic.getPagesCount());
         }
     }
 

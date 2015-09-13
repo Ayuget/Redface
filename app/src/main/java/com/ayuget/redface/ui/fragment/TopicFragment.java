@@ -118,16 +118,19 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflateRootView(R.layout.fragment_topic, inflater, container);
+        View rootView = inflateRootView(R.layout.fragment_topic, inflater, container);
+
+        pager.setAdapter(topicPageAdapter);
+        pager.setCurrentItem(currentPage - 1);
+
+        return rootView;
     }
 
     @Override
     public void onResume() {
         super.onResume();
 
-        pager.setAdapter(topicPageAdapter);
         pager.addOnPageChangeListener(this);
-        pager.setCurrentItem(currentPage - 1);
     }
 
     @Override
