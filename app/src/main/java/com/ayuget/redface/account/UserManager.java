@@ -77,6 +77,9 @@ public class UserManager {
     }
 
     public boolean isActiveUser(String username) {
+        // Forum automatically adds some zero width spaces to usernames
+        username = username.replace("\u200b", "");
+
         if (getActiveUser() == null) {
             return false;
         }
