@@ -326,6 +326,10 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
                 topicFilter = TopicFilter.READ;
                 changedTopicFilter = true;
                 break;
+            case R.id.action_refresh_topic_list:
+                dataPresenter.showLoadingView();
+                loadTopics();
+                break;
         }
 
         if (changedTopicFilter) {
@@ -360,6 +364,8 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
 
                 swipeRefreshLayout.setRefreshing(false);
                 lastLoadedPage = 1;
+                layoutManager.scrollToPosition(0);
+
                 showTopics();
             }
 
