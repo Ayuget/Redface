@@ -404,7 +404,7 @@ public class PostsFragment extends BaseFragment {
             bus.post(new PageRefreshedEvent(topic, currentPagePosition));
 
             showLoadingIndicator();
-            loadPage(topic.getPagesCount());
+            loadPage(currentPage);
         }
     }
 
