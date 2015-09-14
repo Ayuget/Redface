@@ -18,15 +18,20 @@ package com.ayuget.redface.ui.activity;
 
 import android.content.Intent;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.ayuget.redface.R;
 import com.ayuget.redface.data.api.MDService;
 import com.ayuget.redface.data.api.model.Topic;
+import com.ayuget.redface.data.rx.EndlessObserver;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
 import com.ayuget.redface.ui.misc.SnackbarHelper;
 
 import javax.inject.Inject;
+
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class MultiPaneActivity extends BaseDrawerActivity {
     private static final String LOG_TAG = MultiPaneActivity.class.getSimpleName();
@@ -158,6 +163,34 @@ public class MultiPaneActivity extends BaseDrawerActivity {
 
             startActivityForResult(intent, UIConstants.REPLY_REQUEST_CODE);
         }
+    }
+
+    /**
+     * Deletes a post
+     */
+    public void deletePost(final Topic topic, int postId) {
+        Toast.makeText(this, R.string.delete_post_in_progress, Toast.LENGTH_SHORT).show();
+
+        subscribe(mdService.deletePost(userManager.getActiveUser(), topic, postId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new EndlessObserver<Boolean>() {
+                    @Override
+                    public void onNext(Boolean success) {
+                        if (success) {
+                            bus.post(new PageRefreshRequestEvent(topic));
+                        }
+                        else {
+                            Toast.makeText(MultiPaneActivity.this, R.string.delete_post_failed, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable throwable) {
+                        Log.e(LOG_TAG, "Unexpected error while deleting post", throwable);
+                        Toast.makeText(MultiPaneActivity.this, R.string.delete_post_failed, Toast.LENGTH_SHORT).show();
+                    }
+                }));
     }
 
     public boolean isTwoPaneMode() {

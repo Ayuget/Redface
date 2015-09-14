@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.ayuget.redface.R;
 import com.ayuget.redface.data.api.model.PrivateMessage;
 import com.ayuget.redface.data.api.model.Topic;
@@ -29,6 +30,7 @@ import com.ayuget.redface.data.rx.SubscriptionHandler;
 import com.ayuget.redface.data.state.CategoriesStore;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.event.EditPostEvent;
+import com.ayuget.redface.ui.event.PostActionEvent;
 import com.ayuget.redface.ui.event.QuotePostEvent;
 import com.ayuget.redface.ui.fragment.DetailsDefaultFragment;
 import com.ayuget.redface.ui.fragment.PrivateMessageListFragment;
@@ -147,7 +149,7 @@ public class PrivateMessagesActivity extends MultiPaneActivity implements Privat
     }
 
     /**
-     * Code is duplicated with TopicsActivity because Otto doesn't support settings @Subscribe annotations
+     * fixme: Code is duplicated with TopicsActivity because Otto doesn't support settings @Subscribe annotations
      * on base classes (pull request #135 still not merged)
      */
     @Subscribe public void onEditPost(final EditPostEvent event) {
@@ -157,6 +159,32 @@ public class PrivateMessagesActivity extends MultiPaneActivity implements Privat
                 startEditActivity(event.getTopic(), event.getPostId(), messageBBCode);
             }
         }));
+    }
+
+    /**
+     * fixme: Code is duplicated with TopicsActivity because Otto doesn't support settings @Subscribe annotations
+     * on base classes (pull request #135 still not merged)
+     */
+    @Subscribe public void onPostActionEvent(final PostActionEvent event) {
+        switch (event.getPostAction()) {
+            case DELETE:
+                Log.d(LOG_TAG, "About to delete post");
+                new MaterialDialog.Builder(this)
+                        .content(R.string.post_delete_confirmation)
+                        .positiveText(R.string.post_delete_yes)
+                        .negativeText(R.string.post_delete_no)
+                        .callback(new MaterialDialog.ButtonCallback() {
+                            @Override
+                            public void onPositive(MaterialDialog dialog) {
+                                deletePost(event.getTopic(), event.getPostId());
+                            }
+                        })
+                        .show();
+                break;
+            default:
+                Log.e(LOG_TAG, "Action not handled");
+                break;
+        }
     }
 
     /**

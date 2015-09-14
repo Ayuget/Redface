@@ -179,5 +179,8 @@
     <string name="link_sucessfully_copied">Lien copié dans le presse-papier</string>
     <string name="action_share">Partager</string>
     <string name="post_edited_on">Edité le {date}</string>
+    <string name="post_delete_confirmation">Supprimer le message ?</string>
+    <string name="post_delete_no">Annuler</string>
+    <string name="post_delete_yes">Supprimer</string>
 
 </resources>

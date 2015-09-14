@@ -415,10 +415,22 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
     @Subscribe public void onPostActionEvent(final PostActionEvent event) {
         switch (event.getPostAction()) {
             case FAVORITE:
+                Log.d(LOG_TAG, "About to mark post as favorite");
                 markPostAsFavorite(event.getTopic(), event.getPostId());
                 break;
             case DELETE:
-                deletePost(event.getTopic(), event.getPostId());
+                Log.d(LOG_TAG, "About to delete post");
+                new MaterialDialog.Builder(this)
+                        .content(R.string.post_delete_confirmation)
+                        .positiveText(R.string.post_delete_yes)
+                        .negativeText(R.string.post_delete_no)
+                        .callback(new MaterialDialog.ButtonCallback() {
+                            @Override
+                            public void onPositive(MaterialDialog dialog) {
+                                deletePost(event.getTopic(), event.getPostId());
+                            }
+                        })
+                        .show();
                 break;
             default:
                 Log.e(LOG_TAG, "Action not handled");
@@ -447,34 +459,6 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
                     public void onError(Throwable throwable) {
                         Log.e(LOG_TAG, "Unexpected error while marking a post as favorite", throwable);
                         Toast.makeText(TopicsActivity.this, R.string.mark_as_favorite_failed, Toast.LENGTH_SHORT).show();
-                    }
-                }));
-    }
-
-    /**
-     * Deletes a post
-     */
-    public void deletePost(final Topic topic, int postId) {
-        Toast.makeText(TopicsActivity.this, R.string.delete_post_in_progress, Toast.LENGTH_SHORT).show();
-
-        subscribe(mdService.deletePost(userManager.getActiveUser(), topic, postId)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new EndlessObserver<Boolean>() {
-                    @Override
-                    public void onNext(Boolean success) {
-                        if (success) {
-                            bus.post(new PageRefreshRequestEvent(topic));
-                        }
-                        else {
-                            Toast.makeText(TopicsActivity.this, R.string.delete_post_failed, Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void onError(Throwable throwable) {
-                        Log.e(LOG_TAG, "Unexpected error while deleting post", throwable);
-                        Toast.makeText(TopicsActivity.this, R.string.delete_post_failed, Toast.LENGTH_SHORT).show();
                     }
                 }));
     }

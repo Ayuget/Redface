@@ -202,6 +202,9 @@
     <string name="post_added_to_quote">Post sucessfully quoted</string>
     <string name="post_failed_to_quote">Unable to quote this message</string>
     <string name="post_edited_on">Edited on {date}</string>
+    <string name="post_delete_confirmation">Delete post ?</string>
+    <string name="post_delete_yes">Delete</string>
+    <string name="post_delete_no">Cancel</string>
 
     <!-- Private messages -->
     <string name="no_private_messages_found">No private messages found</string>
