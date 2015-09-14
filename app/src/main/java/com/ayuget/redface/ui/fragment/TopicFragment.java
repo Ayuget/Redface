@@ -33,6 +33,7 @@ import android.view.ViewGroup;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.ayuget.redface.R;
+import com.ayuget.redface.data.api.MDEndpoints;
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.activity.MultiPaneActivity;
@@ -56,6 +57,8 @@ import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 
+import javax.inject.Inject;
+
 import butterknife.InjectView;
 
 public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageChangeListener {
@@ -72,6 +75,10 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     private int previousViewPagerState = ViewPager.SCROLL_STATE_IDLE;
 
     private boolean userScrolledViewPager = false;
+
+    @Inject
+    MDEndpoints mdEndpoints;
+
 
     @InjectView(R.id.pager)
     ViewPager pager;
@@ -351,6 +358,13 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
             case R.id.action_go_to_specific_page:
                 showGoToPageDialog();
                 return true;
+
+            case R.id.action_copy_link:
+                UiUtils.copyToClipboard(getActivity(), mdEndpoints.topic(topic, currentPage));
+                break;
+            case R.id.action_share:
+                UiUtils.shareText(getActivity(), mdEndpoints.topic(topic));
+                break;
         }
 
         return super.onOptionsItemSelected(item);

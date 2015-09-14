@@ -42,4 +42,16 @@
         android:title="@string/action_go_to_last_page"
         android:orderInCategory="200"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_copy_link"
+        android:title="@string/action_copy_link"
+        android:orderInCategory="300"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_share"
+        android:title="@string/action_share"
+        android:orderInCategory="400"
+        app:showAsAction="never" />
 </menu>

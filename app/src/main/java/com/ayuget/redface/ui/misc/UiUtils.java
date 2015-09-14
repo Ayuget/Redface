@@ -16,24 +16,42 @@
 
 package com.ayuget.redface.ui.misc;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.View;
+import android.widget.Toast;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
-import com.afollestad.materialdialogs.Theme;
 import com.ayuget.redface.R;
-import com.rengwuxian.materialedittext.MaterialEditText;
 
 public class UiUtils {
     private static final String LOG_TAG = UiUtils.class.getSimpleName();
+
+    /**
+     * Copies text into user clipboard
+     */
+    public static void copyToClipboard(Context context, String text) {
+        ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText(context.getString(R.string.link_sucessfully_copied), text);
+        clipboard.setPrimaryClip(clip);
+
+        Toast.makeText(context, R.string.link_sucessfully_copied, Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * Starts a share intent for the given text
+     */
+    public static void shareText(Context context, String text) {
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, text);
+        sendIntent.setType("text/plain");
+        context.startActivity(sendIntent);
+    }
 
     public static int resolveColorAttribute(Context context, int attrName) {
         final TypedArray styledAttributes = context.getTheme().obtainStyledAttributes(new int[] {attrName});

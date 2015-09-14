@@ -464,6 +464,8 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
         menu.add(0, UIConstants.TOPIC_ACTION_GO_TO_SPECIFIC_PAGE, 2, getResources().getString(R.string.action_go_to_specific_page));
         menu.add(0, UIConstants.TOPIC_ACTION_GO_TO_LAST_PAGE, 3, getResources().getString(R.string.action_go_to_last_page));
         menu.add(0, UIConstants.TOPIC_ACTION_REPLY_TO_TOPIC, 4, getResources().getString(R.string.action_reply_to_topic));
+        menu.add(0, UIConstants.TOPIC_ACTION_COPY_LINK, 5, getResources().getString(R.string.action_copy_link));
+        menu.add(0, UIConstants.TOPIC_ACTION_SHARE, 6, getResources().getString(R.string.action_share));
     }
 
     @Override

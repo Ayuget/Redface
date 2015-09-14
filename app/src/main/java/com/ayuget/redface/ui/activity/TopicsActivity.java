@@ -56,6 +56,7 @@ import com.ayuget.redface.ui.fragment.TopicListFragment;
 import com.ayuget.redface.ui.fragment.TopicListFragmentBuilder;
 import com.ayuget.redface.ui.misc.SnackbarHelper;
 import com.ayuget.redface.ui.misc.PagePosition;
+import com.ayuget.redface.ui.misc.UiUtils;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.squareup.otto.Subscribe;
 
@@ -343,14 +344,22 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
             case UIConstants.TOPIC_ACTION_GO_TO_SPECIFIC_PAGE:
                 showGoToPageDialog(event.getTopic());
                 break;
-            case UIConstants.TOPIC_ACTION_REPLY_TO_TOPIC:
+            case UIConstants.TOPIC_ACTION_REPLY_TO_TOPIC: {
                 Intent intent = new Intent(this, ReplyActivity.class);
                 intent.putExtra(ARG_TOPIC, event.getTopic());
                 startActivity(intent);
                 break;
+            }
             case UIConstants.TOPIC_ACTION_GO_TO_LAST_PAGE:
                 loadTopic(event.getTopic(), event.getTopic().getPagesCount(), new PagePosition(PagePosition.TOP));
                 break;
+            case UIConstants.TOPIC_ACTION_COPY_LINK:
+                UiUtils.copyToClipboard(this, mdEndpoints.topic(event.getTopic()));
+                break;
+            case UIConstants.TOPIC_ACTION_SHARE: {
+                UiUtils.shareText(this, mdEndpoints.topic(event.getTopic()));
+                break;
+            }
         }
     }
 
