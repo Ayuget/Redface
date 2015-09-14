@@ -182,5 +182,6 @@
     <string name="post_delete_confirmation">Supprimer le message ?</string>
     <string name="post_delete_no">Annuler</string>
     <string name="post_delete_yes">Supprimer</string>
+    <string name="insert_image_description">Insérer une image</string>
 
 </resources>

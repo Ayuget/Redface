@@ -668,12 +668,15 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
         return false;
     }
 
-    @OnClick({R.id.make_text_bold_button, R.id.make_text_italic_button, R.id.insert_quote_button, R.id.insert_link_button, R.id.insert_spoiler_button})
+    @OnClick({R.id.make_text_bold_button, R.id.make_text_italic_button, R.id.insert_quote_button, R.id.insert_link_button, R.id.insert_spoiler_button, R.id.insert_image_button})
     public void onExtraToolbarButtonClicked(ImageButton button) {
         Log.d(LOG_TAG, "Button  clicked !");
         switch (button.getId()) {
             case R.id.insert_spoiler_button:
                 insertTag("spoiler");
+                break;
+            case R.id.insert_image_button:
+                insertTag("img");
                 break;
             case R.id.insert_link_button:
                 insertTag("url");

@@ -232,6 +232,7 @@
     <string name="insert_code_button_description">Insert code block</string>
     <string name="insert_spoiler_button_description">Insert spoiler</string>
     <string name="insert_link_button_description">Make text italic</string>
+    <string name="insert_image_description">Insert image</string>
 
     <string name="popular_smileys_button_description">Popular smileys</string>
     <string name="recent_smileys_button_description">Recent smileys</string>
