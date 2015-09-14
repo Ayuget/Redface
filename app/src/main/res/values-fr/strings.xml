@@ -178,5 +178,6 @@
     <string name="action_copy_link">Copier un lien vers ce sujet</string>
     <string name="link_sucessfully_copied">Lien copié dans le presse-papier</string>
     <string name="action_share">Partager</string>
+    <string name="post_edited_on">Edité le {date}</string>
 
 </resources>

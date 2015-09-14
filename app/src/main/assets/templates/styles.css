@@ -212,6 +212,11 @@ img {
     margin-right: 4px;
 }
 
+.extra-details .edited {
+    font-style: italic;
+    font-size: 10px;
+}
+
 /**
 * Overflow icons
 */

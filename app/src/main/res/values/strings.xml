@@ -201,6 +201,7 @@
     <string name="topic_loading_message">Loading topic</string>
     <string name="post_added_to_quote">Post sucessfully quoted</string>
     <string name="post_failed_to_quote">Unable to quote this message</string>
+    <string name="post_edited_on">Edited on {date}</string>
 
     <!-- Private messages -->
     <string name="no_private_messages_found">No private messages found</string>
