@@ -1,8 +1,10 @@
 .gradle
 /local.properties
 /.idea/workspace.xml
+/.idea/runConfigurations.xml
 /.idea/libraries
 .DS_Store
 /build
 *.apk
 manifest-merger*.txt
+captures
