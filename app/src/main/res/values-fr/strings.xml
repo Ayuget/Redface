@@ -140,7 +140,7 @@
     <string name="pref_notification_settings">Notifications</string>
     <string name="pref_pm_notification_frequency">Fréquence de vérification</string>
 
-    <string-array name="pref_pm_notification_frequency_entries" translatable="false">
+    <string-array name="pref_pm_notification_frequency_entries">
         <item>15 minutes</item>
         <item>30 minutes</item>
         <item>1 heure</item>

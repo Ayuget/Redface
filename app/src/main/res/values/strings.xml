@@ -158,14 +158,14 @@
     <string name="pref_enable_pm_notifications_summary">Be notified when you receive a new private message</string>
     <string name="pref_pm_notification_frequency">Polling frequency</string>
     <string name="pref_pm_notification_frequency_default" translatable="false">120</string>
-    <string-array name="pref_pm_notification_frequency_values">
+    <string-array name="pref_pm_notification_frequency_values" translatable="false">
         <item>15</item>
         <item>30</item>
         <item>60</item>
         <item>@string/pref_pm_notification_frequency_default</item>
         <item>360</item>
     </string-array>
-    <string-array name="pref_pm_notification_frequency_entries" translatable="false">
+    <string-array name="pref_pm_notification_frequency_entries">
         <item>15 minutes</item>
         <item>30 minutes</item>
         <item>1 hour</item>
