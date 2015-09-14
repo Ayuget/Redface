@@ -278,9 +278,15 @@ public class HFRMessageSender implements MDMessageSender {
 
                 OkHttpClient httpClient = httpClientProvider.getClientForUser(user);
 
+                boolean isPrivateMessage = topic.getCategory().getId() == UIConstants.PRIVATE_MESSAGE_CAT_ID;
+
+                if (isPrivateMessage) {
+                    Log.d(LOG_TAG, "Editing private message");
+                }
+
                 FormEncodingBuilder formEncodingBuilder = new FormEncodingBuilder();
                 formEncodingBuilder.add("hash_check", hashcheck);
-                formEncodingBuilder.add("cat", String.valueOf(topic.getCategory().getId()));
+                formEncodingBuilder.add("cat", isPrivateMessage ? "prive" : String.valueOf(topic.getCategory().getId()));
                 formEncodingBuilder.add("pseudo", user.getUsername());
                 formEncodingBuilder.add("numreponse", String.valueOf(postId));
                 formEncodingBuilder.add("post", String.valueOf(topic.getId()));
