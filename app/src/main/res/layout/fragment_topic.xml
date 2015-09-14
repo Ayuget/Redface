@@ -19,8 +19,20 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <include layout="@layout/toolbar_actionbar" />
+    android:layout_height="match_parent"
+    android:background="?attr/appBackgroundColor"
+    >
+
+    <!-- No include like in other fragments because we have a PagerTitleStrip below and don't want
+    two shadows drawn -->
+    <android.support.v7.widget.Toolbar
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/toolbar_actionbar"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:minHeight="?attr/actionBarSize"
+        style="@style/RedfaceToolbar"
+        />
 
     <android.support.v4.view.ViewPager
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -32,6 +44,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="8dp"
+            android:elevation="4dp"
             style="@style/RedfaceTopicPagerStrip"
             />
     </android.support.v4.view.ViewPager>

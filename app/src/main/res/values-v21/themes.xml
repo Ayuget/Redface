@@ -18,10 +18,14 @@
 <resources>
     <style name="Theme.Redface.Dark.Base" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowActivityTransitions">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 
     <style name="Theme.Redface.Light.Base" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowActivityTransitions">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 
     <style name="Theme.Redface.Transparent.Dark" parent="Theme.Redface.Dark">

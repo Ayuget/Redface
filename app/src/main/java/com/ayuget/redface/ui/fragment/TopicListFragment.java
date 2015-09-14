@@ -16,27 +16,23 @@
 
 package com.ayuget.redface.ui.fragment;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Spinner;
 
@@ -48,18 +44,18 @@ import com.ayuget.redface.data.api.model.Subcategory;
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.api.model.TopicFilter;
 import com.ayuget.redface.data.rx.EndlessObserver;
-import com.ayuget.redface.ui.BaseActivity;
+import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.adapter.SubcategoriesAdapter;
 import com.ayuget.redface.ui.adapter.TopicsAdapter;
 import com.ayuget.redface.ui.event.TopicContextItemSelectedEvent;
+import com.ayuget.redface.ui.misc.DataPresenter;
 import com.ayuget.redface.ui.misc.DividerItemDecoration;
 import com.ayuget.redface.ui.misc.EndlessScrollListener;
+import com.ayuget.redface.ui.misc.SnackbarHelper;
 import com.ayuget.redface.ui.misc.UiUtils;
 import com.ayuget.redface.ui.view.ContextMenuRecyclerView;
 import com.hannesdorfmann.fragmentargs.annotation.Arg;
-import com.nispok.snackbar.Snackbar;
-import com.nispok.snackbar.SnackbarManager;
 import com.squareup.phrase.Phrase;
 
 import java.util.ArrayList;
@@ -70,10 +66,12 @@ import javax.inject.Inject;
 import butterknife.InjectView;
 import hugo.weaving.DebugLog;
 
-public class TopicListFragment extends ToolbarFragment implements TopicsAdapter.OnTopicClickedListener, TopicsAdapter.OnTopicLongClickListener {
+public class TopicListFragment extends ToggleToolbarFragment implements TopicsAdapter.OnTopicClickedListener, TopicsAdapter.OnTopicLongClickListener {
     private static final String LOG_TAG = TopicListFragment.class.getSimpleName();
 
     private static final String ARG_TOPIC_LIST = "topic_list";
+
+    private static final String ARG_LAST_LOADED_PAGE = "last_loaded_page";
 
     /**
      * Interface definition for a callback to be invoked when a topic in this fragment has
@@ -107,34 +105,17 @@ public class TopicListFragment extends ToolbarFragment implements TopicsAdapter.
     @InjectView(R.id.topic_list_swipe_refresh_layout)
     SwipeRefreshLayout swipeRefreshLayout;
 
-    @InjectView(R.id.loading_indicator)
-    View loadingIndicator;
-
-    @InjectView(R.id.error_layout)
-    View errorView;
-
-    @InjectView(R.id.error_reload_button)
-    Button errorReloadButton;
-
-    @InjectView(R.id.empty_reload_button)
-    Button emptyReloadButton;
-
-    @InjectView(R.id.empty_content_layout)
-    View emptyTopicsLayout;
-
     @InjectView(R.id.empty_content_image)
     ImageView emptyTopicsImage;
 
     @Inject
     UserManager userManager;
 
-    ActionBarDrawerToggle drawerToggle;
+    protected LinearLayoutManager layoutManager;
 
-    LinearLayoutManager layoutManager;
+    protected int lastLoadedPage = 0;
 
-    int lastLoadedPage = 0;
-
-    boolean topicContextMenuInitialized = false;
+    protected DataPresenter dataPresenter;
 
     /**
      * Listener invoked when a topic is clicked
@@ -142,6 +123,8 @@ public class TopicListFragment extends ToolbarFragment implements TopicsAdapter.
     private List<OnTopicClickedListener> onTopicClickedListeners;
 
     @Inject DataService dataService;
+
+    @Inject RedfaceSettings settings;
 
     public TopicListFragment() {
         onTopicClickedListeners = new ArrayList<>();
@@ -164,7 +147,7 @@ public class TopicListFragment extends ToolbarFragment implements TopicsAdapter.
         subcategoriesAdapter = new SubcategoriesAdapter(getActivity(), topicFilter);
         subcategoriesAdapter.replaceWith(category);
 
-        topicsAdapter = new TopicsAdapter(new ContextThemeWrapper(getActivity(), themeManager.getActiveThemeStyle()), themeManager);
+        topicsAdapter = new TopicsAdapter(new ContextThemeWrapper(getActivity(), themeManager.getActiveThemeStyle()), themeManager, settings.isCompactModeEnabled());
         topicsAdapter.setOnTopicClickedListener(this);
         topicsAdapter.setOnTopicLongClickListener(this);
     }
@@ -195,18 +178,17 @@ public class TopicListFragment extends ToolbarFragment implements TopicsAdapter.
 
         swipeRefreshLayout.setColorSchemeResources(R.color.theme_primary, R.color.theme_primary_dark);
 
-        errorReloadButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showLoadingIndicator();
-                loadTopics();
-            }
-        });
+        dataPresenter = DataPresenter.from(rootView)
+                .withDataView(R.id.topic_list_swipe_refresh_layout)
+                .withEmptyView(R.id.empty_content_layout, R.id.empty_reload_button)
+                .withErrorView(R.id.error_layout, R.id.error_reload_button)
+                .withLoadingView(R.id.loading_indicator)
+                .build();
 
-        emptyReloadButton.setOnClickListener(new View.OnClickListener() {
+        dataPresenter.setOnRefreshRequestedListener(new DataPresenter.OnRefreshRequestedListener() {
             @Override
-            public void onClick(View v) {
-                showLoadingIndicator();
+            public void onRefresh() {
+                dataPresenter.showLoadingView();
                 loadTopics();
             }
         });
@@ -228,7 +210,14 @@ public class TopicListFragment extends ToolbarFragment implements TopicsAdapter.
                 topicsAdapter.replaceWith(displayedTopics);
                 showTopics();
             }
+
+            lastLoadedPage = savedInstanceState.getInt(ARG_LAST_LOADED_PAGE, 0);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
 
         if (displayedTopics == null) {
             displayedTopics = new ArrayList<>();
@@ -237,23 +226,14 @@ public class TopicListFragment extends ToolbarFragment implements TopicsAdapter.
         else {
             showTopics();
         }
-
-        BaseActivity activity = (BaseActivity) getActivity();
-
-        DrawerLayout drawerLayout = activity.getDrawerLayout();
-        drawerToggle = new ActionBarDrawerToggle(activity, drawerLayout, getToolbar(), R.string.drawer_open, R.string.drawer_close);
-        drawerToggle.setDrawerIndicatorEnabled(true);
-
-        drawerLayout.setDrawerListener(drawerToggle);
-        drawerToggle.syncState();
     }
 
     @Override
     public void onToolbarInitialized(Toolbar toolbar) {
         initializeToolbarTitle(toolbar);
 
-        // Deal with endless scrolling & toolbar hide toolbar on scroll
-        topicsRecyclerView.setOnScrollListener(new EndlessScrollListener(layoutManager, getToolbar(), true) {
+        // Deal with endless scrolling
+        topicsRecyclerView.addOnScrollListener(new EndlessScrollListener(layoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
                 // When a topic filter is selected, all topics are displayed on one single page,
@@ -317,6 +297,7 @@ public class TopicListFragment extends ToolbarFragment implements TopicsAdapter.
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelableArrayList(ARG_TOPIC_LIST, displayedTopics);
+        outState.putInt(ARG_LAST_LOADED_PAGE, lastLoadedPage);
     }
 
     @Override
@@ -345,10 +326,14 @@ public class TopicListFragment extends ToolbarFragment implements TopicsAdapter.
                 topicFilter = TopicFilter.READ;
                 changedTopicFilter = true;
                 break;
+            case R.id.action_refresh_topic_list:
+                dataPresenter.showLoadingView();
+                loadTopics();
+                break;
         }
 
         if (changedTopicFilter) {
-            showLoadingIndicator();
+            dataPresenter.showLoadingView();
             loadTopics();
 
             if (subcategoriesAdapter != null) {
@@ -379,6 +364,8 @@ public class TopicListFragment extends ToolbarFragment implements TopicsAdapter.
 
                 swipeRefreshLayout.setRefreshing(false);
                 lastLoadedPage = 1;
+                layoutManager.scrollToPosition(0);
+
                 showTopics();
             }
 
@@ -389,13 +376,10 @@ public class TopicListFragment extends ToolbarFragment implements TopicsAdapter.
                 swipeRefreshLayout.setRefreshing(false);
 
                 if (displayedTopics.size() == 0) {
-                    showErrorView();
-                } else {
-                    SnackbarManager.show(Snackbar.with(getActivity())
-                                    .text(R.string.error_loading_topics)
-                                    .colorResource(R.color.theme_primary_light)
-                                    .textColorResource(R.color.tabs_text_color)
-                    );
+                    dataPresenter.showErrorView();
+                }
+                else {
+                    SnackbarHelper.make(TopicListFragment.this, R.string.error_loading_topics).show();
                 }
             }
         }));
@@ -433,11 +417,10 @@ public class TopicListFragment extends ToolbarFragment implements TopicsAdapter.
                 swipeRefreshLayout.setRefreshing(false);
 
                 // Do not display error view because topics are displayed (we are "just" loading additional content)
-                SnackbarManager.show(Snackbar.with(getActivity())
-                                .text(Phrase.from(getActivity(), R.string.error_loading_topics_page).put("page", page).format())
-                                .colorResource(R.color.theme_primary_light)
-                                .textColorResource(R.color.tabs_text_color)
-                );
+                SnackbarHelper.make(
+                        TopicListFragment.this,
+                        Phrase.from(getActivity(), R.string.error_loading_topics_page).put("page", page).format()
+                ).show();
             }
         }));
     }
@@ -456,32 +439,12 @@ public class TopicListFragment extends ToolbarFragment implements TopicsAdapter.
         }
     }
 
-    protected void showLoadingIndicator() {
-        errorView.setVisibility(View.GONE);
-        loadingIndicator.setVisibility(View.VISIBLE);
-        swipeRefreshLayout.setVisibility(View.GONE);
-        emptyTopicsLayout.setVisibility(View.GONE);
-    }
-
-    protected void showErrorView() {
-        errorView.setVisibility(View.VISIBLE);
-        loadingIndicator.setVisibility(View.GONE);
-        swipeRefreshLayout.setVisibility(View.GONE);
-        emptyTopicsLayout.setVisibility(View.GONE);
-    }
-
     protected void showTopics() {
         if (displayedTopics.size() > 0) {
-            errorView.setVisibility(View.GONE);
-            loadingIndicator.setVisibility(View.GONE);
-            swipeRefreshLayout.setVisibility(View.VISIBLE);
-            emptyTopicsLayout.setVisibility(View.GONE);
+            dataPresenter.showDataView();
         }
         else {
-            errorView.setVisibility(View.GONE);
-            loadingIndicator.setVisibility(View.GONE);
-            swipeRefreshLayout.setVisibility(View.GONE);
-            emptyTopicsLayout.setVisibility(View.VISIBLE);
+            dataPresenter.showEmptyView();
         }
     }
 
@@ -501,6 +464,8 @@ public class TopicListFragment extends ToolbarFragment implements TopicsAdapter.
         menu.add(0, UIConstants.TOPIC_ACTION_GO_TO_SPECIFIC_PAGE, 2, getResources().getString(R.string.action_go_to_specific_page));
         menu.add(0, UIConstants.TOPIC_ACTION_GO_TO_LAST_PAGE, 3, getResources().getString(R.string.action_go_to_last_page));
         menu.add(0, UIConstants.TOPIC_ACTION_REPLY_TO_TOPIC, 4, getResources().getString(R.string.action_reply_to_topic));
+        menu.add(0, UIConstants.TOPIC_ACTION_COPY_LINK, 5, getResources().getString(R.string.action_copy_link));
+        menu.add(0, UIConstants.TOPIC_ACTION_SHARE, 6, getResources().getString(R.string.action_share));
     }
 
     @Override

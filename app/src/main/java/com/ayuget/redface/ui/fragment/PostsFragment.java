@@ -22,22 +22,26 @@ import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.ayuget.redface.R;
 import com.ayuget.redface.RedfaceApp;
 import com.ayuget.redface.account.UserManager;
 import com.ayuget.redface.data.DataService;
+import com.ayuget.redface.data.api.MDService;
 import com.ayuget.redface.data.api.model.Post;
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.rx.EndlessObserver;
-import com.ayuget.redface.ui.ReplyActivity;
-import com.ayuget.redface.ui.TopicsActivity;
+import com.ayuget.redface.data.rx.SubscriptionHandler;
+import com.ayuget.redface.ui.activity.MultiPaneActivity;
+import com.ayuget.redface.ui.activity.ReplyActivity;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
 import com.ayuget.redface.ui.event.PageRefreshedEvent;
@@ -47,12 +51,15 @@ import com.ayuget.redface.ui.misc.PagePosition;
 import com.ayuget.redface.ui.misc.UiUtils;
 import com.ayuget.redface.ui.view.TopicPageView;
 import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.google.common.base.Joiner;
 import com.hannesdorfmann.fragmentargs.annotation.Arg;
 import com.squareup.leakcanary.RefWatcher;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -98,8 +105,9 @@ public class PostsFragment extends BaseFragment {
 
     @Inject DataService dataService;
 
-    @Inject
-    UserManager userManager;
+    @Inject UserManager userManager;
+
+    @Inject MDService mdService;
 
     boolean wasRefreshed = false;
 
@@ -109,7 +117,15 @@ public class PostsFragment extends BaseFragment {
 
     ValueAnimator replyButtonAnimator;
 
-    private boolean replyButtonIsHidden = false;
+    private boolean restoredPosts = false;
+
+    private SubscriptionHandler<Long, String> quoteHandler = new SubscriptionHandler<>();
+
+    /**
+     * Map of currently quoted messages and their corresponding content,
+     * used for multi-quote feature
+     */
+    private Map<Long, String> quotedMessages;
 
     @Override
     public void onDestroy() {
@@ -117,16 +133,26 @@ public class PostsFragment extends BaseFragment {
 
         if (topicPageView != null) {
             topicPageView.setOnScrollListener(null);
+            topicPageView.setOnMultiQuoteModeListener(null);
             topicPageView.removeAllViews();
             topicPageView.destroy();
 
             RefWatcher refWatcher = RedfaceApp.getRefWatcher(getActivity());
             refWatcher.watch(topicPageView);
         }
+
+        swipeRefreshLayout.setOnRefreshListener(null);
+        replyButton.setOnClickListener(null);
+
+        if (errorReloadButton != null) {
+            errorReloadButton.setOnClickListener(null);
+        }
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.d(LOG_TAG, String.format("@%d -> onCreate(page=%d)", System.identityHashCode(this), currentPage));
+
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
@@ -135,22 +161,43 @@ public class PostsFragment extends BaseFragment {
         else {
             currentPagePosition = savedInstanceState.getParcelable(ARG_SAVED_PAGE_POSITION);
         }
+
+        quotedMessages = new HashMap<>();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        Log.d(LOG_TAG, String.format("@%d -> onPause(page=%d)", System.identityHashCode(this), currentPage));
+
+        // Disable batch actions because, for now, we are unable to save them properly
+        topicPageView.disableBatchActions();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        Log.d(LOG_TAG, String.format("@%d -> onCreateView(page=%d)", System.identityHashCode(this), currentPage));
+
         final View rootView = inflateRootView(R.layout.fragment_posts, inflater, container);
 
+        // Default view is the loading indicator
+        showLoadingIndicator();
+
         // Restore the list of posts when the fragment is recreated by the framework
+        restoredPosts = false;
+
         if (savedInstanceState != null) {
+            Log.d(LOG_TAG, String.format("@%d -> trying to restore state (page=%d)", System.identityHashCode(this), currentPage));
             displayedPosts = savedInstanceState.getParcelableArrayList(ARG_POST_LIST);
             if (displayedPosts != null) {
-                Log.i(LOG_TAG, "Restored " + String.valueOf(displayedPosts.size()) + " posts to fragment");
+                Log.i(LOG_TAG, String.format("@%d -> Restored %d posts to fragment (page=%d)", System.identityHashCode(this), displayedPosts.size(), currentPage));
 
                 topicPageView.setTopic(topic);
                 topicPageView.setPage(currentPage);
                 topicPageView.setPosts(displayedPosts);
 
+                restoredPosts = displayedPosts.size() > 0;
                 showPosts();
             }
         }
@@ -185,7 +232,8 @@ public class PostsFragment extends BaseFragment {
         replyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startReplyActivity(null);
+                Joiner joiner = Joiner.on("\n");
+                startReplyActivity(joiner.join(quotedMessages.values()));
             }
         });
 
@@ -194,18 +242,56 @@ public class PostsFragment extends BaseFragment {
             public void onScrolled(int dx, int dy) {
                 if (dy < 0) {
                     hideReplyButton();
-                }
-                else {
+                } else {
                     showReplyButton();
                 }
             }
         });
 
-        // Page is loaded instantly only if it's the initial page requested on topic load. Other
-        // pages will be loaded once selected in the ViewPager
-        if (isInitialPage()) {
-            loadPage(currentPage);
-        }
+        topicPageView.setOnMultiQuoteModeListener(new TopicPageView.OnMultiQuoteModeListener() {
+            @Override
+            public void onMultiQuoteModeToggled(boolean active) {
+                if (active) {
+                    quotedMessages.clear();
+                }
+
+                Fragment parent = getParentFragment();
+
+                if (parent != null) {
+                    // Multi-quote event is forwarded to parent fragment as a batch operation
+                    ((TopicFragment) parent).onBatchOperation(active);
+                }
+            }
+
+            @Override
+            public void onPostAdded(final long postId) {
+              subscribe(quoteHandler.load(postId, mdService.getQuote(userManager.getActiveUser(), topic, (int) postId), new EndlessObserver<String>() {
+                  @Override
+                  public void onNext(String quoteBBCode) {
+                      quotedMessages.put(postId, quoteBBCode);
+                  }
+
+                  @Override
+                  public void onError(Throwable throwable) {
+                      Log.e(LOG_TAG, "Failed to add post to quoted list", throwable);
+                      Toast.makeText(getActivity(), R.string.post_failed_to_quote, Toast.LENGTH_SHORT).show();
+                  }
+              }));
+            }
+
+            @Override
+            public void onPostRemoved(long postId) {
+                quotedMessages.remove(postId);
+            }
+
+            @Override
+            public void onQuote() {
+                Joiner joiner = Joiner.on("\n");
+                topicPageView.disableBatchActions();
+                startReplyActivity(joiner.join(quotedMessages.values()));
+            }
+        });
+
 
         if (userManager.getActiveUser().isGuest()) {
             replyButton.setVisibility(View.INVISIBLE);
@@ -216,8 +302,15 @@ public class PostsFragment extends BaseFragment {
 
     @Override
     public void onResume() {
+        Log.d(LOG_TAG, String.format("@%d -> onResume(page=%d)", System.identityHashCode(this), currentPage));
         super.onResume();
-        Log.d(LOG_TAG, "onResume");
+
+        // Page is loaded instantly only if it's the initial page requested on topic load. Other
+        // pages will be loaded once selected in the ViewPager
+        if (isInitialPage() && !restoredPosts) {
+            showLoadingIndicator();
+            loadPage(currentPage);
+        }
     }
 
     private boolean isInitialPage() {
@@ -255,13 +348,11 @@ public class PostsFragment extends BaseFragment {
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     animationInProgress = false;
-                    replyButtonIsHidden = toTranslationY != 0;
                 }
 
                 @Override
                 public void onAnimationCancel(Animator animation) {
                     animationInProgress = false;
-                    replyButtonIsHidden = toTranslationY != 0;
                 }
             });
 
@@ -277,10 +368,10 @@ public class PostsFragment extends BaseFragment {
     }
 
     private void startReplyActivity(String initialContent) {
-        TopicsActivity topicsActivity = (TopicsActivity) getActivity();
+        MultiPaneActivity hostActivity = (MultiPaneActivity) getActivity();
 
-        if (topicsActivity.canLaunchReplyActivity()) {
-            topicsActivity.setCanLaunchReplyActivity(false);
+        if (hostActivity.canLaunchReplyActivity()) {
+            hostActivity.setCanLaunchReplyActivity(false);
 
             Intent intent = new Intent(getActivity(), ReplyActivity.class);
             intent.putExtra(ARG_TOPIC, topic);
@@ -298,14 +389,15 @@ public class PostsFragment extends BaseFragment {
      * forum's read/unread markers.
      */
     @Subscribe public void onPageSelectedEvent(PageSelectedEvent event) {
-        Log.d(LOG_TAG, String.format("@%d -> Fragment(currentPage=%d) received event for page %d selected", System.identityHashCode(this), currentPage, event.getPage()));
-        if (! isInitialPage() && event.getTopic() == topic && event.getPage() == currentPage) {
+        if (! isInitialPage() && event.getTopic() == topic && event.getPage() == currentPage && isVisible()) {
+            Log.d(LOG_TAG, String.format("@%d -> Fragment(currentPage=%d) received event for page %d selected", System.identityHashCode(this), currentPage, event.getPage()));
             loadPage(currentPage);
         }
     }
 
     @Subscribe public void onPageRefreshRequestEvent(PageRefreshRequestEvent event) {
-        if (event.getTopic().getId() == topic.getId()) {
+        if (event.getTopic().getId() == topic.getId() && isVisible()) {
+            Log.d(LOG_TAG, String.format("@%d -> Refresh requested event (currentPage=%d)", System.identityHashCode(this), currentPage));
             wasRefreshed = true;
 
             currentPagePosition = new PagePosition(PagePosition.BOTTOM);

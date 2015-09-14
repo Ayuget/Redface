@@ -19,7 +19,6 @@
     android:id="@+id/hfr_drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/appBackgroundColor"
     android:fitsSystemWindows="true">
 
     <!-- Classic single pane layout -->

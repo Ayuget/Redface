@@ -24,6 +24,7 @@ import com.ayuget.redface.R;
 import com.ayuget.redface.data.api.model.Category;
 import com.ayuget.redface.data.api.model.Subcategory;
 import com.ayuget.redface.data.api.model.User;
+import com.ayuget.redface.ui.UIConstants;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 
@@ -63,6 +64,8 @@ public class CategoriesStore {
 
     private Category metaCategory;
 
+    private Category privateMessagesCategory;
+
     public CategoriesStore(Context context) {
         this.userCategoriesCache = new HashMap<>();
         this.categoriesCache = new HashMap<>();
@@ -70,6 +73,7 @@ public class CategoriesStore {
         this.categoriesPrefs = context.getSharedPreferences(CATEGORIES_PREFS, 0);
 
         this.metaCategory = Category.create(META_CATEGORY_ID, context.getResources().getString(R.string.navdrawer_item_my_topics), "meta", Collections.<Subcategory>emptyList());
+        this.privateMessagesCategory = Category.create(UIConstants.PRIVATE_MESSAGE_CAT_ID, context.getResources().getString(R.string.navdrawer_item_private_messages), "pm", Collections.<Subcategory>emptyList());
 
         loadFromSharedPreferences();
     }
@@ -85,6 +89,10 @@ public class CategoriesStore {
 
     public Category getMetaCategory() {
         return this.metaCategory;
+    }
+
+    public Category getPrivateMessagesCategory() {
+        return privateMessagesCategory;
     }
 
     public Category getCategoryById(int categoryId) {

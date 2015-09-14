@@ -16,8 +16,10 @@
 
 package com.ayuget.redface.ui.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.view.PagerTitleStrip;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -31,29 +33,35 @@ import android.view.ViewGroup;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.ayuget.redface.R;
+import com.ayuget.redface.data.api.MDEndpoints;
 import com.ayuget.redface.data.api.model.Topic;
-import com.ayuget.redface.ui.TopicsActivity;
+import com.ayuget.redface.ui.UIConstants;
+import com.ayuget.redface.ui.activity.MultiPaneActivity;
+import com.ayuget.redface.ui.activity.WritePrivateMessageActivity;
 import com.ayuget.redface.ui.adapter.TopicPageAdapter;
 import com.ayuget.redface.ui.event.GoToPostEvent;
 import com.ayuget.redface.ui.event.PageLoadedEvent;
+import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
 import com.ayuget.redface.ui.event.PageRefreshedEvent;
 import com.ayuget.redface.ui.event.PageSelectedEvent;
 import com.ayuget.redface.ui.event.ScrollToPostEvent;
 import com.ayuget.redface.ui.event.TopicPageCountUpdatedEvent;
+import com.ayuget.redface.ui.event.WritePrivateMessageEvent;
 import com.ayuget.redface.ui.misc.PagePosition;
-import com.ayuget.redface.ui.misc.PageSelectedListener;
+import com.ayuget.redface.ui.misc.SnackbarHelper;
 import com.ayuget.redface.ui.misc.TopicPosition;
+import com.ayuget.redface.ui.misc.UiUtils;
 import com.hannesdorfmann.fragmentargs.annotation.Arg;
-import com.nispok.snackbar.Snackbar;
-import com.nispok.snackbar.SnackbarManager;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 
+import javax.inject.Inject;
+
 import butterknife.InjectView;
 
-public class TopicFragment extends ToolbarFragment {
+public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageChangeListener {
     private static final String LOG_TAG = TopicFragment.class.getSimpleName();
 
     private static final String ARG_TOPIC_POSITIONS_STACK = "topicPositionsStack";
@@ -68,8 +76,15 @@ public class TopicFragment extends ToolbarFragment {
 
     private boolean userScrolledViewPager = false;
 
+    @Inject
+    MDEndpoints mdEndpoints;
+
+
     @InjectView(R.id.pager)
     ViewPager pager;
+
+    @InjectView(R.id.titlestrip)
+    PagerTitleStrip pagerTitleStrip;
 
     /**
      * Topic currently displayed
@@ -110,38 +125,26 @@ public class TopicFragment extends ToolbarFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        ViewGroup rootView = inflateRootView(R.layout.fragment_topic, inflater, container);
+        View rootView = inflateRootView(R.layout.fragment_topic, inflater, container);
 
         pager.setAdapter(topicPageAdapter);
-        pager.setOnPageChangeListener(new PageSelectedListener() {
-            @Override
-            public void onPageSelected(int position) {
-                currentPage = position + 1;
-                bus.post(new PageSelectedEvent(topic, currentPage));
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-                // Keep track of scroll state in order to detect if scrolling has been done
-                // manually by the user, or programatically. It allows us to disable some automatic
-                // scrolling behavior that can be annoying (and buggy) in some corner cases
-                if (previousViewPagerState == ViewPager.SCROLL_STATE_DRAGGING && state == ViewPager.SCROLL_STATE_SETTLING) {
-                    userScrolledViewPager = true;
-
-                    // Reset current page position because user triggered page change
-                    currentPagePosition = null;
-                }
-                else if (previousViewPagerState == ViewPager.SCROLL_STATE_SETTLING && state == ViewPager.SCROLL_STATE_IDLE) {
-                    userScrolledViewPager = false;
-                }
-
-                previousViewPagerState = state;
-            }
-        });
-
         pager.setCurrentItem(currentPage - 1);
 
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        pager.addOnPageChangeListener(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        pager.removeOnPageChangeListener(this);
     }
 
     @Override
@@ -152,19 +155,64 @@ public class TopicFragment extends ToolbarFragment {
     }
 
     @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+        // Ignore event
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+        currentPage = position + 1;
+        bus.post(new PageSelectedEvent(topic, currentPage));
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+        // Keep track of scroll state in order to detect if scrolling has been done
+        // manually by the user, or programatically. It allows us to disable some automatic
+        // scrolling behavior that can be annoying (and buggy) in some corner cases
+        if (previousViewPagerState == ViewPager.SCROLL_STATE_DRAGGING && state == ViewPager.SCROLL_STATE_SETTLING) {
+            userScrolledViewPager = true;
+
+            // Reset current page position because user triggered page change
+            currentPagePosition = null;
+        }
+        else if (previousViewPagerState == ViewPager.SCROLL_STATE_SETTLING && state == ViewPager.SCROLL_STATE_IDLE) {
+            userScrolledViewPager = false;
+        }
+
+        previousViewPagerState = state;
+    }
+
+    @Override
     public void onCreateOptionsMenu(Toolbar toolbar) {
         toolbar.inflateMenu(R.menu.menu_topic);
     }
 
     @Override
     public void onToolbarInitialized(Toolbar toolbar) {
-        TopicsActivity hostActivity = (TopicsActivity) getActivity();
+        MultiPaneActivity hostActivity = (MultiPaneActivity) getActivity();
 
         if (! hostActivity.isTwoPaneMode()) {
             showUpButton();
         }
 
         toolbar.setTitle(topic.getSubject());
+    }
+
+    /**
+     * Method to be invoked by child fragments when a batch operation on Posts has started.
+     */
+    public void onBatchOperation(boolean active) {
+        MultiPaneActivity hostActivity = (MultiPaneActivity) getActivity();
+
+        if (! hostActivity.isTwoPaneMode()) {
+            if (active) {
+                pagerTitleStrip.setBackgroundColor(UiUtils.getActionModeBackgroundColor(getActivity()));
+            }
+            else {
+                pagerTitleStrip.setBackgroundColor(UiUtils.getRegularPagerTitleStripBackgroundColor(getActivity()));
+            }
+        }
     }
 
     /**
@@ -193,6 +241,21 @@ public class TopicFragment extends ToolbarFragment {
             topic.setPagesCount(event.getNewPageCount());
             topicPageAdapter.notifyDataSetChanged();
         }
+    }
+
+    @Subscribe
+    public void onWritePrivateMessage(WritePrivateMessageEvent event) {
+        MultiPaneActivity hostActivity = (MultiPaneActivity) getActivity();
+
+        if (hostActivity.canLaunchReplyActivity()) {
+            hostActivity.setCanLaunchReplyActivity(false);
+
+            Intent intent = new Intent(getActivity(), WritePrivateMessageActivity.class);
+            intent.putExtra(UIConstants.ARG_PM_RECIPIENT, event.getRecipient());
+
+            getActivity().startActivityForResult(intent, UIConstants.NEW_PM_REQUEST_CODE);
+        }
+
     }
 
     @Subscribe
@@ -282,6 +345,9 @@ public class TopicFragment extends ToolbarFragment {
         int id = item.getItemId();
 
         switch (id) {
+            case R.id.action_refresh_topic:
+                bus.post(new PageRefreshRequestEvent(topic));
+                break;
             case R.id.action_go_to_first_page:
                 pager.setCurrentItem(0);
                 return true;
@@ -292,6 +358,13 @@ public class TopicFragment extends ToolbarFragment {
             case R.id.action_go_to_specific_page:
                 showGoToPageDialog();
                 return true;
+
+            case R.id.action_copy_link:
+                UiUtils.copyToClipboard(getActivity(), mdEndpoints.topic(topic, currentPage));
+                break;
+            case R.id.action_share:
+                UiUtils.shareText(getActivity(), mdEndpoints.topic(topic));
+                break;
         }
 
         return super.onOptionsItemSelected(item);
@@ -322,12 +395,7 @@ public class TopicFragment extends ToolbarFragment {
                         }
                         catch (NumberFormatException e) {
                             Log.e(LOG_TAG, String.format("Invalid page number entered : %s", goToPageEditText.getText().toString()), e);
-
-                            SnackbarManager.show(
-                                    Snackbar.with(getActivity())
-                                            .text(R.string.invalid_page_number)
-                                            .textColorResource(R.color.theme_primary_light)
-                            );
+                            SnackbarHelper.make(TopicFragment.this, R.string.invalid_page_number).show();
                         }
                     }
 

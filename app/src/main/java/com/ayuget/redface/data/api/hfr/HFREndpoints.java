@@ -21,6 +21,7 @@ import com.ayuget.redface.data.api.model.Category;
 import com.ayuget.redface.data.api.model.Subcategory;
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.api.model.TopicFilter;
+import com.ayuget.redface.ui.UIConstants;
 import com.google.common.base.Optional;
 import com.squareup.phrase.Phrase;
 
@@ -32,6 +33,8 @@ public class HFREndpoints implements MDEndpoints {
     private static final String SUBCATEGORY_URL = "{base_url}/hfr/{category_slug}/{subcategory_slug}/liste_sujet-{page}.htm";
 
     private static final String TOPIC_URL = "{base_url}/forum2.php?config=hfr.inc&cat={category_id}&post={topic_id}&page={page}";
+
+    private static final String PRIVATE_MESSAGES_URL = "{base_url}/forum1.php?config=hfr.inc&cat=prive&page={page}&subcat=&sondage=0&owntopic=0&trash=0&trash_post=0&moderation=0&new=0&nojs=0&subcatgroup=0";
 
     private static final String AUTH_FORM_URL = "{base_url}/login_validation.php?config=hfr.inc";
 
@@ -52,6 +55,9 @@ public class HFREndpoints implements MDEndpoints {
     private static final String USER_FORUM_PREFERENCES_URL = "{base_url}/user/editprofil.php?config=hfr.inc&page=3";
 
     private static final String META_PAGE_URL = "{base_url}/forum1f.php?config=hfr.inc&owntopic={filter_id}&new=0&nojs=0";
+
+    private static final String FAVORITE_URL = "{base_url}/user/addflag.php?config=hfr.inc&cat={category_id}&post={topic_id}&numreponse={post_id}";
+    public static final String PRIVATE_MESSAGE_REAL_CAT_ID = "prive";
 
     /**
      * Homepage URL (with the list of categories)
@@ -126,6 +132,11 @@ public class HFREndpoints implements MDEndpoints {
         }
     }
 
+    private String getTopicRealCategoryId(Topic topic) {
+        boolean isPrivateMessage = topic.getCategory().getId() == UIConstants.PRIVATE_MESSAGE_CAT_ID;
+        return isPrivateMessage ? PRIVATE_MESSAGE_REAL_CAT_ID : String.valueOf(topic.getCategory().getId());
+    }
+
     /**
      * Topic URL
      */
@@ -133,7 +144,7 @@ public class HFREndpoints implements MDEndpoints {
     public String topic(Topic topic, int page) {
         return Phrase.from(TOPIC_URL)
                 .put("base_url", FORUM_BASE_URL)
-                .put("category_id", topic.getCategory().getId())
+                .put("category_id", getTopicRealCategoryId(topic))
                 .put("topic_id", topic.getId())
                 .put("page", page)
                 .format().toString();
@@ -197,7 +208,7 @@ public class HFREndpoints implements MDEndpoints {
     public String quote(Category category, Topic topic, int postId) {
         return Phrase.from(QUOTE_URL)
                 .put("base_url", FORUM_BASE_URL)
-                .put("category_id", category.getId())
+                .put("category_id", getTopicRealCategoryId(topic))
                 .put("topic_id", topic.getId())
                 .put("post_id", postId)
                 .format().toString();
@@ -207,7 +218,7 @@ public class HFREndpoints implements MDEndpoints {
     public String editPost(Category category, Topic topic, int postId) {
         return Phrase.from(EDIT_URL)
                 .put("base_url", FORUM_BASE_URL)
-                .put("category_id", category.getId())
+                .put("category_id", getTopicRealCategoryId(topic))
                 .put("topic_id", topic.getId())
                 .put("post_id", postId)
                 .format().toString();
@@ -238,5 +249,41 @@ public class HFREndpoints implements MDEndpoints {
         else {
             throw new IllegalStateException("Invalid topic filter for meta page");
         }
+    }
+
+    @Override
+    public String favorite(Category category, Topic topic, int postId) {
+        return Phrase.from(FAVORITE_URL)
+                .put("base_url", FORUM_BASE_URL)
+                .put("category_id", category.getId())
+                .put("topic_id", topic.getId())
+                .put("post_id", postId)
+                .format().toString();
+    }
+
+    @Override
+    public String deletePost() {
+        return Phrase.from(EDIT_FORM_URL)
+                .put("base_url", FORUM_BASE_URL)
+                .format()
+                .toString();
+    }
+
+    @Override
+    public String reportPost() {
+        return null;
+    }
+
+    @Override
+    public String privateMessages() {
+        return privateMessages(1);
+    }
+
+    @Override
+    public String privateMessages(int page) {
+        return Phrase.from(PRIVATE_MESSAGES_URL)
+                .put("base_url", FORUM_BASE_URL)
+                .put("page", page)
+                .format().toString();
     }
 }

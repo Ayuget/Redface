@@ -5,9 +5,15 @@
     <!-- Necessary to connect to forum.hardware.fr -->
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!-- Integration with Android account manager -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
     <uses-permission android:name="android.permission.MANAGE_ACCOUNTS"/>
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
+
+    <!-- Notification service -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:name=".RedfaceApp"
@@ -16,7 +22,7 @@
         android:label="@string/app_name"
         android:theme="@style/Theme.Redface.Dark" >
         <activity
-            android:name="com.ayuget.redface.ui.TopicsActivity"
+            android:name=".ui.activity.TopicsActivity"
             android:windowSoftInputMode="adjustResize"
             android:label="@string/app_name" >
             <intent-filter>
@@ -31,19 +37,25 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.ayuget.redface.ui.AccountActivity"
+            android:name=".ui.activity.AccountActivity"
             android:label="@string/title_activity_login"
-            android:parentActivityName="com.ayuget.redface.ui.BaseActivity"
+            android:parentActivityName=".ui.activity.BaseActivity"
             android:windowSoftInputMode="adjustResize|stateVisible" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.ayuget.redface.ui.BaseActivity" />
+                android:value=".ui.activity.BaseActivity" />
         </activity>
 
-        <activity android:name="com.ayuget.redface.ui.SettingsActivity" />
-        <activity android:name="com.ayuget.redface.ui.ReplyActivity" android:theme="@style/Theme.Redface.Transparent.Dark" android:windowSoftInputMode="adjustResize" />
-        <activity android:name="com.ayuget.redface.ui.EditPostActivity" android:theme="@style/Theme.Redface.Transparent.Dark" android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".ui.activity.SettingsActivity" />
+        <activity
+            android:name=".ui.activity.PrivateMessagesActivity"
+            android:launchMode="singleTop" />
 
+        <activity android:name=".ui.activity.ReplyActivity" android:theme="@style/Theme.Redface.Transparent.Dark" android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".ui.activity.EditPostActivity" android:theme="@style/Theme.Redface.Transparent.Dark" android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".ui.activity.WritePrivateMessageActivity" android:theme="@style/Theme.Redface.Transparent.Dark" android:windowSoftInputMode="adjustResize" />
+
+        <!-- Authentication -->
         <service android:name=".account.RedfaceAuthenticatorService" android:enabled="true">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator"/>
@@ -52,6 +64,14 @@
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator"/>
         </service>
+
+        <!-- Private messages notification service -->
+        <service android:name="com.ayuget.redface.job.PrivateMessagesService" />
+        <receiver android:name="com.ayuget.redface.job.OnAlarmReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
 
         <meta-data android:name="com.crashlytics.ApiKey" android:value="b1f369fddd2fed6f71072ef7db728637b1c633bc"/>
     </application>

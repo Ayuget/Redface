@@ -39,26 +39,8 @@ public abstract class EndlessScrollListener extends RecyclerView.OnScrollListene
 
     private final LinearLayoutManager layoutManager;
 
-    private Toolbar toolbar;
-
-    private boolean hideToolbarOnScroll;
-
-    private boolean animationInProgress = false;
-
-    ValueAnimator toolbarAnimator;
-
-    private boolean toolbarIsHidden = false;
-
-
-
     protected EndlessScrollListener(LinearLayoutManager layoutManager) {
         this.layoutManager = layoutManager;
-    }
-
-    protected EndlessScrollListener(LinearLayoutManager layoutManager, Toolbar toolbar, boolean hideToolbarOnScroll) {
-        this.layoutManager = layoutManager;
-        this.toolbar = toolbar;
-        this.hideToolbarOnScroll = hideToolbarOnScroll;
     }
 
     /**
@@ -73,14 +55,6 @@ public abstract class EndlessScrollListener extends RecyclerView.OnScrollListene
         int totalItemCount = layoutManager.getItemCount();
         int visibleItemCount = layoutManager.getChildCount();
         int firstVisibleItem = layoutManager.findFirstVisibleItemPosition();
-
-        if (!animationInProgress && hideToolbarOnScroll && toolbar != null) {
-            if (!toolbarIsHidden && firstVisibleItem > 0 && dy > 0) {
-                hideToolbar();
-            } else if(toolbarIsHidden && dy < 0) {
-                showToolbar();
-            }
-        }
 
         if (totalItemCount < previousTotalItemCount) {
             this.currentPage = this.startingPageIndex;
@@ -112,50 +86,4 @@ public abstract class EndlessScrollListener extends RecyclerView.OnScrollListene
 
     // Defines the process for actually loading more data based on page
     public abstract void onLoadMore(int page, int totalItemsCount);
-
-    private void showToolbar() {
-        moveToolbar(0);
-    }
-
-    private void hideToolbar() {
-        moveToolbar(-toolbar.getHeight());
-    }
-
-    private void moveToolbar(final float toTranslationY) {
-        if (toolbar.getTranslationY() == toTranslationY) {
-            return;
-        }
-        if (! animationInProgress) {
-            toolbarAnimator = ValueAnimator.ofFloat(toolbar.getTranslationY(), toTranslationY).setDuration(200);
-
-            toolbarAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    float translationY = (float) animation.getAnimatedValue();
-                    toolbar.setTranslationY(translationY);
-                }
-            });
-            toolbarAnimator.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationStart(Animator animation) {
-                    animationInProgress = true;
-                }
-
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    animationInProgress = false;
-                    toolbarIsHidden = toTranslationY != 0;
-                }
-
-                @Override
-                public void onAnimationCancel(Animator animation) {
-                    animationInProgress = false;
-                    toolbarIsHidden = toTranslationY != 0;
-                }
-            });
-
-            toolbarAnimator.start();
-        }
-    }
-
 }

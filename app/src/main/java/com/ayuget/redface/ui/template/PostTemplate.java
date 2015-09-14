@@ -17,8 +17,8 @@
 package com.ayuget.redface.ui.template;
 
 import android.content.Context;
-import android.text.TextUtils;
 
+import com.ayuget.redface.account.UserManager;
 import com.ayuget.redface.data.api.model.Post;
 import com.squareup.phrase.Phrase;
 
@@ -30,15 +30,21 @@ public class PostTemplate extends HTMLTemplate<Post> {
 
     private AvatarTemplate avatarTemplate;
 
-    private EditIconTemplate editIconTemplate;
-
     private PostExtraDetailsTemplate extraDetailsTemplate;
 
-    public PostTemplate(Context context, AvatarTemplate avatarTemplate, EditIconTemplate editIconTemplate, PostExtraDetailsTemplate extraDetailsTemplate) {
+    private PostActionsTemplate postActionsTemplate;
+
+    private QuickActionsTemplate quickActionsTemplate;
+
+    private UserManager userManager;
+
+    public PostTemplate(Context context, UserManager userManager, AvatarTemplate avatarTemplate, PostExtraDetailsTemplate extraDetailsTemplate, PostActionsTemplate postActionsTemplate, QuickActionsTemplate quickActionsTemplate) {
         super(context, POST_TEMPLATE);
+        this.userManager = userManager;
         this.avatarTemplate = avatarTemplate;
-        this.editIconTemplate = editIconTemplate;
         this.extraDetailsTemplate = extraDetailsTemplate;
+        this.postActionsTemplate = postActionsTemplate;
+        this.quickActionsTemplate = quickActionsTemplate;
     }
 
     @Override
@@ -53,9 +59,9 @@ public class PostTemplate extends HTMLTemplate<Post> {
                         .put("posted_on", formatDate(post.getPostDate()))
                         .put("author_id", post.getAuthor())
                         .put("post_id", postId)
-                        .put("post_id_quote", postId)
-                        .put("edit_icon", editIconTemplate.render(post))
+                        .put("post_quick_actions", quickActionsTemplate.render(post))
                         .put("extra_details", extraDetailsTemplate.render(post))
+                        .put("post_actions", userManager.activeUserIsLoggedIn() ? postActionsTemplate.render(post) : "")
                         .format()
                         .toString()
         );

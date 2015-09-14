@@ -19,6 +19,12 @@ package com.ayuget.redface.ui;
 public class UIConstants {
     public static final int INVALID_POINTER_ID = -1;
 
+    public static final String ARG_SELECTED_CATEGORY = "selectedCategory";
+
+    public static final String ARG_SELECTED_PM = "selectedPrivateMessage";
+
+    public static final int PRIVATE_MESSAGE_CAT_ID = -1;
+
     /**
      * Mime-type for pages displayed in the post webview
      */
@@ -39,14 +45,19 @@ public class UIConstants {
     public static final int TOPIC_ACTION_GO_TO_SPECIFIC_PAGE = 3;
     public static final int TOPIC_ACTION_GO_TO_LAST_PAGE = 4;
     public static final int TOPIC_ACTION_REPLY_TO_TOPIC = 5;
+    public static final int TOPIC_ACTION_COPY_LINK = 6;
+    public static final int TOPIC_ACTION_SHARE = 7;
 
     /**
      * Reply intent
      */
     public static final int REPLY_REQUEST_CODE = 1;
+    public static final int NEW_PM_REQUEST_CODE = 2;
     public static final int REPLY_RESULT_KO = 1;
     public static final String ARG_REPLY_TOPIC = "TOPIC";
     public static final String ARG_REPLY_WAS_EDIT = "EDITED";
     public static final String ARG_REPLY_CONTENT = "replyContent";
     public static final String ARG_EDITED_POST_ID = "editedPostId";
+    public static final String ARG_PM_RECIPIENT = "pmRecipient";
+    public static final String ARG_RELOGIN_MODE = "reloginMode";
 }

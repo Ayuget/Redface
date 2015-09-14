@@ -56,7 +56,7 @@ public class PostsTemplate extends HTMLTemplate<List<Post>> {
         stream.append(
                 templateContent
                         .put("posts", postsBuffer.toString())
-                        .put("theme_class", themeManager.getActiveThemeCssClass())
+                        .put("theme_class", themeManager.getActiveThemeCssClass() + " " + themeManager.getFontSizeCssClass())
                         .format()
                         .toString()
         );

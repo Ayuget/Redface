@@ -37,8 +37,8 @@ public class MetaPageTopicsAdapter extends TopicsAdapter implements StickyRecycl
 
     boolean categoryIconsAsTopicIcons;
 
-    public MetaPageTopicsAdapter(Context context, ThemeManager themeManager) {
-        super(context, themeManager);
+    public MetaPageTopicsAdapter(Context context, ThemeManager themeManager, boolean isCompactMode) {
+        super(context, themeManager, isCompactMode);
         categoryIconsAsTopicIcons = false;
     }
 
@@ -52,7 +52,7 @@ public class MetaPageTopicsAdapter extends TopicsAdapter implements StickyRecycl
             return -1;
         }
         else {
-            return getItem(i).getCategory().getId();
+            return getItem(i).getCategory() == null ? -1 : getItem(i).getCategory().getId();
         }
     }
 

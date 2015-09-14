@@ -35,7 +35,7 @@ public class EditIconTemplate extends HTMLTemplate<Post> {
 
     @Override
     protected void render(Post post, Phrase templateContent, StringBuilder stream) {
-        if (post.getAuthor().equals(userManager.getActiveUser().getUsername())) {
+        if (userManager.isActiveUser(post.getAuthor())) {
             stream.append(
                     templateContent.put("post_id", String.valueOf(post.getId())).format().toString()
             );

@@ -22,4 +22,24 @@
         android:defaultValue="@string/pref_theme_default"
         android:entries="@array/pref_theme_values"
         android:entryValues="@array/pref_theme_entries" />
+
+    <CheckBoxPreference
+        android:key="topic_list_compact_mode"
+        android:title="@string/pref_topic_list_compact_mode_title"
+        android:summary="@string/pref_topic_list_compact_mode_summary"
+        android:defaultValue="false" />
+
+    <CheckBoxPreference
+        android:key="double_tap_to_refresh_enabled"
+        android:title="@string/pref_double_tap_to_refresh_title"
+        android:summary="@string/pref_double_tap_to_refresh_summary"
+        android:defaultValue="true" />
+
+    <ListPreference
+        android:key="font_size"
+        android:title="@string/pref_font_size_title"
+        android:summary="@string/pref_font_size_summary"
+        android:defaultValue="@string/pref_font_size_default"
+        android:entries="@array/pref_font_size_values"
+        android:entryValues="@array/pref_font_size_entries" />
 </PreferenceScreen>

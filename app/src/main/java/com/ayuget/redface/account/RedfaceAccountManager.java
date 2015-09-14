@@ -71,6 +71,10 @@ public class RedfaceAccountManager {
         accountManager.setAuthToken(account, user.getPassword(), REDFACE_AUTHTOKEN_TYPE);
     }
 
+    public boolean hasAccount(User user) {
+        return getAccountByName(user.getUsername()) != null;
+    }
+
     public void removeAccount(User user) {
         Account account = new Account(user.getUsername(), REDFACE_ACCOUNT_TYPE);
         accountManager.removeAccount(account, null, null);

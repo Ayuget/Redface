@@ -21,7 +21,8 @@ import android.content.SharedPreferences;
 
 import com.ayuget.redface.R;
 import com.ayuget.redface.data.api.model.TopicFilter;
-import com.ayuget.redface.ui.RedfaceTheme;
+import com.ayuget.redface.ui.theme.FontSize;
+import com.ayuget.redface.ui.theme.RedfaceTheme;
 import com.ayuget.redface.ui.misc.MetaPageOrdering;
 
 public class RedfaceSettings {
@@ -54,6 +55,11 @@ public class RedfaceSettings {
         return RedfaceTheme.valueOf(themeValue);
     }
 
+    public FontSize getFontSize() {
+        String fontSizeValue = sharedPreferences.getString(SettingsConstants.KEY_FONT_SIZE, context.getString(R.string.pref_font_size_default));
+        return FontSize.valueOf(fontSizeValue);
+    }
+
     public int getProxyPort() {
         return Integer.valueOf(sharedPreferences.getString(SettingsConstants.KEY_PROXY_PORT, "0"));
     }
@@ -82,5 +88,21 @@ public class RedfaceSettings {
 
     public int getNotLoggedInDefaultCategoryId() {
         return 13; // fixme : ugly
+    }
+
+    public boolean isCompactModeEnabled() {
+        return sharedPreferences.getBoolean(SettingsConstants.KEY_ENABLE_COMPACT_MODE, false);
+    }
+
+    public boolean arePrivateMessagesNoticationsEnabled() {
+        return sharedPreferences.getBoolean(SettingsConstants.KEY_ENABLE_PRIVATE_MESSAGES_NOTIFICATIONS, true);
+    }
+
+    public int getPrivateMessagesPollingFrequency() {
+        return Integer.valueOf(sharedPreferences.getString(SettingsConstants.KEY_PRIVATE_MESSAGES_POLLING_FREQUENCY, context.getResources().getString(R.string.pref_pm_notification_frequency_default)));
+    }
+
+    public boolean isDoubleTapToRefreshEnabled() {
+        return sharedPreferences.getBoolean(SettingsConstants.KEY_DOUBLE_TAP_TO_REFRESH_ENABLED, true);
     }
 }

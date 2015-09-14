@@ -24,6 +24,10 @@
         <item name="android:fontFamily" tools:targetApi="jelly_bean">sans-serif</item>
     </style>
 
+    <style name="TextAppearance.Compact" parent="TextAppearance">
+        <item name="android:textSize">@dimen/text_size_details</item>
+    </style>
+
     <style name="TextAppearance.Light">
         <item name="android:fontFamily" tools:targetApi="jelly_bean">sans-serif-light</item>
     </style>
@@ -92,7 +96,7 @@
     </style>
 
     <style name="RedfaceTopicPagerStrip">
-        <item name="android:background">@color/pager_strip_background</item>
+        <item name="android:background">?attr/pagerTitleStripBackground</item>
         <item name="android:textColor">@color/tabs_text_color</item>
     </style>
 
@@ -167,4 +171,12 @@
         <item name="android:padding">8dp</item>
     </style>
 
+    <!-- Contextual action bar -->
+    <style name="TextAppearance.ActionMode" parent="@android:style/TextAppearance">
+        <item name="android:textColor">?attr/textColorInverse</item>
+    </style>
+
+    <style name="Redface.ActionMode" parent="@style/Widget.AppCompat.ActionMode">
+        <item name="titleTextStyle">@style/TextAppearance.ActionMode</item>
+    </style>
 </resources>

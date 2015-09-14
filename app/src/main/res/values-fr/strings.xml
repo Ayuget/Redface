@@ -54,14 +54,14 @@
     <string name="login_failed">Connexion impossible, vérifiez le couple pseudo/mot de passe</string>
     <string name="login_password_empty">Le mot de passe ne peut pas être vide</string>
     <string name="login_username_empty">Le pseudo ne peut pas être vide</string>
-    <string name="connect_to_forum">Ajouter un compte</string>
+    <string name="connect_to_forum">Se connecter au forum</string>
     <string name="make_text_bold_button_description">Rendre le texte gras</string>
     <string name="make_text_italic_button_description">Rendre le texte italique</string>
     <string name="menu_about">A propos</string>
     <string name="navdrawer_add_account">Ajouter un compte</string>
     <string name="navdrawer_item_my_topics">Mes sujets</string>
     <string name="navdrawer_item_private_messages">Messages privés</string>
-    <string name="navdrawer_item_profile">Profils</string>
+    <string name="navdrawer_item_profile">Profil</string>
     <string name="navdrawer_item_settings">Paramètres</string>
     <string name="navdrawer_profile_picture">Image de profil</string>
     <string name="pref_activate_proxy_summary">Utiliser un proxy pour se connecter au forum</string>
@@ -126,4 +126,62 @@
     <string name="show_smileys_picker">Ouvrir le sélectionneur de smileys</string>
     <string name="pref_show_previous_page_last_post_title">Reprendre le dernier message</string>
     <string name="pref_show_previous_page_last_post_summary">Afficher le dernier message de la page précédente en haut de page</string>
+    <string name="mark_as_favorite_failed">Erreur lors de l\'ajout du favori</string>
+    <string name="mark_as_favorite_success">Favori correctement ajouté</string>
+    <string name="marking_as_favorite_in_progress">Ajout du favori en cours…</string>
+    <string name="topic_loading_message">Chargement du sujet</string>
+    <string name="pref_topic_list_compact_mode_title">Mode compact</string>
+    <string name="pref_topic_list_compact_mode_summary">Afficher la liste des sujets de manière compacte</string>
+    <string name="no_private_messages_found">Aucun message privé trouvé</string>
+    <string name="error_loading_private_messages">Erreur de chargement des messages privés</string>
+    <string name="error_loading_private_messages_page">Erreur lors du chargement de la page {page} des MPs</string>
+    <string name="pref_enable_pm_notifications_summary">Être notifié lorsque vous recevez un nouveau message privé</string>
+    <string name="pref_enable_pm_notifications_title">Activer les notifications</string>
+    <string name="pref_notification_settings">Notifications</string>
+    <string name="pref_pm_notification_frequency">Fréquence de vérification</string>
+
+    <string-array name="pref_pm_notification_frequency_entries">
+        <item>15 minutes</item>
+        <item>30 minutes</item>
+        <item>1 heure</item>
+        <item>2 heures</item>
+        <item>6 heures</item>
+    </string-array>
+    <string name="pm_recipient">Pseudo du destinataire</string>
+    <string name="action_new_private_message">Nouveau message privé</string>
+    <string name="pm_no_recipient">Veuillez entrer un destinataire</string>
+    <string name="pm_subject">Sujet du message</string>
+    <string name="pm_no_subject">Veuillez entrer un sujet</string>
+    <string name="pm_successfully_sent">Message privé envoyé avec succès</string>
+    <string name="error_sending_pm">Erreur d\'envoi du message privé</string>
+    <string name="action_multiquote">Citer ces messages</string>
+    <string name="quoted_messages">1 message cité</string>
+    <string name="quoted_messages_plural">{count} messages cités</string>
+    <string name="post_added_to_quote">Message correctement cité</string>
+    <string name="post_failed_to_quote">Impossible de citer ce message</string>
+    <string name="delete_post_failed">Erreur de suppression du message</string>
+    <string name="delete_post_in_progress">Suppression en cours…</string>
+    <string name="delete_post_success">Message correctement supprimé</string>
+    <string name="pref_double_tap_to_refresh_summary">Lors de la lecture d\'un sujet, pouvoir effectuer un double tap pour rafraîchir la page</string>
+    <string name="pref_double_tap_to_refresh_title">Activer le double tap pour rafraîchir</string>
+    <string name="action_refresh_topic">Rafraîchir</string>
+    <string name="pref_font_size_summary">Personnaliser la taille de la police (uniquement au sein d\'un sujet pour l\'instant)</string>
+    <string name="pref_font_size_title">Taille de la police</string>
+
+    <string-array name="pref_font_size_values">
+        <item>Petite</item>
+        <item>Normale</item>
+        <item>Grosse</item>
+        <item>Enorme</item>
+    </string-array>
+    <string name="relogin_instructions">Si vos identifiants ont changés ou que vous souhaitez vous ré-authentifier, vous pouvez le faire en remplissant le formulaire ci-dessous</string>
+    <string name="action_copy_link">Copier un lien vers ce sujet</string>
+    <string name="link_sucessfully_copied">Lien copié dans le presse-papier</string>
+    <string name="action_share">Partager</string>
+    <string name="post_edited_on">Edité le {date}</string>
+    <string name="post_delete_confirmation">Supprimer le message ?</string>
+    <string name="post_delete_no">Annuler</string>
+    <string name="post_delete_yes">Supprimer</string>
+    <string name="insert_image_description">Insérer une image</string>
+
 </resources>

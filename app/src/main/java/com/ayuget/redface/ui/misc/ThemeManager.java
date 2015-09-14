@@ -16,11 +16,10 @@
 
 package com.ayuget.redface.ui.misc;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
 import com.ayuget.redface.R;
 import com.ayuget.redface.settings.RedfaceSettings;
-import com.ayuget.redface.ui.RedfaceTheme;
+import com.ayuget.redface.ui.theme.RedfaceTheme;
 
 public class ThemeManager {
     private static final String LIGHT_THEME_CSS_CLASS = "redface-light";
@@ -67,6 +66,10 @@ public class ThemeManager {
         }
     }
 
+    public String getFontSizeCssClass() {
+        return "font-" + settings.getFontSize().toString().toLowerCase();
+    }
+
     public Theme getMaterialDialogTheme() {
         RedfaceTheme activeTheme = settings.getTheme();
 
@@ -97,6 +100,17 @@ public class ThemeManager {
         }
         else {
             return R.drawable.topic_unread_count_dark;
+        }
+    }
+
+    public int getPrivateMessageUnreadDrawable() {
+        RedfaceTheme activeTheme = settings.getTheme();
+
+        if (activeTheme == RedfaceTheme.LIGHT) {
+            return R.drawable.private_message_unread_light;
+        }
+        else {
+            return R.drawable.private_message_unread_dark;
         }
     }
 

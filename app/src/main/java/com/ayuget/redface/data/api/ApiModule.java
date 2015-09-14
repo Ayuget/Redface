@@ -52,8 +52,8 @@ public class ApiModule {
         return new HFRMessageSender(httpClientProvider, mdEndpoints);
     }
 
-    @Provides @Singleton UrlParser provideUrlParser(MDEndpoints endpoints, MDService mdService, Bus bus, CategoriesStore categoriesStore) {
-        return new HFRUrlParser(endpoints, mdService, bus, categoriesStore);
+    @Provides @Singleton UrlParser provideUrlParser(MDEndpoints endpoints, CategoriesStore categoriesStore) {
+        return new HFRUrlParser(endpoints, categoriesStore);
     }
 
     @Provides @Singleton SmileyService provideSmileyService(MDEndpoints endpoints) {

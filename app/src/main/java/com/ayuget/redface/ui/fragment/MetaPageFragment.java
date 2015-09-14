@@ -32,9 +32,8 @@ import com.ayuget.redface.data.rx.EndlessObserver;
 import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.ui.adapter.MetaPageTopicsAdapter;
 import com.ayuget.redface.ui.misc.MetaPageOrdering;
+import com.ayuget.redface.ui.misc.SnackbarHelper;
 import com.hannesdorfmann.fragmentargs.annotation.FragmentArgsInherited;
-import com.nispok.snackbar.Snackbar;
-import com.nispok.snackbar.SnackbarManager;
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration;
 
 import java.util.List;
@@ -56,7 +55,7 @@ public class MetaPageFragment extends TopicListFragment {
 
     @Override
     protected void initializeAdapters() {
-        topicsAdapter = new MetaPageTopicsAdapter(new ContextThemeWrapper(getActivity(), themeManager.getActiveThemeStyle()), themeManager);
+        topicsAdapter = new MetaPageTopicsAdapter(new ContextThemeWrapper(getActivity(), themeManager.getActiveThemeStyle()), themeManager, settings.isCompactModeEnabled());
         topicsAdapter.setOnTopicClickedListener(this);
         topicsAdapter.setOnTopicLongClickListener(this);
     }
@@ -142,7 +141,7 @@ public class MetaPageFragment extends TopicListFragment {
         if (changedPageOrdering) {
             toggleOrderingIcons(getToolbar().getMenu());
             resetAdapterDetails();
-            showLoadingIndicator();
+            dataPresenter.showLoadingView();
             loadTopics();
         }
 
@@ -188,13 +187,9 @@ public class MetaPageFragment extends TopicListFragment {
                 swipeRefreshLayout.setRefreshing(false);
 
                 if (displayedTopics.size() == 0) {
-                    showErrorView();
+                    dataPresenter.showErrorView();
                 } else {
-                    SnackbarManager.show(Snackbar.with(getActivity())
-                                    .text(R.string.error_loading_topics)
-                                    .colorResource(R.color.theme_primary_light)
-                                    .textColorResource(R.color.tabs_text_color)
-                    );
+                    SnackbarHelper.makeError(MetaPageFragment.this, R.string.error_loading_topics).show();
                 }
             }
         }));
