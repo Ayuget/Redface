@@ -277,16 +277,6 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     }
 
     /**
-     * Event fired when a topics page has been refreshed.
-     */
-    @Subscribe
-    public void onPageRefreshed(PageRefreshedEvent event) {
-        if (topic == event.getTopic()) {
-            currentPagePosition = event.getTargetPagePosition();
-        }
-    }
-
-    /**
      * Callback called by the activity when the back key has been pressed
      * @return true if event was consumed, false otherwise
      */

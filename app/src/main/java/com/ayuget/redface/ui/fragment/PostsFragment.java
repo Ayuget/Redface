@@ -44,10 +44,8 @@ import com.ayuget.redface.ui.activity.MultiPaneActivity;
 import com.ayuget.redface.ui.activity.ReplyActivity;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
-import com.ayuget.redface.ui.event.PageRefreshedEvent;
 import com.ayuget.redface.ui.event.PageSelectedEvent;
 import com.ayuget.redface.ui.event.ScrollToPostEvent;
-import com.ayuget.redface.ui.misc.PagePosition;
 import com.ayuget.redface.ui.misc.UiUtils;
 import com.ayuget.redface.ui.view.TopicPageView;
 import com.getbase.floatingactionbutton.FloatingActionButton;
@@ -72,7 +70,7 @@ public class PostsFragment extends BaseFragment {
 
     private static final String ARG_TOPIC = "topic";
 
-    private static final String ARG_SAVED_PAGE_POSITION = "savedPagePosition";
+    private static final String ARG_SAVED_SCROLL_POSITION = "savedScrollPosition";
 
     @Arg
     Topic topic;
@@ -109,9 +107,10 @@ public class PostsFragment extends BaseFragment {
 
     @Inject MDService mdService;
 
-    boolean wasRefreshed = false;
-
-    private PagePosition currentPagePosition;
+    /**
+     * Current scroll position in the webview.
+     */
+    private int currentScrollPosition;
 
     private boolean animationInProgress = false;
 
@@ -128,51 +127,19 @@ public class PostsFragment extends BaseFragment {
     private Map<Long, String> quotedMessages;
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        if (topicPageView != null) {
-            topicPageView.setOnScrollListener(null);
-            topicPageView.setOnMultiQuoteModeListener(null);
-            topicPageView.removeAllViews();
-            topicPageView.destroy();
-
-            RefWatcher refWatcher = RedfaceApp.getRefWatcher(getActivity());
-            refWatcher.watch(topicPageView);
-        }
-
-        swipeRefreshLayout.setOnRefreshListener(null);
-        replyButton.setOnClickListener(null);
-
-        if (errorReloadButton != null) {
-            errorReloadButton.setOnClickListener(null);
-        }
-    }
-
-    @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.d(LOG_TAG, String.format("@%d -> onCreate(page=%d)", System.identityHashCode(this), currentPage));
 
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
-            currentPagePosition = new PagePosition(PagePosition.BOTTOM);
+            currentScrollPosition = 0;
         }
         else {
-            currentPagePosition = savedInstanceState.getParcelable(ARG_SAVED_PAGE_POSITION);
+            currentScrollPosition = savedInstanceState.getInt(ARG_SAVED_SCROLL_POSITION, 0);
         }
 
         quotedMessages = new HashMap<>();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        Log.d(LOG_TAG, String.format("@%d -> onPause(page=%d)", System.identityHashCode(this), currentPage));
-
-        // Disable batch actions because, for now, we are unable to save them properly
-        topicPageView.disableBatchActions();
     }
 
     @Override
@@ -211,8 +178,6 @@ public class PostsFragment extends BaseFragment {
             @Override
             public void onRefresh() {
                 Log.d(LOG_TAG, String.format("Refreshing topic page '%d' for topic %s", currentPage, topic));
-                currentPagePosition = new PagePosition(PagePosition.TOP);
-                bus.post(new PageRefreshedEvent(topic, currentPagePosition));
                 loadPage(currentPage);
             }
         });
@@ -301,8 +266,17 @@ public class PostsFragment extends BaseFragment {
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+
+        currentScrollPosition = topicPageView.getScrollY();
+
+        // Disable batch actions because, for now, we are unable to save them properly
+        topicPageView.disableBatchActions();
+    }
+
+    @Override
     public void onResume() {
-        Log.d(LOG_TAG, String.format("@%d -> onResume(page=%d)", System.identityHashCode(this), currentPage));
         super.onResume();
 
         // Page is loaded instantly only if it's the initial page requested on topic load. Other
@@ -310,6 +284,30 @@ public class PostsFragment extends BaseFragment {
         if (isInitialPage() && !restoredPosts) {
             showLoadingIndicator();
             loadPage(currentPage);
+        }
+
+        topicPageView.setScrollY(currentScrollPosition);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (topicPageView != null) {
+            topicPageView.setOnScrollListener(null);
+            topicPageView.setOnMultiQuoteModeListener(null);
+            topicPageView.removeAllViews();
+            topicPageView.destroy();
+
+            RefWatcher refWatcher = RedfaceApp.getRefWatcher(getActivity());
+            refWatcher.watch(topicPageView);
+        }
+
+        swipeRefreshLayout.setOnRefreshListener(null);
+        replyButton.setOnClickListener(null);
+
+        if (errorReloadButton != null) {
+            errorReloadButton.setOnClickListener(null);
         }
     }
 
@@ -364,7 +362,7 @@ public class PostsFragment extends BaseFragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelableArrayList(ARG_POST_LIST, displayedPosts);
-        outState.putParcelable(ARG_SAVED_PAGE_POSITION, currentPagePosition);
+        outState.putInt(ARG_SAVED_SCROLL_POSITION, currentScrollPosition);
     }
 
     private void startReplyActivity(String initialContent) {
@@ -398,10 +396,6 @@ public class PostsFragment extends BaseFragment {
     @Subscribe public void onPageRefreshRequestEvent(PageRefreshRequestEvent event) {
         if (event.getTopic().getId() == topic.getId() && isVisible()) {
             Log.d(LOG_TAG, String.format("@%d -> Refresh requested event (currentPage=%d)", System.identityHashCode(this), currentPage));
-            wasRefreshed = true;
-
-            currentPagePosition = new PagePosition(PagePosition.BOTTOM);
-            bus.post(new PageRefreshedEvent(topic, currentPagePosition));
 
             showLoadingIndicator();
             loadPage(currentPage);
