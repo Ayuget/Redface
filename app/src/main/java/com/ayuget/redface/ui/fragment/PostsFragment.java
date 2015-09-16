@@ -43,6 +43,7 @@ import com.ayuget.redface.data.rx.SubscriptionHandler;
 import com.ayuget.redface.ui.activity.MultiPaneActivity;
 import com.ayuget.redface.ui.activity.ReplyActivity;
 import com.ayuget.redface.ui.UIConstants;
+import com.ayuget.redface.ui.event.PageLoadedEvent;
 import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
 import com.ayuget.redface.ui.event.PageSelectedEvent;
 import com.ayuget.redface.ui.event.ScrollToPostEvent;
@@ -143,7 +144,7 @@ public class PostsFragment extends BaseFragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable final Bundle savedInstanceState) {
         Log.d(LOG_TAG, String.format("@%d -> onCreateView(page=%d)", System.identityHashCode(this), currentPage));
 
         final View rootView = inflateRootView(R.layout.fragment_posts, inflater, container);
@@ -177,6 +178,7 @@ public class PostsFragment extends BaseFragment {
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                savePageScrollPosition();
                 Log.d(LOG_TAG, String.format("Refreshing topic page '%d' for topic %s", currentPage, topic));
                 loadPage(currentPage);
             }
@@ -209,6 +211,15 @@ public class PostsFragment extends BaseFragment {
                     hideReplyButton();
                 } else {
                     showReplyButton();
+                }
+            }
+        });
+
+        topicPageView.setOnPageLoadedListener(new TopicPageView.OnPageLoadedListener() {
+            @Override
+            public void onPageLoaded() {
+                if (currentScrollPosition > 0) {
+                    restorePageScrollPosition();
                 }
             }
         });
@@ -269,7 +280,7 @@ public class PostsFragment extends BaseFragment {
     public void onPause() {
         super.onPause();
 
-        currentScrollPosition = topicPageView.getScrollY();
+        savePageScrollPosition();
 
         // Disable batch actions because, for now, we are unable to save them properly
         topicPageView.disableBatchActions();
@@ -286,7 +297,7 @@ public class PostsFragment extends BaseFragment {
             loadPage(currentPage);
         }
 
-        topicPageView.setScrollY(currentScrollPosition);
+        restorePageScrollPosition();
     }
 
     @Override
@@ -296,6 +307,7 @@ public class PostsFragment extends BaseFragment {
         if (topicPageView != null) {
             topicPageView.setOnScrollListener(null);
             topicPageView.setOnMultiQuoteModeListener(null);
+            topicPageView.setOnPageLoadedListener(null);
             topicPageView.removeAllViews();
             topicPageView.destroy();
 
@@ -308,6 +320,20 @@ public class PostsFragment extends BaseFragment {
 
         if (errorReloadButton != null) {
             errorReloadButton.setOnClickListener(null);
+        }
+    }
+
+    private void savePageScrollPosition() {
+        if (topicPageView != null) {
+            currentScrollPosition = topicPageView.getScrollY();
+            Log.d(LOG_TAG, String.format("Saved scroll position = %d (currentPage=%d)", currentScrollPosition, currentPage));
+        }
+    }
+
+    private void restorePageScrollPosition() {
+        if (topicPageView != null) {
+            topicPageView.setScrollY(currentScrollPosition);
+            Log.d(LOG_TAG, String.format("Restored scroll position = %d (currentPage=%d)", currentScrollPosition, currentPage));
         }
     }
 
@@ -397,6 +423,7 @@ public class PostsFragment extends BaseFragment {
         if (event.getTopic().getId() == topic.getId() && isVisible()) {
             Log.d(LOG_TAG, String.format("@%d -> Refresh requested event (currentPage=%d)", System.identityHashCode(this), currentPage));
 
+            savePageScrollPosition();
             showLoadingIndicator();
             loadPage(currentPage);
         }
@@ -449,7 +476,6 @@ public class PostsFragment extends BaseFragment {
 
                 Log.d(LOG_TAG, String.format("@%d -> Done loading page, settings posts", System.identityHashCode(PostsFragment.this)));
                 topicPageView.setPosts(posts);
-
                 showPosts();
             }
 
