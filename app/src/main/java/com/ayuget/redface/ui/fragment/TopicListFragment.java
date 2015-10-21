@@ -16,7 +16,6 @@
 
 package com.ayuget.redface.ui.fragment;
 
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;

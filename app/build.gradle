@@ -24,13 +24,13 @@ apply plugin: 'io.fabric'
 apply plugin: 'hugo'
 
 android {
-    compileSdkVersion 22
-    buildToolsVersion "22.0.1"
+    compileSdkVersion 23
+    buildToolsVersion "23.0.1"
 
     defaultConfig {
         applicationId "com.ayuget.redface"
         minSdkVersion 16
-        targetSdkVersion 22
+        targetSdkVersion 23
         versionCode 201
         versionName "2.0.1"
     }
@@ -51,11 +51,11 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
     // Support libraries
-    compile "com.android.support:appcompat-v7:22.2.0"
-    compile "com.android.support:recyclerview-v7:22.2.0"
-    compile "com.android.support:palette-v7:22.2.0"
-    compile 'com.android.support:support-annotations:22.2.0'
-    compile 'com.android.support:design:22.2.0'
+    compile "com.android.support:appcompat-v7:23.1.0"
+    compile "com.android.support:recyclerview-v7:23.1.0"
+    compile "com.android.support:palette-v7:23.1.0"
+    compile 'com.android.support:support-annotations:23.1.0'
+    compile 'com.android.support:design:23.1.0'
 
     // Dependency injection
     compile 'com.squareup.dagger:dagger:1.2.2'

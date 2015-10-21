@@ -46,7 +46,6 @@ public class ContextModule {
         return AccountManager.get(applicationContext);
     }
 
-
     @Provides @Singleton
     RedfaceSettings provideRedfaceSettings() {
         return new RedfaceSettings(applicationContext, PreferenceManager.getDefaultSharedPreferences(applicationContext));

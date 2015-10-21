@@ -61,7 +61,7 @@ public class PostTemplate extends HTMLTemplate<Post> {
                         .put("post_id", postId)
                         .put("post_quick_actions", quickActionsTemplate.render(post))
                         .put("extra_details", extraDetailsTemplate.render(post))
-                        .put("post_actions", userManager.activeUserIsLoggedIn() ? postActionsTemplate.render(post) : "")
+                        .put("post_actions", userManager.isActiveUserLoggedIn() ? postActionsTemplate.render(post) : "")
                         .format()
                         .toString()
         );

@@ -43,7 +43,6 @@ import com.ayuget.redface.data.rx.SubscriptionHandler;
 import com.ayuget.redface.ui.activity.MultiPaneActivity;
 import com.ayuget.redface.ui.activity.ReplyActivity;
 import com.ayuget.redface.ui.UIConstants;
-import com.ayuget.redface.ui.event.PageLoadedEvent;
 import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
 import com.ayuget.redface.ui.event.PageSelectedEvent;
 import com.ayuget.redface.ui.event.ScrollToPostEvent;
@@ -104,7 +103,8 @@ public class PostsFragment extends BaseFragment {
 
     @Inject DataService dataService;
 
-    @Inject UserManager userManager;
+    @Inject
+    UserManager userManager;
 
     @Inject MDService mdService;
 
