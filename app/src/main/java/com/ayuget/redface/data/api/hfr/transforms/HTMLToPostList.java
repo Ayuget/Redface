@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import hugo.weaving.DebugLog;
 import rx.functions.Func1;
 
 public class HTMLToPostList implements Func1<String, List<Post>> {

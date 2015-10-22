@@ -70,9 +70,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import hugo.weaving.DebugLog;
-
-
 public class TopicPageView extends WebView implements View.OnTouchListener {
     private static final String LOG_TAG = TopicPageView.class.getSimpleName();
 
@@ -316,7 +313,6 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
         this.topic = topic;
     }
 
-    @DebugLog
     private void renderPosts() {
         StringBuilder pageBuffer = new StringBuilder();
         postsTemplate.render(this.posts, pageBuffer);
