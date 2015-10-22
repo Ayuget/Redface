@@ -36,8 +36,6 @@
         <item name="android:backgroundDimEnabled">false</item>
 
         <item name="android:windowContentTransitions">true</item>
-        <item name="android:windowEnterTransition">@transition/circular_reveal</item>
-        <item name="android:windowExitTransition">@transition/circular_reveal</item>
     </style>
 
     <style name="Theme.Redface.Transparent.Light" parent="Theme.Redface.Light">
@@ -48,7 +46,5 @@
         <item name="android:backgroundDimEnabled">false</item>
 
         <item name="android:windowContentTransitions">true</item>
-        <item name="android:windowEnterTransition">@transition/circular_reveal</item>
-        <item name="android:windowExitTransition">@transition/circular_reveal</item>
     </style>
 </resources>

@@ -145,7 +145,6 @@
         <android.support.v7.widget.SearchView
             android:id="@+id/smileys_search"
             style="@style/RedfaceSearchView"
-            android:layout="@layout/redface_search_view"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent" />
         </android.support.v7.widget.Toolbar>
