@@ -40,7 +40,7 @@ public class HFREndpoints implements MDEndpoints {
 
     private static final String FILTERED_URL = "{base_url}/forum1.php?config=hfr.inc&cat={category_id}&page={page}&subcat={subcategory_id}&sondage=0&owntopic={filter_id}&trash=0&trash_post=0&moderation=0&new=0&nojs=0&subcatgroup=0";
 
-    private static final String USER_AVATAR_URL = "http://forum-images.hardware.fr/images/mesdiscussions-{user_id}.jpg";
+    private static final String USER_AVATAR_URL = "http://forum-images.hardware.fr/images/mesdiscussions-{user_id}.png";
 
     private static final String SMILEY_API_HOST = "http://stickersapi.feeligo.com";
 
