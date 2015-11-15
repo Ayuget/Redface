@@ -45,6 +45,7 @@
     <string name="action_topics_filter_read">Lus</string>
     <string name="action_topics_filter_title">Filtre des sujets</string>
     <string name="add_smiley_button_description">Ajouter un smiley</string>
+    <string name="insert_smiley_tag_button_description">Insérer un tag smiley</string>
     <string name="category_icon_description">Icone de la catégorie</string>
     <string name="default_fragment_text">Merci de sélectionner une catégorie</string>
     <string name="error_loading_topics">Erreur lors du chargement des sujets</string>
@@ -124,6 +125,7 @@
     </string-array>
     <string name="pref_default_category">Catégorie par défaut</string>
     <string name="show_smileys_picker">Ouvrir le sélectionneur de smileys</string>
+    <string name="no_smileys_found">Pas de résultat</string>
     <string name="pref_show_previous_page_last_post_title">Reprendre le dernier message</string>
     <string name="pref_show_previous_page_last_post_summary">Afficher le dernier message de la page précédente en haut de page</string>
     <string name="mark_as_favorite_failed">Erreur lors de l\'ajout du favori</string>

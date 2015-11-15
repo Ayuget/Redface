@@ -41,8 +41,10 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -182,6 +184,12 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
     EditText replyEditText;
 
     /**
+     * Smiley list loading indicator
+     */
+    @InjectView(R.id.loading_indicator)
+    View smileysLoadingIndicator;
+
+    /**
      * Smiley list
      */
     @InjectView(R.id.smileyList)
@@ -280,8 +288,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
                         lp.height = ViewGroup.LayoutParams.MATCH_PARENT;
                         mainReplyFrame.setLayoutParams(lp);
                     }
-                }
-                else {
+                } else {
                     if (lp.height != replyWindowMaxHeight) {
                         lp.height = replyWindowMaxHeight;
                         mainReplyFrame.setLayoutParams(lp);
@@ -299,9 +306,12 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
             @Override
             public boolean onQueryTextSubmit(String s) {
                 if (s.trim().length() > 0) {
+                    smileyList.reset();
+                    smileysLoadingIndicator.setVisibility(View.VISIBLE);
                     subscribe(dataService.searchForSmileys(s.trim(), new EndlessObserver<List<Smiley>>() {
                         @Override
                         public void onNext(List<Smiley> smileys) {
+                            smileysLoadingIndicator.setVisibility(View.GONE);
                             smileyList.setSmileys(smileys);
                         }
                     }));
@@ -368,9 +378,12 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
      */
     @OnClick(R.id.recent_smileys)
     protected void loadRecentSmileys() {
+        smileyList.reset();
+        smileysLoadingIndicator.setVisibility(View.VISIBLE);
         subscribe(dataService.getRecentlyUsedSmileys(userManager.getActiveUser(), new EndlessObserver<List<Smiley>>() {
             @Override
             public void onNext(List<Smiley> smileys) {
+                smileysLoadingIndicator.setVisibility(View.GONE);
                 smileyList.setSmileys(smileys);
             }
         }));
@@ -381,9 +394,12 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
      */
     @OnClick(R.id.popular_smileys)
     protected void loadPopularSmileys() {
+        smileyList.reset();
+        smileysLoadingIndicator.setVisibility(View.VISIBLE);
         subscribe(dataService.getPopularSmileys(new EndlessObserver<List<Smiley>>() {
             @Override
             public void onNext(List<Smiley> smileys) {
+                smileysLoadingIndicator.setVisibility(View.GONE);
                 smileyList.setSmileys(smileys);
             }
         }));
@@ -479,8 +495,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
                 boolean touchConsumed;
                 if (smileysSelector.getY() != smileySelectorTopOffset) {
                     touchConsumed = (smileysSelector.getY() != toolbarHeight);
-                }
-                else {
+                } else {
                     touchConsumed = false;
                 }
 
@@ -628,14 +643,14 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
         }
     }
 
-    protected void insertTag(String tag) {
+    protected void insertSmileyOrTag(boolean isSmiley, String tag) {
         int selectionStart = replyEditText.getSelectionStart();
         int selectionEnd = replyEditText.getSelectionEnd();
 
         String selectedText =  (selectionEnd == - 1 || selectionEnd <= selectionStart) ? "" : replyEditText.getText().toString().substring(selectionStart, selectionEnd);
 
-        String tagOpen = String.format("[%s]", tag);
-        String tagClose = String.format("[/%s]", tag);
+        String tagOpen = isSmiley ? "[:" : String.format("[%s]", tag);
+        String tagClose = isSmiley ? "]" : String.format("[/%s]", tag);
         insertText(tagOpen + selectedText + tagClose);
 
         replyEditText.setSelection(selectionStart + tagOpen.length() + selectedText.length());
@@ -668,27 +683,30 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
         return false;
     }
 
-    @OnClick({R.id.make_text_bold_button, R.id.make_text_italic_button, R.id.insert_quote_button, R.id.insert_link_button, R.id.insert_spoiler_button, R.id.insert_image_button})
+    @OnClick({R.id.insert_manual_smiley_button, R.id.make_text_bold_button, R.id.make_text_italic_button, R.id.insert_quote_button, R.id.insert_link_button, R.id.insert_spoiler_button, R.id.insert_image_button})
     public void onExtraToolbarButtonClicked(ImageButton button) {
         Log.d(LOG_TAG, "Button  clicked !");
         switch (button.getId()) {
+            case R.id.insert_manual_smiley_button:
+                insertSmileyOrTag(true, null);
+                break;
             case R.id.insert_spoiler_button:
-                insertTag("spoiler");
+                insertSmileyOrTag(false, "spoiler");
                 break;
             case R.id.insert_image_button:
-                insertTag("img");
+                insertSmileyOrTag(false, "img");
                 break;
             case R.id.insert_link_button:
-                insertTag("url");
+                insertSmileyOrTag(false, "url");
                 break;
             case R.id.insert_quote_button:
-                insertTag("quote");
+                insertSmileyOrTag(false, "quote");
                 break;
             case R.id.make_text_bold_button:
-                insertTag("b");
+                insertSmileyOrTag(false, "b");
                 break;
             case R.id.make_text_italic_button:
-                insertTag("i");
+                insertSmileyOrTag(false, "i");
                 break;
         }
     }
@@ -750,13 +768,15 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
                 .start();
     }
 
-    private void styleToolbarButtons(Toolbar toolbar) {
+    private void styleToolbarButtons(ViewGroup toolbar) {
         for (int i = 0; i < toolbar.getChildCount(); i++) {
             View childView = toolbar.getChildAt(i);
 
             if (childView instanceof ImageButton) {
                 ImageButton imageButton = (ImageButton) childView;
                 UiUtils.setDrawableColor(imageButton.getDrawable(), UiUtils.getReplyToolbarIconsColor(this));
+            } else if (childView instanceof HorizontalScrollView || childView instanceof LinearLayout) {
+                styleToolbarButtons((ViewGroup) childView);
             }
         }
     }
