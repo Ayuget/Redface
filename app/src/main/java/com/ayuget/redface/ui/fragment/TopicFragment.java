@@ -19,7 +19,7 @@ package com.ayuget.redface.ui.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.view.PagerTabStrip;
+import android.support.v4.view.PagerTitleStrip;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -84,7 +84,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     ViewPager pager;
 
     @InjectView(R.id.titlestrip)
-    PagerTabStrip pagerTitleStrip;
+    PagerTitleStrip pagerTitleStrip;
 
     /**
      * Topic currently displayed
@@ -126,8 +126,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflateRootView(R.layout.fragment_topic, inflater, container);
-        pagerTitleStrip.setDrawFullUnderline(false);
-        pagerTitleStrip.setTabIndicatorColor(getResources().getColor(R.color.theme_primary));
+
         pager.setAdapter(topicPageAdapter);
         pager.setCurrentItem(currentPage - 1);
 
