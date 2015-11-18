@@ -50,6 +50,11 @@ public class UserManager {
      */
     User preloadingUser;
 
+    /**
+     * Active user
+     */
+    User activeUser = null;
+
     @Inject
     public UserManager(RedfaceSettings settings, RedfaceAccountManager accountManager) {
         this.settings = settings;
@@ -64,7 +69,13 @@ public class UserManager {
             return guestUser;
         }
         else {
-            User foundUser =  accountManager.getAccountByName(activeUsername);
+            User foundUser;
+
+            if (activeUser != null && activeUser.getUsername().equals(activeUsername)) {
+                foundUser = activeUser;
+            } else {
+                foundUser = activeUser = accountManager.getAccountByName(activeUsername);
+            }
 
             if (foundUser == null) {
                 Log.e(LOG_TAG, String.format("User '%s' was not found in accounts", activeUsername));

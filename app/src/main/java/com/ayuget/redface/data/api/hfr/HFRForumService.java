@@ -28,11 +28,13 @@ import com.ayuget.redface.data.api.SmileyService;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToBBCode;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToPostList;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToPrivateMessageList;
+import com.ayuget.redface.data.api.hfr.transforms.HTMLToProfile;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToTopic;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToTopicList;
 import com.ayuget.redface.data.api.model.Category;
 import com.ayuget.redface.data.api.model.Post;
 import com.ayuget.redface.data.api.model.PrivateMessage;
+import com.ayuget.redface.data.api.model.Profile;
 import com.ayuget.redface.data.api.model.Response;
 import com.ayuget.redface.data.api.model.Smiley;
 import com.ayuget.redface.data.api.model.Subcategory;
@@ -351,5 +353,13 @@ public class HFRForumService implements MDService {
     @Override
     public Observable<Boolean> deletePost(User user, Topic topic, int postId) {
         return mdMessageSender.deletePost(user, topic, postId, currentHashcheck);
+    }
+
+    @Override
+    public Observable<Profile> getProfile(User user, int user_id) {
+        Log.d(LOG_TAG, String.format("Retrieving profile for user id '%d'", user_id));
+
+        return pageFetcher.fetchSource(user, mdEndpoints.profile(user_id))
+                .map(new HTMLToProfile());
     }
 }

@@ -609,11 +609,9 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
     }
 
     protected void loadUserAvatarInto(User user, ImageView imageView) {
-        Optional<Integer> userId = UserUtils.getLoggedInUserId(user, httpClientProvider.getClientForUser(user));
-
-        if (userId.isPresent()) {
+        if (user.hasAvatar()) {
             Picasso.with(this)
-                    .load(mdEndpoints.userAvatar(userId.get()))
+                    .load(user.getProfile().getAvatarUrl())
                     .into(imageView);
         }
     }

@@ -19,6 +19,7 @@ package com.ayuget.redface.data.api;
 import com.ayuget.redface.data.api.model.Category;
 import com.ayuget.redface.data.api.model.Post;
 import com.ayuget.redface.data.api.model.PrivateMessage;
+import com.ayuget.redface.data.api.model.Profile;
 import com.ayuget.redface.data.api.model.Response;
 import com.ayuget.redface.data.api.model.Smiley;
 import com.ayuget.redface.data.api.model.Subcategory;
@@ -129,4 +130,9 @@ public interface MDService {
      * Reports a given post to moderators
      */
     Observable<Boolean> reportPost(User user, Topic topic, int postId);
+
+    /**
+     * Get a user profile
+     */
+    Observable<Profile> getProfile(User user, int user_id);
 }

@@ -38,6 +38,7 @@ import com.ayuget.redface.account.UserManager;
 import com.ayuget.redface.data.DataService;
 import com.ayuget.redface.data.api.MDEndpoints;
 import com.ayuget.redface.data.api.model.Category;
+import com.ayuget.redface.data.api.model.Profile;
 import com.ayuget.redface.data.api.model.User;
 import com.ayuget.redface.data.rx.EndlessObserver;
 import com.ayuget.redface.data.state.CategoriesStore;
@@ -184,25 +185,39 @@ public class BaseDrawerActivity extends BaseActivity {
         }
 
         if (userId.isPresent()) {
-            Log.d(LOG_TAG, String.format("Loading avatar for user '%s' (id: '%d')", activeUser.getUsername(), userId.get()));
-            Picasso.with(this)
-                    .load(mdEndpoints.userAvatar(userId.get()))
-                    .into(activeUserPicture, new PaletteTransformation.PaletteCallback(activeUserPicture) {
-                        @Override
-                        protected void onSuccess(Palette palette) {
-                            if (palette != null) {
-                                choseAccountView.setBackgroundColor(palette.getDarkVibrantColor(R.color.theme_primary));
-                            }
-                        }
+            Log.d(LOG_TAG, String.format("Loading profile for user '%s' (id: '%d')", activeUser.getUsername(), userId.get()));
+            // Load active user profile
+            subscribe(dataService.loadProfile(activeUser, userId.get(), new EndlessObserver<Profile>() {
+                @Override
+                public void onNext(Profile profile) {
+                    // TODO: cache users in UserManager
+                    // TODO: currently, users are loaded from the account manager, thus modifying a user here
+                    // TODO: may be useless when accessing it later.
+                    activeUser.setProfile(profile);
+                    Picasso.with(BaseDrawerActivity.this)
+                            .load(profile.getAvatarUrl())
+                            .into(activeUserPicture, new PaletteTransformation.PaletteCallback(activeUserPicture) {
+                                @Override
+                                protected void onSuccess(Palette palette) {
+                                    if (palette != null) {
+                                        choseAccountView.setBackgroundColor(palette.getDarkVibrantColor(R.color.theme_primary));
+                                    }
+                                }
 
-                        @Override
-                        public void onError() {
-                            activeUser.setHasAvatar(false);
-                            loadDefaultProfileImage();
-                        }
-                    });
-        }
-        else {
+                                @Override
+                                public void onError() {
+                                    activeUser.setHasAvatar(false);
+                                    loadDefaultProfileImage();
+                                }
+                            });
+                }
+
+                @Override
+                public void onError(Throwable throwable) {
+                    Log.e(LOG_TAG, String.format("Error on retrieving profile for user '%s'", activeUser), throwable);
+                }
+            }));
+        } else {
             loadDefaultProfileImage();
         }
     }
