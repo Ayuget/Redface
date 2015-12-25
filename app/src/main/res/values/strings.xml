@@ -225,6 +225,7 @@
     <!-- Reply dialog -->
     <string name="action_reply_reply_dialog">Reply</string>
     <string name="add_smiley_button_description">Add smiley</string>
+    <string name="insert_smiley_tag_button_description">Insert a smiley tag</string>
     <string name="make_text_bold_button_description">Make text bold</string>
     <string name="make_text_italic_button_description">Make text italic</string>
     <string name="underline_text_button_description">Underline text</string>
@@ -239,6 +240,7 @@
     <string name="default_smileys_button_description">Default smileys</string>
 
     <string name="show_smileys_picker">Show smileys picker</string>
+    <string name="no_smileys_found">No result</string>
 
     <string name="reply_successfully_posted">Reply successfully posted</string>
     <string name="reply_post_failure">Failed to post reply</string>

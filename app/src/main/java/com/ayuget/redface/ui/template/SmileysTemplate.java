@@ -19,6 +19,7 @@ package com.ayuget.redface.ui.template;
 import android.content.Context;
 import android.text.TextUtils;
 
+import com.ayuget.redface.R;
 import com.ayuget.redface.data.api.model.Smiley;
 import com.ayuget.redface.ui.misc.ThemeManager;
 import com.squareup.phrase.Phrase;
@@ -34,8 +35,12 @@ public class SmileysTemplate extends HTMLTemplate<List<Smiley>> {
 
     private ThemeManager themeManager;
 
+    private static final String noSmileysFoundImgUrl = "http://forum-images.hardware.fr/images/perso/bobox360.gif";
+    private static String noSmileysFoundStr;
+
     public SmileysTemplate(Context context, SmileyTemplate smileyTemplate, ThemeManager themeManager) {
         super(context, SMILEYS_TEMPLATE);
+        noSmileysFoundStr = context.getResources().getString(R.string.no_smileys_found);
         this.smileyTemplate = smileyTemplate;
         this.themeManager = themeManager;
     }
@@ -50,8 +55,13 @@ public class SmileysTemplate extends HTMLTemplate<List<Smiley>> {
     @Override
     protected void render(List<Smiley> smileys, Phrase templateContent, StringBuilder stream) {
         StringBuilder smileysBuffer = new StringBuilder();
-        for(Smiley smiley : smileys) {
-            smileyTemplate.render(smiley, smileysBuffer);
+        if (smileys.size() > 0) {
+            for (Smiley smiley : smileys) {
+                smileyTemplate.render(smiley, smileysBuffer);
+            }
+        } else {
+
+            smileysBuffer.append("<div class=\"nosmiley\">" + noSmileysFoundStr + " <img src=\"" + noSmileysFoundImgUrl + "\"/></div>");
         }
 
         stream.append(
