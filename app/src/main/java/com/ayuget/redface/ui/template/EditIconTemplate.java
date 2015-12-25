@@ -17,7 +17,6 @@
 package com.ayuget.redface.ui.template;
 
 import android.content.Context;
-import android.text.TextUtils;
 
 import com.ayuget.redface.account.UserManager;
 import com.ayuget.redface.data.api.model.Post;

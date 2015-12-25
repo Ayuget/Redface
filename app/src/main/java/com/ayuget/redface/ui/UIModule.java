@@ -38,7 +38,6 @@ import com.ayuget.redface.ui.fragment.TopicFragment;
 import com.ayuget.redface.ui.fragment.TopicListFragment;
 import com.ayuget.redface.ui.misc.ThemeManager;
 import com.ayuget.redface.ui.template.AvatarTemplate;
-import com.ayuget.redface.ui.template.EditIconTemplate;
 import com.ayuget.redface.ui.template.PostActionsTemplate;
 import com.ayuget.redface.ui.template.PostExtraDetailsTemplate;
 import com.ayuget.redface.ui.template.PostTemplate;

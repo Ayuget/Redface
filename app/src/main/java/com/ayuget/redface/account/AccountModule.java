@@ -19,6 +19,7 @@ package com.ayuget.redface.account;
 import android.accounts.AccountManager;
 
 import com.ayuget.redface.ContextModule;
+import com.ayuget.redface.settings.RedfaceSettings;
 
 import javax.inject.Singleton;
 
@@ -28,7 +29,7 @@ import dagger.Provides;
 @Module(
         includes = ContextModule.class,
         injects = {
-                UserManager.class
+                RedfaceUserManager.class
         },
         library = true
 )
@@ -36,5 +37,10 @@ public class AccountModule {
     @Provides @Singleton
     RedfaceAccountManager provideAccountManager(AccountManager androidAccountManager) {
         return new RedfaceAccountManager(androidAccountManager);
+    }
+
+    @Provides @Singleton
+    UserManager provideUserManager(RedfaceSettings settings, RedfaceAccountManager accountManager) {
+        return new RedfaceUserManager(settings, accountManager);
     }
 }

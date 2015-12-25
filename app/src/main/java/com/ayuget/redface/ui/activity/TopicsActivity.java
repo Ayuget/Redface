@@ -34,7 +34,6 @@ import com.ayuget.redface.data.api.model.Category;
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.api.model.TopicStatus;
 import com.ayuget.redface.data.api.model.User;
-import com.ayuget.redface.data.api.model.misc.PostAction;
 import com.ayuget.redface.data.rx.EndlessObserver;
 import com.ayuget.redface.data.rx.SubscriptionHandler;
 import com.ayuget.redface.data.state.CategoriesStore;
@@ -42,8 +41,6 @@ import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.event.EditPostEvent;
 import com.ayuget.redface.ui.event.GoToTopicEvent;
 import com.ayuget.redface.ui.event.InternalLinkClickedEvent;
-import com.ayuget.redface.ui.event.MarkPostAsFavoriteEvent;
-import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
 import com.ayuget.redface.ui.event.PostActionEvent;
 import com.ayuget.redface.ui.event.QuotePostEvent;
 import com.ayuget.redface.ui.event.TopicContextItemSelectedEvent;
@@ -214,7 +211,7 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
         // If current user is not logged in and if default category setting is on "My Topics", let's
         // redirect the user the another accessible cat. "My topics" is necessary empty when user
         // is not logged in, so having an empty landing screen is not the best user experience here
-        if (!userManager.activeUserIsLoggedIn() && defaultCatId == CategoriesStore.META_CATEGORY_ID) {
+        if (!userManager.isActiveUserLoggedIn() && defaultCatId == CategoriesStore.META_CATEGORY_ID) {
             defaultCatId = getSettings().getNotLoggedInDefaultCategoryId();
         }
 

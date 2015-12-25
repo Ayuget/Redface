@@ -26,12 +26,12 @@ import com.ayuget.redface.R;
 import com.ayuget.redface.account.RedfaceAccountManager;
 import com.ayuget.redface.account.UserManager;
 import com.ayuget.redface.data.api.hfr.HFRAuthenticator;
-import com.ayuget.redface.data.api.model.PrivateMessage;
 import com.ayuget.redface.data.api.model.User;
 import com.ayuget.redface.data.rx.EndlessObserver;
 import com.ayuget.redface.data.rx.SubscriptionHandler;
+import com.ayuget.redface.network.HTTPClientProvider;
+import com.ayuget.redface.network.UserCookieStore;
 import com.ayuget.redface.ui.UIConstants;
-import com.ayuget.redface.ui.misc.PagePosition;
 import com.ayuget.redface.ui.misc.SnackbarHelper;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
@@ -61,6 +61,9 @@ public class AccountActivity extends BaseActivity {
     @Inject
     UserManager userManager;
 
+    @Inject
+    HTTPClientProvider httpClientProvider;
+
     private SubscriptionHandler<User, Boolean> loginSubscriptionHandler = new SubscriptionHandler<>();
 
     private boolean isReloginMode;
@@ -81,29 +84,35 @@ public class AccountActivity extends BaseActivity {
         }
     }
 
-   @OnClick(R.id.sign_in_button)
-   protected void onLoginAttempt() {
-       final String username = usernameTextView.getText().toString().trim();
+    @OnClick(R.id.sign_in_button)
+    protected void onLoginAttempt() {
+        final String username = usernameTextView.getText().toString().trim();
 
-       if (username.equals("")) {
+        if (username.equals("")) {
            usernameTextView.setError(getString(R.string.login_username_empty));
            return;
-       }
-       else {
+        }
+        else {
            usernameTextView.setError(null);
-       }
+        }
 
-       final String password = passwordTextView.getText().toString().trim();
-       if (password.equals("")) {
+        final String password = passwordTextView.getText().toString().trim();
+        if (password.equals("")) {
            passwordTextView.setError(getString(R.string.login_password_empty));
            return;
-       }
+        }
 
-       Log.d(LOG_TAG, String.format("Login attempt for user '%s'", username));
+        Log.d(LOG_TAG, String.format("Login attempt for user '%s'", username));
 
-       final User user = new User(username, password);
+        final User user = new User(username, password);
 
-       subscribe(loginSubscriptionHandler.load(user, authenticator.login(user), new EndlessObserver<Boolean>() {
+        // Clearing cookies is necessary because cookies are cached in persistent storage
+        // and not overwritter at every request (for obvious performance reasons).
+        // In this case, we want "fresh" cookies, because we might be in the process of logging in
+        // again.
+        httpClientProvider.clearUserCookies(user);
+
+        subscribe(loginSubscriptionHandler.load(user, authenticator.login(user), new EndlessObserver<Boolean>() {
            @Override
            public void onNext(Boolean loginWorked) {
 
@@ -133,6 +142,12 @@ public class AccountActivity extends BaseActivity {
            public void onError(Throwable throwable) {
                Log.d(LOG_TAG, "Unknow error while logging in :(", throwable);
            }
-       }));
-   }
+        }));
+    }
+
+    private void cleanUserCookies(User user) {
+
+    }
+
+
 }

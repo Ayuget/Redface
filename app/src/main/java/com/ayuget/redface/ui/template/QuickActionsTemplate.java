@@ -34,7 +34,7 @@ public class QuickActionsTemplate extends HTMLTemplate<Post> {
 
     @Override
     protected void render(Post post, Phrase templateContent, StringBuilder stream) {
-        if (userManager.activeUserIsLoggedIn()) {
+        if (userManager.isActiveUserLoggedIn()) {
             stream.append(templateContent.put("post_id", String.valueOf(post.getId())).format().toString());
         }
         else {

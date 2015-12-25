@@ -70,9 +70,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import hugo.weaving.DebugLog;
-
-
 public class TopicPageView extends WebView implements View.OnTouchListener {
     private static final String LOG_TAG = TopicPageView.class.getSimpleName();
 
@@ -129,10 +126,19 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
 
     boolean actionModeIsActive = false;
 
+    boolean wasReloaded = false;
+
+    /**
+     * Callback to be invoked when webview is scrolled
+     */
     public interface OnScrollListener {
         void onScrolled(int dx, int dy);
     }
 
+    /**
+     * Callback to be invoked when multi-quote mode is
+     * triggered from the webview (by post actions buttons)
+     */
     public interface OnMultiQuoteModeListener {
         void onMultiQuoteModeToggled(boolean active);
         void onPostAdded(long postId);
@@ -140,9 +146,18 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
         void onQuote();
     }
 
+    /**
+     * Callback to be invoked when the page is fully rendered
+     */
+    public interface OnPageLoadedListener {
+        void onPageLoaded();
+    }
+
     private OnScrollListener onScrollListener;
 
     private OnMultiQuoteModeListener onMultiQuoteModeListener;
+
+    private OnPageLoadedListener onPageLoadedListener;
 
     @SuppressLint("SetJavaScriptEnabled")
     public TopicPageView(Context context) {
@@ -182,6 +197,7 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
                 @Override
                 public boolean onDoubleTap(MotionEvent e) {
                     if (appSettings.isDoubleTapToRefreshEnabled()) {
+                        wasReloaded = true;
                         bus.post(new PageRefreshRequestEvent(topic));
                     }
                     return true;
@@ -211,12 +227,20 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
                 @Override
                 public void onPageFinished(WebView view, String url) {
                     if (posts.size() > 0) {
+                        Log.d(LOG_TAG, String.format("Page Loaded Event fired (page=%d)", page));
                         TopicPageView.this.post(new Runnable() {
                             @Override
                             public void run() {
-                                // Triggerring the event will allow the fragment in which this webview
-                                // is contained to initiate page position events
-                                bus.post(new PageLoadedEvent(topic, page, TopicPageView.this));
+                                if (!wasReloaded) {
+                                    // Triggerring the event will allow the fragment in which this
+                                    // webview is contained to initiate page position events
+                                    // This has to be triggered only once
+                                    bus.post(new PageLoadedEvent(topic, page, TopicPageView.this));
+                                }
+
+                                if (onPageLoadedListener != null) {
+                                    onPageLoadedListener.onPageLoaded();
+                                }
                             }
                         });
                     }
@@ -244,6 +268,10 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
 
     public void setOnMultiQuoteModeListener(OnMultiQuoteModeListener onMultiQuoteModeListener) {
         this.onMultiQuoteModeListener = onMultiQuoteModeListener;
+    }
+
+    public void setOnPageLoadedListener(OnPageLoadedListener onPageLoadedListener) {
+        this.onPageLoadedListener = onPageLoadedListener;
     }
 
     private void updateActionModeTitle() {
@@ -285,7 +313,6 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
         this.topic = topic;
     }
 
-    @DebugLog
     private void renderPosts() {
         StringBuilder pageBuffer = new StringBuilder();
         postsTemplate.render(this.posts, pageBuffer);
@@ -294,6 +321,7 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
     }
 
     public void setPagePosition(PagePosition pagePosition) {
+        Log.d(LOG_TAG, String.format("setPagePosition called !!! (page=%d)", page));
         if (pagePosition != null) {
             if (pagePosition.isBottom()) {
                 scrollToBottom();

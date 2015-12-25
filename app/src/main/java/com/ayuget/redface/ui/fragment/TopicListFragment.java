@@ -16,7 +16,6 @@
 
 package com.ayuget.redface.ui.fragment;
 
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -64,7 +63,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import butterknife.InjectView;
-import hugo.weaving.DebugLog;
 
 public class TopicListFragment extends ToggleToolbarFragment implements TopicsAdapter.OnTopicClickedListener, TopicsAdapter.OnTopicLongClickListener {
     private static final String LOG_TAG = TopicListFragment.class.getSimpleName();
@@ -270,7 +268,6 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            @DebugLog
             public void onItemSelected(AdapterView<?> spinner, View view, int position, long itemId) {
 
                 if (subcategoriesAdapter.getItemViewType(position) == SubcategoriesAdapter.TYPE_CATEGORY) {

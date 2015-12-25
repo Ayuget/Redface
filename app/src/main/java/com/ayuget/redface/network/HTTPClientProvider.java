@@ -98,6 +98,14 @@ public class HTTPClientProvider {
         return httpClient;
     }
 
+    public void clearUserCookies(User user) {
+        UserCookieStore cookieStore = cookieStores.get(user);
+
+        if (cookieStore != null) {
+            cookieStore.removeAll();
+        }
+    }
+
     @Subscribe public void proxySettingsChanged(ProxySettingsChangedEvent event) {
         if (settings.isProxyEnabled()) {
             enableHTTPProxy();

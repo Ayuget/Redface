@@ -335,7 +335,7 @@ public class BaseDrawerActivity extends BaseActivity {
 
         List<DrawerItem> initialDrawerItems = new ArrayList<>();
 
-        if (userManager.activeUserIsLoggedIn()) {
+        if (userManager.isActiveUserLoggedIn()) {
             // Profile
             initialDrawerItems.add(DrawerItem.simple(NAVDRAWER_ITEM_PROFILE, R.drawable.ic_action_user, R.string.navdrawer_item_profile));
 
