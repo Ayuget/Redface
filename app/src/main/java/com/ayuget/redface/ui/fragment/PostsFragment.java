@@ -99,7 +99,7 @@ public class PostsFragment extends BaseFragment {
     @InjectView(R.id.reply_button)
     FloatingActionButton replyButton;
 
-    private ArrayList<Post> displayedPosts;
+    private ArrayList<Post> displayedPosts = new ArrayList<>();
 
     @Inject DataService dataService;
 
@@ -292,7 +292,7 @@ public class PostsFragment extends BaseFragment {
 
         // Page is loaded instantly only if it's the initial page requested on topic load. Other
         // pages will be loaded once selected in the ViewPager
-        if (isInitialPage() && !restoredPosts) {
+        if (isInitialPage() && displayedPosts != null && displayedPosts.size() == 0) {
             showLoadingIndicator();
             loadPage(currentPage);
         }
