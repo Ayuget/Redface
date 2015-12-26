@@ -16,6 +16,7 @@
   -->
 
 <resources>
+    <style name="Theme.Redface.Night.Base" parent="Theme.AppCompat.NoActionBar" />
     <style name="Theme.Redface.Dark.Base" parent="Theme.AppCompat.NoActionBar" />
     <style name="Theme.Redface.Light.Base" parent="Theme.AppCompat.Light.NoActionBar" />
 
@@ -23,6 +24,8 @@
     <style name="Theme.Redface.Dark" parent="Theme.Redface.Dark.Base">
         <item name="colorPrimary">@color/theme_primary</item>
         <item name="colorPrimaryDark">@color/theme_primary_dark</item>
+        <item name="statusBarBackgroundColor">@color/theme_primary_dark</item>
+        <item name="navDrawerBackgroundColor">@color/theme_primary</item>
 
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowContentOverlay">@null</item>
@@ -70,6 +73,8 @@
     <style name="Theme.Redface.Light" parent="Theme.Redface.Light.Base">
         <item name="colorPrimary">@color/theme_primary</item>
         <item name="colorPrimaryDark">@color/theme_primary_dark</item>
+        <item name="statusBarBackgroundColor">@color/theme_primary_dark</item>
+        <item name="navDrawerBackgroundColor">@color/theme_primary</item>
 
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowContentOverlay">@null</item>
@@ -111,6 +116,55 @@
         <item name="generalIconDrawable">@drawable/ic_action_emo_wonder_light</item>
         <item name="appearanceIconDrawable">@drawable/ic_action_emo_cool_light</item>
         <item name="networkIconDrawable">@drawable/ic_action_cloud_light</item>
+    </style>
+
+    <!-- Dark theme -->
+    <style name="Theme.Redface.Night" parent="Theme.Redface.Night.Base">
+        <item name="colorPrimary">@color/night_theme_primary</item>
+        <item name="colorPrimaryDark">@color/night_theme_primary_dark</item>
+        <item name="statusBarBackgroundColor">@color/night_theme_primary_dark</item>
+        <item name="navDrawerBackgroundColor">@color/night_theme_primary</item>
+
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+
+        <!-- Needed to style contextual action bar -->
+        <item name="windowActionModeOverlay">true</item>
+        <item name="actionBarStyle">@style/RedfaceToolbar</item>
+        <item name="actionModeBackground">@color/cab_background_color</item>
+        <item name="actionModeStyle">@style/Redface.ActionMode</item>
+        <item name="actionModeCloseDrawable">@drawable/ic_action_clear</item>
+
+        <!-- Theme main colors -->
+        <item name="android:windowBackground">@color/app_background_dark</item>
+        <item name="appBackgroundColor">@color/app_background_dark</item>
+        <item name="textColorPrimary">@color/text_primary_dark</item>
+        <item name="textColorInverse">@android:color/white</item>
+        <item name="textColorSecondary">@color/text_secondary_dark</item>
+        <item name="textColorRead">@color/text_read_dark</item>
+
+        <item name="listDividerColor">@color/list_divider_dark</item>
+
+        <item name="defaultTopicIconBackgroundColor">@color/topic_icon_default_bg_dark</item>
+        <item name="defaultTopicIconTextColor">@color/topic_icon_default_color_dark</item>
+
+        <item name="unreadCountBackgroundColor">@color/topic_unread_count_bg_dark</item>
+        <item name="readTopicIconBackgroundColor">@color/topic_icon_read_bg_dark</item>
+        <item name="readTopicIconTextColor">@color/topic_icon_read_color_dark</item>
+        <item name="fullyReadTopicIconBackgroundColor">@color/topic_icon_fully_read_bg_dark</item>
+
+        <item name="toolbarTheme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
+        <item name="toolbarPopupTheme">@style/ThemeOverlay.AppCompat.Dark</item>
+
+        <item name="pagerTitleStripBackground">@color/night_theme_primary</item>
+        <item name="tabletLandscapePagerBackground">@color/night_theme_primary_dark</item>
+
+        <item name="replyToolbarBackground">@color/reply_actions_toolbar_color_dark</item>
+        <item name="replyToolbarIconsColor">@color/reply_toolbar_icons_color_dark</item>
+
+        <item name="generalIconDrawable">@drawable/ic_action_emo_wonder</item>
+        <item name="appearanceIconDrawable">@drawable/ic_action_emo_cool</item>
+        <item name="networkIconDrawable">@drawable/ic_action_cloud</item>
     </style>
 
     <style name="Theme.Redface.Transparent.Dark" parent="Theme.Redface.Dark">

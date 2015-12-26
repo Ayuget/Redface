@@ -146,7 +146,7 @@ public class BaseDrawerActivity extends BaseActivity {
         // Now retrieve the DrawerLayout so that we can set the status bar color.
         // This only takes effect on Lollipop, or when using translucentStatusBar
         // on KitKat.
-        drawerLayout.setStatusBarBackgroundColor(getResources().getColor(R.color.theme_primary_dark));
+        drawerLayout.setStatusBarBackgroundColor(UiUtils.getStatusBarBackgroundColor(this));
         drawerLayout.setDrawerShadow(R.drawable.drawer_shadow, Gravity.LEFT);
 
         // Initiate drawer with "static" items
@@ -200,7 +200,7 @@ public class BaseDrawerActivity extends BaseActivity {
                                 @Override
                                 protected void onSuccess(Palette palette) {
                                     if (palette != null) {
-                                        choseAccountView.setBackgroundColor(palette.getDarkVibrantColor(R.color.theme_primary));
+                                        choseAccountView.setBackgroundColor(palette.getDarkVibrantColor(getResources().getColor(R.color.theme_primary)));
                                     }
                                 }
 

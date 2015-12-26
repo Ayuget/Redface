@@ -17,6 +17,8 @@
 
 <resources>
     <attr name="appBackgroundColor" format="reference|color" />
+    <attr name="statusBarBackgroundColor" format="reference|color" />
+    <attr name="navDrawerBackgroundColor" format="reference|color" />
 
     <!-- Text colors -->
     <attr name="textColorPrimary" format="reference|color" />

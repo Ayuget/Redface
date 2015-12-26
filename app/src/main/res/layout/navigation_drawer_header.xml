@@ -21,13 +21,14 @@
     android:id="@+id/chosen_account_view"
     android:layout_width="match_parent"
     android:layout_height="136dp"
-    android:background="@color/theme_primary">
+    android:background="?attr/navDrawerBackgroundColor">
 
     <ImageView
         android:layout_width="150dp"
         android:layout_height="@dimen/navdrawer_chosen_account_height"
         android:scaleType="fitCenter"
         android:id="@+id/profile_picture"
+        android:layout_marginBottom="8dp"
         android:layout_alignParentBottom="true"/>
 
     <TextView
