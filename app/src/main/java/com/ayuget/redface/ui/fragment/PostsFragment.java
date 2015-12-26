@@ -129,7 +129,7 @@ public class PostsFragment extends BaseFragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.d(LOG_TAG, String.format("@%d -> onCreate(page=%d)", System.identityHashCode(this), currentPage));
+        Log.d(LOG_TAG, String.format("@%d -> Fragment(currentPage=%d) -> onCreate", System.identityHashCode(this), currentPage));
 
         super.onCreate(savedInstanceState);
 
@@ -145,7 +145,7 @@ public class PostsFragment extends BaseFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable final Bundle savedInstanceState) {
-        Log.d(LOG_TAG, String.format("@%d -> onCreateView(page=%d)", System.identityHashCode(this), currentPage));
+        Log.d(LOG_TAG, String.format("@%d -> Fragment(currentPage=%d) -> onCreateView(page=%d)", System.identityHashCode(this), currentPage, currentPage));
 
         final View rootView = inflateRootView(R.layout.fragment_posts, inflater, container);
 
@@ -156,10 +156,10 @@ public class PostsFragment extends BaseFragment {
         restoredPosts = false;
 
         if (savedInstanceState != null) {
-            Log.d(LOG_TAG, String.format("@%d -> trying to restore state (page=%d)", System.identityHashCode(this), currentPage));
+            Log.d(LOG_TAG, String.format("@%d -> Fragment(currentPage=%d) -> trying to restore state", System.identityHashCode(this), currentPage));
             displayedPosts = savedInstanceState.getParcelableArrayList(ARG_POST_LIST);
             if (displayedPosts != null) {
-                Log.i(LOG_TAG, String.format("@%d -> Restored %d posts to fragment (page=%d)", System.identityHashCode(this), displayedPosts.size(), currentPage));
+                Log.i(LOG_TAG, String.format("@%d -> Fragment(currentPage=%d) -> Restored %d posts to fragment", System.identityHashCode(this), displayedPosts.size(), currentPage));
 
                 topicPageView.setTopic(topic);
                 topicPageView.setPage(currentPage);
@@ -296,8 +296,6 @@ public class PostsFragment extends BaseFragment {
             showLoadingIndicator();
             loadPage(currentPage);
         }
-
-        restorePageScrollPosition();
     }
 
     @Override
@@ -387,6 +385,8 @@ public class PostsFragment extends BaseFragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        Log.d(LOG_TAG, String.format("@%d -> Fragment(currentPage=%d) Saving '%d' posts / scrollPosition = '%d'", System.identityHashCode(this), currentPage, displayedPosts.size(), currentScrollPosition));
+
         outState.putParcelableArrayList(ARG_POST_LIST, displayedPosts);
         outState.putInt(ARG_SAVED_SCROLL_POSITION, currentScrollPosition);
     }
@@ -415,13 +415,16 @@ public class PostsFragment extends BaseFragment {
     @Subscribe public void onPageSelectedEvent(PageSelectedEvent event) {
         if (! isInitialPage() && event.getTopic() == topic && event.getPage() == currentPage && isVisible()) {
             Log.d(LOG_TAG, String.format("@%d -> Fragment(currentPage=%d) received event for page %d selected", System.identityHashCode(this), currentPage, event.getPage()));
-            loadPage(currentPage);
+
+            if (displayedPosts != null && displayedPosts.size() == 0) {
+                loadPage(currentPage);
+            }
         }
     }
 
     @Subscribe public void onPageRefreshRequestEvent(PageRefreshRequestEvent event) {
         if (event.getTopic().getId() == topic.getId() && isVisible()) {
-            Log.d(LOG_TAG, String.format("@%d -> Refresh requested event (currentPage=%d)", System.identityHashCode(this), currentPage));
+            Log.d(LOG_TAG, String.format("@%d -> Fragment(currentPage=%d) -> Refresh requested event", System.identityHashCode(this), currentPage));
 
             savePageScrollPosition();
             showLoadingIndicator();
@@ -441,21 +444,21 @@ public class PostsFragment extends BaseFragment {
     }
 
     private void showLoadingIndicator() {
-        Log.d(LOG_TAG, "Showing loading indicator");
+        Log.d(LOG_TAG, String.format("@%d -> Showing loading layout", System.identityHashCode(this)));
         if (errorView != null) { errorView.setVisibility(View.GONE); }
         if (loadingIndicator != null) { loadingIndicator.setVisibility(View.VISIBLE); }
         if (swipeRefreshLayout != null) { swipeRefreshLayout.setVisibility(View.GONE); }
     }
 
     private void showErrorView() {
-        Log.d(LOG_TAG, "Showing error layout");
+        Log.d(LOG_TAG, String.format("@%d -> Showing error layout", System.identityHashCode(this)));
         if (errorView != null) { errorView.setVisibility(View.VISIBLE); }
         if (loadingIndicator != null) { loadingIndicator.setVisibility(View.GONE); }
         if (swipeRefreshLayout != null) { swipeRefreshLayout.setVisibility(View.GONE); }
     }
 
     private void showPosts() {
-        Log.d(LOG_TAG, "Showing posts layout");
+        Log.d(LOG_TAG, String.format("@%d -> Showing posts layout", System.identityHashCode(this)));
         if (errorView != null) { errorView.setVisibility(View.GONE); }
         if (loadingIndicator != null) { loadingIndicator.setVisibility(View.GONE); }
         if (swipeRefreshLayout != null) { swipeRefreshLayout.setVisibility(View.VISIBLE); }
