@@ -447,7 +447,10 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
                 .subscribe(new EndlessObserver<Boolean>() {
                     @Override
                     public void onNext(Boolean success) {
-                        if (! success) {
+                        if (success) {
+                            Toast.makeText(TopicsActivity.this, R.string.mark_as_favorite_success, Toast.LENGTH_SHORT).show();
+                        }
+                        else {
                             Toast.makeText(TopicsActivity.this, R.string.mark_as_favorite_failed, Toast.LENGTH_SHORT).show();
                         }
                     }
