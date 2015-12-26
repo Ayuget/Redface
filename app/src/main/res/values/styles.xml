@@ -110,7 +110,7 @@
     </style>
 
     <style name="RedfaceSmileysToolbar" parent="Widget.AppCompat.Toolbar">
-        <item name="android:background">?attr/replyToolbarBackground</item>
+        <item name="android:background">?attr/colorPrimary</item>
         <item name="popupTheme">?attr/toolbarPopupTheme</item>
         <item name="theme">?attr/toolbarTheme</item>
     </style>
@@ -161,7 +161,11 @@
     </style>
 
     <!-- SearchView style for smiley selector -->
-    <style name="RedfaceSearchView" parent="Widget.AppCompat.Light.SearchView">
+    <style name="RedfaceActionBarWidgetTheme.Light" parent="Widget.AppCompat.Light.SearchView">
+
+    </style>
+
+    <style name="RedfaceActionBarWidgetTheme.Dark" parent="Widget.AppCompat.SearchView">
 
     </style>
 

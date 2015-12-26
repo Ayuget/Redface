@@ -119,7 +119,7 @@
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:backgroundDimEnabled">false</item>
-        <item name="searchViewStyle">@style/RedfaceSearchView</item>
+        <item name="searchViewStyle">@style/RedfaceActionBarWidgetTheme.Dark</item>
     </style>
 
     <style name="Theme.Redface.Transparent.Light" parent="Theme.Redface.Light">
@@ -128,6 +128,6 @@
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:backgroundDimEnabled">false</item>
-        <item name="searchViewStyle">@style/RedfaceSearchView</item>
+        <item name="searchViewStyle">@style/RedfaceActionBarWidgetTheme.Light</item>
     </style>
 </resources>
