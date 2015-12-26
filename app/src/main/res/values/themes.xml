@@ -137,7 +137,7 @@
 
         <!-- Theme main colors -->
         <item name="android:windowBackground">@color/app_background_dark</item>
-        <item name="appBackgroundColor">@color/app_background_dark</item>
+        <item name="appBackgroundColor">@color/night_theme_app_background</item>
         <item name="textColorPrimary">@color/text_primary_dark</item>
         <item name="textColorInverse">@android:color/white</item>
         <item name="textColorSecondary">@color/text_secondary_dark</item>

@@ -36,6 +36,7 @@
     <!-- App night theme colors -->
     <color name="night_theme_primary">#2a2a2f</color>
     <color name="night_theme_primary_dark">#222127</color>
+    <color name="night_theme_app_background">#000000</color>
 
     <!-- Lists -->
     <color name="list_divider_dark">#404246</color>
