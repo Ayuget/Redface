@@ -298,7 +298,6 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
         });
 
         styleToolbarButtons(extrasToolbar);
-        //styleToolbarButtons(smileysToolbar);
         styleToolbarMenu(actionsToolbar);
 
         smileysSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
