@@ -21,6 +21,7 @@ import android.util.Log;
 import com.ayuget.redface.data.api.MDService;
 import com.ayuget.redface.data.api.model.Category;
 import com.ayuget.redface.data.api.model.Post;
+import com.ayuget.redface.data.api.model.Profile;
 import com.ayuget.redface.data.api.model.Smiley;
 import com.ayuget.redface.data.api.model.Subcategory;
 import com.ayuget.redface.data.api.model.Topic;
@@ -42,6 +43,7 @@ public class DataService {
 
     @Inject MDService mdService;
 
+    private SubscriptionHandler<User, Profile> profileSubscriptionHandler = new SubscriptionHandler<>();
     private SubscriptionHandler<User, List<Category>> categoriesSubscriptionHandler = new SubscriptionHandler<>();
     private SubscriptionHandler<CategoryPageKey, List<Topic>> topicsSubscriptionHandler = new SubscriptionHandler<>();
     private SubscriptionHandler<User, List<Topic>> metaPageSubscriptionHandler = new SubscriptionHandler<>();
@@ -85,6 +87,11 @@ public class DataService {
             result = 31 * result + page;
             return result;
         }
+    }
+
+    public Subscription loadProfile(final User user, int user_id, Observer<Profile> observer) {
+        Log.d(LOG_TAG, String.format("Loading profile for user id '%d'", user_id));
+        return profileSubscriptionHandler.load(user, mdService.getProfile(user, user_id), observer);
     }
 
     public Subscription loadCategories(final User user, Observer<List<Category>> observer) {

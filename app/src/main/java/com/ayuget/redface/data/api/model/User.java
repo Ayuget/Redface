@@ -25,6 +25,8 @@ public class User {
 
     private boolean hasAvatar = true;
 
+    private Profile profile = null;
+
     public User(String username, String password) {
         this.username = username;
         this.password = password;
@@ -52,6 +54,14 @@ public class User {
 
     public void setHasAvatar(boolean hasAvatar) {
         this.hasAvatar = hasAvatar;
+    }
+
+    public Profile getProfile() {
+        return profile;
+    }
+
+    public void setProfile(Profile profile) {
+        this.profile = profile;
     }
 
     @Override

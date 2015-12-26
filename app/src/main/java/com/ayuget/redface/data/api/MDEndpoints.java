@@ -51,6 +51,8 @@ public interface MDEndpoints {
 
     public String loginUrl();
 
+    public String profile(int user_id);
+
     public String userAvatar(int user_id);
 
     public String smileyApiHost();
