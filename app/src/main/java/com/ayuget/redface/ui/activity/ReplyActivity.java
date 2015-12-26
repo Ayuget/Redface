@@ -298,9 +298,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
         });
 
         styleToolbarButtons(extrasToolbar);
-        styleToolbarButtons(smileysToolbar);
         styleToolbarMenu(actionsToolbar);
-        styleSmileySearchView();
 
         smileysSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -788,20 +786,6 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
                 UiUtils.setDrawableColor(itemIcon, UiUtils.getReplyToolbarIconsColor(ReplyActivity.this));
             }
         }
-    }
-
-    private void styleSmileySearchView() {
-        ImageView searchButton = (ImageView) smileysSearch.findViewById(R.id.search_button);
-        ImageView searchMagButton = (ImageView) smileysSearch.findViewById(R.id.search_mag_icon);
-        ImageView closeButton = (ImageView) smileysSearch.findViewById(R.id.search_close_btn);
-        ImageView searchGoButton = (ImageView) smileysSearch.findViewById(R.id.search_go_btn);
-        ImageView voiceSearchButton = (ImageView) smileysSearch.findViewById(R.id.search_voice_btn);
-
-        UiUtils.setDrawableColor(searchButton.getDrawable(), UiUtils.getReplyToolbarIconsColor(ReplyActivity.this));
-        UiUtils.setDrawableColor(searchMagButton.getDrawable(), UiUtils.getReplyToolbarIconsColor(ReplyActivity.this));
-        UiUtils.setDrawableColor(closeButton.getDrawable(), UiUtils.getReplyToolbarIconsColor(ReplyActivity.this));
-        UiUtils.setDrawableColor(searchGoButton.getDrawable(), UiUtils.getReplyToolbarIconsColor(ReplyActivity.this));
-        UiUtils.setDrawableColor(voiceSearchButton.getDrawable(), UiUtils.getReplyToolbarIconsColor(ReplyActivity.this));
     }
 
     public Topic getCurrentTopic() {

@@ -125,4 +125,8 @@ public class UiUtils {
     public static int getActionModeBackgroundColor(Context context) {
         return resolveColorAttribute(context, R.attr.actionModeBackground);
     }
+
+    public static int getStatusBarBackgroundColor(Context context) {
+        return resolveColorAttribute(context, R.attr.statusBarBackgroundColor);
+    }
 }

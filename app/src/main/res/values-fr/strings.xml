@@ -97,6 +97,7 @@
     <string-array name="pref_theme_values">
         <item>Clair</item>
         <item>Foncé</item>
+        <item>Nuit</item>
     </string-array>
 
     <!-- Dialogs -->

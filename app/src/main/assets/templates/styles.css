@@ -16,6 +16,11 @@ body.redface-dark {
     color: #ffffff;
 }
 
+body.redface-night {
+    background: #000000;
+    color: #ffffff;
+}
+
 .post {
     word-wrap: break-word;
 }
@@ -30,6 +35,13 @@ body.redface-dark {
 
 .redface-dark .post-toolbar {
     background: #404246;
+    color: #c2c2c4;
+    border-top: 1px solid #222222;
+    border-bottom: 1px solid #111111;
+}
+
+.redface-night .post-toolbar {
+    background: #242428;
     color: #c2c2c4;
     border-top: 1px solid #222222;
     border-bottom: 1px solid #111111;
@@ -109,7 +121,7 @@ body.redface-dark {
     padding-top: 16px;
 }
 
-.redface-dark .post-content a {
+.redface-dark .post-content a, .redface-night .post-content a {
     color: #76a2fb;
 }
 
@@ -160,6 +172,12 @@ img {
     color: #ffffff;
 }
 
+.redface-night .quote, .redface-night .spoiler, .redface-night .code {
+    background: #181820;
+    border: 1px solid #3a3a41;
+    color: #ffffff;
+}
+
 .quote b.s1, .spoiler b.s1Topic {
     display: block;
     font-size: 0.9em;
@@ -170,6 +188,11 @@ img {
 }
 
 .redface-dark .quote b.s1, .redface-dark .spoiler b.s1Topic {
+    background: #181820;
+    color: #a8a8ac;
+}
+
+.redface-night .quote b.s1, .redface-night .spoiler b.s1Topic {
     background: #181820;
     color: #a8a8ac;
 }
@@ -298,7 +321,7 @@ img {
     background: #b3afaf;
 }
 
-.redface-dark .post-action.action-selected {
+.redface-dark .post-action.action-selected, .redface-night .post-action.action-selected {
     background: #27292b;
 }
 

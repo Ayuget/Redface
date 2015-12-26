@@ -18,6 +18,7 @@
 <resources>
     <color name="app_background_light">#ffffff</color>
     <color name="app_background_dark">#222222</color>
+    <color name="app_background_night">#000000</color>
     <color name="app_background_semi_transparent">#BF000000</color>
 
     <!-- Text -->
@@ -31,6 +32,11 @@
     <color name="theme_primary_dark">#C62828</color>
     <color name="theme_primary_light">#EF5350</color>
     <color name="cab_background_color">#757575</color>
+
+    <!-- App night theme colors -->
+    <color name="night_theme_primary">#2a2a2f</color>
+    <color name="night_theme_primary_dark">#222127</color>
+    <color name="night_theme_app_background">#000000</color>
 
     <!-- Lists -->
     <color name="list_divider_dark">#404246</color>

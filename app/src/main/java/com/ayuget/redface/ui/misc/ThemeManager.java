@@ -24,6 +24,7 @@ import com.ayuget.redface.ui.theme.RedfaceTheme;
 public class ThemeManager {
     private static final String LIGHT_THEME_CSS_CLASS = "redface-light";
     private static final String DARK_THEME_CSS_CLASS = "redface-dark";
+    private static final String NIGHT_THEME_CSS_CLASS = "redface-night";
 
     private final RedfaceSettings settings;
 
@@ -39,8 +40,11 @@ public class ThemeManager {
         if (activeTheme == RedfaceTheme.LIGHT) {
             return R.style.Theme_Redface_Light;
         }
-        else {
+        else if (activeTheme == RedfaceTheme.DARK){
             return R.style.Theme_Redface_Dark;
+        }
+        else {
+            return R.style.Theme_Redface_Night;
         }
     }
 
@@ -61,8 +65,11 @@ public class ThemeManager {
         if (activeTheme == RedfaceTheme.LIGHT) {
             return LIGHT_THEME_CSS_CLASS;
         }
-        else {
+        else if (activeTheme == RedfaceTheme.DARK){
             return DARK_THEME_CSS_CLASS;
+        }
+        else {
+            return NIGHT_THEME_CSS_CLASS;
         }
     }
 

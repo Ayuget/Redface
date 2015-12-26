@@ -18,5 +18,6 @@ package com.ayuget.redface.ui.theme;
 
 public enum RedfaceTheme {
     LIGHT,
-    DARK
+    DARK,
+    NIGHT
 }
