@@ -97,7 +97,7 @@ public class BaseFragment extends Fragment {
         LayoutInflater themedInflater = inflater.cloneInContext(contextThemeWrapper);
 
         ViewGroup rootView = (ViewGroup) themedInflater.inflate(viewResId, container, false);
-        ButterKnife.inject(this, rootView);
+        ButterKnife.bind(this, rootView);
         return rootView;
     }
 }

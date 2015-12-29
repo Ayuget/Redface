@@ -42,7 +42,7 @@
 # ButterKnife uses some annotations not available on Android.
 -dontwarn butterknife.internal.**
 # Prevent ButterKnife annotations from getting renamed.
--keepnames class * { @butterknife.InjectView *;}
+-keepnames class * { @butterknife.Bind *;}
 
 # Do not touch Otto annotated classes
 -keepattributes *Annotation*

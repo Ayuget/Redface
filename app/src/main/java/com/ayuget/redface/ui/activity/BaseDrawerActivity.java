@@ -59,7 +59,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 
 public class BaseDrawerActivity extends BaseActivity {
     private static final String LOG_TAG = BaseDrawerActivity.class.getSimpleName();
@@ -92,25 +92,25 @@ public class BaseDrawerActivity extends BaseActivity {
     @Inject
     MDEndpoints mdEndpoints;
 
-    @InjectView(R.id.navdrawer_items_list)
+    @Bind(R.id.navdrawer_items_list)
     ViewGroup drawerItemsListContainer;
 
-    @InjectView(R.id.profile_picture)
+    @Bind(R.id.profile_picture)
     ImageView activeUserPicture;
 
-    @InjectView(R.id.active_username)
+    @Bind(R.id.active_username)
     TextView activeUserName;
 
-    @InjectView(R.id.expand_account_box_indicator)
+    @Bind(R.id.expand_account_box_indicator)
     ImageView expandAccountBoxIndicator;
 
-    @InjectView(R.id.chosen_account_view)
+    @Bind(R.id.chosen_account_view)
     View choseAccountView;
 
-    @InjectView(R.id.account_list)
+    @Bind(R.id.account_list)
     LinearLayout accountListContainer;
 
-    @InjectView(R.id.hfr_drawer_layout)
+    @Bind(R.id.hfr_drawer_layout)
     DrawerLayout drawerLayout;
 
     @Override

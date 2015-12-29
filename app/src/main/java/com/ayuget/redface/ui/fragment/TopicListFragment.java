@@ -62,7 +62,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 
 public class TopicListFragment extends ToggleToolbarFragment implements TopicsAdapter.OnTopicClickedListener, TopicsAdapter.OnTopicLongClickListener {
     private static final String LOG_TAG = TopicListFragment.class.getSimpleName();
@@ -97,13 +97,13 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
 
     private SubcategoriesAdapter subcategoriesAdapter;
 
-    @InjectView(R.id.topics_list)
+    @Bind(R.id.topics_list)
     ContextMenuRecyclerView topicsRecyclerView;
 
-    @InjectView(R.id.topic_list_swipe_refresh_layout)
+    @Bind(R.id.topic_list_swipe_refresh_layout)
     SwipeRefreshLayout swipeRefreshLayout;
 
-    @InjectView(R.id.empty_content_image)
+    @Bind(R.id.empty_content_image)
     ImageView emptyTopicsImage;
 
     @Inject
