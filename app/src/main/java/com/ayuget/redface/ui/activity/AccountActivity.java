@@ -37,19 +37,19 @@ import com.rengwuxian.materialedittext.MaterialEditText;
 
 import javax.inject.Inject;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 import butterknife.OnClick;
 
 public class AccountActivity extends BaseActivity {
     private static final String LOG_TAG = AccountActivity.class.getSimpleName();
 
-    @InjectView(R.id.username)
+    @Bind(R.id.username)
     MaterialEditText usernameTextView;
 
-    @InjectView(R.id.password)
+    @Bind(R.id.password)
     MaterialEditText passwordTextView;
 
-    @InjectView(R.id.relogin_instructions)
+    @Bind(R.id.relogin_instructions)
     TextView reloginInstructions;
 
     @Inject

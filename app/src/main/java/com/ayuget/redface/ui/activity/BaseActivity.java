@@ -22,19 +22,18 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 
 import com.ayuget.redface.BuildConfig;
-import com.ayuget.redface.RedfaceApp;
 import com.ayuget.redface.R;
+import com.ayuget.redface.RedfaceApp;
 import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.ui.misc.ThemeManager;
 import com.ayuget.redface.util.ViewServer;
-import io.fabric.sdk.android.Fabric;
-
 import com.crashlytics.android.Crashlytics;
 import com.squareup.otto.Bus;
 
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
+import io.fabric.sdk.android.Fabric;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
 
@@ -107,7 +106,7 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     public void setContentView(int layoutResID) {
         super.setContentView(layoutResID);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
     }
 
     /**
@@ -116,7 +115,7 @@ public class BaseActivity extends AppCompatActivity {
      */
     public void setContentView(int layoutResID, Bundle savedInstanceState) {
         super.setContentView(layoutResID);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
 
         onInitUiState();
 

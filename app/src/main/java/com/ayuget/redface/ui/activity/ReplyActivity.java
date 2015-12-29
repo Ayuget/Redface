@@ -78,7 +78,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 import butterknife.OnClick;
 
 public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemClickListener {
@@ -150,64 +150,64 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
     /**
      * Main reply window (with user picker, toolbars, ...)
      */
-    @InjectView(R.id.main_reply_frame)
+    @Bind(R.id.main_reply_frame)
     RelativeLayout mainReplyFrame;
 
     /**
      * Primary dialog toolbar, with user selection and send button
      */
-    @InjectView(R.id.toolbar_reply_actions)
+    @Bind(R.id.toolbar_reply_actions)
     Toolbar actionsToolbar;
 
     /**
      * Secondary action toolbar (bold, italic, links, ...)
      */
-    @InjectView(R.id.toolbar_reply_extra)
+    @Bind(R.id.toolbar_reply_extra)
     Toolbar extrasToolbar;
 
     /**
      * Finger draggable view to select smileys
      */
-    @InjectView(R.id.smiley_selector_view)
+    @Bind(R.id.smiley_selector_view)
     View smileysSelector;
 
     /**
      * Toolbar to switch between popular / recent / favorite smileys
      */
-    @InjectView(R.id.smileys_toolbar)
+    @Bind(R.id.smileys_toolbar)
     Toolbar smileysToolbar;
 
     /**
      * Reply text box
      */
-    @InjectView(R.id.reply_text)
+    @Bind(R.id.reply_text)
     EditText replyEditText;
 
     /**
      * Smiley list loading indicator
      */
-    @InjectView(R.id.loading_indicator)
+    @Bind(R.id.loading_indicator)
     View smileysLoadingIndicator;
 
     /**
      * Smiley list
      */
-    @InjectView(R.id.smileyList)
+    @Bind(R.id.smileyList)
     SmileySelectorView smileyList;
 
     /**
      * Root ViewGroup for the reply window
      */
-    @InjectView(R.id.reply_window_root)
+    @Bind(R.id.reply_window_root)
     FrameLayout replyWindowRoot;
 
     /**
      * Smileys search box
      */
-    @InjectView(R.id.smileys_search)
+    @Bind(R.id.smileys_search)
     SearchView smileysSearch;
 
-    @InjectView(R.id.sending_message_spinner)
+    @Bind(R.id.sending_message_spinner)
     View sendingMessageSpinner;
 
     @Inject

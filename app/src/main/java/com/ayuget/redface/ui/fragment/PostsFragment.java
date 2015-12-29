@@ -61,7 +61,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 
 public class PostsFragment extends BaseFragment {
     private static final String LOG_TAG = PostsFragment.class.getSimpleName();
@@ -81,22 +81,22 @@ public class PostsFragment extends BaseFragment {
     @Arg
     int initialPage;
 
-    @InjectView(R.id.loading_indicator)
+    @Bind(R.id.loading_indicator)
     View loadingIndicator;
 
-    @InjectView(R.id.error_layout)
+    @Bind(R.id.error_layout)
     View errorView;
 
-    @InjectView(R.id.error_reload_button)
+    @Bind(R.id.error_reload_button)
     Button errorReloadButton;
 
-    @InjectView(R.id.postsView)
+    @Bind(R.id.postsView)
     TopicPageView topicPageView;
 
-    @InjectView(R.id.topic_list_swipe_refresh_layout)
+    @Bind(R.id.topic_list_swipe_refresh_layout)
     SwipeRefreshLayout swipeRefreshLayout;
 
-    @InjectView(R.id.reply_button)
+    @Bind(R.id.reply_button)
     FloatingActionButton replyButton;
 
     private ArrayList<Post> displayedPosts = new ArrayList<>();

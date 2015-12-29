@@ -56,7 +56,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 
 public class PrivateMessageListFragment extends ToggleToolbarFragment implements PrivateMessagesAdapter.OnPMClickedListener, PrivateMessagesAdapter.OnPMLongClickListener {
     private static final String LOG_TAG = PrivateMessageListFragment.class.getSimpleName();
@@ -87,28 +87,28 @@ public class PrivateMessageListFragment extends ToggleToolbarFragment implements
 
     private OnPrivateMessageClickedListener onPrivateMessageClickedListener;
 
-    @InjectView(R.id.private_messages_list)
+    @Bind(R.id.private_messages_list)
     ContextMenuRecyclerView pmRecyclerView;
 
-    @InjectView(R.id.pm_list_swipe_refresh_layout)
+    @Bind(R.id.pm_list_swipe_refresh_layout)
     SwipeRefreshLayout swipeRefreshLayout;
 
-    @InjectView(R.id.loading_indicator)
+    @Bind(R.id.loading_indicator)
     View loadingIndicator;
 
-    @InjectView(R.id.error_layout)
+    @Bind(R.id.error_layout)
     View errorView;
 
-    @InjectView(R.id.error_reload_button)
+    @Bind(R.id.error_reload_button)
     Button errorReloadButton;
 
-    @InjectView(R.id.empty_reload_button)
+    @Bind(R.id.empty_reload_button)
     Button emptyReloadButton;
 
-    @InjectView(R.id.empty_content_layout)
+    @Bind(R.id.empty_content_layout)
     View noPrivateMessagesLayout;
 
-    @InjectView(R.id.empty_content_image)
+    @Bind(R.id.empty_content_image)
     ImageView noPrivateMessagesImage;
 
     @Inject

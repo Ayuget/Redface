@@ -59,7 +59,7 @@ import java.util.ArrayList;
 
 import javax.inject.Inject;
 
-import butterknife.InjectView;
+import butterknife.Bind;
 
 public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageChangeListener {
     private static final String LOG_TAG = TopicFragment.class.getSimpleName();
@@ -80,10 +80,10 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     MDEndpoints mdEndpoints;
 
 
-    @InjectView(R.id.pager)
+    @Bind(R.id.pager)
     ViewPager pager;
 
-    @InjectView(R.id.titlestrip)
+    @Bind(R.id.titlestrip)
     PagerTabStrip pagerTitleStrip;
 
     /**

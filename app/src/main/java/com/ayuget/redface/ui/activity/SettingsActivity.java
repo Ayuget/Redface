@@ -27,14 +27,14 @@ import com.ayuget.redface.ui.fragment.HomePreferenceFragment;
 import com.ayuget.redface.ui.fragment.NestedPreferenceFragmentBuilder;
 
 import com.squareup.otto.Subscribe;
-import butterknife.InjectView;
+import butterknife.Bind;
 
 public class SettingsActivity extends BaseActivity {
     private static final String LOG_TAG = SettingsActivity.class.getSimpleName();
 
     private static final String NESTED_FRAGMENT_TAG = "nested_fragment";
 
-    @InjectView(R.id.toolbar_actionbar)
+    @Bind(R.id.toolbar_actionbar)
     Toolbar toolbar;
 
     @Override
