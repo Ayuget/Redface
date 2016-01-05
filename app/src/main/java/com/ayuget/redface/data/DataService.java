@@ -91,7 +91,7 @@ public class DataService {
 
     public Subscription loadProfile(final User user, int user_id, Observer<Profile> observer) {
         Log.d(LOG_TAG, String.format("Loading profile for user id '%d'", user_id));
-        return profileSubscriptionHandler.load(user, mdService.getProfile(user, user_id), observer);
+        return profileSubscriptionHandler.loadAndCache(user, mdService.getProfile(user, user_id), observer);
     }
 
     public Subscription loadCategories(final User user, Observer<List<Category>> observer) {
