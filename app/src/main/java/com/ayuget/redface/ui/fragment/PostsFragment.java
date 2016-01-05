@@ -313,8 +313,13 @@ public class PostsFragment extends BaseFragment {
             refWatcher.watch(topicPageView);
         }
 
-        swipeRefreshLayout.setOnRefreshListener(null);
-        replyButton.setOnClickListener(null);
+        if (swipeRefreshLayout != null) {
+            swipeRefreshLayout.setOnRefreshListener(null);
+        }
+
+        if (replyButton != null) {
+            replyButton.setOnClickListener(null);
+        }
 
         if (errorReloadButton != null) {
             errorReloadButton.setOnClickListener(null);
