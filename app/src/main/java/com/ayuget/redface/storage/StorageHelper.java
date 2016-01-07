@@ -74,7 +74,10 @@ public class StorageHelper {
     }
 
     public static void broadcastImageWasSaved(Context context, File image, Bitmap.CompressFormat compressFormat) {
-        String codec = "image/" + compressFormat.name().toLowerCase();
-        MediaScannerConnection.scanFile(context, new String[] { image.getPath() }, new String[] { codec }, null);
+        MediaScannerConnection.scanFile(context, new String[] { image.getPath() }, new String[] { getImageMimeType(compressFormat) }, null);
+    }
+
+    public static String getImageMimeType(Bitmap.CompressFormat compressFormat) {
+        return "image/" + compressFormat.name().toLowerCase();
     }
 }

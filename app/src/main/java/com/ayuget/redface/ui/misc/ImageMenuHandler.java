@@ -23,8 +23,10 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ShareCompat;
 import android.util.Log;
 import android.view.View;
+import android.widget.ShareActionProvider;
 
 import com.ayuget.redface.R;
 import com.ayuget.redface.storage.StorageHelper;
@@ -44,12 +46,19 @@ public class ImageMenuHandler {
 
     private final String imageUrl;
 
+    public interface ImageSavedCallback {
+        void onImageSaved(File savedImage, Bitmap.CompressFormat format);
+    }
+
     public ImageMenuHandler(Activity activity, String imageUrl) {
         this.activity = activity;
         this.imageUrl = imageUrl;
     }
 
     public void saveImage(boolean compressAsPng) {
+        saveImage(compressAsPng, true, null);
+    }
+    public void saveImage(boolean compressAsPng, final boolean notifyUser, final ImageSavedCallback imageSavedCallback) {
         final String imageName = StorageHelper.getFilenameFromUrl(imageUrl);
         final Bitmap.CompressFormat targetFormat = compressAsPng ? Bitmap.CompressFormat.PNG : Bitmap.CompressFormat.JPEG;
 
@@ -78,18 +87,24 @@ public class ImageMenuHandler {
                                         // app.
                                         StorageHelper.broadcastImageWasSaved(activity, mediaFile, targetFormat);
 
-                                        // Then, notify the user with an enhanced snackbar, allowing
-                                        // him (or her) to open the image in his favorite app.
-                                        Snackbar snackbar = SnackbarHelper.makeWithAction(activity, R.string.image_saved_successfully, R.string.action_snackbar_open_image, new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View v) {
-                                                Intent intent = new Intent();
-                                                intent.setAction(Intent.ACTION_VIEW);
-                                                intent.setDataAndType(Uri.parse("file://" + mediaFile.getAbsolutePath()), "image/*");
-                                                activity.startActivity(intent);
-                                            }
-                                        });
-                                        snackbar.show();
+                                        if (notifyUser) {
+                                            // Then, notify the user with an enhanced snackbar, allowing
+                                            // him (or her) to open the image in his favorite app.
+                                            Snackbar snackbar = SnackbarHelper.makeWithAction(activity, R.string.image_saved_successfully, R.string.action_snackbar_open_image, new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View v) {
+                                                    Intent intent = new Intent();
+                                                    intent.setAction(Intent.ACTION_VIEW);
+                                                    intent.setDataAndType(Uri.parse("file://" + mediaFile.getAbsolutePath()), "image/*");
+                                                    activity.startActivity(intent);
+                                                }
+                                            });
+                                            snackbar.show();
+                                        }
+
+                                        if (imageSavedCallback != null) {
+                                            imageSavedCallback.onImageSaved(mediaFile, targetFormat);
+                                        }
                                     }
                                     catch (IOException e) {
                                         Log.e(LOG_TAG, "Unable to save image to external storage", e);
@@ -121,6 +136,17 @@ public class ImageMenuHandler {
     }
 
     public void shareImage() {
-
+        saveImage(false, false, new ImageSavedCallback() {
+            @Override
+            public void onImageSaved(File savedImage, Bitmap.CompressFormat format) {
+                Log.d(LOG_TAG, "Sharing image : '" + savedImage + "'");
+                ShareCompat.IntentBuilder.from(activity)
+                        .setText(activity.getText(R.string.action_share_image))
+                        .setType(StorageHelper.getImageMimeType(format))
+                        .setSubject(savedImage.getName())
+                        .setStream(Uri.fromFile(savedImage))
+                        .startChooser();
+            }
+        });
     }
 }

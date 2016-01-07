@@ -33,6 +33,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.Button;
+import android.widget.ShareActionProvider;
 import android.widget.Toast;
 
 import com.ayuget.redface.R;
