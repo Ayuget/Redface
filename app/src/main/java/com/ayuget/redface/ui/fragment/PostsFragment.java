@@ -173,18 +173,18 @@ public class PostsFragment extends BaseFragment {
             displayedPosts = savedInstanceState.getParcelableArrayList(ARG_POST_LIST);
             if (displayedPosts != null) {
                 Log.i(LOG_TAG, String.format("@%d -> Fragment(currentPage=%d) -> Restored %d posts to fragment", System.identityHashCode(this), displayedPosts.size(), currentPage));
-
-                topicPageView.setTopic(topic);
-                topicPageView.setPage(currentPage);
-                topicPageView.setPosts(displayedPosts);
-
                 restoredPosts = displayedPosts.size() > 0;
-                showPosts();
             }
         }
 
         if (displayedPosts == null) {
             displayedPosts = new ArrayList<>();
+        }
+        else {
+            topicPageView.setTopic(topic);
+            topicPageView.setPage(currentPage);
+            topicPageView.setPosts(displayedPosts);
+            showPosts();
         }
 
         // Implement swipe to refresh
@@ -308,7 +308,7 @@ public class PostsFragment extends BaseFragment {
 
         // Page is loaded instantly only if it's the initial page requested on topic load. Other
         // pages will be loaded once selected in the ViewPager
-        if (isInitialPage() && displayedPosts != null && displayedPosts.size() == 0) {
+        if (isInitialPage() && ((displayedPosts != null && displayedPosts.size() == 0) || displayedPosts == null)) {
             showLoadingIndicator();
             loadPage(currentPage);
         }
