@@ -285,6 +285,7 @@ public class HFRForumService implements MDService {
 
     @Override
     public Observable<List<Smiley>> searchSmileys(String searchExpression) {
+        // http://forum.hardware.fr/message-smi-mp-aj.php?config=hfr.inc&findsmilies=fed
         return smileyService.searchSmileys(searchExpression).map(new Func1<SmileyResponse, List<Smiley>>() {
             @Override
             public List<Smiley> call(SmileyResponse smileyResponse) {

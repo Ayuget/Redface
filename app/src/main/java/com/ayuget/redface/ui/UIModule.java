@@ -36,6 +36,7 @@ import com.ayuget.redface.ui.fragment.PostsFragment;
 import com.ayuget.redface.ui.fragment.PrivateMessageListFragment;
 import com.ayuget.redface.ui.fragment.TopicFragment;
 import com.ayuget.redface.ui.fragment.TopicListFragment;
+import com.ayuget.redface.ui.misc.ImageMenuHandler;
 import com.ayuget.redface.ui.misc.ThemeManager;
 import com.ayuget.redface.ui.template.AvatarTemplate;
 import com.ayuget.redface.ui.template.PostActionsTemplate;

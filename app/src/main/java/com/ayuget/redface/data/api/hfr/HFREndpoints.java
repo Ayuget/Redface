@@ -59,6 +59,7 @@ public class HFREndpoints implements MDEndpoints {
     private static final String META_PAGE_URL = "{base_url}/forum1f.php?config=hfr.inc&owntopic={filter_id}&new=0&nojs=0";
 
     private static final String FAVORITE_URL = "{base_url}/user/addflag.php?config=hfr.inc&cat={category_id}&post={topic_id}&numreponse={post_id}";
+
     public static final String PRIVATE_MESSAGE_REAL_CAT_ID = "prive";
 
     /**

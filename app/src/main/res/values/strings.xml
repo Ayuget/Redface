@@ -261,4 +261,17 @@
 
     <!-- Dialogs -->
     <string name="dialog_go_to_page_positive_text">Go !</string>
+
+    <!-- Save image menu -->
+    <string name="action_save_original_image">Save original image</string>
+    <string name="action_save_image_as_png">Save image as PNG</string>
+    <string name="action_share_image">Share image</string>
+    <string name="action_open_image">Open image at full size</string>
+
+    <!-- Image management -->
+    <string name="error_saving_image">Error while saving image</string>
+    <string name="error_invalid_image">Error while saving image : image is invalid</string>
+    <string name="error_saving_image_permission_denied">Permission required to save image</string>
+    <string name="image_saved_successfully">Image successfully saved !</string>
+    <string name="action_snackbar_open_image">Open</string>
 </resources>

@@ -25,9 +25,13 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -35,17 +39,20 @@ import com.ayuget.redface.R;
 import com.ayuget.redface.RedfaceApp;
 import com.ayuget.redface.account.UserManager;
 import com.ayuget.redface.data.DataService;
+import com.ayuget.redface.data.api.MDEndpoints;
 import com.ayuget.redface.data.api.MDService;
 import com.ayuget.redface.data.api.model.Post;
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.rx.EndlessObserver;
 import com.ayuget.redface.data.rx.SubscriptionHandler;
+import com.ayuget.redface.network.HTTPClientProvider;
 import com.ayuget.redface.ui.activity.MultiPaneActivity;
 import com.ayuget.redface.ui.activity.ReplyActivity;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
 import com.ayuget.redface.ui.event.PageSelectedEvent;
 import com.ayuget.redface.ui.event.ScrollToPostEvent;
+import com.ayuget.redface.ui.misc.ImageMenuHandler;
 import com.ayuget.redface.ui.misc.UiUtils;
 import com.ayuget.redface.ui.view.TopicPageView;
 import com.getbase.floatingactionbutton.FloatingActionButton;
@@ -101,12 +108,17 @@ public class PostsFragment extends BaseFragment {
 
     private ArrayList<Post> displayedPosts = new ArrayList<>();
 
-    @Inject DataService dataService;
+    @Inject
+    DataService dataService;
 
     @Inject
     UserManager userManager;
 
-    @Inject MDService mdService;
+    @Inject
+    MDService mdService;
+
+    @Inject
+    MDEndpoints mdEndpoints;
 
     /**
      * Current scroll position in the webview.
@@ -273,6 +285,9 @@ public class PostsFragment extends BaseFragment {
             replyButton.setVisibility(View.INVISIBLE);
         }
 
+        // Deal with long-press actions on images inside the WebView
+        setupImagesInteractions();
+
         return rootView;
     }
 
@@ -303,6 +318,8 @@ public class PostsFragment extends BaseFragment {
         super.onDestroy();
 
         if (topicPageView != null) {
+            unregisterForContextMenu(topicPageView);
+
             topicPageView.setOnScrollListener(null);
             topicPageView.setOnMultiQuoteModeListener(null);
             topicPageView.setOnPageLoadedListener(null);
@@ -495,6 +512,52 @@ public class PostsFragment extends BaseFragment {
                 showErrorView();
             }
         }));
+    }
+
+    private void setupImagesInteractions() {
+        registerForContextMenu(topicPageView);
+        topicPageView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
+            @Override
+            public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+                WebView.HitTestResult result = ((WebView) v).getHitTestResult();
+                if (result.getType() == WebView.HitTestResult.IMAGE_TYPE || result.getType() == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE) {
+                    final String url = result.getExtra();
+
+                    final ImageMenuHandler imageMenuHandler = new ImageMenuHandler(getActivity(), url);
+                    MenuItem.OnMenuItemClickListener itemClickListener = new MenuItem.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            switch (item.getItemId()) {
+                                case R.id.action_save_original_image:
+                                    imageMenuHandler.saveImage(false);
+                                    break;
+                                case R.id.action_save_image_as_png:
+                                    imageMenuHandler.saveImage(true);
+                                    break;
+                                case R.id.action_open_image:
+                                    imageMenuHandler.openImage();
+                                    break;
+                                case R.id.action_share_image:
+                                    imageMenuHandler.shareImage();
+                                    break;
+                                default:
+                                    Log.e(LOG_TAG, "Unknow menu item clicked");
+                            }
+
+                            return true;
+                        }
+                    };
+
+                    if (! url.contains(mdEndpoints.baseurl())) {
+                        menu.setHeaderTitle(url);
+                        getActivity().getMenuInflater().inflate(R.menu.menu_save_image, menu);
+                        for (int i = 0; i < menu.size(); i++) {
+                            menu.getItem(i).setOnMenuItemClickListener(itemClickListener);
+                        }
+                    }
+                }
+            }
+        });
     }
 
 

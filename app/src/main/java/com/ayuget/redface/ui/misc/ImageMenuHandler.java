@@ -1,0 +1,126 @@
+/*
+ * Copyright 2015 Ayuget
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.ayuget.redface.ui.misc;
+
+import android.Manifest;
+import android.app.Activity;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.support.design.widget.Snackbar;
+import android.util.Log;
+import android.view.View;
+
+import com.ayuget.redface.R;
+import com.ayuget.redface.storage.StorageHelper;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
+import com.tbruyelle.rxpermissions.RxPermissions;
+
+import java.io.File;
+import java.io.IOException;
+
+import rx.functions.Action1;
+
+public class ImageMenuHandler {
+    private static final String LOG_TAG = ImageMenuHandler.class.getSimpleName();
+
+    private final Activity activity;
+
+    private final String imageUrl;
+
+    public ImageMenuHandler(Activity activity, String imageUrl) {
+        this.activity = activity;
+        this.imageUrl = imageUrl;
+    }
+
+    public void saveImage(boolean compressAsPng) {
+        final String imageName = StorageHelper.getFilenameFromUrl(imageUrl);
+        final Bitmap.CompressFormat targetFormat = compressAsPng ? Bitmap.CompressFormat.PNG : Bitmap.CompressFormat.JPEG;
+
+        Picasso.with(activity).load(imageUrl).into(new Target() {
+            @Override
+            public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
+                Log.d(LOG_TAG, "Image successfully decoded, requesting WRITE_EXTERNAL_STORAGE permission to save image");
+
+                RxPermissions.getInstance(activity)
+                        .request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        .subscribe(new Action1<Boolean>() {
+                            @Override
+                            public void call(Boolean granted) {
+                                if (granted) {
+                                    Log.d(LOG_TAG, "WRITE_EXTERNAL_STORAGE granted, saving image to disk");
+
+                                    try {
+                                        final File mediaFile = StorageHelper.getMediaFile(imageName);
+                                        Log.d(LOG_TAG, "Saving image to " + mediaFile.getAbsolutePath());
+
+                                        StorageHelper.storeImageToFile(bitmap, mediaFile, targetFormat);
+
+                                        // First, notify the system that a new image has been saved
+                                        // to external storage. This is important for user experience
+                                        // because it makes the image visible in the system gallery
+                                        // app.
+                                        StorageHelper.broadcastImageWasSaved(activity, mediaFile, targetFormat);
+
+                                        // Then, notify the user with an enhanced snackbar, allowing
+                                        // him (or her) to open the image in his favorite app.
+                                        Snackbar snackbar = SnackbarHelper.makeWithAction(activity, R.string.image_saved_successfully, R.string.action_snackbar_open_image, new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                Intent intent = new Intent();
+                                                intent.setAction(Intent.ACTION_VIEW);
+                                                intent.setDataAndType(Uri.parse("file://" + mediaFile.getAbsolutePath()), "image/*");
+                                                activity.startActivity(intent);
+                                            }
+                                        });
+                                        snackbar.show();
+                                    }
+                                    catch (IOException e) {
+                                        Log.e(LOG_TAG, "Unable to save image to external storage", e);
+                                        SnackbarHelper.makeError(activity, R.string.error_saving_image).show();
+                                    }
+                                }
+                                else {
+                                    Log.w(LOG_TAG, "WRITE_EXTERNAL_STORAGE denied, unable to save image");
+                                    SnackbarHelper.makeError(activity, R.string.error_saving_image_permission_denied).show();
+                                }
+                            }
+                        });
+            }
+
+            @Override
+            public void onBitmapFailed(Drawable errorDrawable) {
+                SnackbarHelper.makeError(activity, R.string.error_saving_image).show();
+            }
+
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+            }
+        });
+    }
+
+    public void openImage() {
+
+    }
+
+    public void shareImage() {
+
+    }
+}

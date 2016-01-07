@@ -15,6 +15,7 @@ repositories {
     mavenCentral()
     maven { url 'https://maven.fabric.io/public' }
     maven { url "https://jitpack.io" }
+    maven { url "http://dl.bintray.com/tbruyelle/tbruyelle" }
 }
 
 apply plugin: 'com.android.application'
@@ -85,6 +86,9 @@ dependencies {
     compile 'com.squareup.phrase:phrase:1.0.3'
     compile 'com.google.guava:guava:18.+'
     compile 'com.uwetrottmann:androidutils:2.0.0'
+
+    // Deal with Android M new-style permissions
+    compile 'com.tbruyelle.rxpermissions:rxpermissions:0.5.1@aar'
 
     // Test related dependencies
     testCompile('com.squareup.assertj:assertj-android:1.0.0') {
