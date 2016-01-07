@@ -162,6 +162,8 @@ public class PostsFragment extends BaseFragment {
 
         final View rootView = inflateRootView(R.layout.fragment_posts, inflater, container);
 
+        topicPageView.setHostActivity(getActivity());
+
         // Default view is the loading indicator
         showLoadingIndicator();
 

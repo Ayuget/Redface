@@ -17,6 +17,7 @@
 package com.ayuget.redface.ui.view;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -49,6 +50,7 @@ import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.api.model.misc.PostAction;
 import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.ui.UIConstants;
+import com.ayuget.redface.ui.activity.BaseActivity;
 import com.ayuget.redface.ui.event.EditPostEvent;
 import com.ayuget.redface.ui.event.GoToPostEvent;
 import com.ayuget.redface.ui.event.GoToTopicEvent;
@@ -97,6 +99,11 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
      * Topic's page currently displayed in the webview
      */
     private int page;
+
+    /**
+     * Activity in which the view is hosted
+     */
+    private Activity hostActivity;
 
     /**
      * Android framework utility class to detect gestures, used
@@ -254,7 +261,7 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
                         Log.d(LOG_TAG, String.format("Clicked on internal url = '%s'", url));
                         return true;
                     } else {
-                        getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                        ((BaseActivity) hostActivity).openLink(url);
                         return true;
                     }
                 }
@@ -280,6 +287,10 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
         if (quoteActionMode != null) {
             quoteActionMode.setTitle(Phrase.from(getContext(), R.string.quoted_messages_plural).put("count", quotedMessages.size()).format());
         }
+    }
+
+    public void setHostActivity(Activity hostActivity) {
+        this.hostActivity = hostActivity;
     }
 
     @Override
