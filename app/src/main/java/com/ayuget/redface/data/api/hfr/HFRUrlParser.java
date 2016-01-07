@@ -132,7 +132,10 @@ public class HFRUrlParser implements UrlParser {
         String topicId = parsedUri.getQueryParameter("post");
         String anchor = parsedUri.getFragment();
 
-        if (categoryId == null || pageNumber == null || topicId == null) {
+        // Set default page number as 1 (first page)
+        if (pageNumber == null) { pageNumber = "1"; }
+
+        if (categoryId == null || topicId == null) {
             Log.e(LOG_TAG, "Invalid standard URL, category, page number or topic id not found");
             return MDLink.invalid();
         }
