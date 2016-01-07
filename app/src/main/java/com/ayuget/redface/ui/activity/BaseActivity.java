@@ -17,7 +17,10 @@
 package com.ayuget.redface.ui.activity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.customtabs.CustomTabsIntent;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 
@@ -25,6 +28,7 @@ import com.ayuget.redface.BuildConfig;
 import com.ayuget.redface.RedfaceApp;
 import com.ayuget.redface.R;
 import com.ayuget.redface.settings.RedfaceSettings;
+import com.ayuget.redface.ui.customtabs.CustomTabActivityHelper;
 import com.ayuget.redface.ui.misc.ThemeManager;
 import com.ayuget.redface.util.ViewServer;
 import io.fabric.sdk.android.Fabric;
@@ -51,6 +55,18 @@ public class BaseActivity extends AppCompatActivity {
 
     private CompositeSubscription subscriptions;
 
+    private CustomTabActivityHelper customTab;
+
+    /**
+     * Dummy callback, no necessary warmup for now
+     */
+    private final CustomTabActivityHelper.ConnectionCallback customTabConnect
+            = new CustomTabActivityHelper.ConnectionCallback() {
+        @Override public void onCustomTabsConnected() { }
+
+        @Override public void onCustomTabsDisconnected() { }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +85,9 @@ public class BaseActivity extends AppCompatActivity {
         if (BuildConfig.DEBUG) {
             ViewServer.get(this).addWindow(this);
         }
+
+        customTab = new CustomTabActivityHelper();
+        customTab.setConnectionCallback(customTabConnect);
     }
 
     @Override
@@ -77,8 +96,8 @@ public class BaseActivity extends AppCompatActivity {
 
         // Proper RxJava subscriptions management with CompositeSubscription
         subscriptions = new CompositeSubscription();
-
         bus.register(this);
+        customTab.bindCustomTabsService(this);
     }
 
     @Override
@@ -86,9 +105,11 @@ public class BaseActivity extends AppCompatActivity {
         super.onStop();
 
         bus.unregister(this);
-
+        customTab.unbindCustomTabsService(this);
         subscriptions.unsubscribe();
     }
+
+
 
     @Override
     protected void onResume() {
@@ -150,6 +171,8 @@ public class BaseActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        customTab.setConnectionCallback(null);
+
         super.onDestroy();
 
         if (BuildConfig.DEBUG) {
@@ -182,5 +205,14 @@ public class BaseActivity extends AppCompatActivity {
 
     public RedfaceSettings getSettings() {
         return settings;
+    }
+
+    public void openLink(String url) {
+        CustomTabActivityHelper.openCustomTab(
+                this,
+                new CustomTabsIntent.Builder()
+                    .setToolbarColor(ContextCompat.getColor(this, R.color.theme_primary))
+                    .build(),
+                Uri.parse(url));
     }
 }

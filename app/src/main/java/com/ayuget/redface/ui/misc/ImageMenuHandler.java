@@ -30,6 +30,7 @@ import android.widget.ShareActionProvider;
 
 import com.ayuget.redface.R;
 import com.ayuget.redface.storage.StorageHelper;
+import com.ayuget.redface.ui.activity.BaseActivity;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 import com.tbruyelle.rxpermissions.RxPermissions;
@@ -132,7 +133,8 @@ public class ImageMenuHandler {
     }
 
     public void openImage() {
-
+        Log.d(LOG_TAG, "Opening " + imageUrl + " in browser (or custom tab if supported)");
+        ((BaseActivity) activity).openLink(imageUrl);
     }
 
     public void shareImage() {
