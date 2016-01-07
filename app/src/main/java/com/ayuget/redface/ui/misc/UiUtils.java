@@ -129,4 +129,8 @@ public class UiUtils {
     public static int getStatusBarBackgroundColor(Context context) {
         return resolveColorAttribute(context, R.attr.statusBarBackgroundColor);
     }
+
+    public static int getInternalBrowserToolbarColor(Context context) {
+        return resolveColorAttribute(context, R.attr.internalBrowserToolbarColor);
+    }
 }

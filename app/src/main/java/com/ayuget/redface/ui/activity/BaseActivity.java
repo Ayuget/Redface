@@ -30,6 +30,7 @@ import com.ayuget.redface.R;
 import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.ui.customtabs.CustomTabActivityHelper;
 import com.ayuget.redface.ui.misc.ThemeManager;
+import com.ayuget.redface.ui.misc.UiUtils;
 import com.ayuget.redface.util.ViewServer;
 import io.fabric.sdk.android.Fabric;
 
@@ -211,7 +212,7 @@ public class BaseActivity extends AppCompatActivity {
         CustomTabActivityHelper.openCustomTab(
                 this,
                 new CustomTabsIntent.Builder()
-                    .setToolbarColor(ContextCompat.getColor(this, R.color.theme_primary))
+                    .setToolbarColor(UiUtils.getInternalBrowserToolbarColor(this))
                     .build(),
                 Uri.parse(url));
     }
