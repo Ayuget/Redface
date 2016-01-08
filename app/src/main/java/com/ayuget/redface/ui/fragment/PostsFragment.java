@@ -182,7 +182,7 @@ public class PostsFragment extends BaseFragment {
         if (displayedPosts == null) {
             displayedPosts = new ArrayList<>();
         }
-        else {
+        else if (displayedPosts.size() > 0){
             topicPageView.setTopic(topic);
             topicPageView.setPage(currentPage);
             topicPageView.setPosts(displayedPosts);
