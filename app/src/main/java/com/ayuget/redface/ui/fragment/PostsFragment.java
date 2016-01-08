@@ -70,10 +70,9 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import butterknife.InjectView;
+import timber.log.Timber;
 
 public class PostsFragment extends BaseFragment {
-    private static final String LOG_TAG = PostsFragment.class.getSimpleName();
-
     private static final String ARG_POST_LIST = "post_list";
 
     private static final String ARG_TOPIC = "topic";
@@ -142,7 +141,7 @@ public class PostsFragment extends BaseFragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.d(LOG_TAG, String.format("@%d -> Fragment(currentPage=%d) -> onCreate", System.identityHashCode(this), currentPage));
+        Timber.d("@%d -> Fragment(currentPage=%d) -> onCreate", System.identityHashCode(this), currentPage);
 
         super.onCreate(savedInstanceState);
 
@@ -158,7 +157,7 @@ public class PostsFragment extends BaseFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable final Bundle savedInstanceState) {
-        Log.d(LOG_TAG, String.format("@%d -> Fragment(currentPage=%d) -> onCreateView(page=%d)", System.identityHashCode(this), currentPage, currentPage));
+        Timber.d("@%d -> Fragment(currentPage=%d) -> onCreateView(page=%d)", System.identityHashCode(this), currentPage, currentPage);
 
         final View rootView = inflateRootView(R.layout.fragment_posts, inflater, container);
 
@@ -171,10 +170,10 @@ public class PostsFragment extends BaseFragment {
         restoredPosts = false;
 
         if (savedInstanceState != null) {
-            Log.d(LOG_TAG, String.format("@%d -> Fragment(currentPage=%d) -> trying to restore state", System.identityHashCode(this), currentPage));
+            Timber.d("@%d -> Fragment(currentPage=%d) -> trying to restore state", System.identityHashCode(this), currentPage);
             displayedPosts = savedInstanceState.getParcelableArrayList(ARG_POST_LIST);
             if (displayedPosts != null) {
-                Log.i(LOG_TAG, String.format("@%d -> Fragment(currentPage=%d) -> Restored %d posts to fragment", System.identityHashCode(this), displayedPosts.size(), currentPage));
+                Timber.d("@%d -> Fragment(currentPage=%d) -> Restored %d posts to fragment", System.identityHashCode(this), displayedPosts.size(), currentPage);
                 restoredPosts = displayedPosts.size() > 0;
             }
         }
@@ -194,7 +193,7 @@ public class PostsFragment extends BaseFragment {
             @Override
             public void onRefresh() {
                 savePageScrollPosition();
-                Log.d(LOG_TAG, String.format("Refreshing topic page '%d' for topic %s", currentPage, topic));
+                Timber.d("Refreshing topic page '%d' for topic %s", currentPage, topic);
                 loadPage(currentPage);
             }
         });
@@ -204,7 +203,7 @@ public class PostsFragment extends BaseFragment {
             errorReloadButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.d(LOG_TAG, String.format("Refreshing topic page '%d' for topic %s", currentPage, topic));
+                    Timber.d("Refreshing topic page '%d' for topic %s", currentPage, topic);
                     showLoadingIndicator();
                     loadPage(currentPage);
                 }
@@ -264,7 +263,7 @@ public class PostsFragment extends BaseFragment {
 
                   @Override
                   public void onError(Throwable throwable) {
-                      Log.e(LOG_TAG, "Failed to add post to quoted list", throwable);
+                      Timber.e(throwable, "Failed to add post to quoted list");
                       Toast.makeText(getActivity(), R.string.post_failed_to_quote, Toast.LENGTH_SHORT).show();
                   }
               }));
@@ -349,14 +348,14 @@ public class PostsFragment extends BaseFragment {
     private void savePageScrollPosition() {
         if (topicPageView != null) {
             currentScrollPosition = topicPageView.getScrollY();
-            Log.d(LOG_TAG, String.format("Saved scroll position = %d (currentPage=%d)", currentScrollPosition, currentPage));
+            Timber.d("Saved scroll position = %d (currentPage=%d)", currentScrollPosition, currentPage);
         }
     }
 
     private void restorePageScrollPosition() {
         if (topicPageView != null) {
             topicPageView.setScrollY(currentScrollPosition);
-            Log.d(LOG_TAG, String.format("Restored scroll position = %d (currentPage=%d)", currentScrollPosition, currentPage));
+            Timber.d("Restored scroll position = %d (currentPage=%d)", currentScrollPosition, currentPage);
         }
     }
 
@@ -410,7 +409,7 @@ public class PostsFragment extends BaseFragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Log.d(LOG_TAG, String.format("@%d -> Fragment(currentPage=%d) Saving '%d' posts / scrollPosition = '%d'", System.identityHashCode(this), currentPage, displayedPosts.size(), currentScrollPosition));
+        Timber.d("@%d -> Fragment(currentPage=%d) Saving '%d' posts / scrollPosition = '%d'", System.identityHashCode(this), currentPage, displayedPosts.size(), currentScrollPosition);
 
         outState.putParcelableArrayList(ARG_POST_LIST, displayedPosts);
         outState.putInt(ARG_SAVED_SCROLL_POSITION, currentScrollPosition);
@@ -439,7 +438,7 @@ public class PostsFragment extends BaseFragment {
      */
     @Subscribe public void onPageSelectedEvent(PageSelectedEvent event) {
         if (! isInitialPage() && event.getTopic() == topic && event.getPage() == currentPage && isVisible()) {
-            Log.d(LOG_TAG, String.format("@%d -> Fragment(currentPage=%d) received event for page %d selected", System.identityHashCode(this), currentPage, event.getPage()));
+            Timber.d("@%d -> Fragment(currentPage=%d) received event for page %d selected", System.identityHashCode(this), currentPage, event.getPage());
 
             if (displayedPosts != null && displayedPosts.size() == 0) {
                 loadPage(currentPage);
@@ -449,7 +448,7 @@ public class PostsFragment extends BaseFragment {
 
     @Subscribe public void onPageRefreshRequestEvent(PageRefreshRequestEvent event) {
         if (event.getTopic().getId() == topic.getId() && isVisible()) {
-            Log.d(LOG_TAG, String.format("@%d -> Fragment(currentPage=%d) -> Refresh requested event", System.identityHashCode(this), currentPage));
+            Timber.d("@%d -> Fragment(currentPage=%d) -> Refresh requested event", System.identityHashCode(this), currentPage);
 
             savePageScrollPosition();
             showLoadingIndicator();
@@ -469,28 +468,28 @@ public class PostsFragment extends BaseFragment {
     }
 
     private void showLoadingIndicator() {
-        Log.d(LOG_TAG, String.format("@%d -> Showing loading layout", System.identityHashCode(this)));
+        Timber.d("@%d -> Showing loading layout", System.identityHashCode(this));
         if (errorView != null) { errorView.setVisibility(View.GONE); }
         if (loadingIndicator != null) { loadingIndicator.setVisibility(View.VISIBLE); }
         if (swipeRefreshLayout != null) { swipeRefreshLayout.setVisibility(View.GONE); }
     }
 
     private void showErrorView() {
-        Log.d(LOG_TAG, String.format("@%d -> Showing error layout", System.identityHashCode(this)));
+        Timber.d("@%d -> Showing error layout", System.identityHashCode(this));
         if (errorView != null) { errorView.setVisibility(View.VISIBLE); }
         if (loadingIndicator != null) { loadingIndicator.setVisibility(View.GONE); }
         if (swipeRefreshLayout != null) { swipeRefreshLayout.setVisibility(View.GONE); }
     }
 
     private void showPosts() {
-        Log.d(LOG_TAG, String.format("@%d -> Showing posts layout", System.identityHashCode(this)));
+        Timber.d("@%d -> Showing posts layout", System.identityHashCode(this));
         if (errorView != null) { errorView.setVisibility(View.GONE); }
         if (loadingIndicator != null) { loadingIndicator.setVisibility(View.GONE); }
         if (swipeRefreshLayout != null) { swipeRefreshLayout.setVisibility(View.VISIBLE); }
     }
 
     public void loadPage(int page) {
-        Log.d(LOG_TAG, String.format("@%d -> Loading page '%d'", System.identityHashCode(this), page));
+        Timber.d("@%d -> Loading page '%d'", System.identityHashCode(this), page);
         subscribe(dataService.loadPosts(userManager.getActiveUser(), topic, page, new EndlessObserver<List<Post>>() {
             @Override
             public void onNext(List<Post> posts) {
@@ -502,7 +501,7 @@ public class PostsFragment extends BaseFragment {
                 topicPageView.setTopic(topic);
                 topicPageView.setPage(currentPage);
 
-                Log.d(LOG_TAG, String.format("@%d -> Done loading page, settings posts", System.identityHashCode(PostsFragment.this)));
+                Timber.d("@%d -> Done loading page, settings posts", System.identityHashCode(PostsFragment.this));
                 topicPageView.setPosts(posts);
                 showPosts();
             }
@@ -511,7 +510,7 @@ public class PostsFragment extends BaseFragment {
             public void onError(Throwable throwable) {
                 swipeRefreshLayout.setRefreshing(false);
 
-                Log.e(LOG_TAG, String.format("Error displaying topic '%s'", topic), throwable);
+                Timber.e(throwable, "Error displaying topic '%s'", topic);
                 showErrorView();
             }
         }));
@@ -544,7 +543,7 @@ public class PostsFragment extends BaseFragment {
                                     imageMenuHandler.shareImage();
                                     break;
                                 default:
-                                    Log.e(LOG_TAG, "Unknow menu item clicked");
+                                    Timber.e("Unknow menu item clicked");
                             }
 
                             return true;

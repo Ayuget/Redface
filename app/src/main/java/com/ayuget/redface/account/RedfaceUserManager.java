@@ -26,9 +26,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public class RedfaceUserManager implements UserManager {
-    private static final String LOG_TAG = RedfaceUserManager.class.getSimpleName();
+import timber.log.Timber;
 
+public class RedfaceUserManager implements UserManager {
     /**
      * Application settings
      */
@@ -75,7 +75,7 @@ public class RedfaceUserManager implements UserManager {
             }
 
             if (foundUser == null) {
-                Log.e(LOG_TAG, String.format("User '%s' was not found in accounts", activeUsername));
+                Timber.e("User '%s' was not found in accounts", activeUsername);
                 return guestUser;
             }
             else {
@@ -99,7 +99,7 @@ public class RedfaceUserManager implements UserManager {
 
     @Override
     public void setActiveUser(User user) {
-        Log.d(LOG_TAG, String.format("Updating active user to '%s'", user.getUsername()));
+        Timber.d("Updating active user to '%s'", user.getUsername());
         settings.updateActiveUsername(user.getUsername());
     }
 

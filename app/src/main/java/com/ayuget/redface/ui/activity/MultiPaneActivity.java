@@ -32,10 +32,9 @@ import javax.inject.Inject;
 
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
 public class MultiPaneActivity extends BaseDrawerActivity {
-    private static final String LOG_TAG = MultiPaneActivity.class.getSimpleName();
-
     private static final String ARG_TOPIC = "topic";
 
     /**
@@ -61,7 +60,7 @@ public class MultiPaneActivity extends BaseDrawerActivity {
 
     @Override
     protected void onInitUiState() {
-        Log.d(LOG_TAG, "Initializing state");
+        Timber.d("Initializing state");
 
         if (findViewById(R.id.details_container) != null) {
             // The detail container view will be present only in the
@@ -77,7 +76,7 @@ public class MultiPaneActivity extends BaseDrawerActivity {
         super.onPostResume();
 
         if (refreshRequestEvent != null) {
-            Log.d(LOG_TAG, "Posting refreshRequestEvent");
+            Timber.d("Posting refreshRequestEvent");
             bus.post(refreshRequestEvent);
             refreshRequestEvent = null;
         }
@@ -99,10 +98,10 @@ public class MultiPaneActivity extends BaseDrawerActivity {
                 Topic topic = data.getParcelableExtra(UIConstants.ARG_REPLY_TOPIC);
 
                 if (topic == null) {
-                    Log.e(LOG_TAG, "topic is null in onActivityResult");
+                    Timber.e("topic is null in onActivityResult");
                 }
                 else {
-                    Log.d(LOG_TAG, String.format("Requesting refresh for topic : %s", topic.getSubject()));
+                    Timber.d("Requesting refresh for topic : %s", topic.getSubject());
 
                     // Deferring event posting until onResume() is called, otherwise inner fragments
                     // won't get the event.
@@ -187,7 +186,7 @@ public class MultiPaneActivity extends BaseDrawerActivity {
 
                     @Override
                     public void onError(Throwable throwable) {
-                        Log.e(LOG_TAG, "Unexpected error while deleting post", throwable);
+                        Timber.e(throwable, "Unexpected error while deleting post");
                         Toast.makeText(MultiPaneActivity.this, R.string.delete_post_failed, Toast.LENGTH_SHORT).show();
                     }
                 }));

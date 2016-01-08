@@ -34,9 +34,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public class HTTPClientProvider {
-    private static final String LOG_TAG = HTTPClientProvider.class.getSimpleName();
+import timber.log.Timber;
 
+public class HTTPClientProvider {
     private final static String USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.1 Safari/537.36";
 
     private final Context context;
@@ -71,7 +71,7 @@ public class HTTPClientProvider {
 
     private void enableHTTPProxy() {
         if (settings.getProxyHost() != null && settings.getProxyPort() > 0) {
-            Log.d(LOG_TAG, String.format("Enabling HTTP Proxy for all requests, host='%s', port='%d'", settings.getProxyHost(), settings.getProxyPort()));
+            Timber.e("Enabling HTTP Proxy for all requests, host='%s', port='%d'", settings.getProxyHost(), settings.getProxyPort());
             httpClient.setProxy(new Proxy(Proxy.Type.HTTP, InetSocketAddress.createUnresolved(settings.getProxyHost(), settings.getProxyPort())));
         }
     }

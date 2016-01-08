@@ -60,10 +60,9 @@ import java.util.List;
 import javax.inject.Inject;
 
 import butterknife.InjectView;
+import timber.log.Timber;
 
 public class BaseDrawerActivity extends BaseActivity {
-    private static final String LOG_TAG = BaseDrawerActivity.class.getSimpleName();
-
     private List<View> drawerItemsViews;
 
     boolean accountBoxExpanded = false;
@@ -124,7 +123,7 @@ public class BaseDrawerActivity extends BaseActivity {
     public void setContentView(int layoutResID) {
         super.setContentView(layoutResID);
 
-        Log.d(LOG_TAG, "setContentView(int layoutResID)");
+        Timber.d("setContentView(int layoutResID)");
 
         setupNavigationDrawer();
         setupAccountBox();
@@ -134,14 +133,14 @@ public class BaseDrawerActivity extends BaseActivity {
     public void setContentView(int layoutResID, Bundle savedInstanceState) {
         super.setContentView(layoutResID, savedInstanceState);
 
-        Log.d(LOG_TAG, "setContentView(int layoutResID, Bundle savedInstanceState)");
+        Timber.d("setContentView(int layoutResID, Bundle savedInstanceState)");
 
         setupNavigationDrawer();
         setupAccountBox();
     }
 
     private void setupNavigationDrawer() {
-        Log.d(LOG_TAG, "Setting up navigation drawer");
+        Timber.d("Setting up navigation drawer");
 
         // Now retrieve the DrawerLayout so that we can set the status bar color.
         // This only takes effect on Lollipop, or when using translucentStatusBar
@@ -157,7 +156,7 @@ public class BaseDrawerActivity extends BaseActivity {
     }
 
     private void updateActiveUser() {
-        Log.d(LOG_TAG, "Updating active user");
+        Timber.d("Updating active user");
         final User activeUser = userManager.getActiveUser();
 
         // Reset categories
@@ -173,7 +172,7 @@ public class BaseDrawerActivity extends BaseActivity {
 
             @Override
             public void onError(Throwable throwable) {
-                Log.e(LOG_TAG, String.format("Error on retrieving categories for user '%s'", activeUser), throwable);
+                Timber.e(throwable, "Error on retrieving categories for user '%s'", activeUser);
             }
         }));
 
@@ -185,7 +184,7 @@ public class BaseDrawerActivity extends BaseActivity {
         }
 
         if (userId.isPresent()) {
-            Log.d(LOG_TAG, String.format("Loading profile for user '%s' (id: '%d')", activeUser.getUsername(), userId.get()));
+            Timber.d("Loading profile for user '%s' (id: '%d')", activeUser.getUsername(), userId.get());
             // Load active user profile
             subscribe(dataService.loadProfile(activeUser, userId.get(), new EndlessObserver<Profile>() {
                 @Override
@@ -214,7 +213,7 @@ public class BaseDrawerActivity extends BaseActivity {
 
                 @Override
                 public void onError(Throwable throwable) {
-                    Log.e(LOG_TAG, String.format("Error on retrieving profile for user '%s'", activeUser), throwable);
+                    Timber.e(throwable, "Error on retrieving profile for user '%s'", activeUser);
                 }
             }));
         } else {

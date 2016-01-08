@@ -61,10 +61,9 @@ import javax.inject.Inject;
 
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
 public class TopicsActivity extends MultiPaneActivity implements TopicListFragment.OnTopicClickedListener {
-    private static final String LOG_TAG = TopicsActivity.class.getSimpleName();
-
     private static final String DEFAULT_FRAGMENT_TAG = "default_fragment";
 
     private static final String DETAILS_DEFAULT_FRAGMENT_TAG = "details_default_fragment";
@@ -107,7 +106,7 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
             urlParser.parseUrl(url).ifTopicLink(new MDLink.IfIsTopicLink() {
                 @Override
                 public void call(final Category category, final int topicId, final int topicPage, final PagePosition pagePosition) {
-                    Log.d(LOG_TAG, String.format("Parsed link for category='%s', topic='%d', page='%d'", category.getName(), topicId, topicPage));
+                    Timber.d("Parsed link for category='%s', topic='%d', page='%d'", category.getName(), topicId, topicPage);
                     onGoToTopicEvent(new GoToTopicEvent(category, topicId, topicPage, pagePosition));
                 }
             });
@@ -131,7 +130,7 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
 
     @Override
     protected void onSetupUiState() {
-        Log.d(LOG_TAG, "Setting up initial state for TopicsActivity");
+        Timber.d("Setting up initial state for TopicsActivity");
 
         DefaultFragment defaultFragment = DefaultFragment.newInstance();
 
@@ -152,7 +151,7 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
 
     @Override
     protected void onRestoreUiState(Bundle savedInstanceState) {
-        Log.d(LOG_TAG, "Restoring UI state for TopicsActivity");
+        Timber.d("Restoring UI state for TopicsActivity");
 
         // This will prevent categories loading eventfrom the navigation drawer to
         // mess-up with the UI (unnecessary reload) when the activity is re-created from
@@ -191,14 +190,14 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
      */
     @Override
     public void onCategoriesLoaded() {
-        Log.d(LOG_TAG, "Categories have been loaded");
+        Timber.d("Categories have been loaded");
 
         if (currentCategory == null) {
-            Log.d(LOG_TAG, "Loading default category");
+            Timber.d("Loading default category");
             loadDefaultCategory();
         }
         else {
-            Log.d(LOG_TAG, "Ignoring categories loaded event, state has been restored");
+            Timber.d("Ignoring categories loaded event, state has been restored");
         }
     }
 
@@ -217,7 +216,7 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
 
         Category defaultCategory = categoriesStore.getCategoryById(defaultCatId);
         if (defaultCategory == null) {
-            Log.w(LOG_TAG, String.format("Category '%d' not found in cache", defaultCatId));
+            Timber.w("Category '%d' not found in cache", defaultCatId);
         }
         else if (defaultCategory.getId() == CategoriesStore.META_CATEGORY_ID) {
             onMyTopicsClicked();
@@ -231,7 +230,7 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
     public void onCategoryClicked(Category category) {
         currentCategory = category;
 
-        Log.d(LOG_TAG, String.format("Loading category '%s', with topicFilter='%s'", category.getName(), getSettings().getDefaultTopicFilter().toString()));
+        Timber.d("Loading category '%s', with topicFilter='%s'", category.getName(), getSettings().getDefaultTopicFilter().toString());
 
         TopicListFragment topicListFragment = new TopicListFragmentBuilder(category).topicFilter(getSettings().getDefaultTopicFilter()).build();
         topicListFragment.addOnTopicClickedListener(this);
@@ -245,7 +244,7 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
     public void onMyTopicsClicked() {
         currentCategory = categoriesStore.getMetaCategory();
 
-        Log.d(LOG_TAG, String.format("Loading meta category, with topicFilter='%s'", getSettings().getDefaultTopicFilter().toString()));
+        Timber.d("Loading meta category, with topicFilter='%s'", getSettings().getDefaultTopicFilter().toString());
         TopicListFragment topicListFragment = new MetaPageFragmentBuilder(currentCategory).topicFilter(getSettings().getDefaultTopicFilter()).build();
         topicListFragment.addOnTopicClickedListener(this);
 
@@ -275,7 +274,7 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
      * Loads a topic in the appropriate panel for a given page and position
      */
     protected void loadTopic(Topic topic, int page, PagePosition pagePosition) {
-        Log.d(LOG_TAG, String.format("Loading topic '%s' (page %d)", topic.getSubject(), page));
+        Timber.d("Loading topic '%s' (page %d)", topic.getSubject(), page);
         TopicFragment topicFragment = new TopicFragmentBuilder(page, topic).currentPagePosition(pagePosition).build();
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -283,7 +282,7 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
         int topicFragmentContainer = isTwoPaneMode() ? R.id.details_container : R.id.container;
 
         if (!isTwoPaneMode()) {
-            Log.d(LOG_TAG, "Setting slide animation for topicFragment");
+            Timber.d("Setting slide animation for topicFragment");
             transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.exit_to_right);
         }
 
@@ -311,7 +310,7 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
 
     @Override
     public void onBackPressed() {
-        Log.d(LOG_TAG, "On Back Pressed");
+        Timber.d("On Back Pressed");
         boolean consumedEvent = false;
 
         TopicFragment topicFragment = (TopicFragment) getSupportFragmentManager().findFragmentByTag(TOPIC_FRAGMENT_TAG);
@@ -329,7 +328,7 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
      * on a topic and gives additional actions to the user.
      */
     @Subscribe public void onTopicContextItemSelected(TopicContextItemSelectedEvent event) {
-        Log.d(LOG_TAG, String.format("Received topic contextItem event : %d for topic %s", event.getItemId(), event.getTopic().getSubject()));
+        Timber.d("Received topic contextItem event : %d for topic %s", event.getItemId(), event.getTopic().getSubject());
 
         switch (event.getItemId()) {
             case UIConstants.TOPIC_ACTION_GO_TO_FIRST_PAGE:
@@ -412,11 +411,11 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
     @Subscribe public void onPostActionEvent(final PostActionEvent event) {
         switch (event.getPostAction()) {
             case FAVORITE:
-                Log.d(LOG_TAG, "About to mark post as favorite");
+                Timber.d("About to mark post as favorite");
                 markPostAsFavorite(event.getTopic(), event.getPostId());
                 break;
             case DELETE:
-                Log.d(LOG_TAG, "About to delete post");
+                Timber.d("About to delete post");
                 new MaterialDialog.Builder(this)
                         .content(R.string.post_delete_confirmation)
                         .positiveText(R.string.post_delete_yes)
@@ -430,7 +429,7 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
                         .show();
                 break;
             default:
-                Log.e(LOG_TAG, "Action not handled");
+                Timber.e("Action not handled");
                 break;
         }
     }
@@ -457,7 +456,7 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
 
                     @Override
                     public void onError(Throwable throwable) {
-                        Log.e(LOG_TAG, "Unexpected error while marking a post as favorite", throwable);
+                        Timber.e(throwable, "Unexpected error while marking a post as favorite");
                         Toast.makeText(TopicsActivity.this, R.string.mark_as_favorite_failed, Toast.LENGTH_SHORT).show();
                     }
                 }));
@@ -480,7 +479,7 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
                             int pageNumber = Integer.valueOf(goToPageEditText.getText().toString());
                             loadTopic(topic, pageNumber, new PagePosition(PagePosition.TOP));
                         } catch (NumberFormatException e) {
-                            Log.e(LOG_TAG, String.format("Invalid page number entered : %s", goToPageEditText.getText().toString()), e);
+                            Timber.e(e, "Invalid page number entered : %s", goToPageEditText.getText().toString());
                             SnackbarHelper.makeError(TopicsActivity.this, R.string.invalid_page_number).show();
                         }
                     }

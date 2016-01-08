@@ -41,9 +41,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ViewHolder> {
-    private static final String LOG_TAG = TopicsAdapter.class.getSimpleName();
+import timber.log.Timber;
 
+public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ViewHolder> {
     private List<Topic> topics = Collections.emptyList();
 
     private Context context;
@@ -204,13 +204,13 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ViewHolder
     }
 
     public void replaceWith(List<Topic> topics) {
-        Log.d(LOG_TAG, String.format("Displaying %d topics", topics.size()));
+        Timber.d("Displaying %d topics", topics.size());
         this.topics = topics;
         notifyDataSetChanged();
     }
 
     public void extendWith(List<Topic> topics) {
-        Log.d(LOG_TAG, String.format("Added %d topics to topic list", topics.size()));
+        Timber.d("Added %d topics to topic list", topics.size());
         this.topics.addAll(topics);
         notifyDataSetChanged();
     }

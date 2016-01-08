@@ -21,20 +21,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-public class OnAlarmReceiver extends BroadcastReceiver {
-    private static final String LOG_TAG = OnAlarmReceiver.class.getSimpleName();
+import timber.log.Timber;
 
+public class OnAlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(final Context context, Intent intent) {
         if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
             // postpone notification service launch a minute,
             // we don't want to slow down booting
-            Log.d(LOG_TAG, "Postponing notifications service launch");
+            Timber.d("Postponing notifications service launch");
             JobUtils.runNotificationServiceDelayed(context);
         }
         else {
             // run the notification service right away
-            Log.d(LOG_TAG, "Run notifications service right away");
+            Timber.d("Run notifications service right away");
             JobUtils.runNotificationService(context);
         }
     }

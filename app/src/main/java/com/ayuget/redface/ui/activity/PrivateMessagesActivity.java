@@ -41,9 +41,9 @@ import com.squareup.otto.Subscribe;
 
 import javax.inject.Inject;
 
-public class PrivateMessagesActivity extends MultiPaneActivity implements PrivateMessageListFragment.OnPrivateMessageClickedListener {
-    private static final String LOG_TAG = PrivateMessagesActivity.class.getSimpleName();
+import timber.log.Timber;
 
+public class PrivateMessagesActivity extends MultiPaneActivity implements PrivateMessageListFragment.OnPrivateMessageClickedListener {
     private static final String DEFAULT_FRAGMENT_TAG = "default_fragment";
 
     private static final String DETAILS_DEFAULT_FRAGMENT_TAG = "details_default_fragment";
@@ -76,7 +76,7 @@ public class PrivateMessagesActivity extends MultiPaneActivity implements Privat
         super.onNewIntent(intent);
 
         if (intent.getExtras() != null) {
-            Log.d(LOG_TAG, "Trying to display private message from intent");
+            Timber.d("Trying to display private message from intent");
             PrivateMessage privateMessage = intent.getExtras().getParcelable(UIConstants.ARG_SELECTED_PM);
 
             if (privateMessage != null) {
@@ -87,7 +87,7 @@ public class PrivateMessagesActivity extends MultiPaneActivity implements Privat
 
     @Override
     protected void onSetupUiState() {
-        Log.d(LOG_TAG, "Setting up initial state");
+        Timber.d("Setting up initial state");
 
         PrivateMessageListFragment pmListFragment = PrivateMessageListFragment.newInstance();
         pmListFragment.setOnPrivateMessageClickedListener(this);
@@ -109,7 +109,7 @@ public class PrivateMessagesActivity extends MultiPaneActivity implements Privat
 
     @Override
     protected void onRestoreUiState(Bundle savedInstanceState) {
-        Log.d(LOG_TAG, "Restoring UI state");
+        Timber.d("Restoring UI state");
 
         PrivateMessageListFragment pmListFragment = (PrivateMessageListFragment) getSupportFragmentManager().findFragmentByTag(PM_LIST_FRAGMENT_TAG);
         if (pmListFragment != null) {
@@ -168,7 +168,7 @@ public class PrivateMessagesActivity extends MultiPaneActivity implements Privat
     @Subscribe public void onPostActionEvent(final PostActionEvent event) {
         switch (event.getPostAction()) {
             case DELETE:
-                Log.d(LOG_TAG, "About to delete post");
+                Timber.d("About to delete post");
                 new MaterialDialog.Builder(this)
                         .content(R.string.post_delete_confirmation)
                         .positiveText(R.string.post_delete_yes)
@@ -182,7 +182,7 @@ public class PrivateMessagesActivity extends MultiPaneActivity implements Privat
                         .show();
                 break;
             default:
-                Log.e(LOG_TAG, "Action not handled");
+                Timber.e("Action not handled");
                 break;
         }
     }
@@ -191,7 +191,7 @@ public class PrivateMessagesActivity extends MultiPaneActivity implements Privat
      * Loads a private message in the appropriate pane.
      */
     private void loadPrivateMessage(PrivateMessage privateMessage, int page, PagePosition pagePosition) {
-        Log.d(LOG_TAG, String.format("Loading private message '%s' at page '%d'", privateMessage.getSubject(), page));
+        Timber.d("Loading private message '%s' at page '%d'", privateMessage.getSubject(), page);
 
         // Mask private message as a regular topic (kinda ugly, btw...)
         Topic pmAsTopic = privateMessage.asTopic();
@@ -204,7 +204,7 @@ public class PrivateMessagesActivity extends MultiPaneActivity implements Privat
         int topicFragmentContainer = isTwoPaneMode() ? R.id.details_container : R.id.container;
 
         if (!isTwoPaneMode()) {
-            Log.d(LOG_TAG, "Setting slide animation for topicFragment (private message)");
+            Timber.d("Setting slide animation for topicFragment (private message)");
             transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.exit_to_right);
         }
 

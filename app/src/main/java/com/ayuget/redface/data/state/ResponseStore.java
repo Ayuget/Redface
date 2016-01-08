@@ -28,9 +28,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ResponseStore {
-    private static final String LOG_TAG = ResponseStore.class.getSimpleName();
+import timber.log.Timber;
 
+public class ResponseStore {
     private static final String RESPONSE_PREFS = "RedfaceResponses";
     private static final String RESPONSE_NAME_PREFIX = "response_";
 
@@ -135,7 +135,7 @@ public class ResponseStore {
                     responsesCache.put(key, entryValue);
                 }
                 else {
-                    Log.w(LOG_TAG, String.format("Unable to decode property '%s' from sharedPreferences, invalid name", entryKey));
+                    Timber.w("Unable to decode property '%s' from sharedPreferences, invalid name", entryKey);
                 }
             }
         }

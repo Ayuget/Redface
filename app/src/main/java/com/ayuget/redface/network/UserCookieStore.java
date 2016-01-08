@@ -32,6 +32,8 @@ import java.net.URISyntaxException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+import timber.log.Timber;
+
 /**
  * A persistent cookie store which implements the Apache HttpClient CookieStore interface.
  * Cookies are stored and will persist on the user's device between application sessions since they
@@ -40,7 +42,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * regular old apache HttpClient/HttpContext if you prefer.
  */
 public class UserCookieStore implements CookieStore {
-    private static final String LOG_TAG = UserCookieStore.class.getSimpleName();
     private static final String COOKIE_PREFS = "RedfaceCookies";
     private static final String COOKIE_NAME_PREFIX = "cookie_";
 
@@ -92,7 +93,7 @@ public class UserCookieStore implements CookieStore {
             }
         }
 
-        Log.d(LOG_TAG, String.format("[user=%s] Successfully decoded '%d' cookies from persistence", user.getUsername(), decodedCookiesCount));
+        Timber.d("[user=%s] Successfully decoded '%d' cookies from persistence", user.getUsername(), decodedCookiesCount);
     }
 
     @Override
@@ -116,7 +117,7 @@ public class UserCookieStore implements CookieStore {
             boolean cookieExists = cookies.get(uri.getHost()).containsKey(name);
 
             if (! cookieExists) {
-                Log.d(LOG_TAG, String.format("[user=%s] Adding cookie '%s' for URL '%s' (name='%s', host='%s')", user.getUsername(), cookie.getName(), uri.toString(), name, host));
+                Timber.d("[user=%s] Adding cookie '%s' for URL '%s' (name='%s', host='%s')", user.getUsername(), cookie.getName(), uri.toString(), name, host);
                 cookies.get(uri.getHost()).put(name, cookie);
 
                 // Save cookie into persistent store
@@ -142,7 +143,7 @@ public class UserCookieStore implements CookieStore {
 
     @Override
     public boolean removeAll() {
-        Log.d(LOG_TAG, String.format("[user=%s] Clearing all cookies !", user.getUsername()));
+        Timber.d("[user=%s] Clearing all cookies !", user.getUsername());
 
         SharedPreferences.Editor prefsWriter = cookiePrefs.edit();
         prefsWriter.clear();
@@ -208,7 +209,7 @@ public class UserCookieStore implements CookieStore {
             ObjectOutputStream outputStream = new ObjectOutputStream(os);
             outputStream.writeObject(cookie);
         } catch (IOException e) {
-            Log.d(LOG_TAG, "IOException in encodeCookie", e);
+            Timber.e(e, "IOException in encodeCookie");
             return null;
         }
 
@@ -229,9 +230,9 @@ public class UserCookieStore implements CookieStore {
             ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
             cookie = ((SerializableHttpCookie) objectInputStream.readObject()).getCookie();
         } catch (IOException e) {
-            Log.d(LOG_TAG, "IOException in decodeCookie", e);
+            Timber.e(e, "IOException in decodeCookie");
         } catch (ClassNotFoundException e) {
-            Log.d(LOG_TAG, "ClassNotFoundException in decodeCookie", e);
+            Timber.e(e, "ClassNotFoundException in decodeCookie");
         }
 
         return cookie;

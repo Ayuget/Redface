@@ -24,8 +24,6 @@ import com.squareup.phrase.Phrase;
 
 
 public class PostTemplate extends HTMLTemplate<Post> {
-    private static final String LOG_TAG = PostTemplate.class.getSimpleName();
-
     private static final String POST_TEMPLATE = "post.html";
 
     private AvatarTemplate avatarTemplate;

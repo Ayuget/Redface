@@ -29,8 +29,6 @@ import android.widget.Toast;
 import com.ayuget.redface.R;
 
 public class UiUtils {
-    private static final String LOG_TAG = UiUtils.class.getSimpleName();
-
     /**
      * Copies text into user clipboard
      */

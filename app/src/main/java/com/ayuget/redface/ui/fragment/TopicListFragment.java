@@ -63,10 +63,9 @@ import java.util.List;
 import javax.inject.Inject;
 
 import butterknife.InjectView;
+import timber.log.Timber;
 
 public class TopicListFragment extends ToggleToolbarFragment implements TopicsAdapter.OnTopicClickedListener, TopicsAdapter.OnTopicLongClickListener {
-    private static final String LOG_TAG = TopicListFragment.class.getSimpleName();
-
     private static final String ARG_TOPIC_LIST = "topic_list";
 
     private static final String ARG_LAST_LOADED_PAGE = "last_loaded_page";
@@ -169,7 +168,7 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                Log.d(LOG_TAG, String.format("Refreshing topic list for category %s (refresh)", category));
+                Timber.d("Refreshing topic list for category %s (refresh)", category);
                 loadTopics();
             }
         });
@@ -204,7 +203,7 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
         if (savedInstanceState != null) {
             displayedTopics = savedInstanceState.getParcelableArrayList(ARG_TOPIC_LIST);
             if (displayedTopics != null) {
-                Log.i(LOG_TAG, "Restored " + String.valueOf(displayedTopics.size()) + " topics to fragment");
+                Timber.i("Restored %d topics to fragment", displayedTopics.size());
                 topicsAdapter.replaceWith(displayedTopics);
                 showTopics();
             }
@@ -346,13 +345,13 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
      * user has to swipe at the bottom of the list to load the next pages
      */
     public void loadTopics() {
-        Log.d(LOG_TAG, String.format("Loading first page for category '%s' (subcategory: '%s') and replacing current topics (with filter='%s')", category.getName(), subcategory, topicFilter == null ? "null" : topicFilter.toString()));
+        Timber.d("Loading first page for category '%s' (subcategory: '%s') and replacing current topics (with filter='%s')", category.getName(), subcategory, topicFilter == null ? "null" : topicFilter.toString());
 
         // Load categories for active user
         subscribe(dataService.loadTopics(userManager.getActiveUser(), category, subcategory, 1, topicFilter, new EndlessObserver<List<Topic>>() {
             @Override
             public void onNext(List<Topic> loadedTopics) {
-                Log.d(LOG_TAG, String.format("Loading request completed, %d topics loaded", loadedTopics.size()));
+                Timber.d("Loading request completed, %d topics loaded", loadedTopics.size());
 
                 displayedTopics.clear();
                 displayedTopics.addAll(loadedTopics);
@@ -368,7 +367,7 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
 
             @Override
             public void onError(Throwable throwable) {
-                Log.e(LOG_TAG, String.format("Error loading first page for category '%s', subcategory '%s'", category.getName(), subcategory), throwable);
+                Timber.e(throwable, "Error loading first page for category '%s', subcategory '%s'", category.getName(), subcategory);
 
                 swipeRefreshLayout.setRefreshing(false);
 
@@ -387,17 +386,17 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
      * @param page page to load (1..n)
      */
     protected void loadPage(final int page) {
-        Log.d(LOG_TAG, String.format("Loading page '%d' for category '%s', subcategory '%s'", page, category, subcategory));
+        Timber.d("Loading page '%d' for category '%s', subcategory '%s'", page, category, subcategory);
 
         if (category == null) {
-            Log.e(LOG_TAG, "Category is null cannot load page");
+            Timber.e("Category is null cannot load page");
             return;
         }
 
         subscribe(dataService.loadTopics(userManager.getActiveUser(), category, subcategory, page, topicFilter, new EndlessObserver<List<Topic>>() {
             @Override
             public void onNext(List<Topic> loadedTopics) {
-                Log.d(LOG_TAG, String.format("Loading request completed, %d topics loaded", loadedTopics.size()));
+                Timber.d("Loading request completed, %d topics loaded", loadedTopics.size());
 
                 displayedTopics.addAll(loadedTopics);
                 topicsAdapter.extendWith(loadedTopics);
@@ -409,7 +408,7 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
 
             @Override
             public void onError(Throwable throwable) {
-                Log.e(LOG_TAG, String.format("Error loading page '%d' for category '%s', subcategory '%s'", page, category.getName(), subcategory), throwable);
+                Timber.e(throwable, "Error loading page '%d' for category '%s', subcategory '%s'", page, category.getName(), subcategory);
 
                 swipeRefreshLayout.setRefreshing(false);
 

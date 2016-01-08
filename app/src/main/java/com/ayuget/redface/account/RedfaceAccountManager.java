@@ -27,10 +27,10 @@ import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.List;
 
+import timber.log.Timber;
+
 
 public class RedfaceAccountManager {
-    private static final String LOG_TAG = RedfaceAccountManager.class.getSimpleName();
-
     private static final String REDFACE_ACCOUNT_TYPE = "com.ayuget.redface.account";
 
     private static final String REDFACE_AUTHTOKEN_TYPE = "password";
@@ -64,7 +64,7 @@ public class RedfaceAccountManager {
     }
 
     public void addAccount(User user) {
-        Log.d(LOG_TAG, String.format("Adding account for user '%s'", user.getUsername()));
+        Timber.d("Adding account for user '%s'", user.getUsername());
         Account account = new Account(user.getUsername(), REDFACE_ACCOUNT_TYPE);
 
         accountManager.addAccountExplicitly(account, user.getPassword(), null);

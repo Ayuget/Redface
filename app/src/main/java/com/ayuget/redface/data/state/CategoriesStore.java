@@ -34,10 +34,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import timber.log.Timber;
+
 
 public class CategoriesStore {
-    private static final String LOG_TAG = CategoriesStore.class.getSimpleName();
-
     public static final int META_CATEGORY_ID = 666;
 
     private static final String CATEGORIES_PREFS = "RedfaceCategories";
@@ -143,16 +143,16 @@ public class CategoriesStore {
                                 subcategories.add(Subcategory.create(subcatsTokens.get(0), subcatsTokens.get(1)));
                             }
                             else {
-                                Log.e(LOG_TAG, String.format("Error while deserializing subcategory '%s'", subcatValue));
+                                Timber.e("Error while deserializing subcategory '%s'", subcatValue);
                             }
                         }
                     }
-                    Log.d(LOG_TAG, String.format("Successfully loaded category '%s' from SharedPreferences", catName));
+                    Timber.d("Successfully loaded category '%s' from SharedPreferences", catName);
 
                     categoriesCache.put(catId, Category.create(catId, catName, catSlug, subcategories));
                 }
                 else {
-                    Log.e(LOG_TAG, String.format("Error while deserializing category '%s'", entryValue));
+                    Timber.e("Error while deserializing category '%s'", entryValue);
                 }
             }
             else if (entryKey.startsWith(USER_MAPPING_NAME_PREFIX)) {
@@ -173,12 +173,12 @@ public class CategoriesStore {
                     if (categoriesCache.containsKey(categoryId)) {
                         userCategories.add(categoriesCache.get(categoryId));
                     } else {
-                        Log.e(LOG_TAG, String.format("Error while associating category '%s' to user '%s' : unknown category", category, username));
+                        Timber.e("Error while associating category '%s' to user '%s' : unknown category", category, username);
                     }
                 }
                 catch (NumberFormatException e) {
                     // Don't crash the app if an invalid category is found
-                    Log.e(LOG_TAG, String.format("Error, deserializing category with non-int id : %s", category));
+                    Timber.e("Error, deserializing category with non-int id : %s", category);
                 }
             }
 

@@ -18,6 +18,8 @@ package com.ayuget.redface;
 
 import android.app.Application;
 import android.content.Context;
+import android.util.Log;
+
 import com.ayuget.redface.account.AccountModule;
 import com.ayuget.redface.job.JobUtils;
 import com.ayuget.redface.network.NetworkModule;
@@ -25,7 +27,10 @@ import com.ayuget.redface.settings.RedfaceSettings;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 
+import net.ypresto.timbertreeutils.CrashlyticsLogTree;
+
 import dagger.ObjectGraph;
+import timber.log.Timber;
 
 public class RedfaceApp extends Application {
     private ObjectGraph objectGraph;
@@ -36,6 +41,16 @@ public class RedfaceApp extends Application {
     public void onCreate() {
         super.onCreate();
 
+        // Setup logging
+        // Error logs are sent to the cloud with Crashlytics
+        if (BuildConfig.DEBUG) {
+            Timber.plant(new Timber.DebugTree());
+        }
+        else {
+            Timber.plant(new CrashlyticsLogTree(Log.ERROR));
+        }
+
+        // Setup dependency injection
         buildObjectGraphAndInject();
 
         initActiveUser();

@@ -24,9 +24,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ShareCompat;
-import android.util.Log;
 import android.view.View;
-import android.widget.ShareActionProvider;
 
 import com.ayuget.redface.R;
 import com.ayuget.redface.storage.StorageHelper;
@@ -39,10 +37,9 @@ import java.io.File;
 import java.io.IOException;
 
 import rx.functions.Action1;
+import timber.log.Timber;
 
 public class ImageMenuHandler {
-    private static final String LOG_TAG = ImageMenuHandler.class.getSimpleName();
-
     private final Activity activity;
 
     private final String imageUrl;
@@ -66,7 +63,7 @@ public class ImageMenuHandler {
         Picasso.with(activity).load(imageUrl).into(new Target() {
             @Override
             public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
-                Log.d(LOG_TAG, "Image successfully decoded, requesting WRITE_EXTERNAL_STORAGE permission to save image");
+                Timber.d("Image successfully decoded, requesting WRITE_EXTERNAL_STORAGE permission to save image");
 
                 RxPermissions.getInstance(activity)
                         .request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -74,11 +71,11 @@ public class ImageMenuHandler {
                             @Override
                             public void call(Boolean granted) {
                                 if (granted) {
-                                    Log.d(LOG_TAG, "WRITE_EXTERNAL_STORAGE granted, saving image to disk");
+                                    Timber.d("WRITE_EXTERNAL_STORAGE granted, saving image to disk");
 
                                     try {
                                         final File mediaFile = StorageHelper.getMediaFile(imageName);
-                                        Log.d(LOG_TAG, "Saving image to " + mediaFile.getAbsolutePath());
+                                        Timber.d("Saving image to %s", mediaFile.getAbsolutePath());
 
                                         StorageHelper.storeImageToFile(bitmap, mediaFile, targetFormat);
 
@@ -108,12 +105,12 @@ public class ImageMenuHandler {
                                         }
                                     }
                                     catch (IOException e) {
-                                        Log.e(LOG_TAG, "Unable to save image to external storage", e);
+                                        Timber.e(e, "Unable to save image to external storage");
                                         SnackbarHelper.makeError(activity, R.string.error_saving_image).show();
                                     }
                                 }
                                 else {
-                                    Log.w(LOG_TAG, "WRITE_EXTERNAL_STORAGE denied, unable to save image");
+                                    Timber.w("WRITE_EXTERNAL_STORAGE denied, unable to save image");
                                     SnackbarHelper.makeError(activity, R.string.error_saving_image_permission_denied).show();
                                 }
                             }
@@ -133,7 +130,7 @@ public class ImageMenuHandler {
     }
 
     public void openImage() {
-        Log.d(LOG_TAG, "Opening " + imageUrl + " in browser (or custom tab if supported)");
+        Timber.d("Opening '%s' in browser (or custom tab if supported)", imageUrl);
         ((BaseActivity) activity).openLink(imageUrl);
     }
 
@@ -141,7 +138,7 @@ public class ImageMenuHandler {
         saveImage(false, false, new ImageSavedCallback() {
             @Override
             public void onImageSaved(File savedImage, Bitmap.CompressFormat format) {
-                Log.d(LOG_TAG, "Sharing image : '" + savedImage + "'");
+                Timber.d("Sharing image : '%s'", savedImage);
                 ShareCompat.IntentBuilder.from(activity)
                         .setText(activity.getText(R.string.action_share_image))
                         .setType(StorageHelper.getImageMimeType(format))

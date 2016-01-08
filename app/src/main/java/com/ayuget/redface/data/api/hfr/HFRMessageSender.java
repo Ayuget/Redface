@@ -40,10 +40,9 @@ import javax.inject.Inject;
 
 import rx.Observable;
 import rx.Subscriber;
+import timber.log.Timber;
 
 public class HFRMessageSender implements MDMessageSender {
-    private static final String LOG_TAG = HFRMessageSender.class.getSimpleName();
-
     private static final Pattern POST_SUCCESSFULLY_ADDED_PATTERN = Pattern.compile("(.*)(Votre réponse a été postée avec succès)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private static final Pattern TOPIC_SUCESSFULLY_CREATED_PATTERN = Pattern.compile("(.*)(Votre message a été posté avec succès)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private static final Pattern POST_SUCCESSFULLY_EDITED_PATTERN = Pattern.compile("(.*)(Votre message a été édité avec succès)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
@@ -69,14 +68,14 @@ public class HFRMessageSender implements MDMessageSender {
         return Observable.create(new Observable.OnSubscribe<Response>() {
             @Override
             public void call(Subscriber<? super Response> subscriber) {
-                Log.d(LOG_TAG, String.format("Posting message for user '%s' in topic '%s'", user.getUsername(), topic.getSubject()));
+                Timber.d("Posting message for user '%s' in topic '%s'", user.getUsername(), topic.getSubject());
 
                 OkHttpClient httpClient = httpClientProvider.getClientForUser(user);
 
                 boolean isPrivateMessage = topic.getCategory().getId() == UIConstants.PRIVATE_MESSAGE_CAT_ID;
 
                 if (isPrivateMessage) {
-                    Log.d(LOG_TAG, "Replying to private message");
+                    Timber.d("Replying to private message");
                 }
 
                 RequestBody formBody = new FormEncodingBuilder()
@@ -105,14 +104,14 @@ public class HFRMessageSender implements MDMessageSender {
                         subscriber.onNext(buildResponse(response.body().string()));
                     }
                     else {
-                        Log.d(LOG_TAG, String.format("Error HTTP Code, response is : %s", response.body().string()));
+                        Timber.d("Error HTTP Code, response is : %s", response.body().string());
                         subscriber.onNext(Response.buildFailure(ResponseCode.UNKNOWN_ERROR));
                     }
 
                     subscriber.onCompleted();
                 }
                 catch (IOException e) {
-                    Log.e(LOG_TAG, "Exception while posting response", e);
+                    Timber.e(e, "Exception while posting response");
                     subscriber.onError(e);
                 }
             }
@@ -124,7 +123,7 @@ public class HFRMessageSender implements MDMessageSender {
         return Observable.create(new Observable.OnSubscribe<Response>() {
             @Override
             public void call(Subscriber<? super Response> subscriber) {
-                Log.d(LOG_TAG, String.format("Editing message for user '%s' in topic '%s' (category id : %d)", user.getUsername(), topic.getSubject(), topic.getCategory().getId()));
+                Timber.d("Editing message for user '%s' in topic '%s' (category id : %d)", user.getUsername(), topic.getSubject(), topic.getCategory().getId());
 
                 StringBuilder parents = new StringBuilder();
                 Matcher m = Pattern.compile("\\[quotemsg=([0-9]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL).matcher(newContent);
@@ -140,7 +139,7 @@ public class HFRMessageSender implements MDMessageSender {
                 boolean isPrivateMessage = topic.getCategory().getId() == UIConstants.PRIVATE_MESSAGE_CAT_ID;
 
                 if (isPrivateMessage) {
-                    Log.d(LOG_TAG, "Editing private message");
+                    Timber.d("Editing private message");
                 }
 
                 FormEncodingBuilder formEncodingBuilder = new FormEncodingBuilder();
@@ -171,14 +170,14 @@ public class HFRMessageSender implements MDMessageSender {
                         subscriber.onNext(buildResponse(response.body().string()));
                     }
                     else {
-                        Log.d(LOG_TAG, String.format("Error HTTP Code, response is : %s", response.body().string()));
+                        Timber.d("Error HTTP Code, response is : %s", response.body().string());
                         subscriber.onNext(Response.buildFailure(ResponseCode.UNKNOWN_ERROR));
                     }
 
                     subscriber.onCompleted();
                 }
                 catch (IOException e) {
-                    Log.e(LOG_TAG, "Exception while posting response", e);
+                    Timber.e(e, "Exception while posting response");
                     subscriber.onError(e);
                 }
             }
@@ -190,7 +189,7 @@ public class HFRMessageSender implements MDMessageSender {
         return Observable.create(new Observable.OnSubscribe<Response>() {
             @Override
             public void call(Subscriber<? super Response> subscriber) {
-                Log.d(LOG_TAG, String.format("Sending new private message from user '%s' to user '%s'", user.getUsername(), recipientUsername));
+                Timber.d("Sending new private message from user '%s' to user '%s'", user.getUsername(), recipientUsername);
 
                 OkHttpClient httpClient = httpClientProvider.getClientForUser(user);
 
@@ -219,14 +218,14 @@ public class HFRMessageSender implements MDMessageSender {
                         subscriber.onNext(buildResponse(response.body().string()));
                     }
                     else {
-                        Log.d(LOG_TAG, String.format("Error HTTP Code, response is : %s", response.body().string()));
+                        Timber.d("Error HTTP Code, response is : %s", response.body().string());
                         subscriber.onNext(Response.buildFailure(ResponseCode.UNKNOWN_ERROR));
                     }
 
                     subscriber.onCompleted();
                 }
                 catch (IOException e) {
-                    Log.e(LOG_TAG, "Exception while sending new private message", e);
+                    Timber.e(e, "Exception while sending new private message");
                     subscriber.onError(e);
                 }
             }
@@ -238,7 +237,7 @@ public class HFRMessageSender implements MDMessageSender {
         return Observable.create(new Observable.OnSubscribe<Boolean>() {
             @Override
             public void call(Subscriber<? super Boolean> subscriber) {
-                Log.d(LOG_TAG, String.format("Marking message '%d' as favorite for user '%s' in topic '%s'", postId, user.getUsername(), topic.getSubject()));
+                Timber.d("Marking message '%d' as favorite for user '%s' in topic '%s'", postId, user.getUsername(), topic.getSubject());
 
                 OkHttpClient httpClient = httpClientProvider.getClientForUser(user);
 
@@ -255,14 +254,14 @@ public class HFRMessageSender implements MDMessageSender {
                         subscriber.onNext(success);
                     }
                     else {
-                        Log.d(LOG_TAG, String.format("Error HTTP Code, response is : %s", response.body().string()));
+                        Timber.d("Error HTTP Code, response is : %s", response.body().string());
                         subscriber.onNext(false);
                     }
 
                     subscriber.onCompleted();
                 }
                 catch (IOException e) {
-                    Log.e(LOG_TAG, "Exception while marking post as favorite", e);
+                    Timber.e(e, "Exception while marking post as favorite");
                     subscriber.onError(e);
                 }
             }
@@ -274,14 +273,14 @@ public class HFRMessageSender implements MDMessageSender {
         return Observable.create(new Observable.OnSubscribe<Boolean>() {
             @Override
             public void call(Subscriber<? super Boolean> subscriber) {
-                Log.d(LOG_TAG, String.format("Deleting post '%d' as user '%s' in topic '%s'", postId, user.getUsername(), topic.getSubject()));
+                Timber.d("Deleting post '%d' as user '%s' in topic '%s'", postId, user.getUsername(), topic.getSubject());
 
                 OkHttpClient httpClient = httpClientProvider.getClientForUser(user);
 
                 boolean isPrivateMessage = topic.getCategory().getId() == UIConstants.PRIVATE_MESSAGE_CAT_ID;
 
                 if (isPrivateMessage) {
-                    Log.d(LOG_TAG, "Editing private message");
+                    Timber.d("Editing private message");
                 }
 
                 FormEncodingBuilder formEncodingBuilder = new FormEncodingBuilder();
@@ -308,14 +307,14 @@ public class HFRMessageSender implements MDMessageSender {
                         subscriber.onNext(success);
                     }
                     else {
-                        Log.d(LOG_TAG, String.format("Error HTTP Code, response is : %s", response.body().string()));
+                        Timber.d("Error HTTP Code, response is : %s", response.body().string());
                         subscriber.onNext(false);
                     }
 
                     subscriber.onCompleted();
                 }
                 catch (IOException e) {
-                    Log.e(LOG_TAG, "Exception while deleteing post", e);
+                    Timber.e(e, "Exception while deleteing post");
                     subscriber.onError(e);
                 }
             }
@@ -328,7 +327,7 @@ public class HFRMessageSender implements MDMessageSender {
     }
 
     private Response buildResponse(String response) {
-        Log.d(LOG_TAG, response);
+        Timber.d(response);
 
         if (matchesPattern(POST_SUCCESSFULLY_ADDED_PATTERN, response)) {
             return Response.buildSuccess(ResponseCode.POST_SUCCESSFULLY_ADDED);

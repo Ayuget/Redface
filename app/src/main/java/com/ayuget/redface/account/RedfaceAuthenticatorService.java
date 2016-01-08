@@ -21,15 +21,15 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
 
-public class RedfaceAuthenticatorService extends Service {
-    private static final String LOG_TAG = RedfaceAuthenticatorService.class.getSimpleName();
+import timber.log.Timber;
 
+public class RedfaceAuthenticatorService extends Service {
     private RedfaceAccountAuthenticator accountAuthenticator;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d(LOG_TAG, "Service started");
+        Timber.d("Service started");
         accountAuthenticator = new RedfaceAccountAuthenticator(this);
     }
 

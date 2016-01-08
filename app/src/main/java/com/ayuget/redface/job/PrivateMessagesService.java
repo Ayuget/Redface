@@ -44,10 +44,9 @@ import java.util.List;
 import javax.inject.Inject;
 
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 public class PrivateMessagesService extends IntentService {
-    private static final String LOG_TAG = PrivateMessagesService.class.getSimpleName();
-
     private static final long[] VIBRATION_PATTERN = new long[] {
             0, 100, 200, 100, 100, 100
     };
@@ -89,7 +88,7 @@ public class PrivateMessagesService extends IntentService {
     @TargetApi(android.os.Build.VERSION_CODES.KITKAT)
     @Override
     protected void onHandleIntent(Intent intent) {
-        Log.d(LOG_TAG, "Handling intent");
+        Timber.d("Handling intent");
 
         if (! settings.arePrivateMessagesNoticationsEnabled()) {
             return;
@@ -129,7 +128,7 @@ public class PrivateMessagesService extends IntentService {
         AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         Intent i = new Intent(this, PrivateMessagesService.class);
         PendingIntent pi = PendingIntent.getService(this, 0, i, 0);
-        Log.d(LOG_TAG, "Going to sleep, setting wake-up alarm to: " + wakeUpTime);
+        Timber.d("Going to sleep, setting wake-up alarm to: %d", wakeUpTime);
         if (AndroidUtils.isKitKatOrHigher()) {
             am.setExact(AlarmManager.RTC_WAKEUP, wakeUpTime, pi);
         } else {

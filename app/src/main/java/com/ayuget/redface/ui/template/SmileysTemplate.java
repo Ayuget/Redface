@@ -27,8 +27,6 @@ import com.squareup.phrase.Phrase;
 import java.util.List;
 
 public class SmileysTemplate extends HTMLTemplate<List<Smiley>> {
-    private static final String LOG_TAG = SmileysTemplate.class.getSimpleName();
-
     private static final String SMILEYS_TEMPLATE = "smileys.html";
 
     private SmileyTemplate smileyTemplate;

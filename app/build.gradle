@@ -62,6 +62,8 @@ dependencies {
     apt 'com.squareup.dagger:dagger-compiler:1.2.2'
 
     // Boilerplate destruction !!
+    compile 'com.jakewharton.timber:timber:4.1.0'
+    compile 'net.ypresto.timbertreeutils:timbertreeutils:1.0.0'
     compile 'com.jakewharton:butterknife:6.0.0'
     compile 'com.hannesdorfmann.fragmentargs:annotation:2.0.1'
     apt 'com.hannesdorfmann.fragmentargs:processor:2.0.1'

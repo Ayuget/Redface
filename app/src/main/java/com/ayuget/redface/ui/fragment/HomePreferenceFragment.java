@@ -30,9 +30,9 @@ import com.squareup.otto.Bus;
 
 import javax.inject.Inject;
 
-public class HomePreferenceFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener {
-    private static final String LOG_TAG = HomePreferenceFragment.class.getSimpleName();
+import timber.log.Timber;
 
+public class HomePreferenceFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener {
     @Inject
     Bus bus;
 
@@ -63,7 +63,7 @@ public class HomePreferenceFragment extends PreferenceFragment implements Prefer
 
     @Override
     public boolean onPreferenceClick(Preference preference) {
-        Log.d(LOG_TAG, String.format("Preference '%s' clicked", preference.getKey()));
+        Timber.d("Preference '%s' clicked", preference.getKey());
         bus.post(new NestedPreferenceSelectedEvent(preference.getKey()));
         return false;
     }
