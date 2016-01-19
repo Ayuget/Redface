@@ -6,12 +6,21 @@
     <link href='http://fonts.googleapis.com/css?family=Roboto:400,300' rel='stylesheet' type='text/css'>
     <style>
         {css}
+
+        .smiley {{
+            width: {smiley_touch_size}px;
+            height: {smiley_touch_size}px;
+        }
+
+        .smiley img {{
+            margin: {smiley_padding}px;
+        }
     </style>
     <script type="text/javascript">
         {js}
     </script>
 </head>
 <body class="{theme_class} smileysView">
-{smileys}
+    <div class="smileys">{smileys}</div>
 </body>
 </html>

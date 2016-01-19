@@ -204,19 +204,23 @@ img {
 }
 
 
+.smileys {
+    display: -webkit-flex;
+    box-sizing: border-box;
+    -webkit-flex-wrap: wrap;
+}
+
 .smiley {
-    display: inline-block;
-    min-width: 40px;
-    min-height: 30px;
-    margin: 6px;
+    box-sizing: border-box;
     text-align: center;
     vertical-align: middle;
+    margin: 7px;
 }
 
 .smiley img {
-    min-width: 20px;
+    max-width: 90%;
+    min-height: 50%;
 }
-
 
 .nosmiley {
     display: block;

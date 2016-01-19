@@ -61,4 +61,7 @@
     <!-- Reply dialog -->
     <dimen name="reply_edit_text_padding">12dp</dimen>
     <dimen name="reply_dialog_avatar_padding">8dp</dimen>
+
+    <dimen name="smiley_touch_size">16dp</dimen>
+    <dimen name="smiley_padding">2dp</dimen>
 </resources>

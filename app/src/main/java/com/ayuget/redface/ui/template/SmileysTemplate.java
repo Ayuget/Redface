@@ -17,11 +17,11 @@
 package com.ayuget.redface.ui.template;
 
 import android.content.Context;
-import android.text.TextUtils;
 
 import com.ayuget.redface.R;
 import com.ayuget.redface.data.api.model.Smiley;
 import com.ayuget.redface.ui.misc.ThemeManager;
+import com.ayuget.redface.ui.misc.UiUtils;
 import com.squareup.phrase.Phrase;
 
 import java.util.List;
@@ -29,18 +29,26 @@ import java.util.List;
 public class SmileysTemplate extends HTMLTemplate<List<Smiley>> {
     private static final String SMILEYS_TEMPLATE = "smileys.html";
 
+    private static final String NO_SMILEYS_FOUND_IMG_URL = "http://forum-images.hardware.fr/images/perso/bobox360.gif";
+
     private SmileyTemplate smileyTemplate;
 
     private ThemeManager themeManager;
 
-    private static final String noSmileysFoundImgUrl = "http://forum-images.hardware.fr/images/perso/bobox360.gif";
-    private static String noSmileysFoundStr;
+    private final int smileyTouchSize;
+
+    private final int smileyPadding;
+
+    private final String noSmileysFoundStr;
 
     public SmileysTemplate(Context context, SmileyTemplate smileyTemplate, ThemeManager themeManager) {
         super(context, SMILEYS_TEMPLATE);
-        noSmileysFoundStr = context.getResources().getString(R.string.no_smileys_found);
+
         this.smileyTemplate = smileyTemplate;
         this.themeManager = themeManager;
+        this.smileyTouchSize = context.getResources().getDimensionPixelSize(R.dimen.smiley_touch_size);
+        this.smileyPadding = context.getResources().getDimensionPixelSize(R.dimen.smiley_padding);
+        this.noSmileysFoundStr = context.getResources().getString(R.string.no_smileys_found);
     }
 
     @Override
@@ -59,13 +67,15 @@ public class SmileysTemplate extends HTMLTemplate<List<Smiley>> {
             }
         } else {
 
-            smileysBuffer.append("<div class=\"nosmiley\">" + noSmileysFoundStr + " <img src=\"" + noSmileysFoundImgUrl + "\"/></div>");
+            smileysBuffer.append("<div class=\"nosmiley\">" + noSmileysFoundStr + " <img src=\"" + NO_SMILEYS_FOUND_IMG_URL + "\"/></div>");
         }
 
         stream.append(
                 templateContent
                         .put("smileys", smileysBuffer.toString())
                         .put("theme_class", themeManager.getActiveThemeCssClass())
+                        .put("smiley_touch_size", smileyTouchSize)
+                        .put("smiley_padding", smileyPadding)
                         .format()
                         .toString()
         );
