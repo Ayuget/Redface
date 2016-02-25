@@ -195,4 +195,7 @@
     <string name="error_saving_image_permission_denied">Permission requise pour l\'enregistrement de l\'image</string>
     <string name="image_saved_successfully">Image sauvegardée avec succès !</string>
     <string name="action_snackbar_open_image">Ouvrir</string>
+    <string name="action_exif_data">Données EXIF</string>
+    <string name="exif_data_title">Données EXIF</string>
+    <string name="unknown_model">Modèle inconnu</string>
 </resources>

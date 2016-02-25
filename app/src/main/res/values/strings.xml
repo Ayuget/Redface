@@ -267,6 +267,11 @@
     <string name="action_save_image_as_png">Save image as PNG</string>
     <string name="action_share_image">Share image</string>
     <string name="action_open_image">Open image at full size</string>
+    <string name="action_exif_data">Show exif data</string>
+
+    <!-- Exif data-->
+    <string name="exif_data_title">Exif data</string>
+    <string name="unknown_model">Unknown model</string>
 
     <!-- Image management -->
     <string name="error_saving_image">Error while saving image</string>
@@ -274,4 +279,5 @@
     <string name="error_saving_image_permission_denied">Permission required to save image</string>
     <string name="image_saved_successfully">Image successfully saved !</string>
     <string name="action_snackbar_open_image">Open</string>
+    <string name="gallery_image_loading_error">Error loading image</string>
 </resources>

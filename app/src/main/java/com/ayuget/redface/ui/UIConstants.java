@@ -60,4 +60,9 @@ public class UIConstants {
     public static final String ARG_EDITED_POST_ID = "editedPostId";
     public static final String ARG_PM_RECIPIENT = "pmRecipient";
     public static final String ARG_RELOGIN_MODE = "reloginMode";
+
+    /**
+     * Exif details screen
+     */
+    public static final String ARG_EXIF_IMAGE = "exifImage";
 }

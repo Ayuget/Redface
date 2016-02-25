@@ -36,4 +36,9 @@
         android:title="@string/action_open_image"
         android:id="@+id/action_open_image"
         app:showAsAction="always" />
+
+    <item
+        android:title="@string/action_exif_data"
+        android:id="@+id/action_exif_data"
+        app:showAsAction="always" />
 </menu>

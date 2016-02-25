@@ -47,6 +47,7 @@ import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.rx.EndlessObserver;
 import com.ayuget.redface.data.rx.SubscriptionHandler;
 import com.ayuget.redface.network.HTTPClientProvider;
+import com.ayuget.redface.ui.activity.ExifDetailsActivity;
 import com.ayuget.redface.ui.activity.MultiPaneActivity;
 import com.ayuget.redface.ui.activity.ReplyActivity;
 import com.ayuget.redface.ui.UIConstants;
@@ -541,6 +542,9 @@ public class PostsFragment extends BaseFragment {
                                     break;
                                 case R.id.action_share_image:
                                     imageMenuHandler.shareImage();
+                                    break;
+                                case R.id.action_exif_data:
+                                    imageMenuHandler.openExifData();
                                     break;
                                 default:
                                     Timber.e("Unknow menu item clicked");

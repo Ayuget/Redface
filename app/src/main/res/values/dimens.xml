@@ -61,7 +61,11 @@
     <!-- Reply dialog -->
     <dimen name="reply_edit_text_padding">12dp</dimen>
     <dimen name="reply_dialog_avatar_padding">8dp</dimen>
-
     <dimen name="smiley_touch_size">16dp</dimen>
     <dimen name="smiley_padding">2dp</dimen>
+
+    <!-- Image detail -->
+    <dimen name="image_detail_item_height">72dp</dimen>
+    <dimen name="image_detail_item_main_text_size">16sp</dimen>
+    <dimen name="image_detail_item_secondary_text_size">13sp</dimen>
 </resources>

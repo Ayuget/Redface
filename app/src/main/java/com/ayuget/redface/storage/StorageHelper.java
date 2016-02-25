@@ -22,6 +22,7 @@ import android.media.MediaScannerConnection;
 import android.os.Environment;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -59,6 +60,18 @@ public class StorageHelper {
 
     public static String getFilenameFromUrl(String url) {
         return url.substring(url.lastIndexOf('/') + 1);
+    }
+
+    public static void storeImageToFile(byte[] imageBytes, File targetFile) throws IOException {
+        FileOutputStream fileOutputStream = null;
+
+        try {
+            fileOutputStream = new FileOutputStream(targetFile);
+            fileOutputStream.write(imageBytes);
+        }
+        finally {
+            if (fileOutputStream != null) { fileOutputStream.close(); }
+        }
     }
 
     public static void storeImageToFile(Bitmap bitmap, File targetFile, Bitmap.CompressFormat compressFormat) throws IOException {
