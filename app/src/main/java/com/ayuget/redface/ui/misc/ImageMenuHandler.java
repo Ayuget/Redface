@@ -25,6 +25,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.ShareCompat;
 import android.view.View;
 
@@ -203,7 +204,7 @@ public class ImageMenuHandler {
     public void openExifData() {
         Intent intent = new Intent(activity, ExifDetailsActivity.class);
         intent.putExtra(UIConstants.ARG_EXIF_IMAGE, imageUrl);
-        activity.startActivity(intent);
+        activity.startActivity(intent, ActivityOptionsCompat.makeCustomAnimation(activity, R.anim.slide_up, R.anim.slide_down).toBundle());
     }
 
     public void shareImage() {
