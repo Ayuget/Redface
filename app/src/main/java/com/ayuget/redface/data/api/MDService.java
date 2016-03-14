@@ -18,6 +18,8 @@ package com.ayuget.redface.data.api;
 
 import com.ayuget.redface.data.api.model.Category;
 import com.ayuget.redface.data.api.model.Post;
+import com.ayuget.redface.data.api.model.PrivateMessage;
+import com.ayuget.redface.data.api.model.Profile;
 import com.ayuget.redface.data.api.model.Response;
 import com.ayuget.redface.data.api.model.Smiley;
 import com.ayuget.redface.data.api.model.Subcategory;
@@ -34,12 +36,7 @@ public interface MDService {
      * Lists all categories for a given user (some categories are
      * hidden / not available for some users, for example moderators forum, ...)
      */
-    public Observable<List<Category>> listCategories(User user);
-
-    /**
-     * Returns details about a particular category
-     */
-    public Observable<Category> getCategoryById(User user, int categoryId);
+    Observable<List<Category>> listCategories(User user);
 
     /**
      * Lists all topics for a given category
@@ -47,7 +44,7 @@ public interface MDService {
      * @param filter filter to apply
      * @return topics list
      */
-    public Observable<List<Topic>> listTopics(User user, final Category category, final Subcategory subcategory, int page, final TopicFilter filter);
+    Observable<List<Topic>> listTopics(User user, final Category category, final Subcategory subcategory, int page, final TopicFilter filter);
 
     /**
      * Lists all topics for the meta page
@@ -55,62 +52,87 @@ public interface MDService {
      * @param sortByDate sort topics by date (desc) or group them by categories
      * @return topics list
      */
-    public Observable<List<Topic>> listMetaPageTopics(User user, final TopicFilter filter, boolean sortByDate);
+    Observable<List<Topic>> listMetaPageTopics(User user, final TopicFilter filter, boolean sortByDate);
+
+    /**
+     * Lists private messages for a given user
+     */
+    Observable<List<PrivateMessage>> listPrivateMessages(User user, int page);
+
+    /**
+     * Returns all private messages with unread messages
+     */
+    Observable<List<PrivateMessage>> getNewPrivateMessages(User user);
 
     /**
      * Returns a specific topic page
      */
-    public Observable<List<Post>> listPosts(User user, Topic topic, int page);
+    Observable<List<Post>> listPosts(User user, Topic topic, int page);
 
     /**
      * Returns basic informations (subject and pages count) about a topic
      */
-    public Observable<Topic> getTopic(User user, Category category, int topicId);
-
-    /**
-     * Logs in the given user
-     */
-    public Observable<Boolean> login(User user);
+    Observable<Topic> getTopic(User user, Category category, int topicId);
 
     /**
      * Returns quote BBCode for a given post
      */
-    public Observable<String> getQuote(User user, Topic topic, int postId);
+    Observable<String> getQuote(User user, Topic topic, int postId);
 
     /**
      * Returns post BBCode
      */
-    public Observable<String> getPostContent(User user, Topic topic, int postId);
+    Observable<String> getPostContent(User user, Topic topic, int postId);
 
     /**
      * Returns a list of the smileys the most recently used by the user
      */
-    public Observable<List<Smiley>> getRecentlyUsedSmileys(User user);
+    Observable<List<Smiley>> getRecentlyUsedSmileys(User user);
 
     /**
      * Returns a list of popular smileys
      */
-    public Observable<List<Smiley>> getPopularSmileys();
+    Observable<List<Smiley>> getPopularSmileys();
 
     /**
      * Search for smileys
      * @param searchExpression search criteria
      * @return list of smileys matching the expression
      */
-    public Observable<List<Smiley>> searchSmileys(String searchExpression);
+    Observable<List<Smiley>> searchSmileys(String searchExpression);
 
     /**
      * Reply to a topic
      */
-    public Observable<Response> replyToTopic(User user, Topic topic, String message, boolean includeSignature);
+    Observable<Response> replyToTopic(User user, Topic topic, String message, boolean includeSignature);
 
     /**
      * Edit a post
      */
-    public Observable<Response> editPost(User user, Topic topic, int postId, String newMessage, boolean includeSignature);
+    Observable<Response> editPost(User user, Topic topic, int postId, String newMessage, boolean includeSignature);
 
     /**
-     * Returns current hashcheck, needed for certain actions (like reply to a topic, ...)
+     * New private message
      */
-    public String getHashcheck();
+    Observable<Response> sendNewPrivateMessage(User user, String subject, String recipientUsername, String message, boolean includeSignature);
+
+    /**
+     * Marks a certain post in a topic as favorite (will set the topic as favorite in the process)
+     */
+    Observable<Boolean> markPostAsFavorite(User user, Topic topic, int postId);
+
+    /**
+     * Deletes a given post
+     */
+    Observable<Boolean> deletePost(User user, Topic topic, int postId);
+
+    /**
+     * Reports a given post to moderators
+     */
+    Observable<Boolean> reportPost(User user, Topic topic, int postId);
+
+    /**
+     * Get a user profile
+     */
+    Observable<Profile> getProfile(User user, int user_id);
 }

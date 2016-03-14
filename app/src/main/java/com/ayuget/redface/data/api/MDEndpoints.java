@@ -51,6 +51,8 @@ public interface MDEndpoints {
 
     public String loginUrl();
 
+    public String profile(int user_id);
+
     public String userAvatar(int user_id);
 
     public String smileyApiHost();
@@ -66,4 +68,14 @@ public interface MDEndpoints {
     public String userForumPreferences();
 
     public String metaPage(TopicFilter topicFilter);
+
+    public String favorite(Category category, Topic topic, int postId);
+
+    public String deletePost();
+
+    public String reportPost();
+
+    public String privateMessages();
+
+    public String privateMessages(int page);
 }

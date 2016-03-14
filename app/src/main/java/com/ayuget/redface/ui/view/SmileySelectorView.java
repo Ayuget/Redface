@@ -88,6 +88,10 @@ public class SmileySelectorView extends WebView {
         super.onLayout(changed, l, t, r, b);
     }
 
+    public void reset() {
+        loadDataWithBaseURL(mdEndpoints.homepage(), "", UIConstants.MIME_TYPE, UIConstants.POSTS_ENCODING, null);
+    }
+
     public void setSmileys(List<Smiley> smileys) {
         StringBuilder pageBuffer = new StringBuilder();
         smileysTemplate.render(smileys, pageBuffer);

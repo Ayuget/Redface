@@ -1,7 +1,14 @@
+/**
+* Scrolls to the bottom of the page
+*/
 function scrollToBottom() {
     window.scrollTo(0,document.body.scrollHeight);
 }
 
+/**
+* Scrolls to a particular element
+* @param id element id
+*/
 function scrollToElement(id) {
     var elem = document.getElementById(id);
     var x = 0;
@@ -16,6 +23,9 @@ function scrollToElement(id) {
     window.scrollTo(x, y);
 }
 
+/**
+* Toggles inner child spoiler visibility
+*/
 function toggleSpoiler(obj){
 	var div = obj.getElementsByTagName('div');
 	if (div[0]) {
@@ -26,6 +36,84 @@ function toggleSpoiler(obj){
 			div[0].style.visibility = 'visible';
 		}
 	}
+}
+
+/**
+* Deal with the clicked URL by calling the Java callback defined
+* in the Javascript interface of the webview.
+*
+* Stops the event propagation to avoid issues with spoilers
+*/
+function handleUrl(event, postId, url) {
+    event = event || window.event;
+    Android.handleUrl(postId, url);
+
+    event.stopPropagation();
+}
+
+/**
+* Toggles overflow menu for a certain post
+* @param id post id
+*/
+function toggleOverflowMenu(id){
+	var overflowList = document.getElementById(id);
+	if (overflowList != null) {
+		if (overflowList.style.display == "block") {
+			overflowList.style.display = 'none';
+		}
+		else if (overflowList.style.display == "none" || !overflowList.style.display) {
+		    closeAllOverflowMenus();
+			overflowList.style.display = 'block';
+		}
+	}
+}
+
+function closeAllOverflowMenus() {
+    var menus = document.getElementsByClassName("post-overflow-icons");
+    var i;
+    for (i = 0; i < menus.length; i++) {
+        menus[i].style.display = "none";
+    }
+}
+
+function favoritePost(postId) {
+    Android.markPostAsFavorite(postId);
+    toggleOverflowMenu(postId);
+}
+
+function toggleQuoteStatus(link, postId) {
+    Android.toggleQuoteStatus(postId);
+
+    var icon = link.getElementsByTagName("i")[1];
+
+    if (icon.classList.contains('fa-minus')) {
+        icon.classList.remove('fa-minus');
+        link.classList.remove('action-selected');
+        icon.classList.add('fa-plus');
+    }
+    else {
+        icon.classList.remove('fa-plus');
+        icon.classList.add('fa-minus');
+        link.classList.add('action-selected');
+    }
+}
+
+function clearQuotedMessages() {
+    var icons = document.getElementsByClassName("fa-minus");
+    var i;
+
+    console.log(icons);
+    for (i = icons.length - 1; i >= 0; i--) {
+        var item = icons[i];
+        item.classList.remove('fa-minus');
+        item.classList.add('fa-plus');
+    }
+
+    var links = document.getElementsByClassName("action-selected");
+    console.log(links);
+    for (i = links.length - 1; i >= 0; i--) {
+        links[i].classList.remove('action-selected');
+    }
 }
 
 /**

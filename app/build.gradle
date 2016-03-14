@@ -1,41 +1,42 @@
 buildscript {
     repositories {
         mavenCentral()
-        maven { url 'http://download.crashlytics.com/maven' }
-
+        maven { url 'https://maven.fabric.io/public' }
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.2.3'
+        classpath 'com.android.tools.build:gradle:2.0.0-alpha3'
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
-
-        classpath 'com.jakewharton.hugo:hugo-plugin:1.1.0'
-        classpath 'com.crashlytics.tools.gradle:crashlytics-gradle:1.+'
+        classpath 'io.fabric.tools:gradle:1.+'
     }
 }
 
 repositories {
     mavenCentral()
-    maven { url 'http://download.crashlytics.com/maven' }
+    maven { url 'https://maven.fabric.io/public' }
+    maven { url "https://jitpack.io" }
 }
 
 apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
-apply plugin: 'crashlytics'
-apply plugin: 'hugo'
+apply plugin: 'io.fabric'
 
 android {
-    compileSdkVersion 22
-    buildToolsVersion "22.0.1"
+    compileSdkVersion 23
+    buildToolsVersion '23.0.2'
 
     defaultConfig {
         applicationId "com.ayuget.redface"
         minSdkVersion 16
-        targetSdkVersion 22
-        versionCode 120
-        versionName "1.2.0"
+        targetSdkVersion 23
+        versionCode 201
+        versionName "2.0.1"
     }
     buildTypes {
+        debug {
+            applicationIdSuffix '.debug'
+        }
+
         release {
             minifyEnabled true
             shrinkResources true
@@ -48,11 +49,11 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
     // Support libraries
-    compile "com.android.support:appcompat-v7:22.2.0"
-    compile "com.android.support:recyclerview-v7:21.0.0"
-    compile "com.android.support:palette-v7:21.0.0"
-    compile 'com.android.support:support-annotations:22.0.0'
-    compile 'com.android.support:design:22.2.0'
+    compile "com.android.support:appcompat-v7:23.1.1"
+    compile "com.android.support:recyclerview-v7:23.1.1"
+    compile "com.android.support:palette-v7:23.1.1"
+    compile 'com.android.support:support-annotations:23.1.1'
+    compile 'com.android.support:design:23.1.1'
 
     // Dependency injection
     compile 'com.squareup.dagger:dagger:1.2.2'
@@ -66,11 +67,12 @@ dependencies {
     // UI-related dependencies
     compile 'com.getbase:floatingactionbutton:1.8.0'
     compile 'com.squareup.picasso:picasso:2.4.0'
-    compile 'com.nispok:snackbar:2.7.3'
     compile 'com.astuetz:pagerslidingtabstrip:1.0.1'
     compile 'com.pnikosis:materialish-progress:1.4'
     compile 'com.rengwuxian.materialedittext:library:1.8.2'
-    compile 'com.afollestad:material-dialogs:0.6.4.0'
+    compile('com.afollestad.material-dialogs:core:0.8.4.2@aar') {
+        transitive = true
+    }
     compile 'com.timehop.stickyheadersrecyclerview:library:0.4.0@aar'
 
     // Misc...
@@ -82,13 +84,28 @@ dependencies {
     compile 'io.reactivex:rxandroid:0.23.0'
     compile 'com.squareup.phrase:phrase:1.0.3'
     compile 'com.google.guava:guava:18.+'
+    compile 'com.uwetrottmann:androidutils:2.0.0'
 
     // Test related dependencies
-    androidTestCompile 'com.squareup.assertj:assertj-android:1.0.0'
-    compile 'com.crashlytics.android:crashlytics:1.+'
+    testCompile('com.squareup.assertj:assertj-android:1.0.0') {
+        // assertj-android currently ships with support-annotations 20.0.0 which is in conflict
+        // with the version used by the app
+        exclude module: 'support-annotations'
+    }
 
-    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.3'
-    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.3'
+    compile('com.crashlytics.sdk.android:crashlytics:2.5.1@aar') {
+        transitive = true
+    }
+
+    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.3.1'
+    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.3.1'
+
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.mockito:mockito-core:1.10.19'
+    testCompile('org.robolectric:robolectric:3.0') {
+        exclude group: 'commons-logging', module: 'commons-logging'
+        exclude group: 'org.apache.httpcomponents', module: 'httpclient'
+    }
 
     // Proguard related
     compile 'com.google.code.findbugs:jsr305:2.0.2'

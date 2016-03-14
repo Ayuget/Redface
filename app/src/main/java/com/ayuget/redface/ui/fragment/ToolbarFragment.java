@@ -63,6 +63,10 @@ public class ToolbarFragment extends BaseFragment {
         // No menu by default
     }
 
+    /**
+     * Callback called when the toolbar has been initialized
+     * (click callbacks, ...)
+     */
     public void onToolbarInitialized(Toolbar toolbar) {
     }
 

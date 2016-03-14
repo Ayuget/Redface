@@ -27,6 +27,10 @@
     <string name="action_go_to_last_page">Go to last page</string>
     <string name="action_go_to_specific_page">Go to page…</string>
     <string name="action_reply_to_topic">Post a reply</string>
+    <string name="action_copy_link">Copy a link to this topic</string>
+    <string name="action_share">Share</string>
+    <string name="action_refresh_topic">Refresh</string>
+    <string name="link_sucessfully_copied">Link copied to clipboard</string>
 
     <string name="action_topics_filter_title">Topics filter</string>
     <string name="action_topics_filter_all">All</string>
@@ -78,6 +82,10 @@
     <string name="pref_appearance_title">Appearance</string>
     <string name="pref_appearance_summary">Change how the application looks</string>
     <string name="pref_show_fully_read_topics_title">Show fully read topics</string>
+    <string name="pref_topic_list_compact_mode_title">Compact mode</string>
+    <string name="pref_topic_list_compact_mode_summary">Display topic list in a compact way</string>
+    <string name="pref_double_tap_to_refresh_title">Enable double tap to refresh</string>
+    <string name="pref_double_tap_to_refresh_summary">Double tapping inside a topic will trigger a page refresg</string>
     <string name="pref_show_previous_page_last_post_title">Show previous page last post</string>
     <string name="pref_show_previous_page_last_post_summary">Display the last post of the previous page at the top of the page</string>
     <string name="pref_show_fully_read_topics_summary">This option only works If you are not in the Meta category</string>
@@ -112,10 +120,28 @@
     <string-array name="pref_theme_values">
         <item>Light</item>
         <item>Dark</item>
+        <item>Night</item>
     </string-array>
     <string-array name="pref_theme_entries" translatable="false">
         <item>@string/pref_theme_default</item>
         <item>DARK</item>
+        <item>NIGHT</item>
+    </string-array>
+
+    <string name="pref_font_size_title">Font size</string>
+    <string name="pref_font_size_summary">Customize the font size (currently only inside a topic)</string>
+    <string name="pref_font_size_default" translatable="false">NORMAL</string>
+    <string-array name="pref_font_size_values">
+        <item>Small</item>
+        <item>Normal</item>
+        <item>Big</item>
+        <item>Huge</item>
+    </string-array>
+    <string-array name="pref_font_size_entries" translatable="false">
+        <item>SMALL</item>
+        <item>@string/pref_font_size_default</item>
+        <item>BIG</item>
+        <item>HUGE</item>
     </string-array>
 
     <string name="pref_default_meta_ordering">Default ordering for \"My topics\" screen</string>
@@ -129,7 +155,25 @@
         <item>GROUP_BY_CATS</item>
     </string-array>
 
-
+    <string name="pref_notification_settings">Notifications</string>
+    <string name="pref_enable_pm_notifications_title">Enable private messages notifications</string>
+    <string name="pref_enable_pm_notifications_summary">Be notified when you receive a new private message</string>
+    <string name="pref_pm_notification_frequency">Polling frequency</string>
+    <string name="pref_pm_notification_frequency_default" translatable="false">120</string>
+    <string-array name="pref_pm_notification_frequency_values" translatable="false">
+        <item>15</item>
+        <item>30</item>
+        <item>60</item>
+        <item>@string/pref_pm_notification_frequency_default</item>
+        <item>360</item>
+    </string-array>
+    <string-array name="pref_pm_notification_frequency_entries">
+        <item>15 minutes</item>
+        <item>30 minutes</item>
+        <item>1 hour</item>
+        <item>2 hours</item>
+        <item>6 hours</item>
+    </string-array>
 
     <!-- About page -->
     <string name="menu_about">About</string>
@@ -140,11 +184,35 @@
     <string name="prompt_go_to_page">Go to page…</string>
     <string name="invalid_page_number">Invalid page number</string>
 
+    <!-- Post actions -->
+    <string name="marking_as_favorite_in_progress">Marking as favorite…</string>
+    <string name="mark_as_favorite_failed">Failed to mark as favorite</string>
+    <string name="mark_as_favorite_success">Successfully marked as favorite !</string>
+    <string name="delete_post_in_progress">Deleting post…</string>
+    <string name="delete_post_failed">Failed to delete post</string>
+    <string name="delete_post_success">Successfully deleted post !</string>
+    <string name="action_multiquote">Quote those messages</string>
+    <string name="quoted_messages">1 quoted message</string>
+    <string name="quoted_messages_plural">{count} quoted messages</string>
+
     <!-- Post page -->
     <string name="reload_page">Reload</string>
     <string name="page_loading_error">Error loading page</string>
     <string name="no_topics_found">No topics found</string>
     <string name="select_topic_message">Please select a topic</string>
+    <string name="topic_loading_message">Loading topic</string>
+    <string name="post_added_to_quote">Post sucessfully quoted</string>
+    <string name="post_failed_to_quote">Unable to quote this message</string>
+    <string name="post_edited_on">Edited on {date}</string>
+    <string name="post_delete_confirmation">Delete post ?</string>
+    <string name="post_delete_yes">Delete</string>
+    <string name="post_delete_no">Cancel</string>
+
+    <!-- Private messages -->
+    <string name="no_private_messages_found">No private messages found</string>
+    <string name="error_loading_private_messages">Error while private messages</string>
+    <string name="error_loading_private_messages_page">Error while loading private messages for page {page}</string>
+    <string name="action_new_private_message">New private message</string>
 
     <!-- Login page -->
     <string name="prompt_username">Username</string>
@@ -159,6 +227,7 @@
     <!-- Reply dialog -->
     <string name="action_reply_reply_dialog">Reply</string>
     <string name="add_smiley_button_description">Add smiley</string>
+    <string name="insert_smiley_tag_button_description">Insert a smiley tag</string>
     <string name="make_text_bold_button_description">Make text bold</string>
     <string name="make_text_italic_button_description">Make text italic</string>
     <string name="underline_text_button_description">Underline text</string>
@@ -166,18 +235,29 @@
     <string name="insert_code_button_description">Insert code block</string>
     <string name="insert_spoiler_button_description">Insert spoiler</string>
     <string name="insert_link_button_description">Make text italic</string>
+    <string name="insert_image_description">Insert image</string>
 
     <string name="popular_smileys_button_description">Popular smileys</string>
     <string name="recent_smileys_button_description">Recent smileys</string>
     <string name="default_smileys_button_description">Default smileys</string>
 
     <string name="show_smileys_picker">Show smileys picker</string>
+    <string name="no_smileys_found">No result</string>
 
     <string name="reply_successfully_posted">Reply successfully posted</string>
     <string name="reply_post_failure">Failed to post reply</string>
     <string name="message_successfully_edited">Reply successfully posted</string>
     <string name="message_edit_failure">Failed to edit message</string>
     <string name="user_switch_sucessful">Changed active user to {username}</string>
+
+    <string name="pm_recipient">Recipient username</string>
+    <string name="pm_subject">Message subject</string>
+    <string name="pm_no_recipient">Please enter a recipient name</string>
+    <string name="pm_no_subject">Please enter a subject</string>
+    <string name="pm_successfully_sent">Private message successfully sent</string>
+    <string name="error_sending_pm">Failed to send private message</string>
+
+    <string name="relogin_instructions">If your login credentials have changed, or if you wish to re-login, please fill-in the following form</string>
 
     <!-- Dialogs -->
     <string name="dialog_go_to_page_positive_text">Go !</string>

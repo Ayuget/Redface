@@ -22,7 +22,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 
 import com.ayuget.redface.R;
-import com.ayuget.redface.ui.BaseActivity;
+import com.ayuget.redface.ui.activity.BaseActivity;
 
 public class ToolbarHelper {
     /**

@@ -16,15 +16,15 @@
 
 package com.ayuget.redface.ui.misc;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.Theme;
 import com.ayuget.redface.R;
 import com.ayuget.redface.settings.RedfaceSettings;
-import com.ayuget.redface.ui.RedfaceTheme;
+import com.ayuget.redface.ui.theme.RedfaceTheme;
 
 public class ThemeManager {
     private static final String LIGHT_THEME_CSS_CLASS = "redface-light";
     private static final String DARK_THEME_CSS_CLASS = "redface-dark";
+    private static final String NIGHT_THEME_CSS_CLASS = "redface-night";
 
     private final RedfaceSettings settings;
 
@@ -40,8 +40,11 @@ public class ThemeManager {
         if (activeTheme == RedfaceTheme.LIGHT) {
             return R.style.Theme_Redface_Light;
         }
-        else {
+        else if (activeTheme == RedfaceTheme.DARK){
             return R.style.Theme_Redface_Dark;
+        }
+        else {
+            return R.style.Theme_Redface_Night;
         }
     }
 
@@ -62,9 +65,16 @@ public class ThemeManager {
         if (activeTheme == RedfaceTheme.LIGHT) {
             return LIGHT_THEME_CSS_CLASS;
         }
-        else {
+        else if (activeTheme == RedfaceTheme.DARK){
             return DARK_THEME_CSS_CLASS;
         }
+        else {
+            return NIGHT_THEME_CSS_CLASS;
+        }
+    }
+
+    public String getFontSizeCssClass() {
+        return "font-" + settings.getFontSize().toString().toLowerCase();
     }
 
     public Theme getMaterialDialogTheme() {
@@ -97,6 +107,17 @@ public class ThemeManager {
         }
         else {
             return R.drawable.topic_unread_count_dark;
+        }
+    }
+
+    public int getPrivateMessageUnreadDrawable() {
+        RedfaceTheme activeTheme = settings.getTheme();
+
+        if (activeTheme == RedfaceTheme.LIGHT) {
+            return R.drawable.private_message_unread_light;
+        }
+        else {
+            return R.drawable.private_message_unread_dark;
         }
     }
 

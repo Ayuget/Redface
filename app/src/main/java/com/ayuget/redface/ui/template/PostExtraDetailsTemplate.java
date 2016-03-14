@@ -19,20 +19,46 @@ package com.ayuget.redface.ui.template;
 import android.content.Context;
 import android.text.TextUtils;
 
+import com.ayuget.redface.R;
 import com.ayuget.redface.data.api.model.Post;
+import com.ayuget.redface.util.DateUtils;
 import com.squareup.phrase.Phrase;
 
 public class PostExtraDetailsTemplate extends HTMLTemplate<Post> {
     private static final String EXTRA_DETAILS_TEMPLATE = "extra_details.html";
 
+    private static final String EDITED_HTML = "<span class=\"edited\">{edited_text}</span>";
+    private static final String QUOTE_COUNT_HTML = "<i class=\"fa fa-comments fa-3\"></i> {quote_count}";
+
+    private Context context;
+
     public PostExtraDetailsTemplate(Context context) {
         super(context, EXTRA_DETAILS_TEMPLATE);
+        this.context = context;
     }
 
     @Override
-    protected void render(Post post, Phrase templateContent, StringBuilder stream) {
+    protected void render(Post post, Phrase templateContent, StringBuilder stream)
+    {
+        StringBuilder extraDetails = new StringBuilder();
+
+        if (post.getLastEditionDate() != null) {
+            String editedText = Phrase.from(context, R.string.post_edited_on)
+                    .put("date", DateUtils.formatLocale(context, post.getLastEditionDate()))
+                    .format()
+                    .toString();
+
+            extraDetails.append(Phrase.from(EDITED_HTML).put("edited_text", editedText).format().toString());
+        }
+
         if (post.getQuoteCount() > 0) {
-            stream.append(templateContent.put("quote_count", post.getQuoteCount()).format().toString());
+            if (extraDetails.length() > 0) { extraDetails.append(" - "); }
+            extraDetails.append(Phrase.from(QUOTE_COUNT_HTML).put("quote_count", post.getQuoteCount()).format().toString());
+        }
+
+
+        if (extraDetails.length() > 0) {
+            stream.append(templateContent.put("extra_details", extraDetails.toString()).format().toString());
         }
         else {
             stream.append("");

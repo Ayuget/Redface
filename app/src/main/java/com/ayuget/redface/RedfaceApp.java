@@ -19,6 +19,7 @@ package com.ayuget.redface;
 import android.app.Application;
 import android.content.Context;
 import com.ayuget.redface.account.AccountModule;
+import com.ayuget.redface.job.JobUtils;
 import com.ayuget.redface.network.NetworkModule;
 import com.ayuget.redface.settings.RedfaceSettings;
 import com.squareup.leakcanary.LeakCanary;
@@ -40,6 +41,8 @@ public class RedfaceApp extends Application {
         initActiveUser();
 
         refWatcher = LeakCanary.install(this);
+
+        JobUtils.runNotificationService(this);
     }
 
     private void initActiveUser() {

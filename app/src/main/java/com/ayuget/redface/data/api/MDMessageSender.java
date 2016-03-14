@@ -16,7 +16,6 @@
 
 package com.ayuget.redface.data.api;
 
-import com.ayuget.redface.data.api.model.Post;
 import com.ayuget.redface.data.api.model.Response;
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.api.model.User;
@@ -24,7 +23,15 @@ import com.ayuget.redface.data.api.model.User;
 import rx.Observable;
 
 public interface MDMessageSender {
-    public Observable<Response> replyToTopic(User user, Topic topic, String message, String hashcheck, boolean includeSignature);
+    Observable<Response> replyToTopic(User user, Topic topic, String message, String hashcheck, boolean includeSignature);
 
-    public Observable<Response> editPost(User user, Topic topic, int postId, String newContent, String hashcheck, boolean includeSignature);
+    Observable<Response> editPost(User user, Topic topic, int postId, String newContent, String hashcheck, boolean includeSignature);
+
+    Observable<Response> sendNewPrivateMessage(User user, String subject, String recipientUsername, String message, String hashcheck, boolean includeSignature);
+
+    Observable<Boolean> markPostAsFavorite(User user, Topic topic, int postId);
+
+    Observable<Boolean> deletePost(User user, Topic topic, int postId, final String hashcheck);
+
+    Observable<Boolean> reportPost(User user, Topic topic, int postId);
 }

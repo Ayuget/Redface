@@ -23,14 +23,20 @@ import android.net.Uri;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.ActionMode;
 import android.view.GestureDetector;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
 
 import com.ayuget.redface.BuildConfig;
+import com.ayuget.redface.R;
 import com.ayuget.redface.RedfaceApp;
 import com.ayuget.redface.data.api.MDEndpoints;
 import com.ayuget.redface.data.api.MDLink;
@@ -38,6 +44,7 @@ import com.ayuget.redface.data.api.UrlParser;
 import com.ayuget.redface.data.api.model.Category;
 import com.ayuget.redface.data.api.model.Post;
 import com.ayuget.redface.data.api.model.Topic;
+import com.ayuget.redface.data.api.model.misc.PostAction;
 import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.event.EditPostEvent;
@@ -46,7 +53,9 @@ import com.ayuget.redface.ui.event.GoToTopicEvent;
 import com.ayuget.redface.ui.event.InternalLinkClickedEvent;
 import com.ayuget.redface.ui.event.PageLoadedEvent;
 import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
+import com.ayuget.redface.ui.event.PostActionEvent;
 import com.ayuget.redface.ui.event.QuotePostEvent;
+import com.ayuget.redface.ui.event.WritePrivateMessageEvent;
 import com.ayuget.redface.ui.misc.DummyGestureListener;
 import com.ayuget.redface.ui.misc.PagePosition;
 import com.ayuget.redface.ui.misc.ThemeManager;
@@ -54,16 +63,17 @@ import com.ayuget.redface.ui.misc.UiUtils;
 import com.ayuget.redface.ui.template.PostsTemplate;
 import com.ayuget.redface.util.JsExecutor;
 import com.squareup.otto.Bus;
+import com.squareup.phrase.Phrase;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import hugo.weaving.DebugLog;
-
-
 public class TopicPageView extends WebView implements View.OnTouchListener {
     private static final String LOG_TAG = TopicPageView.class.getSimpleName();
+
+    private static final String ARG_QUOTED_MESSAGES = "quoted_messages";
 
     /**
      * The post currently displayed in the webview. These posts will be encoded to HTML with
@@ -92,6 +102,16 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
      */
     private GestureDetector doubleTapGestureDetector;
 
+    /**
+     * List of quoted messages, used for multi-quote feature
+     */
+    private ArrayList<Long> quotedMessages;
+
+    /**
+     * Used to display a contextual action bar when multi-quote mode is enabled
+     */
+    private ActionMode quoteActionMode;
+
     @Inject PostsTemplate postsTemplate;
 
     @Inject MDEndpoints mdEndpoints;
@@ -104,11 +124,40 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
 
     @Inject RedfaceSettings appSettings;
 
+    boolean actionModeIsActive = false;
+
+    boolean wasReloaded = false;
+
+    /**
+     * Callback to be invoked when webview is scrolled
+     */
     public interface OnScrollListener {
-        public void onScrolled(int dx, int dy);
+        void onScrolled(int dx, int dy);
+    }
+
+    /**
+     * Callback to be invoked when multi-quote mode is
+     * triggered from the webview (by post actions buttons)
+     */
+    public interface OnMultiQuoteModeListener {
+        void onMultiQuoteModeToggled(boolean active);
+        void onPostAdded(long postId);
+        void onPostRemoved(long postId);
+        void onQuote();
+    }
+
+    /**
+     * Callback to be invoked when the page is fully rendered
+     */
+    public interface OnPageLoadedListener {
+        void onPageLoaded();
     }
 
     private OnScrollListener onScrollListener;
+
+    private OnMultiQuoteModeListener onMultiQuoteModeListener;
+
+    private OnPageLoadedListener onPageLoadedListener;
 
     @SuppressLint("SetJavaScriptEnabled")
     public TopicPageView(Context context) {
@@ -135,6 +184,8 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
             throw new IllegalStateException("View is already initialized");
         }
         else {
+            quotedMessages = new ArrayList<>();
+
             // Deal with double-tap to refresh
             doubleTapGestureDetector = new GestureDetector(context, new DummyGestureListener());
             doubleTapGestureDetector.setOnDoubleTapListener(new GestureDetector.OnDoubleTapListener() {
@@ -145,7 +196,10 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
 
                 @Override
                 public boolean onDoubleTap(MotionEvent e) {
-                    bus.post(new PageRefreshRequestEvent(topic));
+                    if (appSettings.isDoubleTapToRefreshEnabled()) {
+                        wasReloaded = true;
+                        bus.post(new PageRefreshRequestEvent(topic));
+                    }
                     return true;
                 }
 
@@ -172,26 +226,34 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
             setWebViewClient(new WebViewClient() {
                 @Override
                 public void onPageFinished(WebView view, String url) {
-                    TopicPageView.this.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            // Triggerring the event will allow the fragment in which this webview
-                            // is contained to initiate page position events
-                            bus.post(new PageLoadedEvent(topic, page, TopicPageView.this));
-                        }
-                    });
+                    if (posts.size() > 0) {
+                        Log.d(LOG_TAG, String.format("Page Loaded Event fired (page=%d)", page));
+                        TopicPageView.this.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (!wasReloaded) {
+                                    // Triggerring the event will allow the fragment in which this
+                                    // webview is contained to initiate page position events
+                                    // This has to be triggered only once
+                                    bus.post(new PageLoadedEvent(topic, page, TopicPageView.this));
+                                }
+
+                                if (onPageLoadedListener != null) {
+                                    onPageLoadedListener.onPageLoaded();
+                                }
+                            }
+                        });
+                    }
                 }
 
                 @Override
                 public boolean shouldOverrideUrlLoading(WebView view, String url) {
                     if (url != null && url.startsWith(mdEndpoints.baseurl())) {
                         Log.d(LOG_TAG, String.format("Clicked on internal url = '%s'", url));
-                        urlParser.parseUrl(url);
                         return true;
-                    }
-                    else {
-                         getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-                         return true;
+                    } else {
+                        getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                        return true;
                     }
                 }
             });
@@ -202,6 +264,20 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
 
     public void setOnScrollListener(OnScrollListener onScrollListener) {
         this.onScrollListener = onScrollListener;
+    }
+
+    public void setOnMultiQuoteModeListener(OnMultiQuoteModeListener onMultiQuoteModeListener) {
+        this.onMultiQuoteModeListener = onMultiQuoteModeListener;
+    }
+
+    public void setOnPageLoadedListener(OnPageLoadedListener onPageLoadedListener) {
+        this.onPageLoadedListener = onPageLoadedListener;
+    }
+
+    private void updateActionModeTitle() {
+        if (quoteActionMode != null) {
+            quoteActionMode.setTitle(Phrase.from(getContext(), R.string.quoted_messages_plural).put("count", quotedMessages.size()).format());
+        }
     }
 
     @Override
@@ -237,7 +313,6 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
         this.topic = topic;
     }
 
-    @DebugLog
     private void renderPosts() {
         StringBuilder pageBuffer = new StringBuilder();
         postsTemplate.render(this.posts, pageBuffer);
@@ -246,6 +321,7 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
     }
 
     public void setPagePosition(PagePosition pagePosition) {
+        Log.d(LOG_TAG, String.format("setPagePosition called !!! (page=%d)", page));
         if (pagePosition != null) {
             if (pagePosition.isBottom()) {
                 scrollToBottom();
@@ -263,6 +339,74 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
 
     public void scrollToPost(long postId) {
         JsExecutor.execute(this, String.format("scrollToElement('post%d')", postId));
+    }
+
+    private void startMultiQuoteMode() {
+        quoteActionMode = startActionMode(new ActionMode.Callback() {
+            @Override
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                actionModeIsActive = true;
+
+                if (quotedMessages.size() > 1) {
+                    mode.setTitle(Phrase.from(getContext(), R.string.quoted_messages_plural).put("count", quotedMessages.size()).format());
+                } else {
+                    mode.setTitle(R.string.quoted_messages);
+                }
+
+                MenuInflater inflater = mode.getMenuInflater();
+                inflater.inflate(R.menu.menu_multi_quote, menu);
+
+                if (onMultiQuoteModeListener != null) {
+                    onMultiQuoteModeListener.onMultiQuoteModeToggled(true);
+                }
+
+                inflater = null; // Force GC
+
+                return true;
+            }
+
+            @Override
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                return false;
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.action_multiquote:
+                        if (onMultiQuoteModeListener != null) {
+                            onMultiQuoteModeListener.onQuote();
+                        }
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+                actionModeIsActive = false;
+                quotedMessages.clear();
+                JsExecutor.execute(TopicPageView.this, "clearQuotedMessages()");
+
+                if (onMultiQuoteModeListener != null) {
+                    onMultiQuoteModeListener.onMultiQuoteModeToggled(false);
+                }
+            }
+        });
+    }
+
+    /**
+     * Disables view current batch mode, if active
+     */
+    public void disableBatchActions() {
+        if (quoteActionMode != null) {
+            quoteActionMode.finish();
+        }
+
+        if (onMultiQuoteModeListener != null) {
+            onMultiQuoteModeListener.onMultiQuoteModeToggled(false);
+        }
     }
 
     private class JsInterface {
@@ -284,6 +428,56 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
         }
 
         @JavascriptInterface
+        public void toggleQuoteStatus(final long postId) {
+            Log.d(LOG_TAG, String.format("Toggling quote status for post '%d'", postId));
+
+            if (quotedMessages.contains(postId)) {
+                quotedMessages.remove(postId);
+                if (onMultiQuoteModeListener != null) {
+                    onMultiQuoteModeListener.onPostRemoved(postId);
+                }
+            }
+            else {
+                quotedMessages.add(postId);
+                if (onMultiQuoteModeListener != null) {
+                    onMultiQuoteModeListener.onPostAdded(postId);
+                }
+            }
+
+            if (quotedMessages.size() == 0 && quoteActionMode != null) {
+                TopicPageView.this.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        quoteActionMode.finish();
+                        quoteActionMode = null;
+                        if (onMultiQuoteModeListener != null) {
+                            onMultiQuoteModeListener.onMultiQuoteModeToggled(false);
+                        }
+                    }
+                });
+            }
+            else {
+                if (! actionModeIsActive) {
+                    TopicPageView.this.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            startMultiQuoteMode();
+                        }
+                    });
+                }
+                else {
+                    TopicPageView.this.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateActionModeTitle();
+                            }
+
+                    });
+                }
+            }
+        }
+
+        @JavascriptInterface
         public void editPost(final int postId) {
             Log.d(LOG_TAG, String.format("Editing post '%d'", postId));
             TopicPageView.this.post(new Runnable() {
@@ -295,12 +489,48 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
         }
 
         @JavascriptInterface
-        public void showProfile(String username) {
-            Log.d(LOG_TAG, String.format("Profile requested for user '%s'", username));
+        public void markPostAsFavorite(final int postId) {
+            Log.d(LOG_TAG, String.format("Marking post '%d' as favorite", postId));
+            TopicPageView.this.post(new Runnable() {
+                @Override
+                public void run() {
+                    bus.post(new PostActionEvent(PostAction.FAVORITE, topic, postId));
+                }
+            });
         }
 
         @JavascriptInterface
-        public void handleUrl(final int postId, String url) {
+        public void deletePost(final int postId) {
+            Log.d(LOG_TAG, String.format("Deleting post '%d'", postId));
+            TopicPageView.this.post(new Runnable() {
+                @Override
+                public void run() {
+                    bus.post(new PostActionEvent(PostAction.DELETE, topic, postId));
+                }
+            });
+        }
+
+        @JavascriptInterface
+        public void writePrivateMessage(final int postId) {
+            for (final Post post : posts) {
+                if (post.getId() == postId) {
+                    TopicPageView.this.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            bus.post(new WritePrivateMessageEvent(post.getAuthor()));
+                        }
+                    });
+                }
+            }
+        }
+
+        @JavascriptInterface
+        public void showProfile (String username){
+                Log.d(LOG_TAG, String.format("Profile requested for user '%s'", username));
+        }
+
+        @JavascriptInterface
+        public void handleUrl(final int postId, final String url) {
             Log.d(LOG_TAG, String.format("Clicked on internal url = '%s' (postId = %d)", url, postId));
 
             TopicPageView.this.post(new Runnable() {
@@ -316,6 +546,12 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
                     TopicPageView.this.post(new Runnable() {
                         @Override
                         public void run() {
+                            // Action can take a few seconds to process, depending on target and on network quality,
+                            // we need to do something to indicate that we handled the event
+                            if (topicId != topic.getId()) {
+                                Toast.makeText(getContext(), R.string.topic_loading_message, Toast.LENGTH_SHORT).show();
+                            }
+
                             if (topic.getId() == topicId) {
                                 int destinationPage = topicPage;
                                 PagePosition targetPagePosition = pagePosition;
@@ -328,12 +564,16 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
                                 }
 
                                 bus.post(new GoToPostEvent(destinationPage, targetPagePosition, TopicPageView.this));
-                            }
-                            else {
+                            } else {
                                 bus.post(new GoToTopicEvent(category, topicId, topicPage, pagePosition));
                             }
                         }
                     });
+                }
+            }).ifInvalid(new MDLink.IfIsInvalidLink() {
+                @Override
+                public void call() {
+                    getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
                 }
             });
         }

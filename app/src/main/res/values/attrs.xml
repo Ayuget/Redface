@@ -17,9 +17,12 @@
 
 <resources>
     <attr name="appBackgroundColor" format="reference|color" />
+    <attr name="statusBarBackgroundColor" format="reference|color" />
+    <attr name="navDrawerBackgroundColor" format="reference|color" />
 
     <!-- Text colors -->
     <attr name="textColorPrimary" format="reference|color" />
+    <attr name="textColorInverse" format="reference|color" />
     <attr name="textColorSecondary" format="reference|color" />
     <attr name="textColorRead" format="reference|color" />
 
@@ -37,6 +40,7 @@
     <!-- Toolbar theme -->
     <attr name="toolbarTheme" format="reference" />
     <attr name="toolbarPopupTheme" format="reference" />
+    <attr name="pagerTitleStripBackground" format="reference|color" />
     <attr name="tabletLandscapePagerBackground" format="reference|color" />
 
     <!-- Reply toolbars -->

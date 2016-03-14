@@ -56,41 +56,63 @@
             android:minHeight="?attr/actionBarSize"
             android:layout_alignParentBottom="true"
             style="@style/ReplyOptionsToolbar">
-            <ImageButton
-                android:id="@+id/show_smileys_picker"
-                android:contentDescription="@string/show_smileys_picker"
-                style="@style/ReplyOptionsIcon"
-                android:src="@drawable/ic_action_insert_emoticon" />
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-            <ImageButton
-                android:id="@+id/make_text_bold_button"
-                android:contentDescription="@string/make_text_bold_button_description"
-                style="@style/ReplyOptionsIcon"
-                android:src="@drawable/ic_action_format_bold" />
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <ImageButton
+                        android:id="@+id/show_smileys_picker"
+                        android:contentDescription="@string/show_smileys_picker"
+                        style="@style/ReplyOptionsIcon"
+                        android:src="@drawable/ic_action_insert_emoticon" />
 
-            <ImageButton
-                android:id="@+id/make_text_italic_button"
-                android:contentDescription="@string/make_text_italic_button_description"
-                style="@style/ReplyOptionsIcon"
-                android:src="@drawable/ic_action_format_italic" />
+                    <ImageButton
+                        android:id="@+id/insert_manual_smiley_button"
+                        android:contentDescription="@string/insert_smiley_tag_button_description"
+                        style="@style/ReplyOptionsIcon"
+                        android:src="@drawable/ic_action_smiley_tag" />
 
-            <ImageButton
-                android:id="@+id/insert_quote_button"
-                android:contentDescription="@string/insert_quote_button_description"
-                style="@style/ReplyOptionsIcon"
-                android:src="@drawable/ic_action_format_quote" />
+                    <ImageButton
+                        android:id="@+id/make_text_bold_button"
+                        android:contentDescription="@string/make_text_bold_button_description"
+                        style="@style/ReplyOptionsIcon"
+                        android:src="@drawable/ic_action_format_bold" />
 
-            <ImageButton
-                android:id="@+id/insert_link_button"
-                android:contentDescription="@string/insert_link_button_description"
-                style="@style/ReplyOptionsIcon"
-                android:src="@drawable/ic_action_insert_link" />
+                    <ImageButton
+                        android:id="@+id/make_text_italic_button"
+                        android:contentDescription="@string/make_text_italic_button_description"
+                        style="@style/ReplyOptionsIcon"
+                        android:src="@drawable/ic_action_format_italic" />
 
-            <ImageButton
-                android:id="@+id/insert_spoiler_button"
-                android:contentDescription="@string/insert_spoiler_button_description"
-                style="@style/ReplyOptionsIcon"
-                android:src="@drawable/ic_action_crop_square" />
+                    <ImageButton
+                        android:id="@+id/insert_quote_button"
+                        android:contentDescription="@string/insert_quote_button_description"
+                        style="@style/ReplyOptionsIcon"
+                        android:src="@drawable/ic_action_format_quote" />
+
+                    <ImageButton
+                        android:id="@+id/insert_link_button"
+                        android:contentDescription="@string/insert_link_button_description"
+                        style="@style/ReplyOptionsIcon"
+                        android:src="@drawable/ic_action_insert_link" />
+
+                    <ImageButton
+                        android:id="@+id/insert_spoiler_button"
+                        android:contentDescription="@string/insert_spoiler_button_description"
+                        style="@style/ReplyOptionsIcon"
+                        android:src="@drawable/ic_action_crop_square" />
+
+                    <ImageButton
+                        android:id="@+id/insert_image_button"
+                        android:contentDescription="@string/insert_image_description"
+                        style="@style/ReplyOptionsIcon"
+                        android:src="@drawable/ic_action_insert_photo" />
+                </LinearLayout>
+
+            </HorizontalScrollView>
 
             </android.support.v7.widget.Toolbar>
 
@@ -138,8 +160,6 @@
 
         <android.support.v7.widget.SearchView
             android:id="@+id/smileys_search"
-            style="@style/RedfaceSearchView"
-            android:layout="@layout/redface_search_view"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent" />
         </android.support.v7.widget.Toolbar>

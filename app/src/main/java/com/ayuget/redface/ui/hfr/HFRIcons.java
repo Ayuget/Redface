@@ -51,7 +51,7 @@ public class HFRIcons {
     }
 
     public static int getCategoryIcon(Category category) {
-        if(categoriesIcons.containsKey(category.getId())) {
+        if(category != null && categoriesIcons.containsKey(category.getId())) {
             return categoriesIcons.get(category.getId());
         }
         else {

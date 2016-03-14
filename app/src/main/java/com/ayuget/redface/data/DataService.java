@@ -21,6 +21,7 @@ import android.util.Log;
 import com.ayuget.redface.data.api.MDService;
 import com.ayuget.redface.data.api.model.Category;
 import com.ayuget.redface.data.api.model.Post;
+import com.ayuget.redface.data.api.model.Profile;
 import com.ayuget.redface.data.api.model.Smiley;
 import com.ayuget.redface.data.api.model.Subcategory;
 import com.ayuget.redface.data.api.model.Topic;
@@ -42,6 +43,7 @@ public class DataService {
 
     @Inject MDService mdService;
 
+    private SubscriptionHandler<User, Profile> profileSubscriptionHandler = new SubscriptionHandler<>();
     private SubscriptionHandler<User, List<Category>> categoriesSubscriptionHandler = new SubscriptionHandler<>();
     private SubscriptionHandler<CategoryPageKey, List<Topic>> topicsSubscriptionHandler = new SubscriptionHandler<>();
     private SubscriptionHandler<User, List<Topic>> metaPageSubscriptionHandler = new SubscriptionHandler<>();
@@ -51,11 +53,13 @@ public class DataService {
     private SubscriptionHandler<String, List<Smiley>> popularSmileysHandler = new SubscriptionHandler<>();
 
     public static class CategoryPageKey {
+        private final User user;
         private final Category category;
         private final Subcategory subcategory;
         private final int page;
 
-        public CategoryPageKey(Category category, Subcategory subcategory, int page) {
+        public CategoryPageKey(User user, Category category, Subcategory subcategory, int page) {
+            this.user = user;
             this.category = category;
             this.subcategory = subcategory;
             this.page = page;
@@ -69,20 +73,25 @@ public class DataService {
             CategoryPageKey that = (CategoryPageKey) o;
 
             if (page != that.page) return false;
+            if (!user.equals(that.user)) return false;
             if (!category.equals(that.category)) return false;
-            if (subcategory != null ? !subcategory.equals(that.subcategory) : that.subcategory != null)
-                return false;
+            return !(subcategory != null ? !subcategory.equals(that.subcategory) : that.subcategory != null);
 
-            return true;
         }
 
         @Override
         public int hashCode() {
-            int result = category.hashCode();
+            int result = user.hashCode();
+            result = 31 * result + category.hashCode();
             result = 31 * result + (subcategory != null ? subcategory.hashCode() : 0);
             result = 31 * result + page;
             return result;
         }
+    }
+
+    public Subscription loadProfile(final User user, int user_id, Observer<Profile> observer) {
+        Log.d(LOG_TAG, String.format("Loading profile for user id '%d'", user_id));
+        return profileSubscriptionHandler.load(user, mdService.getProfile(user, user_id), observer);
     }
 
     public Subscription loadCategories(final User user, Observer<List<Category>> observer) {
@@ -91,7 +100,7 @@ public class DataService {
     }
 
     public Subscription loadTopics(final User user, final Category category, final Subcategory subcategory, int page, final TopicFilter topicFilter, Observer<List<Topic>> observer) {
-        return topicsSubscriptionHandler.load(new CategoryPageKey(category, subcategory, page), mdService.listTopics(user, category, subcategory, page, topicFilter), observer);
+        return topicsSubscriptionHandler.load(new CategoryPageKey(user, category, subcategory, page), mdService.listTopics(user, category, subcategory, page, topicFilter), observer);
     }
 
     public Subscription loadMetaPageTopics(final User user, final TopicFilter topicFilter, boolean sortByDate, Observer<List<Topic>> observer) {

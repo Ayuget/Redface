@@ -16,104 +16,50 @@
 
 package com.ayuget.redface.account;
 
-import android.util.Log;
-
-import com.ayuget.redface.settings.RedfaceSettings;
-import com.ayuget.redface.data.api.model.Guest;
 import com.ayuget.redface.data.api.model.User;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
-public class UserManager {
-    private static final String LOG_TAG = UserManager.class.getSimpleName();
+public interface UserManager {
 
     /**
-     * Application settings
+     * Returns currently active user.
      */
-    RedfaceSettings settings;
+    User getActiveUser();
 
     /**
-     * Real accounts manager (guest is not considered as an account). Accounts
-     * will appear in the appropriate Android preference screen.
+     * Checks if a given user is the active one.
+     *
+     * Can be used to trigger some additional actions
+     * in the app, like post edition buttons, ...
      */
-    RedfaceAccountManager accountManager;
+    boolean isActiveUser(String username);
 
     /**
-     * Guest user, not logged in
+     * Sets application currently active user.
      */
-    User guestUser;
+    void setActiveUser(User user);
 
     /**
-     * Real user used to preload pages
+     * Returns true if the currently active user is logged in.
+     * In guest mode, basically all forum actions are disabled
      */
-    User preloadingUser;
-
-    @Inject
-    public UserManager(RedfaceSettings settings, RedfaceAccountManager accountManager) {
-        this.settings = settings;
-        this.accountManager = accountManager;
-        this.guestUser = new Guest();
-    }
-
-    public User getActiveUser() {
-        String activeUsername = settings.getActiveUsername();
-
-        if (activeUsername == null || activeUsername.equals(guestUser.getUsername())) {
-            return guestUser;
-        }
-        else {
-            User foundUser =  accountManager.getAccountByName(activeUsername);
-
-            if (foundUser == null) {
-                Log.e(LOG_TAG, String.format("User '%s' was not found in accounts", activeUsername));
-                return guestUser;
-            }
-            else {
-                return foundUser;
-            }
-        }
-    }
-
-    public void setActiveUser(User user) {
-        Log.d(LOG_TAG, String.format("Updating active user to '%s'", user.getUsername()));
-        settings.updateActiveUsername(user.getUsername());
-    }
-
-    public boolean activeUserIsLoggedIn() {
-        return ! getActiveUser().isGuest();
-    }
+    boolean isActiveUserLoggedIn();
 
     /**
-     * Returns a list of all available users, including guest.
+     * Returns all users, including guest user
      */
-    public List<User> getAllUsers() {
-        List<User> users = accountManager.getAccounts();
-        users.add(0, guestUser);
-        return users;
-    }
+    List<User> getAllUsers();
 
     /**
-     * Returns a list of all "real" users, meaning actual forum and app users.
-     * Excludes guest, preloading user, ...
+     * Returns only "real" users, meaning all users EXCEPT
+     * the guest user.
      */
-    public List<User> getRealUsers() {
-        return accountManager.getAccounts();
-    }
+    List<User> getRealUsers();
 
     /**
-     * Returns guest user. Can be used to browse the forum anonymously, or to
-     * load certain pieces of information without messing up with flags...
+     * Returns guest user. That user is "virtual", meaning that it
+     * has no real forum account.
      */
-    public User getGuestUser() {
-        return this.guestUser;
-    }
-
-    /**
-     * Returns user to be used to preload pages.
-     */
-    public User getPreloadingUser() {
-        return this.preloadingUser;
-    }
+    User getGuestUser();
 }

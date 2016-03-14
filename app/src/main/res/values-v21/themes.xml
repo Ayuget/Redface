@@ -18,10 +18,20 @@
 <resources>
     <style name="Theme.Redface.Dark.Base" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowActivityTransitions">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
+
+    <style name="Theme.Redface.Night.Base" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowActivityTransitions">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 
     <style name="Theme.Redface.Light.Base" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowActivityTransitions">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 
     <style name="Theme.Redface.Transparent.Dark" parent="Theme.Redface.Dark">
@@ -32,8 +42,16 @@
         <item name="android:backgroundDimEnabled">false</item>
 
         <item name="android:windowContentTransitions">true</item>
-        <item name="android:windowEnterTransition">@transition/circular_reveal</item>
-        <item name="android:windowExitTransition">@transition/circular_reveal</item>
+    </style>
+
+    <style name="Theme.Redface.Transparent.Night" parent="Theme.Redface.Night">
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:backgroundDimEnabled">false</item>
+
+        <item name="android:windowContentTransitions">true</item>
     </style>
 
     <style name="Theme.Redface.Transparent.Light" parent="Theme.Redface.Light">
@@ -44,7 +62,5 @@
         <item name="android:backgroundDimEnabled">false</item>
 
         <item name="android:windowContentTransitions">true</item>
-        <item name="android:windowEnterTransition">@transition/circular_reveal</item>
-        <item name="android:windowExitTransition">@transition/circular_reveal</item>
     </style>
 </resources>

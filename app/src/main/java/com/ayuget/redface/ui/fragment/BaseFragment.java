@@ -54,43 +54,44 @@ public class BaseFragment extends Fragment {
         // Inject dependencies
         RedfaceApp app = RedfaceApp.get(getActivity());
         app.inject(this);
-
-        // Proper RxJava subscriptions management with CompositeSubscription
-        subscriptions = new CompositeSubscription();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
 
-        subscriptions.unsubscribe();
-
+        // LeakCanary
         RefWatcher refWatcher = RedfaceApp.getRefWatcher(getActivity());
         refWatcher.watch(this);
     }
 
     @Override
-    public void onResume() {
+    public void onStart() {
         super.onResume();
+
+        // Proper RxJava subscriptions management with CompositeSubscription
+        subscriptions = new CompositeSubscription();
 
         bus.register(this);
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
+    public void onStop() {
+        super.onStop();
 
         bus.unregister(this);
-    }
-
-    protected void emitEvent(Object o) {
-        bus.post(o);
+        subscriptions.unsubscribe();
     }
 
     protected void subscribe(Subscription s) {
         subscriptions.add(s);
     }
 
+    /**
+     * Inflates fragment root view and deals with view injections through ButterKnife
+     *
+     * Also applies app custom theme
+     */
     protected ViewGroup inflateRootView(@LayoutRes int viewResId, LayoutInflater inflater, ViewGroup container) {
         final Context contextThemeWrapper = new ContextThemeWrapper(getActivity(), themeManager.getActiveThemeStyle());
         LayoutInflater themedInflater = inflater.cloneInContext(contextThemeWrapper);

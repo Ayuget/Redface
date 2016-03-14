@@ -97,28 +97,35 @@ public class UserCookieStore implements CookieStore {
 
     @Override
     public void add(URI uri, HttpCookie cookie) {
-        Log.d(LOG_TAG, String.format("[user=%s] Adding cookie '%s' for URL '%s'", user.getUsername(), cookie.getName(), uri.toString()));
-
         String name = getCookieToken(uri, cookie);
+        String host = uri.getHost();
 
         // Save cookie into local store, or remove if expired
-        if (!cookie.hasExpired()) {
-            if(!cookies.containsKey(uri.getHost())) {
-                cookies.put(uri.getHost(), new ConcurrentHashMap<String, HttpCookie>());
-            }
-            cookies.get(uri.getHost()).put(name, cookie);
-        }
-        else {
+        if (cookie.hasExpired()) {
             if(cookies.containsKey(uri.toString())) {
                 cookies.get(uri.getHost()).remove(name);
             }
         }
+        else {
+            if(!cookies.containsKey(uri.getHost())) {
+                cookies.put(uri.getHost(), new ConcurrentHashMap<String, HttpCookie>());
+            }
 
-        // Save cookie into persistent store
-        SharedPreferences.Editor prefsWriter = cookiePrefs.edit();
-        prefsWriter.putString(uri.getHost(), TextUtils.join(",", cookies.get(uri.getHost()).keySet()));
-        prefsWriter.putString(COOKIE_NAME_PREFIX + name, encodeCookie(new SerializableHttpCookie(cookie)));
-        prefsWriter.commit();
+            // We choose deliberately not to overwrite existing cookies, because it is simply
+            // not necessary. Existing (non-expired) cookies will work just fine.
+            boolean cookieExists = cookies.get(uri.getHost()).containsKey(name);
+
+            if (! cookieExists) {
+                Log.d(LOG_TAG, String.format("[user=%s] Adding cookie '%s' for URL '%s' (name='%s', host='%s')", user.getUsername(), cookie.getName(), uri.toString(), name, host));
+                cookies.get(uri.getHost()).put(name, cookie);
+
+                // Save cookie into persistent store
+                SharedPreferences.Editor prefsWriter = cookiePrefs.edit();
+                prefsWriter.putString(uri.getHost(), TextUtils.join(",", cookies.get(uri.getHost()).keySet()));
+                prefsWriter.putString(COOKIE_NAME_PREFIX + name, encodeCookie(new SerializableHttpCookie(cookie)));
+                prefsWriter.apply();
+            }
+        }
     }
 
     protected String getCookieToken(URI uri, HttpCookie cookie) {
@@ -135,6 +142,8 @@ public class UserCookieStore implements CookieStore {
 
     @Override
     public boolean removeAll() {
+        Log.d(LOG_TAG, String.format("[user=%s] Clearing all cookies !", user.getUsername()));
+
         SharedPreferences.Editor prefsWriter = cookiePrefs.edit();
         prefsWriter.clear();
         prefsWriter.commit();

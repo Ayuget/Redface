@@ -55,4 +55,20 @@
         android:defaultValue="@string/pref_default_meta_ordering_default"
         android:entries="@array/pref_default_meta_ordering_values"
         android:entryValues="@array/pref_default_meta_ordering_entries" />
+
+    <PreferenceCategory
+        android:title="@string/pref_notification_settings">
+        <CheckBoxPreference
+            android:key="enable_pm_notifications"
+            android:title="@string/pref_enable_pm_notifications_title"
+            android:summary="@string/pref_enable_pm_notifications_summary"
+            android:defaultValue="true" />
+        <ListPreference
+            android:key="pm_notification_polling_frequency"
+            android:title="@string/pref_pm_notification_frequency"
+            android:defaultValue="@string/pref_pm_notification_frequency_default"
+            android:entries="@array/pref_pm_notification_frequency_entries"
+            android:entryValues="@array/pref_pm_notification_frequency_values"
+            android:dependency="enable_pm_notifications" />
+    </PreferenceCategory>
 </PreferenceScreen>

@@ -9,13 +9,15 @@ body {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-
-  padding: 20px;
 }
 
 body.redface-dark {
-    /* background: #282828; */
     background: #222222;
+    color: #ffffff;
+}
+
+body.redface-night {
+    background: #000000;
     color: #ffffff;
 }
 
@@ -25,10 +27,9 @@ body.redface-dark {
 
 .post-toolbar {
     font-family: 'Roboto Light', sans-serif-light;
-    padding: 3px 8px 3px 8px;
     background: #cfcece;
     color: #424242;
-    height: 42px;
+    height: 48px;
     box-sizing: border-box;
 }
 
@@ -39,27 +40,53 @@ body.redface-dark {
     border-bottom: 1px solid #111111;
 }
 
+.redface-night .post-toolbar {
+    background: #242428;
+    color: #c2c2c4;
+    border-top: 1px solid #222222;
+    border-bottom: 1px solid #111111;
+}
+
 .profile-picture-container {
+    padding: 0px 4px 0px 8px;
     float: left;
-    display: table-cell;
+    white-space: nowrap;
+    height: 48px;
+    box-sizing: border-box;
+}
+
+.profile-picture-helper {
+    display: inline-block;
+    height: 100%;
     vertical-align: middle;
-    padding-top: 2px;
-    height: 36px;
 }
 
 .profile-picture {
     max-height: 32px;
-    padding-right: 7px;
-    display: block;
+    max-width: 48px;
+    vertical-align: middle;
 }
 
 .post-details {
     float: left;
+    padding: 8px 4px 0px 4px;
 }
 
 .post-content {
     padding: 8px;
     font-size: 12px;
+}
+
+.font-small .post-content {
+    font-size: 10px;
+}
+
+.font-big .post-content {
+    font-size: 14px;
+}
+
+.font-huge .post-content {
+    font-size: 16px;
 }
 
 .post-author {
@@ -75,22 +102,26 @@ body.redface-dark {
 }
 
 .post-actions {
-    float:right;
-    overflow: auto;
+    position: absolute;
+    right: 0;
+    z-index: 1000;
+
+    overflow: none;
+    height: 48px;
 }
 
 .post-action {
-    width: 36px;
-    height: 26px;
+    width: 44px;
+    height: 31px;
     display: table-cell;
     vertical-align: middle;
     text-align: center;
     float: left;
     margin-right: 3px;
-    padding-top: 10px;
+    padding-top: 16px;
 }
 
-.redface-dark .post-content a {
+.redface-dark .post-content a, .redface-night .post-content a {
     color: #76a2fb;
 }
 
@@ -108,7 +139,7 @@ img {
 * Citations
 */
 
-.quote, .spoiler {
+.quote, .spoiler, .code {
     transition: box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     transition-delay: 0.2s;
     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
@@ -118,7 +149,7 @@ img {
     display: none;
 }
 
-.quote, .spoiler {
+.quote, .spoiler, .code {
     border: 1px solid #d4d4d4;
     background: #FAFAFA;
     min-height: 40px;
@@ -135,7 +166,13 @@ img {
     padding: 4px 10px 4px 10px;
 }
 
-.redface-dark .quote, .redface-dark .spoiler {
+.redface-dark .quote, .redface-dark .spoiler, .redface-dark .code {
+    background: #181820;
+    border: 1px solid #3a3a41;
+    color: #ffffff;
+}
+
+.redface-night .quote, .redface-night .spoiler, .redface-night .code {
     background: #181820;
     border: 1px solid #3a3a41;
     color: #ffffff;
@@ -151,6 +188,11 @@ img {
 }
 
 .redface-dark .quote b.s1, .redface-dark .spoiler b.s1Topic {
+    background: #181820;
+    color: #a8a8ac;
+}
+
+.redface-night .quote b.s1, .redface-night .spoiler b.s1Topic {
     background: #181820;
     color: #a8a8ac;
 }
@@ -175,6 +217,16 @@ img {
     min-width: 20px;
 }
 
+
+.nosmiley {
+    display: block;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    vertical-align: middle;
+    padding-top: 20px;
+}
+
 .Topic.masque {
     visibility: hidden;
 }
@@ -191,6 +243,87 @@ img {
     margin-right: 4px;
 }
 
+.extra-details .edited {
+    font-style: italic;
+    font-size: 10px;
+}
+
+/**
+* Overflow icons
+*/
+.post-overflow-icons {
+    overflow: none;
+    list-style-type: none;
+    background: #424242;
+    color: #ffffff;
+    height: 48px;
+    margin: 0;
+    padding-left: 10px;
+
+    display: none;
+}
+
+.post-overflow-icons li {
+    float: left;
+    height: 48px;
+}
+
+.post-overflow-icons li a {
+    width: 52px;
+    height: 48px;
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+    float: left;
+    margin-right: 3px;
+    padding-top: 15px;
+}
+
+/**
+* Code table
+*/
+.code {
+    max-width: 95%;
+    overflow: auto;
+    font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
+
+.code ol {
+    list-style-position: inside;
+    padding: 0px 4px 0px 4px;
+    overflow: auto;
+}
+
+.code li {
+    overflow: auto;
+    word-wrap: break-word;
+}
+
+.post-action.action-lg {
+    padding-top: 12px;
+    height: 34px;
+}
+
+.post-actions .fa-stack {
+    vertical-align: -50%;
+}
+
+.post-actions .fa-stack-1x {
+    line-height: normal;
+}
+
+.post-actions .fa-sm {
+    font-size: 0.5em;
+    line-height: 1.9em;
+}
+
+.post-action.action-selected {
+    background: #b3afaf;
+}
+
+.redface-dark .post-action.action-selected, .redface-night .post-action.action-selected {
+    background: #27292b;
+}
 
 /**
 * Material design ripple effect

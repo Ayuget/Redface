@@ -17,7 +17,6 @@
 package com.ayuget.redface.ui.template;
 
 import android.content.Context;
-import android.text.TextUtils;
 
 import com.ayuget.redface.account.UserManager;
 import com.ayuget.redface.data.api.model.Post;
@@ -35,7 +34,7 @@ public class EditIconTemplate extends HTMLTemplate<Post> {
 
     @Override
     protected void render(Post post, Phrase templateContent, StringBuilder stream) {
-        if (post.getAuthor().equals(userManager.getActiveUser().getUsername())) {
+        if (userManager.isActiveUser(post.getAuthor())) {
             stream.append(
                     templateContent.put("post_id", String.valueOf(post.getId())).format().toString()
             );
