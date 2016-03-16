@@ -35,11 +35,11 @@ public class HTMLToPostList implements Func1<String, List<Post>> {
      */
     private static final int DEFAULT_POSTS_COUNT = 40;
 
-    private static final Pattern descriptionPattern = Pattern.compile(
+    private static final Pattern DESCRIPTION_PATTERN = Pattern.compile(
             "(?:<meta name=\"Description\" content=\")(?:.*)(?:Pages : )(\\d+)(?:[^\"])"
     );
 
-    private static final Pattern postPattern = Pattern.compile(
+    private static final Pattern POST_PATTERN = Pattern.compile(
             "(<table\\s*cellspacing.*?class=\"([a-z]+)\">.*?" +
             "<tr.*?class=\"message.*?" +
             "<a.*?href=\"#t([0-9]+)\".*?" +
@@ -57,13 +57,13 @@ public class HTMLToPostList implements Func1<String, List<Post>> {
 
         // Description tag parsing to find the total number of pages. If
         int topicPagesCount = UIConstants.UNKNOWN_PAGES_COUNT;
-        Matcher pagesMatcher = descriptionPattern.matcher(source);
+        Matcher pagesMatcher = DESCRIPTION_PATTERN.matcher(source);
 
         if (pagesMatcher.find()) {
             topicPagesCount = Integer.valueOf(pagesMatcher.group(1));
         }
 
-        Matcher m = postPattern.matcher(source);
+        Matcher m = POST_PATTERN.matcher(source);
 
         while (m.find()) {
             long postId = Long.parseLong(m.group(3));

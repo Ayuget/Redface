@@ -114,8 +114,8 @@ public class DataService {
         return recentSmileysHandler.loadAndCache(user, mdService.getRecentlyUsedSmileys(user), observer);
     }
 
-    public Subscription searchForSmileys(final String searchExpression, Observer<List<Smiley>> observer) {
-        return smileysSearchHandler.loadAndCache(searchExpression, mdService.searchSmileys(searchExpression), observer);
+    public Subscription searchForSmileys(final User user, final String searchExpression, Observer<List<Smiley>> observer) {
+        return smileysSearchHandler.loadAndCache(searchExpression, mdService.searchSmileys(user, searchExpression), observer);
     }
 
     public Subscription getPopularSmileys(Observer<List<Smiley>> observer) {

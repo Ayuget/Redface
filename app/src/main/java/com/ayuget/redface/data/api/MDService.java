@@ -99,7 +99,7 @@ public interface MDService {
      * @param searchExpression search criteria
      * @return list of smileys matching the expression
      */
-    Observable<List<Smiley>> searchSmileys(String searchExpression);
+    Observable<List<Smiley>> searchSmileys(User user, String searchExpression);
 
     /**
      * Reply to a topic

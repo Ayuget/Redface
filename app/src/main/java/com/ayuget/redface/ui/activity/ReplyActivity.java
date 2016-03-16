@@ -305,7 +305,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
                 if (s.trim().length() > 0) {
                     smileyList.reset();
                     smileysLoadingIndicator.setVisibility(View.VISIBLE);
-                    subscribe(dataService.searchForSmileys(s.trim(), new EndlessObserver<List<Smiley>>() {
+                    subscribe(dataService.searchForSmileys(userManager.getActiveUser(), s.trim(), new EndlessObserver<List<Smiley>>() {
                         @Override
                         public void onNext(List<Smiley> smileys) {
                             smileysLoadingIndicator.setVisibility(View.GONE);

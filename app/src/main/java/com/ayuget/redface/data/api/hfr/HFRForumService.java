@@ -29,6 +29,7 @@ import com.ayuget.redface.data.api.hfr.transforms.HTMLToBBCode;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToPostList;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToPrivateMessageList;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToProfile;
+import com.ayuget.redface.data.api.hfr.transforms.HTMLToSmileyList;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToTopic;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToTopicList;
 import com.ayuget.redface.data.api.model.Category;
@@ -283,14 +284,10 @@ public class HFRForumService implements MDService {
     }
 
     @Override
-    public Observable<List<Smiley>> searchSmileys(String searchExpression) {
+    public Observable<List<Smiley>> searchSmileys(User user, String searchExpression) {
         // http://forum.hardware.fr/message-smi-mp-aj.php?config=hfr.inc&findsmilies=fed
-        return smileyService.searchSmileys(searchExpression).map(new Func1<SmileyResponse, List<Smiley>>() {
-            @Override
-            public List<Smiley> call(SmileyResponse smileyResponse) {
-                return smileyResponse.getSmileys();
-            }
-        });
+        return pageFetcher.fetchSource(user, mdEndpoints.smileySearch(searchExpression))
+                .map(new HTMLToSmileyList());
     }
 
     @Override

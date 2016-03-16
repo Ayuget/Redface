@@ -25,6 +25,11 @@ import com.ayuget.redface.ui.UIConstants;
 import com.google.common.base.Optional;
 import com.squareup.phrase.Phrase;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
+import timber.log.Timber;
+
 public class HFREndpoints implements MDEndpoints {
     private static final String FORUM_BASE_URL = "http://forum.hardware.fr";
 
@@ -61,6 +66,8 @@ public class HFREndpoints implements MDEndpoints {
     private static final String FAVORITE_URL = "{base_url}/user/addflag.php?config=hfr.inc&cat={category_id}&post={topic_id}&numreponse={post_id}";
 
     public static final String PRIVATE_MESSAGE_REAL_CAT_ID = "prive";
+
+    public static final String SMILEY_SEARCH_URL = "{base_url}/message-smi-mp-aj.php?config=hfr.inc&findsmilies={search_term}";
 
     /**
      * Homepage URL (with the list of categories)
@@ -296,6 +303,22 @@ public class HFREndpoints implements MDEndpoints {
         return Phrase.from(PRIVATE_MESSAGES_URL)
                 .put("base_url", FORUM_BASE_URL)
                 .put("page", page)
+                .format().toString();
+    }
+
+    @Override
+    public String smileySearch(String searchTerm) {
+        String encodedTerm;
+        try {
+            encodedTerm = URLEncoder.encode(searchTerm, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            Timber.e(e, "Error while encoding smiley search term");
+            encodedTerm = searchTerm;
+        }
+
+        return Phrase.from(SMILEY_SEARCH_URL)
+                .put("base_url", FORUM_BASE_URL)
+                .put("search_term", encodedTerm)
                 .format().toString();
     }
 }
