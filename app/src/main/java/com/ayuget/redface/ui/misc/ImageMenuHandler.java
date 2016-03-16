@@ -66,30 +66,43 @@ public class ImageMenuHandler {
     }
 
     public void saveImage(final boolean compressAsPng, final boolean notifyUser, final boolean broadcastSave, final boolean overrideExisting, final ImageSavedCallback imageSavedCallback) {
-        String imageOriginalName = StorageHelper.getFilenameFromUrl(imageUrl);
-        final Bitmap.CompressFormat targetFormat = compressAsPng ? Bitmap.CompressFormat.PNG : Bitmap.CompressFormat.JPEG;
+        RxPermissions.getInstance(activity)
+                .request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                .subscribe(new Action1<Boolean>() {
+                    @Override
+                    public void call(Boolean granted) {
+                        if (granted) {
+                            String imageOriginalName = StorageHelper.getFilenameFromUrl(imageUrl);
+                            final Bitmap.CompressFormat targetFormat = compressAsPng ? Bitmap.CompressFormat.PNG : Bitmap.CompressFormat.JPEG;
 
-        // When compressing image as PNG, we need to make sure the file extension is ".png"
-        final String imageName = compressAsPng ?  replaceExtensionWithPng(imageOriginalName) : imageOriginalName;
+                            // When compressing image as PNG, we need to make sure the file extension is ".png"
+                            final String imageName = compressAsPng ?  replaceExtensionWithPng(imageOriginalName) : imageOriginalName;
 
-        // Images can be already stored locally so they are only downloaded from the network
-        // if necessary.
-        try {
-            final File mediaFile = StorageHelper.getMediaFile(imageName);
+                            // Images can be already stored locally so they are only downloaded from the network
+                            // if necessary.
+                            try {
+                                final File mediaFile = StorageHelper.getMediaFile(imageName);
 
-            if (mediaFile.exists() && ! overrideExisting) {
-                Timber.d("Image '%s' already exists, it will not be redownloaded for efficiency reasons", mediaFile.getAbsolutePath());
-                notifyImageWasSaved(imageSavedCallback, mediaFile, targetFormat);
-            }
+                                if (mediaFile.exists() && ! overrideExisting) {
+                                    Timber.d("Image '%s' already exists, it will not be redownloaded for efficiency reasons", mediaFile.getAbsolutePath());
+                                    notifyImageWasSaved(imageSavedCallback, mediaFile, targetFormat);
+                                }
 
-            else {
-                saveImageFromNetwork(mediaFile, targetFormat, compressAsPng, notifyUser, broadcastSave, imageSavedCallback);
-            }
-        }
-        catch (IOException e) {
-            Timber.e(e, "Unable to save image to external storage");
-            SnackbarHelper.makeError(activity, R.string.error_saving_image).show();
-        }
+                                else {
+                                    saveImageFromNetwork(mediaFile, targetFormat, compressAsPng, notifyUser, broadcastSave, imageSavedCallback);
+                                }
+                            }
+                            catch (IOException e) {
+                                Timber.e(e, "Unable to save image to external storage");
+                                SnackbarHelper.makeError(activity, R.string.error_saving_image).show();
+                            }
+                        }
+                        else {
+                            Timber.w("WRITE_EXTERNAL_STORAGE denied, unable to save image");
+                            SnackbarHelper.makeError(activity, R.string.error_saving_image_permission_denied).show();
+                        }
+                    }
+                });
     }
 
     /**

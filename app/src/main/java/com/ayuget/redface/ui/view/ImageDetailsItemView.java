@@ -23,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.ayuget.redface.R;
+import com.ayuget.redface.ui.misc.UiUtils;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -55,9 +56,11 @@ public class ImageDetailsItemView extends RelativeLayout {
         inflate(getContext(), R.layout.item_image_detail, this);
         ButterKnife.inject(this);
 
-        detailIconView.setImageDrawable(getContext().getDrawable(icon));
+        detailIconView.setImageDrawable(getContext().getResources().getDrawable(icon));
         mainTextView.setText(mainText);
         secondaryTextView.setText(secondaryText);
+
+        UiUtils.setDrawableColor(detailIconView.getDrawable(), UiUtils.getReplyToolbarIconsColor(getContext()));
     }
 
     public static Builder from(Context context) {

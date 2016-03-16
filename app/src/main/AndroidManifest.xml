@@ -50,7 +50,7 @@
         </activity>
 
         <activity android:name=".ui.activity.SettingsActivity" />
-        <activity android:name=".ui.activity.ExifDetailsActivity" android:theme="@style/Theme.Redface.Transparent.Dark" />
+        <activity android:name=".ui.activity.ExifDetailsActivity" />
         <activity
             android:name=".ui.activity.PrivateMessagesActivity"
             android:launchMode="singleTop" />
