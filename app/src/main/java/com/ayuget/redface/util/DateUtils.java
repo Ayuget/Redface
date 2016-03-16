@@ -40,4 +40,9 @@ public class DateUtils {
     public static String formatLocale(Context context, Date d) {
         return android.text.format.DateUtils.formatDateTime(context, d.getTime(), android.text.format.DateUtils.FORMAT_NUMERIC_DATE | android.text.format.DateUtils.FORMAT_SHOW_TIME | android.text.format.DateUtils.FORMAT_SHOW_DATE | android.text.format.DateUtils.FORMAT_SHOW_YEAR);
     }
+
+    public static long getCurrentTimestamp() {
+        Date now = new Date();
+        return now.getTime() / 1000;
+    }
 }

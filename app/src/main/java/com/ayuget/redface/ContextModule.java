@@ -25,6 +25,7 @@ import com.ayuget.redface.data.state.CategoriesStore;
 import com.ayuget.redface.data.state.ResponseStore;
 import com.ayuget.redface.network.HTTPClientProvider;
 import com.ayuget.redface.settings.RedfaceSettings;
+import com.ayuget.redface.storage.DiskLruCacheFactory;
 import com.squareup.otto.Bus;
 
 import javax.inject.Singleton;
@@ -66,5 +67,10 @@ public class ContextModule {
 
     @Provides @Singleton ResponseStore provideResponseStore() {
         return new ResponseStore(applicationContext);
+    }
+
+    @Provides @Singleton
+    DiskLruCacheFactory provideDiskLRUCacheFactory() {
+        return new DiskLruCacheFactory(applicationContext);
     }
 }

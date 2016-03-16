@@ -14,20 +14,29 @@
  * limitations under the License.
  */
 
-package com.ayuget.redface.data;
+package com.ayuget.redface.data.provider;
 
-import com.ayuget.redface.ContextModule;
-import com.ayuget.redface.data.api.ApiModule;
-import com.ayuget.redface.data.provider.ProviderModule;
+import android.util.Pair;
 
-import dagger.Module;
+import java.util.HashMap;
+import java.util.Map;
 
-@Module(
-        includes = {
-                ApiModule.class,
-                ContextModule.class,
-                ProviderModule.class
-        }
-)
-public class DataModule {
+public class UserMemoryCache<K, V> {
+    private final Map<K, Pair<Long, V>> valueCache = new HashMap<>();
+
+    public void put(K key, V value, long timestamp) {
+        valueCache.put(key, Pair.create(timestamp, value));
+    }
+
+    public Pair<Long, V> get(K key) {
+        return valueCache.get(key);
+    }
+
+    public boolean containsKey(K key) {
+        return valueCache.containsKey(key);
+    }
+
+    public void remove(K key) {
+        valueCache.remove(key);
+    }
 }

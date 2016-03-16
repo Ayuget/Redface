@@ -27,6 +27,7 @@ import com.ayuget.redface.data.api.model.User;
 import com.ayuget.redface.ui.UIConstants;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
+import com.squareup.okhttp.internal.DiskLruCache;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -198,7 +199,7 @@ public class CategoriesStore {
             }
 
             SharedPreferences.Editor editor = categoriesPrefs.edit();
-
+            
             for (Category category : categories) {
                 String categoryKey = CATEGORY_NAME_PREFIX + category.getId();
 
