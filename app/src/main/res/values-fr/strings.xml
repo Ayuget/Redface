@@ -198,4 +198,7 @@
     <string name="action_exif_data">Données EXIF</string>
     <string name="exif_data_title">Données EXIF</string>
     <string name="unknown_model">Modèle inconnu</string>
+    <string name="gallery_image_loading_error">Erreur de chargement de l\'image</string>
+    <string name="pref_enable_internal_browser_summary">Ouvrir tous les liens externes dans le navigateur interne</string>
+    <string name="pref_enable_internal_browser_title">Activer le navigateur interne</string>
 </resources>

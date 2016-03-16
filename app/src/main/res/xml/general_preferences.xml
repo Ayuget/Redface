@@ -56,6 +56,12 @@
         android:entries="@array/pref_default_meta_ordering_values"
         android:entryValues="@array/pref_default_meta_ordering_entries" />
 
+    <CheckBoxPreference
+        android:key="enable_internal_browser"
+        android:title="@string/pref_enable_internal_browser_title"
+        android:summary="@string/pref_enable_internal_browser_summary"
+        android:defaultValue="true" />
+
     <PreferenceCategory
         android:title="@string/pref_notification_settings">
         <CheckBoxPreference

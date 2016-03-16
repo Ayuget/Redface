@@ -82,6 +82,8 @@
     <string name="pref_appearance_title">Appearance</string>
     <string name="pref_appearance_summary">Change how the application looks</string>
     <string name="pref_show_fully_read_topics_title">Show fully read topics</string>
+    <string name="pref_enable_internal_browser_title">Enable internal browser</string>
+    <string name="pref_enable_internal_browser_summary">Open all external links in the internal browser</string>
     <string name="pref_topic_list_compact_mode_title">Compact mode</string>
     <string name="pref_topic_list_compact_mode_summary">Display topic list in a compact way</string>
     <string name="pref_double_tap_to_refresh_title">Enable double tap to refresh</string>

@@ -209,11 +209,16 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     public void openLink(String url) {
-        CustomTabActivityHelper.openCustomTab(
-                this,
-                new CustomTabsIntent.Builder()
-                    .setToolbarColor(UiUtils.getInternalBrowserToolbarColor(this))
-                    .build(),
-                Uri.parse(url));
+        if (settings.isInternalBrowserEnabled()) {
+            CustomTabActivityHelper.openCustomTab(
+                    this,
+                    new CustomTabsIntent.Builder()
+                            .setToolbarColor(UiUtils.getInternalBrowserToolbarColor(this))
+                            .build(),
+                    Uri.parse(url));
+        }
+        else {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+        }
     }
 }
