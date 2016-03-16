@@ -72,7 +72,7 @@ public class ToolbarFragment extends BaseFragment {
 
     public void showUpButton() {
         // Resources comes from AppCompat library
-        toolbar.setNavigationIcon(R.drawable.abc_ic_ab_back_mtrl_am_alpha);;
+        toolbar.setNavigationIcon(R.drawable.md_nav_back);
     }
 
     public void clearInternalStack() {

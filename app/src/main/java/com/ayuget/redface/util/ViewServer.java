@@ -27,6 +27,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewDebug;
 
+import timber.log.Timber;
+
 /**
  * <p>This class can be used to enable the use of HierarchyViewer inside an
  * application. HierarchyViewer is an Android SDK tool that can be used
@@ -98,9 +100,6 @@ public class ViewServer implements Runnable {
     private static final int VIEW_SERVER_MAX_CONNECTIONS = 10;
     private static final String BUILD_TYPE_USER = "user";
 
-    // Debug facility
-    private static final String LOG_TAG = "ViewServer";
-
     private static final String VALUE_PROTOCOL_VERSION = "4";
     private static final String VALUE_SERVER_VERSION = "4";
 
@@ -158,7 +157,7 @@ public class ViewServer implements Runnable {
                 try {
                     sServer.start();
                 } catch (IOException e) {
-                    Log.d(LOG_TAG, "Error:", e);
+                    Timber.e(e, "Error:");
                 }
             }
         } else {
@@ -223,7 +222,7 @@ public class ViewServer implements Runnable {
                 try {
                     mThreadPool.shutdownNow();
                 } catch (SecurityException e) {
-                    Log.w(LOG_TAG, "Could not stop all view server threads");
+                    Timber.w("Could not stop all view server threads");
                 }
             }
 
@@ -235,7 +234,7 @@ public class ViewServer implements Runnable {
                 mServer = null;
                 return true;
             } catch (IOException e) {
-                Log.w(LOG_TAG, "Could not close the view server");
+                Timber.w("Could not close the view server");
             }
         }
 
@@ -368,7 +367,7 @@ public class ViewServer implements Runnable {
         try {
             mServer = new ServerSocket(mPort, VIEW_SERVER_MAX_CONNECTIONS, InetAddress.getLocalHost());
         } catch (Exception e) {
-            Log.w(LOG_TAG, "Starting ServerSocket error: ", e);
+            Timber.w(e, "Starting ServerSocket error: ");
         }
 
         while (mServer != null && Thread.currentThread() == mThread) {
@@ -385,7 +384,7 @@ public class ViewServer implements Runnable {
                     }
                 }
             } catch (Exception e) {
-                Log.w(LOG_TAG, "Connection error: ", e);
+                Timber.w(e, "Connection error: ");
             }
         }
     }
@@ -578,10 +577,10 @@ public class ViewServer implements Runnable {
                 }
 
                 if (!result) {
-                    Log.w(LOG_TAG, "An error occurred with the command: " + command);
+                    Timber.w("An error occurred with the command: " + command);
                 }
             } catch(IOException e) {
-                Log.w(LOG_TAG, "Connection error: ", e);
+                Timber.w(e, "Connection error: ");
             } finally {
                 if (in != null) {
                     try {
@@ -640,8 +639,8 @@ public class ViewServer implements Runnable {
                 }
 
             } catch (Exception e) {
-                Log.w(LOG_TAG, "Could not send command " + command +
-                        " with parameters " + parameters, e);
+                Timber.w(e, "Could not send command " + command +
+                        " with parameters " + parameters);
                 success = false;
             } finally {
                 if (out != null) {
@@ -811,7 +810,7 @@ public class ViewServer implements Runnable {
                     }
                 }
             } catch (Exception e) {
-                Log.w(LOG_TAG, "Connection error: ", e);
+                Timber.w(e, "Connection error: ");
             } finally {
                 if (out != null) {
                     try {

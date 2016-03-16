@@ -23,8 +23,6 @@ import com.ayuget.redface.data.api.model.Smiley;
 import com.squareup.phrase.Phrase;
 
 public class SmileyTemplate extends HTMLTemplate<Smiley> {
-    private static final String LOG_TAG = SmileyTemplate.class.getSimpleName();
-
     private static final String SMILEY_TEMPLATE = "smiley.html";
 
     public SmileyTemplate(Context context) {

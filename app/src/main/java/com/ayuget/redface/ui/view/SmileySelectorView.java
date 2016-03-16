@@ -37,8 +37,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 public class SmileySelectorView extends WebView {
-    private static final String LOG_TAG = TopicPageView.class.getSimpleName();
-
     private boolean initialized;
 
     @Inject

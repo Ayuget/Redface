@@ -41,9 +41,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
-public class PrivateMessagesAdapter extends RecyclerView.Adapter<PrivateMessagesAdapter.ViewHolder>{
-    private static final String LOG_TAG = PrivateMessagesAdapter.class.getSimpleName();
+import timber.log.Timber;
 
+public class PrivateMessagesAdapter extends RecyclerView.Adapter<PrivateMessagesAdapter.ViewHolder>{
     private static final Phrase PM_TITLE_FORMAT = Phrase.from("<strong>@{recipient} :</strong> {subject}");
 
     private List<PrivateMessage> privateMessages = Collections.emptyList();
@@ -190,13 +190,13 @@ public class PrivateMessagesAdapter extends RecyclerView.Adapter<PrivateMessages
     }
 
     public void replaceWith(List<PrivateMessage> privateMessages) {
-        Log.d(LOG_TAG, String.format("Displaying %d private messages", privateMessages.size()));
+        Timber.d("Displaying %d private messages", privateMessages.size());
         this.privateMessages = privateMessages;
         notifyDataSetChanged();
     }
 
     public void extendWith(List<PrivateMessage> privateMessages) {
-        Log.d(LOG_TAG, String.format("Added %d private messages to pm list", privateMessages.size()));
+        Timber.d("Added %d private messages to pm list", privateMessages.size());
         this.privateMessages.addAll(privateMessages);
         notifyDataSetChanged();
     }

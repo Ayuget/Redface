@@ -28,9 +28,9 @@ import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.event.SmileySelectedEvent;
 import com.squareup.otto.Subscribe;
 
-public class EditPostActivity extends ReplyActivity {
-    private static final String LOG_TAG = EditPostActivity.class.getSimpleName();
+import timber.log.Timber;
 
+public class EditPostActivity extends ReplyActivity {
     private SubscriptionHandler<User, Response> editSubscriptionHandler = new SubscriptionHandler<>();
 
     private int editedPostId;
@@ -67,7 +67,7 @@ public class EditPostActivity extends ReplyActivity {
 
             @Override
             public void onError(Throwable throwable) {
-                Log.e(LOG_TAG, "Unknown exception while editing post", throwable);
+                Timber.e(throwable, "Unknown exception while editing post");
                 onReplyFailure();
             }
         }));

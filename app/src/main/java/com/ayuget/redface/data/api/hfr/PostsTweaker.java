@@ -35,8 +35,6 @@ import rx.functions.Func1;
  * by the app, handles images cache, images download settings, ...
  */
 public final class PostsTweaker implements Func1<List<Post>, List<Post>> {
-    private static final String LOG_TAG = PostsTweaker.class.getSimpleName();
-
     private static final String REGULAR_LINK_REGEX = "<a\\s*href=\"(http://forum\\.hardware\\.fr.*?)\"\\s*target=\"_blank\"\\s*class=\"cLink\">";
     private static final CallbackMatcher SMILEYS_REGEX = new CallbackMatcher("<img\\s*src=\"(http://forum\\-images\\.hardware\\.fr.*?)\"\\s*alt=\"(.*?)\".*?/>");
     private static final CallbackMatcher QUOTES_AND_SPOILERS = new CallbackMatcher("(?:<div class=\\\"container\\\"><table class=\\\")(oldcitation|citation|spoiler)(?:[^>]+)(?:>)(?:.*?)(?:<b class=\\\")(s1|s1Topic)(?:\\\">)(?:(?:<a href=\")([^\\\"]+)(?:\")(?:[^>]+)(?:>))?", Pattern.DOTALL);

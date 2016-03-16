@@ -80,10 +80,9 @@ import javax.inject.Inject;
 
 import butterknife.InjectView;
 import butterknife.OnClick;
+import timber.log.Timber;
 
 public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemClickListener {
-    private static final String LOG_TAG = ReplyActivity.class.getSimpleName();
-
     private static final String ARG_TOPIC = "topic";
 
     /**
@@ -306,7 +305,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
                 if (s.trim().length() > 0) {
                     smileyList.reset();
                     smileysLoadingIndicator.setVisibility(View.VISIBLE);
-                    subscribe(dataService.searchForSmileys(s.trim(), new EndlessObserver<List<Smiley>>() {
+                    subscribe(dataService.searchForSmileys(userManager.getActiveUser(), s.trim(), new EndlessObserver<List<Smiley>>() {
                         @Override
                         public void onNext(List<Smiley> smileys) {
                             smileysLoadingIndicator.setVisibility(View.GONE);
@@ -551,7 +550,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
 
     protected void setupUserSwitcher(LayoutInflater inflater, List<User> users) {
         if (users.size() == 0) {
-            Log.e(LOG_TAG, "Empty user list");
+            Timber.e("Empty user list");
         }
         else if (users.size() == 1 || !canSwitchUser()) {
             View userView = setupUserView(inflater, canSwitchUser() ? users.get(0) : userManager.getActiveUser());
@@ -559,7 +558,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
         }
         else {
             // Setup spinner for user selection
-            Log.d(LOG_TAG, String.format("Initializing spinner for '%d' users", users.size()));
+            Timber.d("Initializing spinner for '%d' users", users.size());
             View spinnerContainer = inflater.inflate(R.layout.reply_user_spinner, actionsToolbar, false);
             ActionBar.LayoutParams lp = new ActionBar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
             actionsToolbar.addView(spinnerContainer, 0, lp);
@@ -681,7 +680,6 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
 
     @OnClick({R.id.insert_manual_smiley_button, R.id.make_text_bold_button, R.id.make_text_italic_button, R.id.insert_quote_button, R.id.insert_link_button, R.id.insert_spoiler_button, R.id.insert_image_button})
     public void onExtraToolbarButtonClicked(ImageButton button) {
-        Log.d(LOG_TAG, "Button  clicked !");
         switch (button.getId()) {
             case R.id.insert_manual_smiley_button:
                 insertSmileyOrTag(true, null);
@@ -726,7 +724,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
 
             @Override
             public void onError(Throwable throwable) {
-                Log.e(LOG_TAG, "Unknown exception while replying", throwable);
+                Timber.e(throwable, "Unknown exception while replying");
                 onReplyFailure();
             }
         }));

@@ -57,10 +57,9 @@ import java.util.List;
 import javax.inject.Inject;
 
 import butterknife.InjectView;
+import timber.log.Timber;
 
 public class PrivateMessageListFragment extends ToggleToolbarFragment implements PrivateMessagesAdapter.OnPMClickedListener, PrivateMessagesAdapter.OnPMLongClickListener {
-    private static final String LOG_TAG = PrivateMessageListFragment.class.getSimpleName();
-
     private static final String ARG_PRIVATE_MESSAGES_LIST = "pms_list";
 
     private static final String ARG_LAST_LOADED_PAGE = "last_loaded_page";
@@ -153,7 +152,7 @@ public class PrivateMessageListFragment extends ToggleToolbarFragment implements
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                Log.d(LOG_TAG, "Refreshing private messages");
+                Timber.d("Refreshing private messages");
                 loadPrivateMessages(1);
             }
         });
@@ -229,7 +228,7 @@ public class PrivateMessageListFragment extends ToggleToolbarFragment implements
             displayedPrivateMessages = savedInstanceState.getParcelableArrayList(ARG_PRIVATE_MESSAGES_LIST);
 
             if (displayedPrivateMessages != null) {
-                Log.d(LOG_TAG, String.format("Restored %d private messages", displayedPrivateMessages.size()));
+                Timber.d("Restored %d private messages", displayedPrivateMessages.size());
                 pmAdapter.replaceWith(displayedPrivateMessages);
                 showPrivateMessages();
             }
@@ -293,12 +292,12 @@ public class PrivateMessageListFragment extends ToggleToolbarFragment implements
      * @param page page to load
      */
     private void loadPrivateMessages(final int page) {
-        Log.d(LOG_TAG, String.format("Loading private messages page %d", page));
+        Timber.d("Loading private messages page %d", page);
 
         subscribe(pmSubscriptionHandler.load(1, mdService.listPrivateMessages(userManager.getActiveUser(), page), new EndlessObserver<List<PrivateMessage>>() {
             @Override
             public void onNext(List<PrivateMessage> privateMessages) {
-                Log.d(LOG_TAG, String.format("Loading request completed, %d private messages loaded", privateMessages.size()));
+                Timber.d("Loading request completed, %d private messages loaded", privateMessages.size());
 
                 if (page == 1) {
                     displayedPrivateMessages.clear();
@@ -320,7 +319,7 @@ public class PrivateMessageListFragment extends ToggleToolbarFragment implements
 
             @Override
             public void onError(Throwable throwable) {
-                Log.d(LOG_TAG, String.format("Error loading private messages page %d", page), throwable);
+                Timber.e(throwable, "Error loading private messages page %d", page);
 
                 swipeRefreshLayout.setRefreshing(false);
 

@@ -25,8 +25,6 @@ import com.squareup.phrase.Phrase;
 import java.util.List;
 
 public class PostsTemplate extends HTMLTemplate<List<Post>> {
-    private static final String LOG_TAG = PostsTemplate.class.getSimpleName();
-
     private static final String POSTS_TEMPLATE = "posts.html";
 
     private PostTemplate postTemplate;

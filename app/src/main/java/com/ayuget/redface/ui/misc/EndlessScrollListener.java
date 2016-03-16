@@ -24,8 +24,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 
 public abstract class EndlessScrollListener extends RecyclerView.OnScrollListener {
-    private static final String LOG_TAG = EndlessScrollListener.class.getSimpleName();
-
     // The minimum amount of items to have below your current scroll position before loading more.
     private int visibleThreshold = 5;
     // The current offset index of data you have loaded

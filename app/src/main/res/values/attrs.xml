@@ -17,6 +17,7 @@
 
 <resources>
     <attr name="appBackgroundColor" format="reference|color" />
+    <attr name="internalBrowserToolbarColor" format="reference|color" />
     <attr name="statusBarBackgroundColor" format="reference|color" />
     <attr name="navDrawerBackgroundColor" format="reference|color" />
 

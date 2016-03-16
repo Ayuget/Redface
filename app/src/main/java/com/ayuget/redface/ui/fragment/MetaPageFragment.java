@@ -40,10 +40,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import timber.log.Timber;
+
 @FragmentArgsInherited
 public class MetaPageFragment extends TopicListFragment {
-    private static final String LOG_TAG = TopicListFragment.class.getSimpleName();
-
     private static final String ARG_META_PAGE_SORTED_BY_DATE = "meta_page_ordering";
 
     private  StickyRecyclerHeadersDecoration headerDecoration;
@@ -161,13 +161,13 @@ public class MetaPageFragment extends TopicListFragment {
      * user has to swipe at the bottom of the list to load the next pages
      */
     public void loadTopics() {
-        Log.d(LOG_TAG, String.format("Loading meta category and replacing current topics (with filter='%s')", topicFilter == null ? "null" : topicFilter.toString()));
+        Timber.d("Loading meta category and replacing current topics (with filter='%s')", topicFilter == null ? "null" : topicFilter.toString());
 
         // Load categories for active user
         subscribe(dataService.loadMetaPageTopics(userManager.getActiveUser(), topicFilter, areTopicsSortedByDate(), new EndlessObserver<List<Topic>>() {
             @Override
             public void onNext(List<Topic> loadedTopics) {
-                Log.d(LOG_TAG, String.format("Loading request completed, %d topics loaded", loadedTopics.size()));
+                Timber.d("Loading request completed, %d topics loaded", loadedTopics.size());
 
                 displayedTopics.clear();
                 displayedTopics.addAll(loadedTopics);
@@ -182,7 +182,7 @@ public class MetaPageFragment extends TopicListFragment {
 
             @Override
             public void onError(Throwable throwable) {
-                Log.e(LOG_TAG, "Error loading meta category", throwable);
+                Timber.e(throwable, "Error loading meta category");
 
                 swipeRefreshLayout.setRefreshing(false);
 

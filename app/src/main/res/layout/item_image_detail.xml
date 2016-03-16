@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2015 Ayuget
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="72dp">
+    <ImageView
+        android:id="@+id/detail_icon"
+        android:layout_width="72dp"
+        android:padding="20dp"
+        tools:src="@drawable/ic_action_access_time"
+        android:layout_height="match_parent" />
+
+    <LinearLayout
+        android:id="@+id/details"
+        android:layout_toRightOf="@id/detail_icon"
+        android:layout_centerVertical="true"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/activity_horizontal_margin">
+        <TextView
+            android:id="@+id/main_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Redface.ImageDetails.MainText"
+            android:layout_marginBottom="2dp"
+            tools:text="My_great_image.png" />
+
+        <TextView
+            android:id="@+id/secondary_text"
+            style="@style/Redface.ImageDetails.SecondaryText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="1024x760 - 2.4MB" />
+    </LinearLayout>
+
+
+
+</RelativeLayout>

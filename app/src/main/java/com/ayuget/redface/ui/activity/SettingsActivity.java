@@ -30,8 +30,6 @@ import com.squareup.otto.Subscribe;
 import butterknife.InjectView;
 
 public class SettingsActivity extends BaseActivity {
-    private static final String LOG_TAG = SettingsActivity.class.getSimpleName();
-
     private static final String NESTED_FRAGMENT_TAG = "nested_fragment";
 
     @InjectView(R.id.toolbar_actionbar)

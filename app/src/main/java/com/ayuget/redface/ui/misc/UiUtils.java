@@ -29,8 +29,6 @@ import android.widget.Toast;
 import com.ayuget.redface.R;
 
 public class UiUtils {
-    private static final String LOG_TAG = UiUtils.class.getSimpleName();
-
     /**
      * Copies text into user clipboard
      */
@@ -65,8 +63,12 @@ public class UiUtils {
 
     public static int dpToPx(Context context, int dp) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-        int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
-        return px;
+        return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+    }
+
+    public static int dpToPx(Context context, float dp) {
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
     }
 
     /**
@@ -128,5 +130,9 @@ public class UiUtils {
 
     public static int getStatusBarBackgroundColor(Context context) {
         return resolveColorAttribute(context, R.attr.statusBarBackgroundColor);
+    }
+
+    public static int getInternalBrowserToolbarColor(Context context) {
+        return resolveColorAttribute(context, R.attr.internalBrowserToolbarColor);
     }
 }

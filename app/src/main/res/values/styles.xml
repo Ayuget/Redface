@@ -15,6 +15,7 @@
   -->
 
 <resources xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
+    <style name="Redface"/>
 
     <!-- Text styles -->
     <style name="TextAppearance" parent="@android:style/TextAppearance">
@@ -182,5 +183,16 @@
 
     <style name="Redface.ActionMode" parent="@style/Widget.AppCompat.ActionMode">
         <item name="titleTextStyle">@style/TextAppearance.ActionMode</item>
+    </style>
+
+    <style name="Redface.ImageDetails" />
+    <style name="Redface.ImageDetails.MainText">
+        <item name="android:textSize">@dimen/image_detail_item_main_text_size</item>
+        <item name="android:textColor">?attr/textColorPrimary</item>
+    </style>
+
+    <style name="Redface.ImageDetails.SecondaryText">
+        <item name="android:textSize">@dimen/image_detail_item_secondary_text_size</item>
+        <item name="android:textColor">?attr/textColorSecondary</item>
     </style>
 </resources>

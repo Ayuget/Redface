@@ -29,6 +29,7 @@ import com.ayuget.redface.data.api.hfr.transforms.HTMLToBBCode;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToPostList;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToPrivateMessageList;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToProfile;
+import com.ayuget.redface.data.api.hfr.transforms.HTMLToSmileyList;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToTopic;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToTopicList;
 import com.ayuget.redface.data.api.model.Category;
@@ -64,13 +65,12 @@ import retrofit.http.Path;
 import rx.Observable;
 import rx.functions.Func1;
 import rx.functions.Func2;
+import timber.log.Timber;
 
 /**
  * Dedicated service to parse pages from HFR's forum
  */
 public class HFRForumService implements MDService {
-    private static final String LOG_TAG = HFRForumService.class.getSimpleName();
-
     @Inject PageFetcher pageFetcher;
 
     @Inject PostsTweaker postsTweaker;
@@ -95,7 +95,7 @@ public class HFRForumService implements MDService {
 
     @Override
     public Observable<List<Category>> listCategories(final User user) {
-        Log.d(LOG_TAG, String.format("Retrieving categories for user '%s'", user.getUsername()));
+        Timber.d("Retrieving categories for user '%s'", user.getUsername());
 
         List<Category> cachedCategories = categoriesStore.getCategories(user);
 
@@ -105,14 +105,14 @@ public class HFRForumService implements MDService {
                     .map(new Func1<List<Category>, List<Category>>() {
                         @Override
                         public List<Category> call(List<Category> categories) {
-                            Log.d(LOG_TAG, String.format("Successfully retrieved '%d' categories from network for user '%s', caching them", categories.size(), user.getUsername()));
+                            Timber.d("Successfully retrieved '%d' categories from network for user '%s', caching them", categories.size(), user.getUsername());
                             categoriesStore.storeCategories(user, categories);
                             return categories;
                         }
                     });
         }
         else {
-            Log.d(LOG_TAG, String.format("Successfully retrieved '%d' categories from cache for user '%s'", cachedCategories.size(), user.getUsername()));
+            Timber.d("Successfully retrieved '%d' categories from cache for user '%s'", cachedCategories.size(), user.getUsername());
             return Observable.just(cachedCategories);
         }
     }
@@ -284,13 +284,10 @@ public class HFRForumService implements MDService {
     }
 
     @Override
-    public Observable<List<Smiley>> searchSmileys(String searchExpression) {
-        return smileyService.searchSmileys(searchExpression).map(new Func1<SmileyResponse, List<Smiley>>() {
-            @Override
-            public List<Smiley> call(SmileyResponse smileyResponse) {
-                return smileyResponse.getSmileys();
-            }
-        });
+    public Observable<List<Smiley>> searchSmileys(User user, String searchExpression) {
+        // http://forum.hardware.fr/message-smi-mp-aj.php?config=hfr.inc&findsmilies=fed
+        return pageFetcher.fetchSource(user, mdEndpoints.smileySearch(searchExpression))
+                .map(new HTMLToSmileyList());
     }
 
     @Override
@@ -357,7 +354,7 @@ public class HFRForumService implements MDService {
 
     @Override
     public Observable<Profile> getProfile(User user, int user_id) {
-        Log.d(LOG_TAG, String.format("Retrieving profile for user id '%d'", user_id));
+        Timber.d("Retrieving profile for user id '%d'", user_id);
 
         return pageFetcher.fetchSource(user, mdEndpoints.profile(user_id))
                 .map(new HTMLToProfile());

@@ -29,8 +29,6 @@ import com.ayuget.redface.data.api.model.TopicFilter;
 import com.ayuget.redface.ui.misc.BindableAdapter;
 
 public class SubcategoriesAdapter extends BindableAdapter<SelectableItem> {
-    private static final String LOG_TAG = SubcategoriesAdapter.class.getSimpleName();
-
     public final static int TYPE_CATEGORY = 0;
     public final static int TYPE_SUBCATEGORY = 1;
 

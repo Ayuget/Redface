@@ -40,10 +40,9 @@ import javax.inject.Inject;
 
 import rx.Observable;
 import rx.Subscriber;
+import timber.log.Timber;
 
 public class HFRAuthenticator implements MDAuthenticator {
-    private static final String LOG_TAG = HFRAuthenticator.class.getSimpleName();
-
     public static final Pattern AUTHENTICATION_ERROR_PATTERN = Pattern.compile("(.*)(Votre mot de passe ou nom d\'utilisateur n\'est pas valide)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
     private final HTTPClientProvider httpClientProvider;
@@ -61,7 +60,7 @@ public class HFRAuthenticator implements MDAuthenticator {
         return Observable.create(new Observable.OnSubscribe<Boolean>() {
             @Override
             public void call(Subscriber<? super Boolean> subscriber) {
-                Log.d(LOG_TAG, String.format("Logging in user '%s'", user.getUsername()));
+                Timber.d("Logging in user '%s'", user.getUsername());
 
                 OkHttpClient httpClient = httpClientProvider.getClientForUser(user);
 
@@ -83,7 +82,7 @@ public class HFRAuthenticator implements MDAuthenticator {
 
                     if (response.isSuccessful() && !loginFailed) {
                         // Successful login
-                        Log.d(LOG_TAG, String.format("User '%s' was successfully logged in", user.getUsername()));
+                        Timber.d("User '%s' was successfully logged in", user.getUsername());
 
                         if (BuildConfig.DEBUG) {
                             printReceivedCookies(httpClient);
@@ -92,7 +91,7 @@ public class HFRAuthenticator implements MDAuthenticator {
                         subscriber.onNext(true);
                     }
                     else {
-                        Log.e(LOG_TAG, String.format("Failed to log in user '%s'", user.getUsername()));
+                        Timber.e("Failed to log in user '%s'", user.getUsername());
                         subscriber.onNext(false);
                     }
 
@@ -109,7 +108,7 @@ public class HFRAuthenticator implements MDAuthenticator {
         CookieManager cookieManager = (CookieManager) httpClient.getCookieHandler();
         CookieStore cookieStore = cookieManager.getCookieStore();
         for (HttpCookie cookie : cookieStore.getCookies()) {
-            Log.d(LOG_TAG, String.format("Received cookie '%s'", cookie.getName()));
+            Timber.d("Received cookie '%s'", cookie.getName());
         }
     }
 }

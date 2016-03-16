@@ -46,6 +46,10 @@ public class RedfaceSettings {
         return sharedPreferences.getBoolean(SettingsConstants.KEY_ENABLE_PROXY, false);
     }
 
+    public boolean isInternalBrowserEnabled() {
+        return sharedPreferences.getBoolean(SettingsConstants.KEY_ENABLE_INTERNAL_BROWSER, true);
+    }
+
     public String getProxyHost() {
         return sharedPreferences.getString(SettingsConstants.KEY_PROXY_HOST, null);
     }

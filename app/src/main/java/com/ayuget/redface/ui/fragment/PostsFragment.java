@@ -25,27 +25,36 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.Button;
+import android.widget.ShareActionProvider;
 import android.widget.Toast;
 
 import com.ayuget.redface.R;
 import com.ayuget.redface.RedfaceApp;
 import com.ayuget.redface.account.UserManager;
 import com.ayuget.redface.data.DataService;
+import com.ayuget.redface.data.api.MDEndpoints;
 import com.ayuget.redface.data.api.MDService;
 import com.ayuget.redface.data.api.model.Post;
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.rx.EndlessObserver;
 import com.ayuget.redface.data.rx.SubscriptionHandler;
+import com.ayuget.redface.network.HTTPClientProvider;
+import com.ayuget.redface.ui.activity.ExifDetailsActivity;
 import com.ayuget.redface.ui.activity.MultiPaneActivity;
 import com.ayuget.redface.ui.activity.ReplyActivity;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
 import com.ayuget.redface.ui.event.PageSelectedEvent;
 import com.ayuget.redface.ui.event.ScrollToPostEvent;
+import com.ayuget.redface.ui.misc.ImageMenuHandler;
 import com.ayuget.redface.ui.misc.UiUtils;
 import com.ayuget.redface.ui.view.TopicPageView;
 import com.getbase.floatingactionbutton.FloatingActionButton;
@@ -62,10 +71,9 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import butterknife.InjectView;
+import timber.log.Timber;
 
 public class PostsFragment extends BaseFragment {
-    private static final String LOG_TAG = PostsFragment.class.getSimpleName();
-
     private static final String ARG_POST_LIST = "post_list";
 
     private static final String ARG_TOPIC = "topic";
@@ -101,12 +109,17 @@ public class PostsFragment extends BaseFragment {
 
     private ArrayList<Post> displayedPosts = new ArrayList<>();
 
-    @Inject DataService dataService;
+    @Inject
+    DataService dataService;
 
     @Inject
     UserManager userManager;
 
-    @Inject MDService mdService;
+    @Inject
+    MDService mdService;
+
+    @Inject
+    MDEndpoints mdEndpoints;
 
     /**
      * Current scroll position in the webview.
@@ -129,7 +142,7 @@ public class PostsFragment extends BaseFragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.d(LOG_TAG, String.format("@%d -> Fragment(currentPage=%d) -> onCreate", System.identityHashCode(this), currentPage));
+        Timber.d("@%d -> Fragment(currentPage=%d) -> onCreate", System.identityHashCode(this), currentPage);
 
         super.onCreate(savedInstanceState);
 
@@ -145,9 +158,11 @@ public class PostsFragment extends BaseFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable final Bundle savedInstanceState) {
-        Log.d(LOG_TAG, String.format("@%d -> Fragment(currentPage=%d) -> onCreateView(page=%d)", System.identityHashCode(this), currentPage, currentPage));
+        Timber.d("@%d -> Fragment(currentPage=%d) -> onCreateView(page=%d)", System.identityHashCode(this), currentPage, currentPage);
 
         final View rootView = inflateRootView(R.layout.fragment_posts, inflater, container);
+
+        topicPageView.setHostActivity(getActivity());
 
         // Default view is the loading indicator
         showLoadingIndicator();
@@ -156,22 +171,22 @@ public class PostsFragment extends BaseFragment {
         restoredPosts = false;
 
         if (savedInstanceState != null) {
-            Log.d(LOG_TAG, String.format("@%d -> Fragment(currentPage=%d) -> trying to restore state", System.identityHashCode(this), currentPage));
+            Timber.d("@%d -> Fragment(currentPage=%d) -> trying to restore state", System.identityHashCode(this), currentPage);
             displayedPosts = savedInstanceState.getParcelableArrayList(ARG_POST_LIST);
             if (displayedPosts != null) {
-                Log.i(LOG_TAG, String.format("@%d -> Fragment(currentPage=%d) -> Restored %d posts to fragment", System.identityHashCode(this), displayedPosts.size(), currentPage));
-
-                topicPageView.setTopic(topic);
-                topicPageView.setPage(currentPage);
-                topicPageView.setPosts(displayedPosts);
-
+                Timber.d("@%d -> Fragment(currentPage=%d) -> Restored %d posts to fragment", System.identityHashCode(this), displayedPosts.size(), currentPage);
                 restoredPosts = displayedPosts.size() > 0;
-                showPosts();
             }
         }
 
         if (displayedPosts == null) {
             displayedPosts = new ArrayList<>();
+        }
+        else if (displayedPosts.size() > 0){
+            topicPageView.setTopic(topic);
+            topicPageView.setPage(currentPage);
+            topicPageView.setPosts(displayedPosts);
+            showPosts();
         }
 
         // Implement swipe to refresh
@@ -179,7 +194,7 @@ public class PostsFragment extends BaseFragment {
             @Override
             public void onRefresh() {
                 savePageScrollPosition();
-                Log.d(LOG_TAG, String.format("Refreshing topic page '%d' for topic %s", currentPage, topic));
+                Timber.d("Refreshing topic page '%d' for topic %s", currentPage, topic);
                 loadPage(currentPage);
             }
         });
@@ -189,7 +204,7 @@ public class PostsFragment extends BaseFragment {
             errorReloadButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.d(LOG_TAG, String.format("Refreshing topic page '%d' for topic %s", currentPage, topic));
+                    Timber.d("Refreshing topic page '%d' for topic %s", currentPage, topic);
                     showLoadingIndicator();
                     loadPage(currentPage);
                 }
@@ -249,7 +264,7 @@ public class PostsFragment extends BaseFragment {
 
                   @Override
                   public void onError(Throwable throwable) {
-                      Log.e(LOG_TAG, "Failed to add post to quoted list", throwable);
+                      Timber.e(throwable, "Failed to add post to quoted list");
                       Toast.makeText(getActivity(), R.string.post_failed_to_quote, Toast.LENGTH_SHORT).show();
                   }
               }));
@@ -273,6 +288,9 @@ public class PostsFragment extends BaseFragment {
             replyButton.setVisibility(View.INVISIBLE);
         }
 
+        // Deal with long-press actions on images inside the WebView
+        setupImagesInteractions();
+
         return rootView;
     }
 
@@ -292,7 +310,7 @@ public class PostsFragment extends BaseFragment {
 
         // Page is loaded instantly only if it's the initial page requested on topic load. Other
         // pages will be loaded once selected in the ViewPager
-        if (isInitialPage() && displayedPosts != null && displayedPosts.size() == 0) {
+        if (isInitialPage() && ((displayedPosts != null && displayedPosts.size() == 0) || displayedPosts == null)) {
             showLoadingIndicator();
             loadPage(currentPage);
         }
@@ -303,6 +321,8 @@ public class PostsFragment extends BaseFragment {
         super.onDestroy();
 
         if (topicPageView != null) {
+            unregisterForContextMenu(topicPageView);
+
             topicPageView.setOnScrollListener(null);
             topicPageView.setOnMultiQuoteModeListener(null);
             topicPageView.setOnPageLoadedListener(null);
@@ -313,8 +333,13 @@ public class PostsFragment extends BaseFragment {
             refWatcher.watch(topicPageView);
         }
 
-        swipeRefreshLayout.setOnRefreshListener(null);
-        replyButton.setOnClickListener(null);
+        if (swipeRefreshLayout != null) {
+            swipeRefreshLayout.setOnRefreshListener(null);
+        }
+
+        if (replyButton != null) {
+            replyButton.setOnClickListener(null);
+        }
 
         if (errorReloadButton != null) {
             errorReloadButton.setOnClickListener(null);
@@ -324,14 +349,14 @@ public class PostsFragment extends BaseFragment {
     private void savePageScrollPosition() {
         if (topicPageView != null) {
             currentScrollPosition = topicPageView.getScrollY();
-            Log.d(LOG_TAG, String.format("Saved scroll position = %d (currentPage=%d)", currentScrollPosition, currentPage));
+            Timber.d("Saved scroll position = %d (currentPage=%d)", currentScrollPosition, currentPage);
         }
     }
 
     private void restorePageScrollPosition() {
         if (topicPageView != null) {
             topicPageView.setScrollY(currentScrollPosition);
-            Log.d(LOG_TAG, String.format("Restored scroll position = %d (currentPage=%d)", currentScrollPosition, currentPage));
+            Timber.d("Restored scroll position = %d (currentPage=%d)", currentScrollPosition, currentPage);
         }
     }
 
@@ -385,7 +410,7 @@ public class PostsFragment extends BaseFragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Log.d(LOG_TAG, String.format("@%d -> Fragment(currentPage=%d) Saving '%d' posts / scrollPosition = '%d'", System.identityHashCode(this), currentPage, displayedPosts.size(), currentScrollPosition));
+        Timber.d("@%d -> Fragment(currentPage=%d) Saving '%d' posts / scrollPosition = '%d'", System.identityHashCode(this), currentPage, displayedPosts.size(), currentScrollPosition);
 
         outState.putParcelableArrayList(ARG_POST_LIST, displayedPosts);
         outState.putInt(ARG_SAVED_SCROLL_POSITION, currentScrollPosition);
@@ -414,7 +439,7 @@ public class PostsFragment extends BaseFragment {
      */
     @Subscribe public void onPageSelectedEvent(PageSelectedEvent event) {
         if (! isInitialPage() && event.getTopic() == topic && event.getPage() == currentPage && isVisible()) {
-            Log.d(LOG_TAG, String.format("@%d -> Fragment(currentPage=%d) received event for page %d selected", System.identityHashCode(this), currentPage, event.getPage()));
+            Timber.d("@%d -> Fragment(currentPage=%d) received event for page %d selected", System.identityHashCode(this), currentPage, event.getPage());
 
             if (displayedPosts != null && displayedPosts.size() == 0) {
                 loadPage(currentPage);
@@ -424,7 +449,7 @@ public class PostsFragment extends BaseFragment {
 
     @Subscribe public void onPageRefreshRequestEvent(PageRefreshRequestEvent event) {
         if (event.getTopic().getId() == topic.getId() && isVisible()) {
-            Log.d(LOG_TAG, String.format("@%d -> Fragment(currentPage=%d) -> Refresh requested event", System.identityHashCode(this), currentPage));
+            Timber.d("@%d -> Fragment(currentPage=%d) -> Refresh requested event", System.identityHashCode(this), currentPage);
 
             savePageScrollPosition();
             showLoadingIndicator();
@@ -444,28 +469,28 @@ public class PostsFragment extends BaseFragment {
     }
 
     private void showLoadingIndicator() {
-        Log.d(LOG_TAG, String.format("@%d -> Showing loading layout", System.identityHashCode(this)));
+        Timber.d("@%d -> Showing loading layout", System.identityHashCode(this));
         if (errorView != null) { errorView.setVisibility(View.GONE); }
         if (loadingIndicator != null) { loadingIndicator.setVisibility(View.VISIBLE); }
         if (swipeRefreshLayout != null) { swipeRefreshLayout.setVisibility(View.GONE); }
     }
 
     private void showErrorView() {
-        Log.d(LOG_TAG, String.format("@%d -> Showing error layout", System.identityHashCode(this)));
+        Timber.d("@%d -> Showing error layout", System.identityHashCode(this));
         if (errorView != null) { errorView.setVisibility(View.VISIBLE); }
         if (loadingIndicator != null) { loadingIndicator.setVisibility(View.GONE); }
         if (swipeRefreshLayout != null) { swipeRefreshLayout.setVisibility(View.GONE); }
     }
 
     private void showPosts() {
-        Log.d(LOG_TAG, String.format("@%d -> Showing posts layout", System.identityHashCode(this)));
+        Timber.d("@%d -> Showing posts layout", System.identityHashCode(this));
         if (errorView != null) { errorView.setVisibility(View.GONE); }
         if (loadingIndicator != null) { loadingIndicator.setVisibility(View.GONE); }
         if (swipeRefreshLayout != null) { swipeRefreshLayout.setVisibility(View.VISIBLE); }
     }
 
     public void loadPage(int page) {
-        Log.d(LOG_TAG, String.format("@%d -> Loading page '%d'", System.identityHashCode(this), page));
+        Timber.d("@%d -> Loading page '%d'", System.identityHashCode(this), page);
         subscribe(dataService.loadPosts(userManager.getActiveUser(), topic, page, new EndlessObserver<List<Post>>() {
             @Override
             public void onNext(List<Post> posts) {
@@ -477,7 +502,7 @@ public class PostsFragment extends BaseFragment {
                 topicPageView.setTopic(topic);
                 topicPageView.setPage(currentPage);
 
-                Log.d(LOG_TAG, String.format("@%d -> Done loading page, settings posts", System.identityHashCode(PostsFragment.this)));
+                Timber.d("@%d -> Done loading page, settings posts", System.identityHashCode(PostsFragment.this));
                 topicPageView.setPosts(posts);
                 showPosts();
             }
@@ -486,10 +511,59 @@ public class PostsFragment extends BaseFragment {
             public void onError(Throwable throwable) {
                 swipeRefreshLayout.setRefreshing(false);
 
-                Log.e(LOG_TAG, String.format("Error displaying topic '%s'", topic), throwable);
+                Timber.e(throwable, "Error displaying topic '%s'", topic);
                 showErrorView();
             }
         }));
+    }
+
+    private void setupImagesInteractions() {
+        registerForContextMenu(topicPageView);
+        topicPageView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
+            @Override
+            public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+                WebView.HitTestResult result = ((WebView) v).getHitTestResult();
+                if (result.getType() == WebView.HitTestResult.IMAGE_TYPE || result.getType() == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE) {
+                    final String url = result.getExtra();
+
+                    final ImageMenuHandler imageMenuHandler = new ImageMenuHandler(getActivity(), url);
+                    MenuItem.OnMenuItemClickListener itemClickListener = new MenuItem.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            switch (item.getItemId()) {
+                                case R.id.action_save_original_image:
+                                    imageMenuHandler.saveImage(false);
+                                    break;
+                                case R.id.action_save_image_as_png:
+                                    imageMenuHandler.saveImage(true);
+                                    break;
+                                case R.id.action_open_image:
+                                    imageMenuHandler.openImage();
+                                    break;
+                                case R.id.action_share_image:
+                                    imageMenuHandler.shareImage();
+                                    break;
+                                case R.id.action_exif_data:
+                                    imageMenuHandler.openExifData();
+                                    break;
+                                default:
+                                    Timber.e("Unknow menu item clicked");
+                            }
+
+                            return true;
+                        }
+                    };
+
+                    if (! url.contains(mdEndpoints.baseurl())) {
+                        menu.setHeaderTitle(url);
+                        getActivity().getMenuInflater().inflate(R.menu.menu_save_image, menu);
+                        for (int i = 0; i < menu.size(); i++) {
+                            menu.getItem(i).setOnMenuItemClickListener(itemClickListener);
+                        }
+                    }
+                }
+            }
+        });
     }
 
 

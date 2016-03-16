@@ -17,12 +17,12 @@
 package com.ayuget.redface.ui.view;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.ActionMode;
 import android.view.GestureDetector;
 import android.view.Menu;
@@ -47,6 +47,7 @@ import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.api.model.misc.PostAction;
 import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.ui.UIConstants;
+import com.ayuget.redface.ui.activity.BaseActivity;
 import com.ayuget.redface.ui.event.EditPostEvent;
 import com.ayuget.redface.ui.event.GoToPostEvent;
 import com.ayuget.redface.ui.event.GoToTopicEvent;
@@ -70,11 +71,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import timber.log.Timber;
+
 public class TopicPageView extends WebView implements View.OnTouchListener {
-    private static final String LOG_TAG = TopicPageView.class.getSimpleName();
-
-    private static final String ARG_QUOTED_MESSAGES = "quoted_messages";
-
     /**
      * The post currently displayed in the webview. These posts will be encoded to HTML with
      * specific {@link com.ayuget.redface.ui.template.HTMLTemplate} classes.
@@ -95,6 +94,11 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
      * Topic's page currently displayed in the webview
      */
     private int page;
+
+    /**
+     * Activity in which the view is hosted
+     */
+    private Activity hostActivity;
 
     /**
      * Android framework utility class to detect gestures, used
@@ -227,7 +231,7 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
                 @Override
                 public void onPageFinished(WebView view, String url) {
                     if (posts.size() > 0) {
-                        Log.d(LOG_TAG, String.format("Page Loaded Event fired (page=%d)", page));
+                        Timber.d("Page Loaded Event fired (page=%d)", page);
                         TopicPageView.this.post(new Runnable() {
                             @Override
                             public void run() {
@@ -249,10 +253,10 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
                 @Override
                 public boolean shouldOverrideUrlLoading(WebView view, String url) {
                     if (url != null && url.startsWith(mdEndpoints.baseurl())) {
-                        Log.d(LOG_TAG, String.format("Clicked on internal url = '%s'", url));
+                        Timber.d("Clicked on internal url = '%s'", url);
                         return true;
                     } else {
-                        getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                        ((BaseActivity) hostActivity).openLink(url);
                         return true;
                     }
                 }
@@ -278,6 +282,10 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
         if (quoteActionMode != null) {
             quoteActionMode.setTitle(Phrase.from(getContext(), R.string.quoted_messages_plural).put("count", quotedMessages.size()).format());
         }
+    }
+
+    public void setHostActivity(Activity hostActivity) {
+        this.hostActivity = hostActivity;
     }
 
     @Override
@@ -321,7 +329,7 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
     }
 
     public void setPagePosition(PagePosition pagePosition) {
-        Log.d(LOG_TAG, String.format("setPagePosition called !!! (page=%d)", page));
+        Timber.d("setPagePosition called !!! (page=%d)", page);
         if (pagePosition != null) {
             if (pagePosition.isBottom()) {
                 scrollToBottom();
@@ -333,7 +341,7 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
     }
 
     public void scrollToBottom() {
-        Log.d(LOG_TAG, "Scrolling to the bottom of the page");
+        Timber.d("Scrolling to the bottom of the page");
         JsExecutor.execute(this, "scrollToBottom()");
     }
 
@@ -418,7 +426,7 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
 
         @JavascriptInterface
         public void quotePost(final int postId) {
-            Log.d(LOG_TAG, String.format("Quoting post '%d'", postId));
+            Timber.d("Quoting post '%d'", postId);
             TopicPageView.this.post(new Runnable() {
                 @Override
                 public void run() {
@@ -429,7 +437,7 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
 
         @JavascriptInterface
         public void toggleQuoteStatus(final long postId) {
-            Log.d(LOG_TAG, String.format("Toggling quote status for post '%d'", postId));
+            Timber.d("Toggling quote status for post '%d'", postId);
 
             if (quotedMessages.contains(postId)) {
                 quotedMessages.remove(postId);
@@ -479,7 +487,7 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
 
         @JavascriptInterface
         public void editPost(final int postId) {
-            Log.d(LOG_TAG, String.format("Editing post '%d'", postId));
+            Timber.d("Editing post '%d'", postId);
             TopicPageView.this.post(new Runnable() {
                 @Override
                 public void run() {
@@ -490,7 +498,7 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
 
         @JavascriptInterface
         public void markPostAsFavorite(final int postId) {
-            Log.d(LOG_TAG, String.format("Marking post '%d' as favorite", postId));
+            Timber.d("Marking post '%d' as favorite", postId);
             TopicPageView.this.post(new Runnable() {
                 @Override
                 public void run() {
@@ -501,7 +509,7 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
 
         @JavascriptInterface
         public void deletePost(final int postId) {
-            Log.d(LOG_TAG, String.format("Deleting post '%d'", postId));
+            Timber.d("Deleting post '%d'", postId);
             TopicPageView.this.post(new Runnable() {
                 @Override
                 public void run() {
@@ -526,12 +534,12 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
 
         @JavascriptInterface
         public void showProfile (String username){
-                Log.d(LOG_TAG, String.format("Profile requested for user '%s'", username));
+            Timber.d("Profile requested for user '%s'", username);
         }
 
         @JavascriptInterface
         public void handleUrl(final int postId, final String url) {
-            Log.d(LOG_TAG, String.format("Clicked on internal url = '%s' (postId = %d)", url, postId));
+            Timber.d("Clicked on internal url = '%s' (postId = %d)", url, postId);
 
             TopicPageView.this.post(new Runnable() {
                 @Override

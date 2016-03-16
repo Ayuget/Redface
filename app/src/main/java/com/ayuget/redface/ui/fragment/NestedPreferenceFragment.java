@@ -42,9 +42,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public class NestedPreferenceFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
-    private static final String LOG_TAG = NestedPreferenceFragment.class.getSimpleName();
+import timber.log.Timber;
 
+public class NestedPreferenceFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
     @Inject
     Bus bus;
 
@@ -159,7 +159,7 @@ public class NestedPreferenceFragment extends PreferenceFragment implements Shar
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        Log.d(LOG_TAG, String.format("Settings key '%s' changed", key));
+        Timber.d("Settings key '%s' changed", key);
         boolean proxySettingsChanged = key.equals(SettingsConstants.KEY_ENABLE_PROXY) || key.equals(SettingsConstants.KEY_PROXY_HOST) || key.equals(SettingsConstants.KEY_PROXY_PORT);
 
         if (proxySettingsChanged) {
@@ -167,7 +167,7 @@ public class NestedPreferenceFragment extends PreferenceFragment implements Shar
         }
 
         if (key.equals(SettingsConstants.KEY_THEME)) {
-            Log.d(LOG_TAG, "Posting theme changed event");
+            Timber.d("Posting theme changed event");
             bus.post(new ThemeChangedEvent());
         }
 

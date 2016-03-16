@@ -36,11 +36,10 @@ import javax.inject.Singleton;
 
 import rx.Observer;
 import rx.Subscription;
+import timber.log.Timber;
 
 @Singleton
 public class DataService {
-    private static final String LOG_TAG = DataService.class.getSimpleName();
-
     @Inject MDService mdService;
 
     private SubscriptionHandler<User, Profile> profileSubscriptionHandler = new SubscriptionHandler<>();
@@ -90,12 +89,12 @@ public class DataService {
     }
 
     public Subscription loadProfile(final User user, int user_id, Observer<Profile> observer) {
-        Log.d(LOG_TAG, String.format("Loading profile for user id '%d'", user_id));
-        return profileSubscriptionHandler.load(user, mdService.getProfile(user, user_id), observer);
+        Timber.d("Loading profile for user id '%d'", user_id);
+        return profileSubscriptionHandler.loadAndCache(user, mdService.getProfile(user, user_id), observer);
     }
 
     public Subscription loadCategories(final User user, Observer<List<Category>> observer) {
-        Log.d(LOG_TAG, String.format("Loading categories for user '%s'", user.getUsername()));
+        Timber.d("Loading categories for user '%s'", user.getUsername());
         return categoriesSubscriptionHandler.loadAndCache(user, mdService.listCategories(user), observer);
     }
 
@@ -115,8 +114,8 @@ public class DataService {
         return recentSmileysHandler.loadAndCache(user, mdService.getRecentlyUsedSmileys(user), observer);
     }
 
-    public Subscription searchForSmileys(final String searchExpression, Observer<List<Smiley>> observer) {
-        return smileysSearchHandler.loadAndCache(searchExpression, mdService.searchSmileys(searchExpression), observer);
+    public Subscription searchForSmileys(final User user, final String searchExpression, Observer<List<Smiley>> observer) {
+        return smileysSearchHandler.loadAndCache(searchExpression, mdService.searchSmileys(user, searchExpression), observer);
     }
 
     public Subscription getPopularSmileys(Observer<List<Smiley>> observer) {

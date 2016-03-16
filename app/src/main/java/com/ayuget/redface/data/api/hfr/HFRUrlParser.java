@@ -31,9 +31,9 @@ import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
-public class HFRUrlParser implements UrlParser {
-    private static final String LOG_TAG = HFRUrlParser.class.getSimpleName();
+import timber.log.Timber;
 
+public class HFRUrlParser implements UrlParser {
     private static final String REWRITTEN_TOPIC_LIST_REGEX = "([^\\/]+)(?:\\/)(?:([^\\/]+)(?:\\/))?(?:liste_sujet-)(\\d+)(?:.*)";
 
     private static final String REWRITTEN_TOPIC_REGEX = "([^\\/]+)(?:\\/)(?:([^\\/]+)(?:\\/))?(?:[^\\_]+)(?:_)(\\d+)(?:_)(\\d+)(?:\\.htm)";
@@ -83,7 +83,7 @@ public class HFRUrlParser implements UrlParser {
     }
 
     public MDLink parseRewrittenUrl(String url) {
-        Log.d(LOG_TAG, String.format("Parsing rewritten topic URL : %s", url));
+        Timber.d("Parsing rewritten topic URL : %s", url);
 
         // Split url and anchor
         String[] urlParts = url.split("#");
@@ -101,16 +101,16 @@ public class HFRUrlParser implements UrlParser {
             int topicId = Integer.parseInt(rewrittenTopicMatcher.group(subcatOffset + 2));
             int pageNumber = Integer.parseInt(rewrittenTopicMatcher.group(subcatOffset + 3));
 
-            Log.d(LOG_TAG, String.format("Rewritten topic URL : %s, category : %s, subcategory : %s, topicId : %d, pageNumber : %d", url, categorySlug, subcategorySlug, topicId, pageNumber));
+            Timber.d("Rewritten topic URL : %s, category : %s, subcategory : %s, topicId : %d, pageNumber : %d", url, categorySlug, subcategorySlug, topicId, pageNumber);
 
             Category topicCategory = categoriesStore.getCategoryBySlug(categorySlug);
 
             if (topicCategory == null) {
-                Log.e(LOG_TAG, String.format("Category '%s' is unknown", categorySlug));
+                Timber.e("Category '%s' is unknown", categorySlug);
                 return MDLink.invalid();
             }
             else {
-                Log.d(LOG_TAG, String.format("Link is for category '%s'", topicCategory.getName()));
+                Timber.d("Link is for category '%s'", topicCategory.getName());
                 return MDLink.forTopic(topicCategory, topicId)
                         .atPage(pageNumber)
                         .atPost(parseAnchor(anchor))
@@ -123,7 +123,7 @@ public class HFRUrlParser implements UrlParser {
     }
 
     public MDLink parseStandardUrl(String url) {
-        Log.d(LOG_TAG, String.format("Parsing standard topic URL : %s", url));
+        Timber.d("Parsing standard topic URL : %s", url);
 
         Uri parsedUri = Uri.parse(url);
 
@@ -132,18 +132,21 @@ public class HFRUrlParser implements UrlParser {
         String topicId = parsedUri.getQueryParameter("post");
         String anchor = parsedUri.getFragment();
 
-        if (categoryId == null || pageNumber == null || topicId == null) {
-            Log.e(LOG_TAG, "Invalid standard URL, category, page number or topic id not found");
+        // Set default page number as 1 (first page)
+        if (pageNumber == null) { pageNumber = "1"; }
+
+        if (categoryId == null || topicId == null) {
+            Timber.e("URL '%s' is invalid, category, or topic id not found", url);
             return MDLink.invalid();
         }
 
         try {
             Category topicCategory = categoriesStore.getCategoryById(Integer.parseInt(categoryId));
             if (topicCategory == null) {
-                Log.e(LOG_TAG, String.format("Category with id '%s' is unknown", categoryId));
+                Timber.e("Category with id '%s' is unknown", categoryId);
                 return MDLink.invalid();
             } else {
-                Log.d(LOG_TAG, String.format("Link is for category '%s'", topicCategory.getName()));
+                Timber.d("Link is for category '%s'", topicCategory.getName());
                 return MDLink.forTopic(topicCategory, Integer.parseInt(topicId))
                         .atPage(Integer.parseInt(pageNumber))
                         .atPost(parseAnchor(anchor))
@@ -151,14 +154,14 @@ public class HFRUrlParser implements UrlParser {
             }
         }
         catch (NumberFormatException e) {
-            Log.e(LOG_TAG, "Error while parsing standard URL", e);
+            Timber.e(e, "Error while parsing standard URL");
             return MDLink.invalid();
         }
     }
 
     public PagePosition parseAnchor(String anchor) {
         if (anchor == null || ! (anchor.length() > 1 && anchor.charAt(0) == 't')) {
-            Log.e(LOG_TAG, String.format("Anchor '%s' is invalid", anchor));
+            Timber.e("Anchor '%s' is invalid", anchor);
             return new PagePosition(PagePosition.TOP);
         }
         else {

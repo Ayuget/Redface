@@ -78,4 +78,6 @@ public interface MDEndpoints {
     public String privateMessages();
 
     public String privateMessages(int page);
+
+    String smileySearch(String searchTerm);
 }

@@ -186,5 +186,19 @@
     <string name="post_delete_no">Annuler</string>
     <string name="post_delete_yes">Supprimer</string>
     <string name="insert_image_description">Insérer une image</string>
-
+    <string name="action_save_image_as_png">Sauvegarder au format PNG</string>
+    <string name="action_save_original_image">Sauvegarder l\'image originale</string>
+    <string name="action_open_image">Ouvrir l\'image en taille réelle</string>
+    <string name="action_share_image">Partager l\'image</string>
+    <string name="error_saving_image">Erreur lors de l\'enregistrement de l\'image</string>
+    <string name="error_invalid_image">Erreur lors de l\'enregistrement de l\'image : image invalide</string>
+    <string name="error_saving_image_permission_denied">Permission requise pour l\'enregistrement de l\'image</string>
+    <string name="image_saved_successfully">Image sauvegardée avec succès !</string>
+    <string name="action_snackbar_open_image">Ouvrir</string>
+    <string name="action_exif_data">Données EXIF</string>
+    <string name="exif_data_title">Données EXIF</string>
+    <string name="unknown_model">Modèle inconnu</string>
+    <string name="gallery_image_loading_error">Erreur de chargement de l\'image</string>
+    <string name="pref_enable_internal_browser_summary">Ouvrir tous les liens externes dans le navigateur interne</string>
+    <string name="pref_enable_internal_browser_title">Activer le navigateur interne</string>
 </resources>

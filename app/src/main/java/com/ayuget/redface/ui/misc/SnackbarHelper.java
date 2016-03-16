@@ -47,6 +47,12 @@ public class SnackbarHelper {
         return snack;
     }
 
+    public static Snackbar makeWithAction(Activity targetActivity, @StringRes int textRes, @StringRes int actionRes, View.OnClickListener actionClickListener) {
+        Snackbar snackbar = make(targetActivity.findViewById(android.R.id.content), textRes, false);
+        snackbar.setAction(actionRes, actionClickListener);
+        return snackbar;
+    }
+
     public static Snackbar make(Activity targetActivity, @StringRes int textRes) {
         return make(targetActivity.findViewById(android.R.id.content), textRes, false);
     }

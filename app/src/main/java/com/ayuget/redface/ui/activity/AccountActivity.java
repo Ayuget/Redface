@@ -39,10 +39,9 @@ import javax.inject.Inject;
 
 import butterknife.InjectView;
 import butterknife.OnClick;
+import timber.log.Timber;
 
 public class AccountActivity extends BaseActivity {
-    private static final String LOG_TAG = AccountActivity.class.getSimpleName();
-
     @InjectView(R.id.username)
     MaterialEditText usernameTextView;
 
@@ -74,12 +73,12 @@ public class AccountActivity extends BaseActivity {
         setContentView(R.layout.activity_account);
 
         if (getIntent() != null) {
-            Log.d(LOG_TAG, "Got some intent data");
+            Timber.d("Got some intent data");
             isReloginMode = getIntent().getBooleanExtra(UIConstants.ARG_RELOGIN_MODE, false);
         }
 
         if (isReloginMode) {
-            Log.d(LOG_TAG, "Relogin mode");
+            Timber.d("Relogin mode");
             reloginInstructions.setVisibility(View.VISIBLE);
         }
     }
@@ -102,7 +101,7 @@ public class AccountActivity extends BaseActivity {
            return;
         }
 
-        Log.d(LOG_TAG, String.format("Login attempt for user '%s'", username));
+        Timber.d("Login attempt for user '%s'", username);
 
         final User user = new User(username, password);
 
@@ -117,7 +116,7 @@ public class AccountActivity extends BaseActivity {
            public void onNext(Boolean loginWorked) {
 
                if (loginWorked) {
-                   Log.d(LOG_TAG, "Login is successful !!");
+                   Timber.d("Login is successful !!");
 
                    // If we are logging in again (change of credentials for example), do
                    // not add a new account
@@ -133,14 +132,14 @@ public class AccountActivity extends BaseActivity {
                    finish();
                }
                else {
-                   Log.d(LOG_TAG, "Error while logging in");
+                   Timber.d("Error while logging in");
                    SnackbarHelper.make(AccountActivity.this, R.string.login_failed).show();
                }
            }
 
            @Override
            public void onError(Throwable throwable) {
-               Log.d(LOG_TAG, "Unknow error while logging in :(", throwable);
+               Timber.e(throwable, "Unknown error while logging");
            }
         }));
     }

@@ -33,9 +33,9 @@ import com.ayuget.redface.ui.event.SmileySelectedEvent;
 import com.ayuget.redface.ui.misc.SnackbarHelper;
 import com.squareup.otto.Subscribe;
 
-public class WritePrivateMessageActivity extends ReplyActivity {
-    private static final String LOG_TAG = WritePrivateMessageActivity.class.getSimpleName();
+import timber.log.Timber;
 
+public class WritePrivateMessageActivity extends ReplyActivity {
     private EditText recipientUsername;
 
     private EditText pmSubject;
@@ -96,7 +96,7 @@ public class WritePrivateMessageActivity extends ReplyActivity {
 
             @Override
             public void onError(Throwable throwable) {
-                Log.e(LOG_TAG, "Unknown exception while sending new private message", throwable);
+                Timber.e(throwable, "Unknown exception while sending new private message");
                 onReplyFailure();
             }
         }));

@@ -60,10 +60,9 @@ import java.util.ArrayList;
 import javax.inject.Inject;
 
 import butterknife.InjectView;
+import timber.log.Timber;
 
 public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageChangeListener {
-    private static final String LOG_TAG = TopicFragment.class.getSimpleName();
-
     private static final String ARG_TOPIC_POSITIONS_STACK = "topicPositionsStack";
 
     private TopicPageAdapter topicPageAdapter;
@@ -223,7 +222,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
      */
     @Subscribe
     public void onTopicPageLoaded(PageLoadedEvent event) {
-        Log.d(LOG_TAG, String.format("@%d -> Received topicPageLoaded event (topic='%s', page='%d'), current(topic='%s', page='%d', currentPagePosition='%s')", System.identityHashCode(this), event.getTopic().getSubject(), event.getPage(), topic.getSubject(), currentPage, currentPagePosition));
+        Timber.d("@%d -> Received topicPageLoaded event (topic='%s', page='%d'), current(topic='%s', page='%d', currentPagePosition='%s')", System.identityHashCode(this), event.getTopic().getSubject(), event.getPage(), topic.getSubject(), currentPage, currentPagePosition);
         if (event.getTopic().equals(topic) && event.getPage() == currentPage) {
             if (currentPagePosition != null && !userScrolledViewPager) {
                 event.getTopicPageView().setPagePosition(currentPagePosition);
@@ -385,7 +384,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
                             pager.setCurrentItem(pageNumber - 1);
                         }
                         catch (NumberFormatException e) {
-                            Log.e(LOG_TAG, String.format("Invalid page number entered : %s", goToPageEditText.getText().toString()), e);
+                            Timber.e(e, "Invalid page number entered : %s", goToPageEditText.getText().toString());
                             SnackbarHelper.make(TopicFragment.this, R.string.invalid_page_number).show();
                         }
                     }

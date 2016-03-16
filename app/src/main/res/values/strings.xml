@@ -82,6 +82,8 @@
     <string name="pref_appearance_title">Appearance</string>
     <string name="pref_appearance_summary">Change how the application looks</string>
     <string name="pref_show_fully_read_topics_title">Show fully read topics</string>
+    <string name="pref_enable_internal_browser_title">Enable internal browser</string>
+    <string name="pref_enable_internal_browser_summary">Open all external links in the internal browser</string>
     <string name="pref_topic_list_compact_mode_title">Compact mode</string>
     <string name="pref_topic_list_compact_mode_summary">Display topic list in a compact way</string>
     <string name="pref_double_tap_to_refresh_title">Enable double tap to refresh</string>
@@ -261,4 +263,23 @@
 
     <!-- Dialogs -->
     <string name="dialog_go_to_page_positive_text">Go !</string>
+
+    <!-- Save image menu -->
+    <string name="action_save_original_image">Save original image</string>
+    <string name="action_save_image_as_png">Save image as PNG</string>
+    <string name="action_share_image">Share image</string>
+    <string name="action_open_image">Open image at full size</string>
+    <string name="action_exif_data">Show exif data</string>
+
+    <!-- Exif data-->
+    <string name="exif_data_title">Exif data</string>
+    <string name="unknown_model">Unknown model</string>
+
+    <!-- Image management -->
+    <string name="error_saving_image">Error while saving image</string>
+    <string name="error_invalid_image">Error while saving image : image is invalid</string>
+    <string name="error_saving_image_permission_denied">Permission required to save image</string>
+    <string name="image_saved_successfully">Image successfully saved !</string>
+    <string name="action_snackbar_open_image">Open</string>
+    <string name="gallery_image_loading_error">Error loading image</string>
 </resources>

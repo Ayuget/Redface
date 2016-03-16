@@ -28,9 +28,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Date;
 
-public abstract class HTMLTemplate<T> {
-    private static final String LOG_TAG = HTMLTemplate.class.getSimpleName();
+import timber.log.Timber;
 
+public abstract class HTMLTemplate<T> {
     private final Context context;
 
     private final String templateFile;
@@ -74,7 +74,7 @@ public abstract class HTMLTemplate<T> {
             return output;
         }
         catch (final IOException e) {
-            Log.e(LOG_TAG, e.getMessage());
+            Timber.e(e, e.getMessage());
             return null;
         }
         finally {
@@ -83,7 +83,7 @@ public abstract class HTMLTemplate<T> {
                 try {
                     in.close();
                 } catch (IOException e) {
-                    Log.e(LOG_TAG, e.getMessage());
+                    Timber.e(e, e.getMessage());
                 }
             }
         }
