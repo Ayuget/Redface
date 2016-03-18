@@ -67,7 +67,7 @@ public class BaseFragment extends Fragment {
 
     @Override
     public void onStart() {
-        super.onResume();
+        super.onStart();
 
         // Proper RxJava subscriptions management with CompositeSubscription
         subscriptions = new CompositeSubscription();
