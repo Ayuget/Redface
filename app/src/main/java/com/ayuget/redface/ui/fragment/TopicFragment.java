@@ -18,6 +18,7 @@ package com.ayuget.redface.ui.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
@@ -29,6 +30,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -54,6 +56,7 @@ import com.ayuget.redface.ui.misc.UiUtils;
 import com.hannesdorfmann.fragmentargs.annotation.Arg;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.squareup.otto.Subscribe;
+import com.squareup.phrase.Phrase;
 
 import java.util.ArrayList;
 
@@ -376,9 +379,9 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
                 .positiveText(R.string.dialog_go_to_page_positive_text)
                 .negativeText(android.R.string.cancel)
                 .theme(themeManager.getMaterialDialogTheme())
-                .callback(new MaterialDialog.ButtonCallback() {
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
-                    public void onPositive(MaterialDialog dialog) {
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         try {
                             int pageNumber = Integer.valueOf(goToPageEditText.getText().toString());
                             pager.setCurrentItem(pageNumber - 1);
@@ -388,15 +391,15 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
                             SnackbarHelper.make(TopicFragment.this, R.string.invalid_page_number).show();
                         }
                     }
-
-                    @Override
-                    public void onNegative(MaterialDialog dialog) {
-                    }
-                }).build();
+                })
+                .build();
 
 
         final View positiveAction = dialog.getActionButton(DialogAction.POSITIVE);
         goToPageEditText = (MaterialEditText) dialog.getCustomView().findViewById(R.id.page_number);
+
+        TextView pagesCountView = (TextView) dialog.getCustomView().findViewById(R.id.pages_count);
+        pagesCountView.setText(Phrase.from(getActivity(), R.string.pages_count_currently).put("current_page", currentPage).put("pages_count", topic.getPagesCount()).format());
 
         goToPageEditText.addTextChangedListener(new TextWatcher() {
             @Override

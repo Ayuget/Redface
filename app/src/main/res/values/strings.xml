@@ -69,7 +69,7 @@
 
     <!-- Network preferences screen-->
     <string name="pref_network_title">Network</string>
-    <string name="pref_network_summary">Configure network related options (proxy, ...)</string>
+    <string name="pref_network_summary">Configure network related options (proxy, …)</string>
 
     <string name="pref_activate_proxy_title">Enable proxy</string>
     <string name="pref_activate_proxy_summary">Use a proxy to connect to the forum</string>
@@ -185,6 +185,8 @@
     <string name="error_loading_topics_page">Error while loading topics for page {page}</string>
     <string name="prompt_go_to_page">Go to page…</string>
     <string name="invalid_page_number">Invalid page number</string>
+    <string name="pages_count">{page} pages</string>
+    <string name="pages_count_currently">Currently {current_page} / {pages_count}</string>
 
     <!-- Post actions -->
     <string name="marking_as_favorite_in_progress">Marking as favorite…</string>
@@ -203,7 +205,7 @@
     <string name="no_topics_found">No topics found</string>
     <string name="select_topic_message">Please select a topic</string>
     <string name="topic_loading_message">Loading topic</string>
-    <string name="post_added_to_quote">Post sucessfully quoted</string>
+    <string name="post_added_to_quote">Post successfully quoted</string>
     <string name="post_failed_to_quote">Unable to quote this message</string>
     <string name="post_edited_on">Edited on {date}</string>
     <string name="post_delete_confirmation">Delete post ?</string>
