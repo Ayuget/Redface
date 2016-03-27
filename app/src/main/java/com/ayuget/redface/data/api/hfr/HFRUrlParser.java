@@ -161,7 +161,7 @@ public class HFRUrlParser implements UrlParser {
 
     public PagePosition parseAnchor(String anchor) {
         if (anchor == null || ! (anchor.length() > 1 && anchor.charAt(0) == 't')) {
-            Timber.e("Anchor '%s' is invalid", anchor);
+            Timber.w("Anchor '%s' is invalid", anchor);
             return new PagePosition(PagePosition.TOP);
         }
         else {

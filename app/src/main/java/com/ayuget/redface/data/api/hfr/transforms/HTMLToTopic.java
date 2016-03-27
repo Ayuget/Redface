@@ -22,9 +22,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import rx.functions.Func1;
+import timber.log.Timber;
 
 public class HTMLToTopic implements Func1<String, Topic> {
-    public static final Pattern TOPIC_DETAILS_PATTERN = Pattern.compile("(?:<input type=\"hidden\" name=\"post\")(?:\\s*)(?:value=\")(\\d+)(?:\")(?:.*?)(?:<h3>)(.*?)(?:</h3>)(?:.*)(?:class=\"cHeader\">)(.*?)(?:</a></div>)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private static final Pattern TOPIC_DETAILS_PATTERN = Pattern.compile("(?:<input type=\"hidden\" name=\"post\")(?:\\s*)(?:value=\")(\\d+)(?:\")(?:.*?)(?:<h3>)(.*?)(?:</h3>)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+
+    private static final Pattern TOPIC_PAGES_COUNT_PATTERN = Pattern.compile("(?:<a)(?:[^>]+)(?:class=\"cHeader\">)(\\d+)(?:</a></div>)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
     @Override
     public Topic call(String s) {
@@ -33,7 +36,9 @@ public class HTMLToTopic implements Func1<String, Topic> {
         if (m.find()) {
             int topicId = Integer.valueOf(m.group(1));
             String topicSubject = m.group(2);
-            int pagesCount = Integer.valueOf(m.group(3));
+
+            Matcher pageCountMatcher = TOPIC_PAGES_COUNT_PATTERN.matcher(s);
+            int pagesCount = pageCountMatcher.find() ? Integer.valueOf(pageCountMatcher.group(1)) : 1;
 
             // Sets up a topic with all vital informations for it to be displayed
             Topic topic = new Topic(topicId);
@@ -42,6 +47,10 @@ public class HTMLToTopic implements Func1<String, Topic> {
 
             return topic;
         }
+        else {
+            Timber.e("Topic details not found");
+        }
+
         return null;
     }
 }
