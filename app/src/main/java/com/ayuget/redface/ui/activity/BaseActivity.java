@@ -18,9 +18,9 @@ package com.ayuget.redface.ui.activity;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.customtabs.CustomTabsIntent;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 
@@ -184,6 +184,13 @@ public class BaseActivity extends AppCompatActivity {
     protected void initializeTheme() {
         getWindow().setBackgroundDrawable(null);
         setTheme(themeManager.getActiveThemeStyle());
+
+        // Status bar color is forced this way (thus overriding the statusBarColor attributes in the
+        // theme) because of a weird issue of status bar color not respecting the active theme
+        // on context change (orientation, ...)
+        if(android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+            getWindow().setStatusBarColor(UiUtils.getStatusBarBackgroundColor(this));
+        }
     }
 
     protected void subscribe(Subscription s) {
