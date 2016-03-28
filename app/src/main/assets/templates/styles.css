@@ -284,6 +284,28 @@ img {
 }
 
 /**
+* Moderation messages
+*/
+
+.post.moderation .post-toolbar {
+    background: #B71C1C;
+    border-top: 1px solid #C62828;
+    border-bottom: 1px solid #C62828;
+    color: #FFEBEE;
+}
+
+.post.moderation .post-content {
+    background: #D32F2F;
+    color: #ffffff;
+}
+
+
+.post.moderation .quote, .post.moderation .spoiler, .post.moderation .code {
+    background: #C62828;
+    color: #ffffff;
+}
+
+/**
 * Code table
 */
 .code {

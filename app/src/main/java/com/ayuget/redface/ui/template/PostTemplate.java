@@ -49,6 +49,8 @@ public class PostTemplate extends HTMLTemplate<Post> {
     protected void render(Post post, Phrase templateContent, StringBuilder stream) {
         String postId = String.valueOf(post.getId());
 
+        String extraClasses = post.isFromModerators() ? "moderation" : "";
+
         stream.append(
                 templateContent
                         .put("author", post.getAuthor())
@@ -60,6 +62,7 @@ public class PostTemplate extends HTMLTemplate<Post> {
                         .put("post_quick_actions", quickActionsTemplate.render(post))
                         .put("extra_details", extraDetailsTemplate.render(post))
                         .put("post_actions", userManager.isActiveUserLoggedIn() ? postActionsTemplate.render(post) : "")
+                        .put("extra_classes", extraClasses)
                         .format()
                         .toString()
         );
