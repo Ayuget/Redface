@@ -216,7 +216,10 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ViewHolder
     }
 
     int getTopicIcon(Topic topic) {
-        if (topic.isSticky()) {
+        if (topic.isLocked()) {
+            return R.drawable.ic_lock_white_24dp;
+        }
+        else if (topic.isSticky()) {
             return R.drawable.ic_action_pin;
         }
         else if (topic.getStatus() == TopicStatus.FAVORITE_NEW_CONTENT) {
