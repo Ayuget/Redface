@@ -37,6 +37,7 @@ import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.api.model.TopicStatus;
 import com.ayuget.redface.data.api.model.User;
 import com.ayuget.redface.data.rx.EndlessObserver;
+import com.ayuget.redface.data.rx.RxUtils;
 import com.ayuget.redface.data.rx.SubscriptionHandler;
 import com.ayuget.redface.data.state.CategoriesStore;
 import com.ayuget.redface.ui.UIConstants;
@@ -63,6 +64,7 @@ import com.squareup.phrase.Phrase;
 import javax.inject.Inject;
 
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -103,16 +105,7 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
 
         if (getIntent().getData() != null) {
             restoredInstanceState = true;
-
-            String url = getIntent().getData().toString();
-
-            urlParser.parseUrl(url).ifTopicLink(new MDLink.IfIsTopicLink() {
-                @Override
-                public void call(final Category category, final int topicId, final int topicPage, final PagePosition pagePosition) {
-                    Timber.d("Parsed link for category='%s', topic='%d', page='%d'", category.getName(), topicId, topicPage);
-                    onGoToTopicEvent(new GoToTopicEvent(category, topicId, topicPage, pagePosition));
-                }
-            });
+            parseIntentUrl(getIntent().getData().toString());
         }
         else if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
@@ -128,6 +121,35 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * Parses an URL received from the incoming intent upon activity creation or restart
+     */
+    private void parseIntentUrl(String intentUrl) {
+        Timber.d("Parsing URL from intent : '%s'", intentUrl);
+        urlParser.parseUrl(intentUrl).compose(RxUtils.<MDLink>applySchedulers())
+                .subscribe(new Action1<MDLink>() {
+                    @Override
+                    public void call(MDLink mdLink) {
+                        mdLink.ifTopicLink(new MDLink.IfIsTopicLink() {
+                            @Override
+                            public void call(final Category category, final int topicId, final int topicPage, final PagePosition pagePosition) {
+                                Timber.d("Parsed link for category='%s', topic='%d', page='%d'", category.getName(), topicId, topicPage);
+                                onGoToTopicEvent(new GoToTopicEvent(category, topicId, topicPage, pagePosition));
+                            }
+                        });
+                    }
+                });
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+
+        if (getIntent().getData() != null) {
+            parseIntentUrl(getIntent().getData().toString());
         }
     }
 

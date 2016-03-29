@@ -45,6 +45,7 @@ import com.ayuget.redface.data.api.model.Category;
 import com.ayuget.redface.data.api.model.Post;
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.api.model.misc.PostAction;
+import com.ayuget.redface.data.rx.RxUtils;
 import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.activity.BaseActivity;
@@ -71,6 +72,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import rx.functions.Action1;
 import timber.log.Timber;
 
 public class TopicPageView extends WebView implements View.OnTouchListener {
@@ -548,42 +550,43 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
                 }
             });
 
-            urlParser.parseUrl(url).ifTopicLink(new MDLink.IfIsTopicLink() {
-                @Override
-                public void call(final Category category, final int topicId, final int topicPage, final PagePosition pagePosition) {
-                    TopicPageView.this.post(new Runnable() {
+            urlParser.parseUrl(url).compose(RxUtils.<MDLink>applySchedulers())
+                    .subscribe(new Action1<MDLink>() {
                         @Override
-                        public void run() {
-                            // Action can take a few seconds to process, depending on target and on network quality,
-                            // we need to do something to indicate that we handled the event
-                            if (topicId != topic.getId()) {
-                                Toast.makeText(getContext(), R.string.topic_loading_message, Toast.LENGTH_SHORT).show();
-                            }
+                        public void call(MDLink mdLink) {
+                            mdLink.ifTopicLink(new MDLink.IfIsTopicLink() {
+                                @Override
+                                public void call(Category category, int topicId, int topicPage, PagePosition pagePosition) {
+                                    // Action can take a few seconds to process, depending on target and on network quality,
+                                    // we need to do something to indicate that we handled the event
+                                    if (topicId != topic.getId()) {
+                                        Toast.makeText(getContext(), R.string.topic_loading_message, Toast.LENGTH_SHORT).show();
+                                    }
 
-                            if (topic.getId() == topicId) {
-                                int destinationPage = topicPage;
-                                PagePosition targetPagePosition = pagePosition;
+                                    if (topic.getId() == topicId) {
+                                        int destinationPage = topicPage;
+                                        PagePosition targetPagePosition = pagePosition;
 
-                                // Hack needed because we are hiding the first post of a page, which is equal
-                                // to the last post of previous page.
-                                if (!appSettings.showPreviousPageLastPost() && destinationPage > 1 && posts.size() > 0 && topicPage == page && pagePosition.getPostId() < posts.get(0).getId()) {
-                                    targetPagePosition = new PagePosition(PagePosition.BOTTOM);
-                                    destinationPage -= 1;
+                                        // Hack needed because we are hiding the first post of a page, which is equal
+                                        // to the last post of previous page.
+                                        if (!appSettings.showPreviousPageLastPost() && destinationPage > 1 && posts.size() > 0 && topicPage == page && pagePosition.getPostId() < posts.get(0).getId()) {
+                                            targetPagePosition = new PagePosition(PagePosition.BOTTOM);
+                                            destinationPage -= 1;
+                                        }
+
+                                        bus.post(new GoToPostEvent(destinationPage, targetPagePosition, TopicPageView.this));
+                                    } else {
+                                        bus.post(new GoToTopicEvent(category, topicId, topicPage, pagePosition));
+                                    }
                                 }
-
-                                bus.post(new GoToPostEvent(destinationPage, targetPagePosition, TopicPageView.this));
-                            } else {
-                                bus.post(new GoToTopicEvent(category, topicId, topicPage, pagePosition));
-                            }
+                            }).ifInvalid(new MDLink.IfIsInvalidLink() {
+                                @Override
+                                public void call() {
+                                    getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                                }
+                            });
                         }
                     });
-                }
-            }).ifInvalid(new MDLink.IfIsInvalidLink() {
-                @Override
-                public void call() {
-                    getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-                }
-            });
         }
     }
 }

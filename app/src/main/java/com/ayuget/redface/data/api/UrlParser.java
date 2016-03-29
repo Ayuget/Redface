@@ -16,6 +16,8 @@
 
 package com.ayuget.redface.data.api;
 
+import rx.Observable;
+
 public interface UrlParser {
-    MDLink parseUrl(String url);
+    Observable<MDLink> parseUrl(String url);
 }
