@@ -216,7 +216,7 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
     public void onResume() {
         super.onResume();
 
-        if (displayedTopics == null) {
+        if (displayedTopics == null || displayedTopics.size() == 0) {
             displayedTopics = new ArrayList<>();
             loadTopics();
         }
