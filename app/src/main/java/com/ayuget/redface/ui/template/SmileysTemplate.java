@@ -67,15 +67,13 @@ public class SmileysTemplate extends HTMLTemplate<List<Smiley>> {
             }
         } else {
 
-            smileysBuffer.append("<div class=\"nosmiley\">" + noSmileysFoundStr + " <img src=\"" + NO_SMILEYS_FOUND_IMG_URL + "\"/></div>");
+            smileysBuffer.append("<div class=\"nosmiley\">").append(noSmileysFoundStr).append(" <img src=\"").append(NO_SMILEYS_FOUND_IMG_URL).append("\"/></div>");
         }
 
         stream.append(
                 templateContent
                         .put("smileys", smileysBuffer.toString())
                         .put("theme_class", themeManager.getActiveThemeCssClass())
-                        .put("smiley_touch_size", smileyTouchSize)
-                        .put("smiley_padding", smileyPadding)
                         .format()
                         .toString()
         );

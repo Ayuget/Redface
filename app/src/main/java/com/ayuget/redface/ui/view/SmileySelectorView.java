@@ -36,6 +36,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import timber.log.Timber;
+
 public class SmileySelectorView extends WebView {
     private boolean initialized;
 
@@ -105,6 +107,7 @@ public class SmileySelectorView extends WebView {
 
         @JavascriptInterface
         public void addSmiley(final String smileyCode) {
+            Timber.d("Selected smiley %s", smileyCode);
             SmileySelectorView.this.post(new Runnable() {
                 @Override
                 public void run() {
