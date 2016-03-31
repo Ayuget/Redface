@@ -124,6 +124,15 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
         }
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        if (intent.getData() != null) {
+            parseIntentUrl(intent.getData().toString());
+        }
+    }
+
     /**
      * Parses an URL received from the incoming intent upon activity creation or restart
      */
@@ -142,15 +151,6 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
                         });
                     }
                 });
-    }
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-
-        if (getIntent().getData() != null) {
-            parseIntentUrl(getIntent().getData().toString());
-        }
     }
 
     @Override
