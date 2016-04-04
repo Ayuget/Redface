@@ -25,8 +25,8 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,8 +35,13 @@ import android.widget.TextView;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.ayuget.redface.R;
+import com.ayuget.redface.account.UserManager;
 import com.ayuget.redface.data.api.MDEndpoints;
+import com.ayuget.redface.data.api.MDService;
 import com.ayuget.redface.data.api.model.Topic;
+import com.ayuget.redface.data.api.model.User;
+import com.ayuget.redface.data.rx.EndlessObserver;
+import com.ayuget.redface.data.rx.SubscriptionHandler;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.activity.MultiPaneActivity;
 import com.ayuget.redface.ui.activity.WritePrivateMessageActivity;
@@ -44,7 +49,6 @@ import com.ayuget.redface.ui.adapter.TopicPageAdapter;
 import com.ayuget.redface.ui.event.GoToPostEvent;
 import com.ayuget.redface.ui.event.PageLoadedEvent;
 import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
-import com.ayuget.redface.ui.event.PageRefreshedEvent;
 import com.ayuget.redface.ui.event.PageSelectedEvent;
 import com.ayuget.redface.ui.event.ScrollToPostEvent;
 import com.ayuget.redface.ui.event.TopicPageCountUpdatedEvent;
@@ -68,6 +72,8 @@ import timber.log.Timber;
 public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageChangeListener {
     private static final String ARG_TOPIC_POSITIONS_STACK = "topicPositionsStack";
 
+    private static final int UNFLAG_ACTION = 42;
+
     private TopicPageAdapter topicPageAdapter;
 
     private MaterialEditText goToPageEditText;
@@ -78,9 +84,16 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
     private boolean userScrolledViewPager = false;
 
+    private SubscriptionHandler<User, Boolean> unflagSubscriptionHandler = new SubscriptionHandler<>();
+
     @Inject
     MDEndpoints mdEndpoints;
 
+    @Inject
+    UserManager userManager;
+
+    @Inject
+    MDService mdService;
 
     @InjectView(R.id.pager)
     ViewPager pager;
@@ -189,6 +202,14 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     @Override
     public void onCreateOptionsMenu(Toolbar toolbar) {
         toolbar.inflateMenu(R.menu.menu_topic);
+
+        if (userManager.isActiveUserLoggedIn()) {
+            // Small hack to find the last added item order...
+            Menu existingMenu = toolbar.getMenu();
+            int lastAction = existingMenu.size() > 0 ? existingMenu.getItem(existingMenu.size() - 1).getOrder() : 0;
+
+            toolbar.getMenu().add(Menu.NONE, UNFLAG_ACTION, lastAction + 100, getString(R.string.action_unflag_topic));
+        }
     }
 
     @Override
@@ -334,6 +355,12 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     }
 
     @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+
+    }
+
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
@@ -358,12 +385,32 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
             case R.id.action_share:
                 UiUtils.shareText(getActivity(), mdEndpoints.topic(topic));
                 break;
+            case UNFLAG_ACTION:
+                unflagTopic();
+                break;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Unflags current topic.
+     */
+    private void unflagTopic() {
+        User activeUser = userManager.getActiveUser();
+        subscribe(unflagSubscriptionHandler.load(activeUser, mdService.unflagTopic(activeUser, topic), new EndlessObserver<Boolean>() {
+            @Override
+            public void onNext(Boolean aBoolean) {
+                SnackbarHelper.make(TopicFragment.this, R.string.flag_successfully_removed).show();
+            }
 
+            @Override
+            public void onError(Throwable throwable) {
+                Timber.e(throwable, "Error while removing flag");
+                SnackbarHelper.makeError(TopicFragment.this, R.string.error_removing_flag).show();
+            }
+        }));
+    }
 
     /**
      * Clears internal navigation stack

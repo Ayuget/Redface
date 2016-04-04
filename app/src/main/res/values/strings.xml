@@ -30,7 +30,10 @@
     <string name="action_copy_link">Copy a link to this topic</string>
     <string name="action_share">Share</string>
     <string name="action_refresh_topic">Refresh</string>
+    <string name="action_unflag_topic">Remove flag</string>
     <string name="link_sucessfully_copied">Link copied to clipboard</string>
+    <string name="flag_successfully_removed">Flag successfully removed</string>
+    <string name="error_removing_flag">Error while removing flag</string>
 
     <string name="action_topics_filter_title">Topics filter</string>
     <string name="action_topics_filter_all">All</string>

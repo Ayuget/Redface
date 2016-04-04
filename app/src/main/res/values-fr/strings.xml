@@ -203,4 +203,7 @@
     <string name="pref_enable_internal_browser_title">Activer le navigateur interne</string>
     <string name="pages_count">{page} pages</string>
     <string name="pages_count_currently">Actuellement {current_page} / {pages_count}</string>
+    <string name="action_unflag_topic">Effacer le drapeau</string>
+    <string name="error_removing_flag">Erreur lors de la suppression du drapeau</string>
+    <string name="flag_successfully_removed">Drapeau effacé avec succès</string>
 </resources>

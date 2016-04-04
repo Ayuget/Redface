@@ -22,16 +22,49 @@ import com.ayuget.redface.data.api.model.User;
 
 import rx.Observable;
 
+/**
+ * Interface describing all possible interactions with a {@code MesDiscussions} forum.
+ */
 public interface MDMessageSender {
+    /**
+     * Posts a reply to the given {@link Topic}. User's signature can be included, using the
+     * {@code includeSignature} argument.
+     *
+     * {@code hashcheck} argument is purely a technical one, used as "security" by the forum.
+     */
     Observable<Response> replyToTopic(User user, Topic topic, String message, String hashcheck, boolean includeSignature);
 
+    /**
+     * Edits a post.
+     */
     Observable<Response> editPost(User user, Topic topic, int postId, String newContent, String hashcheck, boolean includeSignature);
 
+    /**
+     * Sends a new private message to {@code recipientUsername}.
+     *
+     * While the forum technically allows a private message to be sent to multiple recipients, that
+     * features seems to be disabled and therefore not implemented here.
+     */
     Observable<Response> sendNewPrivateMessage(User user, String subject, String recipientUsername, String message, String hashcheck, boolean includeSignature);
 
+    /**
+     * Marks a post as favorite.
+     */
     Observable<Boolean> markPostAsFavorite(User user, Topic topic, int postId);
 
+    /**
+     * Deletes a post. One can only delete its own posts, excepts for moderators who have
+     * additional rights.
+     */
     Observable<Boolean> deletePost(User user, Topic topic, int postId, final String hashcheck);
 
+    /**
+     * Reports a post to the moderators.
+     */
     Observable<Boolean> reportPost(User user, Topic topic, int postId);
+
+    /**
+     * Removes a flag (or a favorite) on a given {@link Topic}
+     */
+    Observable<Boolean> unflagTopic(User user, Topic topic);
 }
