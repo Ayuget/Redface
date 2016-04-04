@@ -55,7 +55,7 @@
             />
         <TextView
             android:id="@+id/error_message"
-            android:textSize="16dp"
+            android:textSize="16sp"
             android:layout_width="wrap_content"
             android:layout_height="48dp"
             android:gravity="center"
@@ -86,7 +86,7 @@
             />
         <TextView
             android:id="@+id/empty_content_message"
-            android:textSize="16dp"
+            android:textSize="16sp"
             android:layout_width="wrap_content"
             android:layout_height="48dp"
             android:gravity="center"
@@ -113,7 +113,6 @@
             android:clipToPadding="false"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingTop="?attr/actionBarSize"
             android:layout_gravity="start"
             android:scrollbars="vertical"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
