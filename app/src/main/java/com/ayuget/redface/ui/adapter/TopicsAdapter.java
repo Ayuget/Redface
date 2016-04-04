@@ -128,7 +128,7 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ViewHolder
         return new ViewHolder(parent);
     }
 
-    String getPrintableUnreadPagesCount(int realCount) {
+    private String getPrintableUnreadPagesCount(int realCount) {
         if (realCount >= 100) {
             return "99+";
         }

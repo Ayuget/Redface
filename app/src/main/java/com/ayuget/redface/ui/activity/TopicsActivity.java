@@ -252,7 +252,7 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
     }
 
     @Override
-    public void onCategoryClicked(Category category) {
+    public void onCategoryClicked(Category category, boolean addToBackstack) {
         currentCategory = category;
 
         Timber.d("Loading category '%s', with topicFilter='%s'", category.getName(), getSettings().getDefaultTopicFilter().toString());
@@ -262,6 +262,11 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.container, topicListFragment, TOPICS_FRAGMENT_TAG);
+
+        if (addToBackstack) {
+            transaction.addToBackStack(TOPICS_FRAGMENT_TAG);
+        }
+
         transaction.commit();
     }
 

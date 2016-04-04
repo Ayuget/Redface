@@ -32,18 +32,15 @@ import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersAdapter;
 
 import java.util.List;
 
-public class MetaPageTopicsAdapter extends TopicsAdapter implements StickyRecyclerHeadersAdapter<RecyclerView.ViewHolder> {
-    List<Category> categories;
-
-    boolean categoryIconsAsTopicIcons;
+public class MetaPageTopicsAdapter extends TopicsAdapter implements StickyRecyclerHeadersAdapter<MetaPageTopicsAdapter.HeaderViewHolder> {
+    /**
+     * Boolean that controls if category icons should be used instead of regular icons
+     */
+    private boolean categoryIconsAsTopicIcons;
 
     public MetaPageTopicsAdapter(Context context, ThemeManager themeManager, boolean isCompactMode) {
         super(context, themeManager, isCompactMode);
         categoryIconsAsTopicIcons = false;
-    }
-
-    public void replaceCategories(List<Category> categories) {
-        this.categories = categories;
     }
 
     @Override
@@ -56,19 +53,33 @@ public class MetaPageTopicsAdapter extends TopicsAdapter implements StickyRecycl
         }
     }
 
-    @Override
-    public RecyclerView.ViewHolder onCreateHeaderViewHolder(ViewGroup parent) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.list_item_category_header, parent, false);
-        return new RecyclerView.ViewHolder(view) {
-        };
+    public static class HeaderViewHolder extends RecyclerView.ViewHolder {
+        private View parent;
+
+        public HeaderViewHolder(View itemView) {
+            super(itemView);
+            this.parent = itemView;
+        }
+
+        public void setOnHeaderClickedListener(View.OnClickListener listener) {
+            parent.setOnClickListener(listener);
+        }
     }
 
     @Override
-    public void onBindHeaderViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindHeaderViewHolder(HeaderViewHolder holder, int position) {
+        final Category category = getItem(position).getCategory();
+
         TextView textView = (TextView) holder.itemView;
-        textView.setText(getItem(position).getCategory().getName());
+        textView.setText(category.getName());
     }
+
+    @Override
+    public HeaderViewHolder onCreateHeaderViewHolder(ViewGroup parent) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_category_header, parent, false);
+        return new HeaderViewHolder(view);
+    }
+
 
     public void setCategoryIconsAsTopicIcons(boolean categoryIconsAsTopicIcons) {
         this.categoryIconsAsTopicIcons = categoryIconsAsTopicIcons;

@@ -18,7 +18,6 @@ package com.ayuget.redface.ui.fragment;
 
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -27,14 +26,18 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.ayuget.redface.R;
+import com.ayuget.redface.data.api.model.Category;
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.rx.EndlessObserver;
+import com.ayuget.redface.data.state.CategoriesStore;
 import com.ayuget.redface.settings.RedfaceSettings;
+import com.ayuget.redface.ui.activity.TopicsActivity;
 import com.ayuget.redface.ui.adapter.MetaPageTopicsAdapter;
 import com.ayuget.redface.ui.misc.MetaPageOrdering;
 import com.ayuget.redface.ui.misc.SnackbarHelper;
 import com.hannesdorfmann.fragmentargs.annotation.FragmentArgsInherited;
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration;
+import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersTouchListener;
 
 import java.util.List;
 
@@ -42,13 +45,17 @@ import javax.inject.Inject;
 
 import timber.log.Timber;
 
+
 @FragmentArgsInherited
-public class MetaPageFragment extends TopicListFragment {
+public class MetaPageFragment extends TopicListFragment implements StickyRecyclerHeadersTouchListener.OnHeaderClickListener {
     private static final String ARG_META_PAGE_SORTED_BY_DATE = "meta_page_ordering";
 
     private  StickyRecyclerHeadersDecoration headerDecoration;
 
     private MetaPageOrdering pageOrdering;
+
+    @Inject
+    CategoriesStore categoriesStore;
 
     @Inject
     RedfaceSettings settings;
@@ -86,7 +93,12 @@ public class MetaPageFragment extends TopicListFragment {
         View createdView =  super.onCreateView(inflater, container, savedInstanceState);
 
         headerDecoration = new StickyRecyclerHeadersDecoration((MetaPageTopicsAdapter) topicsAdapter);
+
+        StickyRecyclerHeadersTouchListener touchListener = new StickyRecyclerHeadersTouchListener(topicsRecyclerView, headerDecoration);
+        touchListener.setOnHeaderClickListener(this);
+
         topicsRecyclerView.addItemDecoration(headerDecoration);
+        topicsRecyclerView.addOnItemTouchListener(touchListener);
 
         return createdView;
     }
@@ -198,5 +210,14 @@ public class MetaPageFragment extends TopicListFragment {
     @Override
     protected void loadPage(int page) {
         // no second page for meta page
+    }
+
+    @Override
+    public void onHeaderClick(View header, int position, long headerId) {
+        Category clickedCategory = categoriesStore.getCategoryById((int) headerId);
+
+        if (clickedCategory != null) {
+            ((TopicsActivity) getActivity()).onCategoryClicked(clickedCategory, true);
+        }
     }
 }
