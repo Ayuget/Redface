@@ -250,4 +250,14 @@ public class PrivateMessage implements Parcelable {
 
         return topic;
     }
+
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("PrivateMessage{");
+        sb.append("id=").append(id);
+        sb.append(", recipient='").append(recipient).append('\'');
+        sb.append(", subject='").append(subject).append('\'');
+        sb.append('}');
+        return sb.toString();
+    }
 }

@@ -65,7 +65,9 @@ public class PrivateMessagesActivity extends MultiPaneActivity implements Privat
 
         if (getIntent() != null) {
             PrivateMessage privateMessage = getIntent().getParcelableExtra(UIConstants.ARG_SELECTED_PM);
+
             if (privateMessage != null) {
+                Timber.d("Received private message : '%s'", privateMessage);
                 loadPrivateMessage(privateMessage, privateMessage.getPagesCount(), PagePosition.bottom());
             }
         }
@@ -80,6 +82,8 @@ public class PrivateMessagesActivity extends MultiPaneActivity implements Privat
             PrivateMessage privateMessage = intent.getExtras().getParcelable(UIConstants.ARG_SELECTED_PM);
 
             if (privateMessage != null) {
+                Timber.d("Received private message : '%s'", privateMessage);
+
                 loadPrivateMessage(privateMessage, privateMessage.getPagesCount(), PagePosition.bottom());
             }
         }

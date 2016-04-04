@@ -103,6 +103,7 @@ public class PrivateMessagesService extends IntentService {
                     for (PrivateMessage privateMessage : privateMessages) {
                         // Prepare intent to deal with clicks
                         Intent resultIntent = new Intent(PrivateMessagesService.this, PrivateMessagesActivity.class);
+                        resultIntent.setAction(String.valueOf(privateMessage.getId()));
                         resultIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         resultIntent.putExtra(UIConstants.ARG_SELECTED_PM, privateMessage);
                         PendingIntent resultPendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
