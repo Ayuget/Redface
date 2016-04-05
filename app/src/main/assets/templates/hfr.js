@@ -81,9 +81,7 @@ function favoritePost(postId) {
     toggleOverflowMenu(postId);
 }
 
-function toggleQuoteStatus(link, postId) {
-    Android.toggleQuoteStatus(postId);
-
+function toggleQuoteIcon(link) {
     var icon = link.getElementsByTagName("i")[1];
 
     if (icon.classList.contains('fa-minus')) {
@@ -95,6 +93,25 @@ function toggleQuoteStatus(link, postId) {
         icon.classList.remove('fa-plus');
         icon.classList.add('fa-minus');
         link.classList.add('action-selected');
+    }
+}
+
+function toggleQuoteStatus(link, postId) {
+    Android.toggleQuoteStatus(postId);
+    toggleQuoteIcon(link);
+}
+
+function setPostsAsQuoted(posts) {
+    var i;
+
+    for (i = 0; i < posts.length; i++) {
+        var postId = posts[i];
+        var postDiv = document.getElementById("post" + postId);
+
+        if (postDiv != null) {
+            var multiQuoteLink = postDiv.getElementsByClassName("multi-quote")[0];
+            toggleQuoteIcon(multiQuoteLink);
+        }
     }
 }
 
