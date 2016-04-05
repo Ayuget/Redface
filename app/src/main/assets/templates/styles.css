@@ -299,11 +299,76 @@ img {
     color: #ffffff;
 }
 
-
 .post.moderation .quote, .post.moderation .spoiler, .post.moderation .code {
     background: #C62828;
     color: #ffffff;
 }
+
+.post.moderation .quote b.s1, .post.moderation .spoiler b.s1Topic {
+    background: #C62828;
+    color: #ffffff;
+}
+
+/**
+* Quoted messages (dark & night themes)
+*/
+
+.redface-dark .post.quoted .post-toolbar, .redface-night .post.quoted .post-toolbar {
+    background: #795548;
+    border-top: 1px solid #6D4C41;
+    border-bottom: 1px solid #6D4C41;
+    color: #FFEBEE;
+}
+
+.redface-dark .post.quoted .post-content, .redface-night .post.quoted .post-content {
+    background: #4E342E;
+    color: #ffffff;
+}
+
+.redface-dark .post.quoted .quote, .redface-dark .post.moderation .spoiler, .redface-dark .post.moderation .code, .redface-night .post.quoted .quote, .redface-night .post.moderation .spoiler, .redface-night .post.moderation .code {
+    background: #5D4037;
+    color: #ffffff;
+}
+
+.redface-dark .post.quoted .quote b.s1, .redface-dark .post.quoted .spoiler b.s1Topic, .redface-night .post.quoted .quote b.s1, .redface-night .post.quoted .spoiler b.s1Topic {
+    background: #5D4037;
+    color: #ffffff;
+}
+
+.redface-dark .post.quoted .post-action.action-selected, .redface-night .post.quoted .post-action.action-selected {
+    background: #6D4C41;
+}
+
+/**
+* Quoted messages (light theme)
+*/
+
+.redface-light .post.quoted .post-toolbar {
+    background: #B39DDB;
+    border-top: 1px solid #6D4C41;
+    border-bottom: 1px solid #6D4C41;
+    color: #424242;
+}
+
+.redface-light .post.quoted .post-content {
+    background: #EDE7F6;
+    color: #000000;
+}
+
+.redface-light .post.quoted .quote, .redface-light .post.moderation .spoiler, .redface-light .post.moderation .code {
+    background: #D1C4E9;
+    color: #000000;
+}
+
+.redface-light .post.quoted .quote b.s1, .redface-light .post.quoted .spoiler b.s1Topic {
+    background: #D1C4E9;
+    color: #000000;
+}
+
+.redface-light .post.quoted .post-action.action-selected {
+    background: #EDE7F6;
+}
+
 
 /**
 * Code table

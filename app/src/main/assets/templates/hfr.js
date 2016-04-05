@@ -96,9 +96,21 @@ function toggleQuoteIcon(link) {
     }
 }
 
+function togglePostQuotedStatus(link) {
+    var postDiv = link.closest(".post");
+
+    if (postDiv.classList.contains("quoted")) {
+        postDiv.classList.remove("quoted");
+    }
+    else {
+        postDiv.classList.add("quoted")
+    }
+}
+
 function toggleQuoteStatus(link, postId) {
     Android.toggleQuoteStatus(postId);
     toggleQuoteIcon(link);
+    togglePostQuotedStatus(link);
 }
 
 function setPostsAsQuoted(posts) {
@@ -111,6 +123,7 @@ function setPostsAsQuoted(posts) {
         if (postDiv != null) {
             var multiQuoteLink = postDiv.getElementsByClassName("multi-quote")[0];
             toggleQuoteIcon(multiQuoteLink);
+            togglePostQuotedStatus(multiQuoteLink);
         }
     }
 }
@@ -119,7 +132,6 @@ function clearQuotedMessages() {
     var icons = document.getElementsByClassName("fa-minus");
     var i;
 
-    console.log(icons);
     for (i = icons.length - 1; i >= 0; i--) {
         var item = icons[i];
         item.classList.remove('fa-minus');
@@ -127,9 +139,13 @@ function clearQuotedMessages() {
     }
 
     var links = document.getElementsByClassName("action-selected");
-    console.log(links);
     for (i = links.length - 1; i >= 0; i--) {
         links[i].classList.remove('action-selected');
+    }
+
+    var quoted = document.getElementsByClassName("quoted");
+    for (i = quoted.length - 1; i >= 0; i--) {
+        quoted[i].classList.remove('quoted');
     }
 }
 

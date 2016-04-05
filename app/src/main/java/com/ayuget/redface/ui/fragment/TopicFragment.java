@@ -621,7 +621,12 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
      */
     private void updateQuotedMessagesCount() {
         if (quoteActionMode != null) {
-            quoteActionMode.setTitle(Phrase.from(getContext(), R.string.quoted_messages_plural).put("count", quotedMessagesCache.size()).format());
+            if (quotedMessagesCache.size() > 1) {
+                quoteActionMode.setTitle(Phrase.from(getContext(), R.string.quoted_messages_plural).put("count", quotedMessagesCache.size()).format());
+            }
+            else {
+                quoteActionMode.setTitle(R.string.quoted_messages);
+            }
         }
     }
 
