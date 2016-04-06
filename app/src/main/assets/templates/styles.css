@@ -313,33 +313,33 @@ img {
 * Quoted messages (dark & night themes)
 */
 .redface-dark div.post.quoted .post-toolbar, .redface-night div.post.quoted .post-toolbar {
-    background: #3346bb;
-    border-top: 1px solid #303F9F;
-    border-bottom: 1px solid #303F9F;
+    background: #795548;
+    border-top: 1px solid #6D4C41;
+    border-bottom: 1px solid #6D4C41;
     color: #FFEBEE;
 }
 
 .redface-dark div.post.quoted .post-content, .redface-night div.post.quoted .post-content {
-    background: #1A237E;
+    background: #4E342E;
     color: #ffffff;
 }
 
 .redface-dark div.post.quoted .quote, .redface-dark div.post.quoted .spoiler, .redface-dark div.post.quoted .code, .redface-night div.post.quoted .quote, .redface-night div.post.quoted .spoiler, .redface-night div.post.quoted .code {
-    background: #283593;
+    background: #5D4037;
     color: #ffffff;
 }
 
 .redface-dark div.post.quoted .quote b.s1, .redface-dark div.post.quoted .spoiler b.s1Topic, .redface-night div.post.quoted .quote b.s1, .redface-night div.post.quoted .spoiler b.s1Topic {
-    background: #283593;
+    background: #5D4037;
     color: #ffffff;
 }
 
-.redface-dark div.post.quoted .quote b.s1 a, .redface-night div.post.quoted .quote b.s1 a {
-    color: #E8EAF6;
+.redface-dark divdiv.post.quoted .quote b.s1 a, .redface-night divdiv.post.quoted .quote b.s1 a {
+    color: #EFEBE9;
 }
 
-.redface-dark div.post.quoted .post-action.action-selected {
-    background: #1A237E;
+.redface-dark div.post.quoted .post-action.action-selected, .redface-night div.post.quoted .post-action.action-selected {
+    background: #6D4C41;
 }
 
 /**
@@ -375,36 +375,36 @@ img {
 /**
 * EgoQuote (dark & night themes)
 */
-
 .redface-dark .post.egoQuote .post-toolbar, .redface-night .post.egoQuote .post-toolbar {
-    background: #795548;
-    border-top: 1px solid #6D4C41;
-    border-bottom: 1px solid #6D4C41;
+    background: #3346bb;
+    border-top: 1px solid #303F9F;
+    border-bottom: 1px solid #303F9F;
     color: #FFEBEE;
 }
 
 .redface-dark .post.egoQuote .post-content, .redface-night .post.egoQuote .post-content {
-    background: #4E342E;
+    background: #1A237E;
     color: #ffffff;
 }
 
 .redface-dark .post.egoQuote .quote, .redface-dark .post.egoQuote .spoiler, .redface-dark .post.egoQuote .code, .redface-night .post.egoQuote .quote, .redface-night .post.egoQuote .spoiler, .redface-night .post.egoQuote .code {
-    background: #5D4037;
+    background: #283593;
     color: #ffffff;
 }
 
 .redface-dark .post.egoQuote .quote b.s1, .redface-dark .post.egoQuote .spoiler b.s1Topic, .redface-night .post.egoQuote .quote b.s1, .redface-night .post.egoQuote .spoiler b.s1Topic {
-    background: #5D4037;
+    background: #283593;
     color: #ffffff;
 }
 
-.redface-dark div.post.egoQuote .quote b.s1 a, .redface-night div.post.egoQuote .quote b.s1 a {
-    color: #EFEBE9;
+.redface-dark .post.egoQuote .quote b.s1 a, .redface-night .post.egoQuote .quote b.s1 a {
+    color: #E8EAF6;
 }
 
 .redface-dark .post.egoQuote .post-action.action-selected, .redface-night .post.egoQuote .post-action.action-selected {
-    background: #6D4C41;
+    background: #1A237E;
 }
+
 
 /**
 * EgoQuote (light theme)
