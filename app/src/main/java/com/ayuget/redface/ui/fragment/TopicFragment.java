@@ -203,6 +203,15 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (quoteActionMode != null) {
+            quoteActionMode.finish();
+        }
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
