@@ -499,6 +499,13 @@ public class BaseDrawerActivity extends BaseActivity {
      * Called when an item is selected in the navigation drawer
      */
     public void onCategoryClicked(Category category) {
+        onCategoryClicked(category, false);
+    }
+
+    /**
+     * Called when an item is selected in the navigation drawer
+     */
+    public void onCategoryClicked(Category category, boolean addToBackstack) {
     }
 
     /**

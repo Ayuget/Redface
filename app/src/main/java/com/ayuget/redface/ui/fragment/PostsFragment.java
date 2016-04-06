@@ -22,19 +22,14 @@ import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.Button;
-import android.widget.ShareActionProvider;
-import android.widget.Toast;
 
 import com.ayuget.redface.R;
 import com.ayuget.redface.RedfaceApp;
@@ -46,27 +41,23 @@ import com.ayuget.redface.data.api.model.Post;
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.rx.EndlessObserver;
 import com.ayuget.redface.data.rx.SubscriptionHandler;
-import com.ayuget.redface.network.HTTPClientProvider;
-import com.ayuget.redface.ui.activity.ExifDetailsActivity;
 import com.ayuget.redface.ui.activity.MultiPaneActivity;
 import com.ayuget.redface.ui.activity.ReplyActivity;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
 import com.ayuget.redface.ui.event.PageSelectedEvent;
 import com.ayuget.redface.ui.event.ScrollToPostEvent;
+import com.ayuget.redface.ui.event.UnquoteAllPostsEvent;
 import com.ayuget.redface.ui.misc.ImageMenuHandler;
 import com.ayuget.redface.ui.misc.UiUtils;
 import com.ayuget.redface.ui.view.TopicPageView;
 import com.getbase.floatingactionbutton.FloatingActionButton;
-import com.google.common.base.Joiner;
 import com.hannesdorfmann.fragmentargs.annotation.Arg;
 import com.squareup.leakcanary.RefWatcher;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -134,12 +125,6 @@ public class PostsFragment extends BaseFragment {
 
     private SubscriptionHandler<Long, String> quoteHandler = new SubscriptionHandler<>();
 
-    /**
-     * Map of currently quoted messages and their corresponding content,
-     * used for multi-quote feature
-     */
-    private Map<Long, String> quotedMessages;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Timber.d("@%d -> Fragment(currentPage=%d) -> onCreate", System.identityHashCode(this), currentPage);
@@ -152,8 +137,6 @@ public class PostsFragment extends BaseFragment {
         else {
             currentScrollPosition = savedInstanceState.getInt(ARG_SAVED_SCROLL_POSITION, 0);
         }
-
-        quotedMessages = new HashMap<>();
     }
 
     @Override
@@ -214,8 +197,7 @@ public class PostsFragment extends BaseFragment {
         replyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Joiner joiner = Joiner.on("\n");
-                startReplyActivity(joiner.join(quotedMessages.values()));
+                ((TopicFragment)getParentFragment()).replyToTopic();
             }
         });
 
@@ -236,53 +218,10 @@ public class PostsFragment extends BaseFragment {
                 if (currentScrollPosition > 0) {
                     restorePageScrollPosition();
                 }
+
+                updateQuotedPostsStatus();
             }
         });
-
-        topicPageView.setOnMultiQuoteModeListener(new TopicPageView.OnMultiQuoteModeListener() {
-            @Override
-            public void onMultiQuoteModeToggled(boolean active) {
-                if (active) {
-                    quotedMessages.clear();
-                }
-
-                Fragment parent = getParentFragment();
-
-                if (parent != null) {
-                    // Multi-quote event is forwarded to parent fragment as a batch operation
-                    ((TopicFragment) parent).onBatchOperation(active);
-                }
-            }
-
-            @Override
-            public void onPostAdded(final long postId) {
-              subscribe(quoteHandler.load(postId, mdService.getQuote(userManager.getActiveUser(), topic, (int) postId), new EndlessObserver<String>() {
-                  @Override
-                  public void onNext(String quoteBBCode) {
-                      quotedMessages.put(postId, quoteBBCode);
-                  }
-
-                  @Override
-                  public void onError(Throwable throwable) {
-                      Timber.e(throwable, "Failed to add post to quoted list");
-                      Toast.makeText(getActivity(), R.string.post_failed_to_quote, Toast.LENGTH_SHORT).show();
-                  }
-              }));
-            }
-
-            @Override
-            public void onPostRemoved(long postId) {
-                quotedMessages.remove(postId);
-            }
-
-            @Override
-            public void onQuote() {
-                Joiner joiner = Joiner.on("\n");
-                topicPageView.disableBatchActions();
-                startReplyActivity(joiner.join(quotedMessages.values()));
-            }
-        });
-
 
         if (userManager.getActiveUser().isGuest()) {
             replyButton.setVisibility(View.INVISIBLE);
@@ -295,18 +234,10 @@ public class PostsFragment extends BaseFragment {
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-
-        savePageScrollPosition();
-
-        // Disable batch actions because, for now, we are unable to save them properly
-        topicPageView.disableBatchActions();
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
+
+        topicPageView.setOnQuoteListener((TopicFragment)getParentFragment());
 
         // Page is loaded instantly only if it's the initial page requested on topic load. Other
         // pages will be loaded once selected in the ViewPager
@@ -317,6 +248,13 @@ public class PostsFragment extends BaseFragment {
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+
+        savePageScrollPosition();
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
 
@@ -324,8 +262,11 @@ public class PostsFragment extends BaseFragment {
             unregisterForContextMenu(topicPageView);
 
             topicPageView.setOnScrollListener(null);
-            topicPageView.setOnMultiQuoteModeListener(null);
             topicPageView.setOnPageLoadedListener(null);
+
+            // Unregister parent fragment as quote listener to avoid memory leaks
+            topicPageView.setOnQuoteListener(null);
+
             topicPageView.removeAllViews();
             topicPageView.destroy();
 
@@ -458,6 +399,17 @@ public class PostsFragment extends BaseFragment {
     }
 
     /**
+     * Event fired by the host {@link com.ayuget.redface.ui.fragment.TopicFragment} to indicate
+     * that multi-quote mode has been turned off and that posts UI should be updated accordingly.
+     */
+    @Subscribe
+    public void onUnquoteAllPostsEvent(UnquoteAllPostsEvent event) {
+        if (topicPageView != null) {
+            topicPageView.clearQuotedPosts();
+        }
+    }
+
+    /**
      * Since we can't (without hacks) retrieve the currently displayed fragment in the viewpager,
      * another choice is to use the event bus to subscribe to scrolling "events" and change the
      * scroll position like this.
@@ -489,7 +441,7 @@ public class PostsFragment extends BaseFragment {
         if (swipeRefreshLayout != null) { swipeRefreshLayout.setVisibility(View.VISIBLE); }
     }
 
-    public void loadPage(int page) {
+    public void loadPage(final int page) {
         Timber.d("@%d -> Loading page '%d'", System.identityHashCode(this), page);
         subscribe(dataService.loadPosts(userManager.getActiveUser(), topic, page, new EndlessObserver<List<Post>>() {
             @Override
@@ -504,6 +456,7 @@ public class PostsFragment extends BaseFragment {
 
                 Timber.d("@%d -> Done loading page, settings posts", System.identityHashCode(PostsFragment.this));
                 topicPageView.setPosts(posts);
+
                 showPosts();
             }
 
@@ -515,6 +468,14 @@ public class PostsFragment extends BaseFragment {
                 showErrorView();
             }
         }));
+    }
+
+    private void updateQuotedPostsStatus() {
+        List<Long> quotedPosts = ((TopicFragment)getParentFragment()).getPageQuotedPosts(currentPage);
+        Timber.d("Posts already quoted for page '%d' = %s", currentPage, quotedPosts);
+        if (quotedPosts.size() > 0) {
+            topicPageView.setQuotedPosts(quotedPosts);
+        }
     }
 
     private void setupImagesInteractions() {

@@ -20,11 +20,16 @@ import android.content.Context;
 
 import com.ayuget.redface.account.UserManager;
 import com.ayuget.redface.data.api.model.Post;
+import com.ayuget.redface.settings.RedfaceSettings;
 import com.squareup.phrase.Phrase;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class PostTemplate extends HTMLTemplate<Post> {
     private static final String POST_TEMPLATE = "post.html";
+
+    private static final Pattern IS_QUOTED_PATTERN = Pattern.compile("(?:<a)(?:[^>]*)(?:>)(.+?)(?: a écrit :)(?:</a>)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
     private AvatarTemplate avatarTemplate;
 
@@ -36,18 +41,40 @@ public class PostTemplate extends HTMLTemplate<Post> {
 
     private UserManager userManager;
 
-    public PostTemplate(Context context, UserManager userManager, AvatarTemplate avatarTemplate, PostExtraDetailsTemplate extraDetailsTemplate, PostActionsTemplate postActionsTemplate, QuickActionsTemplate quickActionsTemplate) {
+    private RedfaceSettings appSettings;
+
+    public PostTemplate(Context context, UserManager userManager, AvatarTemplate avatarTemplate, PostExtraDetailsTemplate extraDetailsTemplate, PostActionsTemplate postActionsTemplate, QuickActionsTemplate quickActionsTemplate, RedfaceSettings appSettings) {
         super(context, POST_TEMPLATE);
         this.userManager = userManager;
         this.avatarTemplate = avatarTemplate;
         this.extraDetailsTemplate = extraDetailsTemplate;
         this.postActionsTemplate = postActionsTemplate;
         this.quickActionsTemplate = quickActionsTemplate;
+        this.appSettings = appSettings;
+    }
+
+    private boolean isUserQuoted(String htmlContent) {
+        Matcher quotedMatcher = IS_QUOTED_PATTERN.matcher(htmlContent);
+        while (quotedMatcher.find()) {
+            String quotedUser = quotedMatcher.group(1);
+
+            if (quotedUser.equals(userManager.getActiveUser().getUsername())) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Override
     protected void render(Post post, Phrase templateContent, StringBuilder stream) {
         String postId = String.valueOf(post.getId());
+
+        String extraClasses = post.isFromModerators() ? "moderation" : "";
+
+        if (appSettings.isEgoQuoteEnabled() && isUserQuoted(post.getHtmlContent())) {
+            extraClasses = extraClasses + " egoQuote";
+        }
 
         stream.append(
                 templateContent
@@ -60,6 +87,7 @@ public class PostTemplate extends HTMLTemplate<Post> {
                         .put("post_quick_actions", quickActionsTemplate.render(post))
                         .put("extra_details", extraDetailsTemplate.render(post))
                         .put("post_actions", userManager.isActiveUserLoggedIn() ? postActionsTemplate.render(post) : "")
+                        .put("extra_classes", extraClasses)
                         .format()
                         .toString()
         );

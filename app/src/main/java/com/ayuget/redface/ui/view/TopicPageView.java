@@ -45,6 +45,7 @@ import com.ayuget.redface.data.api.model.Category;
 import com.ayuget.redface.data.api.model.Post;
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.api.model.misc.PostAction;
+import com.ayuget.redface.data.rx.RxUtils;
 import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.activity.BaseActivity;
@@ -56,6 +57,7 @@ import com.ayuget.redface.ui.event.PageLoadedEvent;
 import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
 import com.ayuget.redface.ui.event.PostActionEvent;
 import com.ayuget.redface.ui.event.QuotePostEvent;
+import com.ayuget.redface.ui.event.UnquoteAllPostsEvent;
 import com.ayuget.redface.ui.event.WritePrivateMessageEvent;
 import com.ayuget.redface.ui.misc.DummyGestureListener;
 import com.ayuget.redface.ui.misc.PagePosition;
@@ -63,7 +65,9 @@ import com.ayuget.redface.ui.misc.ThemeManager;
 import com.ayuget.redface.ui.misc.UiUtils;
 import com.ayuget.redface.ui.template.PostsTemplate;
 import com.ayuget.redface.util.JsExecutor;
+import com.google.common.base.Joiner;
 import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 import com.squareup.phrase.Phrase;
 
 import java.util.ArrayList;
@@ -71,6 +75,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import rx.functions.Action1;
 import timber.log.Timber;
 
 public class TopicPageView extends WebView implements View.OnTouchListener {
@@ -140,14 +145,11 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
     }
 
     /**
-     * Callback to be invoked when multi-quote mode is
-     * triggered from the webview (by post actions buttons)
+     * Callback to be invoked when a post is quoted (or un-quoted) in multi-quote mode
      */
-    public interface OnMultiQuoteModeListener {
-        void onMultiQuoteModeToggled(boolean active);
-        void onPostAdded(long postId);
-        void onPostRemoved(long postId);
-        void onQuote();
+    public interface OnQuoteListener {
+        void onPostQuoted(int page, long postId);
+        void onPostUnquoted(int page, long postId);
     }
 
     /**
@@ -159,7 +161,7 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
 
     private OnScrollListener onScrollListener;
 
-    private OnMultiQuoteModeListener onMultiQuoteModeListener;
+    private OnQuoteListener onQuoteListener;
 
     private OnPageLoadedListener onPageLoadedListener;
 
@@ -270,8 +272,8 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
         this.onScrollListener = onScrollListener;
     }
 
-    public void setOnMultiQuoteModeListener(OnMultiQuoteModeListener onMultiQuoteModeListener) {
-        this.onMultiQuoteModeListener = onMultiQuoteModeListener;
+    public void setOnQuoteListener(OnQuoteListener onQuoteListener) {
+        this.onQuoteListener = onQuoteListener;
     }
 
     public void setOnPageLoadedListener(OnPageLoadedListener onPageLoadedListener) {
@@ -349,72 +351,22 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
         JsExecutor.execute(this, String.format("scrollToElement('post%d')", postId));
     }
 
-    private void startMultiQuoteMode() {
-        quoteActionMode = startActionMode(new ActionMode.Callback() {
-            @Override
-            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                actionModeIsActive = true;
+    /**
+     * Sets the posts that are actually quoted
+     */
+    public void setQuotedPosts(List<Long> posts) {
+        quotedMessages.clear();
+        quotedMessages.addAll(posts);
 
-                if (quotedMessages.size() > 1) {
-                    mode.setTitle(Phrase.from(getContext(), R.string.quoted_messages_plural).put("count", quotedMessages.size()).format());
-                } else {
-                    mode.setTitle(R.string.quoted_messages);
-                }
-
-                MenuInflater inflater = mode.getMenuInflater();
-                inflater.inflate(R.menu.menu_multi_quote, menu);
-
-                if (onMultiQuoteModeListener != null) {
-                    onMultiQuoteModeListener.onMultiQuoteModeToggled(true);
-                }
-
-                inflater = null; // Force GC
-
-                return true;
-            }
-
-            @Override
-            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                return false;
-            }
-
-            @Override
-            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.action_multiquote:
-                        if (onMultiQuoteModeListener != null) {
-                            onMultiQuoteModeListener.onQuote();
-                        }
-                        return true;
-                    default:
-                        return false;
-                }
-            }
-
-            @Override
-            public void onDestroyActionMode(ActionMode mode) {
-                actionModeIsActive = false;
-                quotedMessages.clear();
-                JsExecutor.execute(TopicPageView.this, "clearQuotedMessages()");
-
-                if (onMultiQuoteModeListener != null) {
-                    onMultiQuoteModeListener.onMultiQuoteModeToggled(false);
-                }
-            }
-        });
+        JsExecutor.execute(this, "setPostsAsQuoted([" + Joiner.on(",").join(posts) + "])");
     }
 
     /**
-     * Disables view current batch mode, if active
+     * Unquotes all previously quoted posts for the given page
      */
-    public void disableBatchActions() {
-        if (quoteActionMode != null) {
-            quoteActionMode.finish();
-        }
-
-        if (onMultiQuoteModeListener != null) {
-            onMultiQuoteModeListener.onMultiQuoteModeToggled(false);
-        }
+    public void clearQuotedPosts() {
+        quotedMessages.clear();
+        JsExecutor.execute(this, "clearQuotedMessages()");
     }
 
     private class JsInterface {
@@ -441,45 +393,23 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
 
             if (quotedMessages.contains(postId)) {
                 quotedMessages.remove(postId);
-                if (onMultiQuoteModeListener != null) {
-                    onMultiQuoteModeListener.onPostRemoved(postId);
+                if (onQuoteListener != null) {
+                    TopicPageView.this.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            onQuoteListener.onPostUnquoted(page, postId);
+                        }
+                    });
                 }
             }
             else {
                 quotedMessages.add(postId);
-                if (onMultiQuoteModeListener != null) {
-                    onMultiQuoteModeListener.onPostAdded(postId);
-                }
-            }
-
-            if (quotedMessages.size() == 0 && quoteActionMode != null) {
-                TopicPageView.this.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        quoteActionMode.finish();
-                        quoteActionMode = null;
-                        if (onMultiQuoteModeListener != null) {
-                            onMultiQuoteModeListener.onMultiQuoteModeToggled(false);
-                        }
-                    }
-                });
-            }
-            else {
-                if (! actionModeIsActive) {
+                if (onQuoteListener != null) {
                     TopicPageView.this.post(new Runnable() {
                         @Override
                         public void run() {
-                            startMultiQuoteMode();
+                            onQuoteListener.onPostQuoted(page, postId);
                         }
-                    });
-                }
-                else {
-                    TopicPageView.this.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            updateActionModeTitle();
-                            }
-
                     });
                 }
             }
@@ -548,42 +478,43 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
                 }
             });
 
-            urlParser.parseUrl(url).ifTopicLink(new MDLink.IfIsTopicLink() {
-                @Override
-                public void call(final Category category, final int topicId, final int topicPage, final PagePosition pagePosition) {
-                    TopicPageView.this.post(new Runnable() {
+            urlParser.parseUrl(url).compose(RxUtils.<MDLink>applySchedulers())
+                    .subscribe(new Action1<MDLink>() {
                         @Override
-                        public void run() {
-                            // Action can take a few seconds to process, depending on target and on network quality,
-                            // we need to do something to indicate that we handled the event
-                            if (topicId != topic.getId()) {
-                                Toast.makeText(getContext(), R.string.topic_loading_message, Toast.LENGTH_SHORT).show();
-                            }
+                        public void call(MDLink mdLink) {
+                            mdLink.ifTopicLink(new MDLink.IfIsTopicLink() {
+                                @Override
+                                public void call(Category category, int topicId, int topicPage, PagePosition pagePosition) {
+                                    // Action can take a few seconds to process, depending on target and on network quality,
+                                    // we need to do something to indicate that we handled the event
+                                    if (topicId != topic.getId()) {
+                                        Toast.makeText(getContext(), R.string.topic_loading_message, Toast.LENGTH_SHORT).show();
+                                    }
 
-                            if (topic.getId() == topicId) {
-                                int destinationPage = topicPage;
-                                PagePosition targetPagePosition = pagePosition;
+                                    if (topic.getId() == topicId) {
+                                        int destinationPage = topicPage;
+                                        PagePosition targetPagePosition = pagePosition;
 
-                                // Hack needed because we are hiding the first post of a page, which is equal
-                                // to the last post of previous page.
-                                if (!appSettings.showPreviousPageLastPost() && destinationPage > 1 && posts.size() > 0 && topicPage == page && pagePosition.getPostId() < posts.get(0).getId()) {
-                                    targetPagePosition = new PagePosition(PagePosition.BOTTOM);
-                                    destinationPage -= 1;
+                                        // Hack needed because we are hiding the first post of a page, which is equal
+                                        // to the last post of previous page.
+                                        if (!appSettings.showPreviousPageLastPost() && destinationPage > 1 && posts.size() > 0 && topicPage == page && pagePosition.getPostId() < posts.get(0).getId()) {
+                                            targetPagePosition = new PagePosition(PagePosition.BOTTOM);
+                                            destinationPage -= 1;
+                                        }
+
+                                        bus.post(new GoToPostEvent(destinationPage, targetPagePosition, TopicPageView.this));
+                                    } else {
+                                        bus.post(new GoToTopicEvent(category, topicId, topicPage, pagePosition));
+                                    }
                                 }
-
-                                bus.post(new GoToPostEvent(destinationPage, targetPagePosition, TopicPageView.this));
-                            } else {
-                                bus.post(new GoToTopicEvent(category, topicId, topicPage, pagePosition));
-                            }
+                            }).ifInvalid(new MDLink.IfIsInvalidLink() {
+                                @Override
+                                public void call() {
+                                    getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                                }
+                            });
                         }
                     });
-                }
-            }).ifInvalid(new MDLink.IfIsInvalidLink() {
-                @Override
-                public void call() {
-                    getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-                }
-            });
         }
     }
 }

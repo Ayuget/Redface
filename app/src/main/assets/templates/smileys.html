@@ -8,12 +8,20 @@
         {css}
 
         .smiley {{
-            width: {smiley_touch_size}px;
-            height: {smiley_touch_size}px;
+            box-sizing: border-box;
+            width: 60px;
+            height: 45px;
+            margin: 4px;
         }
 
         .smiley img {{
-            margin: {smiley_padding}px;
+            max-width: 90%;
+            max-height: 90%;
+        }
+
+        body {{
+            padding-top: 20px;
+            padding-bottom: 80px;
         }
     </style>
     <script type="text/javascript">

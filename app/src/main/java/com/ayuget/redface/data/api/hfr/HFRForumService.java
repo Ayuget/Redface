@@ -52,7 +52,6 @@ import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.event.TopicPageCountUpdatedEvent;
 import com.ayuget.redface.util.UserUtils;
 import com.google.common.base.Optional;
-import com.google.common.primitives.Ints;
 import com.squareup.otto.Bus;
 
 import java.util.List;
@@ -358,5 +357,10 @@ public class HFRForumService implements MDService {
 
         return pageFetcher.fetchSource(user, mdEndpoints.profile(user_id))
                 .map(new HTMLToProfile());
+    }
+
+    @Override
+    public Observable<Boolean> unflagTopic(User user, Topic topic) {
+        return mdMessageSender.unflagTopic(user, topic);
     }
 }

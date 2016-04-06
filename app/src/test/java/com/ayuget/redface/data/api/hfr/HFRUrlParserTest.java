@@ -69,7 +69,7 @@ public class HFRUrlParserTest extends BaseTestCase {
 
         String rewrittenTopicUrl = "http://forum.hardware.fr/hfr/Discussions/politique/hollande-social-democratie-sujet_47220_1.htm";
 
-        MDLink parsedLink = urlParser.parseUrl(rewrittenTopicUrl);
+        MDLink parsedLink = urlParser.parseUrl(rewrittenTopicUrl).toBlocking().first();
 
         assertThat(parsedLink.isTopic()).isTrue();
         assertThat(parsedLink.getTopicId()).isEqualTo(47220);
@@ -86,11 +86,26 @@ public class HFRUrlParserTest extends BaseTestCase {
 
         when(categoriesStore.getCategoryById(13)).thenReturn(dummyCat);
 
-        MDLink parsedLink = urlParser.parseUrl(standardTopicUrl);
+        MDLink parsedLink = urlParser.parseUrl(standardTopicUrl).toBlocking().first();
         assertThat(parsedLink.isTopic()).isTrue();
         assertThat(parsedLink.getTopicId()).isEqualTo(59264);
         assertThat(parsedLink.getTopicPage()).isEqualTo(8748);
         assertThat(parsedLink.getPagePosition()).isEqualTo(PagePosition.at(42586267L));
         assertThat(parsedLink.getCategory()).isEqualTo(dummyCat);
+    }
+
+    @Test
+    public void testParseRedirectedUrl() throws Exception {
+        HFRUrlParser urlParser = new HFRUrlParser(hfrEndpoints, categoriesStore);
+
+        String redirectedUrl = "http://forum.hardware.fr/forum2.php?config=hfr.inc&cat=13&subcat=430&post=61179&page=1&p=1&sondage=0&owntopic=0&trash=0&trash_post=0&print=0&numreponse=45255613&quote_only=0&new=0&nojs=0#t45255613";
+
+        MDLink parsedLink = urlParser.parseUrl(redirectedUrl).toBlocking().first();
+
+        assertThat(parsedLink.isTopic()).isTrue();
+        assertThat(parsedLink.getTopicId()).isEqualTo(61179);
+        assertThat(parsedLink.getTopicPage()).isEqualTo(40331);
+        assertThat(parsedLink.getPagePosition()).isEqualTo(PagePosition.at(45255613L));
+
     }
 }

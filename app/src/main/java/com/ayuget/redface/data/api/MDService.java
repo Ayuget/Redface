@@ -135,4 +135,9 @@ public interface MDService {
      * Get a user profile
      */
     Observable<Profile> getProfile(User user, int user_id);
+
+    /**
+     * Removes a flag (or a favorite) on a given {@link Topic}
+     */
+    Observable<Boolean> unflagTopic(User user, Topic topic);
 }

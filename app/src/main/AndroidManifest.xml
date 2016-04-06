@@ -26,8 +26,9 @@
         android:theme="@style/Theme.Redface.Dark" >
         <activity
             android:name=".ui.activity.TopicsActivity"
+            android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize"
-            android:label="@string/app_name" >
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -36,7 +37,9 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:host="forum.hardware.fr" android:scheme="http" />
+                <data android:scheme="http" />
+                <data android:host="forum.hardware.fr" />
+                <data android:pathPattern="/.*" />
             </intent-filter>
         </activity>
         <activity

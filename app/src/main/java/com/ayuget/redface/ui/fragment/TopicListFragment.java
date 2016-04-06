@@ -24,7 +24,6 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
@@ -140,6 +139,16 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
         setHasOptionsMenu(true);
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (topicsAdapter != null) {
+            topicsAdapter.setOnTopicClickedListener(null);
+            topicsAdapter.setOnTopicLongClickListener(null);
+        }
+    }
+
     protected void initializeAdapters() {
         subcategoriesAdapter = new SubcategoriesAdapter(getActivity(), topicFilter);
         subcategoriesAdapter.replaceWith(category);
@@ -216,7 +225,7 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
     public void onResume() {
         super.onResume();
 
-        if (displayedTopics == null) {
+        if (displayedTopics == null || displayedTopics.size() == 0) {
             displayedTopics = new ArrayList<>();
             loadTopics();
         }

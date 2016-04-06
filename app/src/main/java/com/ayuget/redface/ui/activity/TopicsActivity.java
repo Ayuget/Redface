@@ -18,11 +18,13 @@ package com.ayuget.redface.ui.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
@@ -35,6 +37,7 @@ import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.api.model.TopicStatus;
 import com.ayuget.redface.data.api.model.User;
 import com.ayuget.redface.data.rx.EndlessObserver;
+import com.ayuget.redface.data.rx.RxUtils;
 import com.ayuget.redface.data.rx.SubscriptionHandler;
 import com.ayuget.redface.data.state.CategoriesStore;
 import com.ayuget.redface.ui.UIConstants;
@@ -56,10 +59,12 @@ import com.ayuget.redface.ui.misc.PagePosition;
 import com.ayuget.redface.ui.misc.UiUtils;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.squareup.otto.Subscribe;
+import com.squareup.phrase.Phrase;
 
 import javax.inject.Inject;
 
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -100,16 +105,7 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
 
         if (getIntent().getData() != null) {
             restoredInstanceState = true;
-
-            String url = getIntent().getData().toString();
-
-            urlParser.parseUrl(url).ifTopicLink(new MDLink.IfIsTopicLink() {
-                @Override
-                public void call(final Category category, final int topicId, final int topicPage, final PagePosition pagePosition) {
-                    Timber.d("Parsed link for category='%s', topic='%d', page='%d'", category.getName(), topicId, topicPage);
-                    onGoToTopicEvent(new GoToTopicEvent(category, topicId, topicPage, pagePosition));
-                }
-            });
+            parseIntentUrl(getIntent().getData().toString());
         }
         else if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
@@ -126,6 +122,35 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
                 }
             }
         }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        if (intent.getData() != null) {
+            parseIntentUrl(intent.getData().toString());
+        }
+    }
+
+    /**
+     * Parses an URL received from the incoming intent upon activity creation or restart
+     */
+    private void parseIntentUrl(String intentUrl) {
+        Timber.d("Parsing URL from intent : '%s'", intentUrl);
+        urlParser.parseUrl(intentUrl).compose(RxUtils.<MDLink>applySchedulers())
+                .subscribe(new Action1<MDLink>() {
+                    @Override
+                    public void call(MDLink mdLink) {
+                        mdLink.ifTopicLink(new MDLink.IfIsTopicLink() {
+                            @Override
+                            public void call(final Category category, final int topicId, final int topicPage, final PagePosition pagePosition) {
+                                Timber.d("Parsed link for category='%s', topic='%d', page='%d'", category.getName(), topicId, topicPage);
+                                onGoToTopicEvent(new GoToTopicEvent(category, topicId, topicPage, pagePosition));
+                            }
+                        });
+                    }
+                });
     }
 
     @Override
@@ -227,7 +252,7 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
     }
 
     @Override
-    public void onCategoryClicked(Category category) {
+    public void onCategoryClicked(Category category, boolean addToBackstack) {
         currentCategory = category;
 
         Timber.d("Loading category '%s', with topicFilter='%s'", category.getName(), getSettings().getDefaultTopicFilter().toString());
@@ -237,6 +262,11 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.container, topicListFragment, TOPICS_FRAGMENT_TAG);
+
+        if (addToBackstack) {
+            transaction.addToBackStack(TOPICS_FRAGMENT_TAG);
+        }
+
         transaction.commit();
     }
 
@@ -420,9 +450,9 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
                         .content(R.string.post_delete_confirmation)
                         .positiveText(R.string.post_delete_yes)
                         .negativeText(R.string.post_delete_no)
-                        .callback(new MaterialDialog.ButtonCallback() {
+                        .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
-                            public void onPositive(MaterialDialog dialog) {
+                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                                 deletePost(event.getTopic(), event.getPostId());
                             }
                         })
@@ -472,9 +502,9 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
                 .positiveText(R.string.dialog_go_to_page_positive_text)
                 .negativeText(android.R.string.cancel)
                 .theme(themeManager.getMaterialDialogTheme())
-                .callback(new MaterialDialog.ButtonCallback() {
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
-                    public void onPositive(MaterialDialog dialog) {
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         try {
                             int pageNumber = Integer.valueOf(goToPageEditText.getText().toString());
                             loadTopic(topic, pageNumber, new PagePosition(PagePosition.TOP));
@@ -483,15 +513,15 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
                             SnackbarHelper.makeError(TopicsActivity.this, R.string.invalid_page_number).show();
                         }
                     }
-
-                    @Override
-                    public void onNegative(MaterialDialog dialog) {
-                    }
-                }).build();
+                })
+                .build();
 
 
         final View positiveAction = dialog.getActionButton(DialogAction.POSITIVE);
         goToPageEditText = (MaterialEditText) dialog.getCustomView().findViewById(R.id.page_number);
+
+        TextView pagesCountView = (TextView) dialog.getCustomView().findViewById(R.id.pages_count);
+        pagesCountView.setText(Phrase.from(this, R.string.pages_count).put("page", topic.getPagesCount()).format());
 
         goToPageEditText.addTextChangedListener(new TextWatcher() {
             @Override

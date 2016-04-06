@@ -18,52 +18,73 @@ package com.ayuget.redface.ui.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.ayuget.redface.R;
+import com.ayuget.redface.account.UserManager;
 import com.ayuget.redface.data.api.MDEndpoints;
+import com.ayuget.redface.data.api.MDService;
 import com.ayuget.redface.data.api.model.Topic;
+import com.ayuget.redface.data.api.model.User;
+import com.ayuget.redface.data.quote.QuotedMessagesCache;
+import com.ayuget.redface.data.rx.EndlessObserver;
+import com.ayuget.redface.data.rx.SubscriptionHandler;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.activity.MultiPaneActivity;
+import com.ayuget.redface.ui.activity.ReplyActivity;
 import com.ayuget.redface.ui.activity.WritePrivateMessageActivity;
 import com.ayuget.redface.ui.adapter.TopicPageAdapter;
 import com.ayuget.redface.ui.event.GoToPostEvent;
 import com.ayuget.redface.ui.event.PageLoadedEvent;
 import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
-import com.ayuget.redface.ui.event.PageRefreshedEvent;
 import com.ayuget.redface.ui.event.PageSelectedEvent;
 import com.ayuget.redface.ui.event.ScrollToPostEvent;
 import com.ayuget.redface.ui.event.TopicPageCountUpdatedEvent;
+import com.ayuget.redface.ui.event.UnquoteAllPostsEvent;
 import com.ayuget.redface.ui.event.WritePrivateMessageEvent;
 import com.ayuget.redface.ui.misc.PagePosition;
 import com.ayuget.redface.ui.misc.SnackbarHelper;
 import com.ayuget.redface.ui.misc.TopicPosition;
 import com.ayuget.redface.ui.misc.UiUtils;
+import com.ayuget.redface.ui.view.TopicPageView;
 import com.hannesdorfmann.fragmentargs.annotation.Arg;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.squareup.otto.Subscribe;
+import com.squareup.phrase.Phrase;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.InjectView;
 import timber.log.Timber;
 
-public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageChangeListener {
+public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageChangeListener, TopicPageView.OnQuoteListener {
     private static final String ARG_TOPIC_POSITIONS_STACK = "topicPositionsStack";
+
+    private static final String ARG_QUOTED_MESSAGES_CACHE = "quotedMessagesCache";
+
+    private static final String ARG_TOPIC = "topic";
+
+    private static final int UNFLAG_ACTION = 42;
 
     private TopicPageAdapter topicPageAdapter;
 
@@ -75,9 +96,34 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
     private boolean userScrolledViewPager = false;
 
+    /**
+     * Delegate to handle the "unflag" action subscription properly
+     */
+    private SubscriptionHandler<User, Boolean> unflagSubscriptionHandler = new SubscriptionHandler<>();
+
+    /**
+     * Delegate to handle the "fetch quote bbcode" action subscription properly
+     */
+    private SubscriptionHandler<Long, String> quoteHandler = new SubscriptionHandler<>();
+
+    /**
+     * Used to display a contextual action bar when multi-quote mode is enabled
+     */
+    private ActionMode quoteActionMode;
+
+    /**
+     * In-memory cache for quoted messages
+     */
+    private QuotedMessagesCache quotedMessagesCache;
+
     @Inject
     MDEndpoints mdEndpoints;
 
+    @Inject
+    UserManager userManager;
+
+    @Inject
+    MDService mdService;
 
     @InjectView(R.id.pager)
     ViewPager pager;
@@ -113,10 +159,15 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
         if (savedInstanceState != null) {
             topicPositionsStack = savedInstanceState.getParcelableArrayList(ARG_TOPIC_POSITIONS_STACK);
+            quotedMessagesCache = savedInstanceState.getParcelable(ARG_QUOTED_MESSAGES_CACHE);
         }
 
         if (topicPositionsStack == null) {
             topicPositionsStack = new ArrayList<>();
+        }
+
+        if (quotedMessagesCache == null) {
+            quotedMessagesCache = new QuotedMessagesCache();
         }
 
         setHasOptionsMenu(true);
@@ -137,6 +188,10 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     public void onResume() {
         super.onResume();
 
+        if (quotedMessagesCache.size() > 0) {
+            startMultiQuoteAction();
+        }
+
         pager.addOnPageChangeListener(this);
     }
 
@@ -148,10 +203,20 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (quoteActionMode != null) {
+            quoteActionMode.finish();
+        }
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putParcelableArrayList(ARG_TOPIC_POSITIONS_STACK, topicPositionsStack);
+        outState.putParcelable(ARG_QUOTED_MESSAGES_CACHE, quotedMessagesCache);
     }
 
     @Override
@@ -186,6 +251,14 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     @Override
     public void onCreateOptionsMenu(Toolbar toolbar) {
         toolbar.inflateMenu(R.menu.menu_topic);
+
+        if (userManager.isActiveUserLoggedIn()) {
+            // Small hack to find the last added item order...
+            Menu existingMenu = toolbar.getMenu();
+            int lastAction = existingMenu.size() > 0 ? existingMenu.getItem(existingMenu.size() - 1).getOrder() : 0;
+
+            toolbar.getMenu().add(Menu.NONE, UNFLAG_ACTION, lastAction + 100, getString(R.string.action_unflag_topic));
+        }
     }
 
     @Override
@@ -331,6 +404,12 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     }
 
     @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+
+    }
+
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
@@ -355,12 +434,32 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
             case R.id.action_share:
                 UiUtils.shareText(getActivity(), mdEndpoints.topic(topic));
                 break;
+            case UNFLAG_ACTION:
+                unflagTopic();
+                break;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Unflags current topic.
+     */
+    private void unflagTopic() {
+        User activeUser = userManager.getActiveUser();
+        subscribe(unflagSubscriptionHandler.load(activeUser, mdService.unflagTopic(activeUser, topic), new EndlessObserver<Boolean>() {
+            @Override
+            public void onNext(Boolean aBoolean) {
+                SnackbarHelper.make(TopicFragment.this, R.string.flag_successfully_removed).show();
+            }
 
+            @Override
+            public void onError(Throwable throwable) {
+                Timber.e(throwable, "Error while removing flag");
+                SnackbarHelper.makeError(TopicFragment.this, R.string.error_removing_flag).show();
+            }
+        }));
+    }
 
     /**
      * Clears internal navigation stack
@@ -376,9 +475,9 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
                 .positiveText(R.string.dialog_go_to_page_positive_text)
                 .negativeText(android.R.string.cancel)
                 .theme(themeManager.getMaterialDialogTheme())
-                .callback(new MaterialDialog.ButtonCallback() {
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
-                    public void onPositive(MaterialDialog dialog) {
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         try {
                             int pageNumber = Integer.valueOf(goToPageEditText.getText().toString());
                             pager.setCurrentItem(pageNumber - 1);
@@ -388,15 +487,15 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
                             SnackbarHelper.make(TopicFragment.this, R.string.invalid_page_number).show();
                         }
                     }
-
-                    @Override
-                    public void onNegative(MaterialDialog dialog) {
-                    }
-                }).build();
+                })
+                .build();
 
 
         final View positiveAction = dialog.getActionButton(DialogAction.POSITIVE);
         goToPageEditText = (MaterialEditText) dialog.getCustomView().findViewById(R.id.page_number);
+
+        TextView pagesCountView = (TextView) dialog.getCustomView().findViewById(R.id.pages_count);
+        pagesCountView.setText(Phrase.from(getActivity(), R.string.pages_count_currently).put("current_page", currentPage).put("pages_count", topic.getPagesCount()).format());
 
         goToPageEditText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -428,5 +527,158 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
         dialog.show();
         positiveAction.setEnabled(false);
+    }
+
+    @Override
+    public void onPostQuoted(final int page, final long postId) {
+        if (quotedMessagesCache.size() == 0) {
+            startMultiQuoteAction();
+        }
+
+        subscribe(quoteHandler.load(postId, mdService.getQuote(userManager.getActiveUser(), topic, (int) postId), new EndlessObserver<String>() {
+            @Override
+            public void onNext(String quoteBBCode) {
+                quotedMessagesCache.add(postId, page, quoteBBCode);
+                updateQuotedMessagesCount();
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                Timber.e(throwable, "Failed to add post to quoted list");
+                Toast.makeText(getActivity(), R.string.post_failed_to_quote, Toast.LENGTH_SHORT).show();
+            }
+        }));
+    }
+
+    @Override
+    public void onPostUnquoted(int page, long postId) {
+        quotedMessagesCache.remove(postId);
+        updateQuotedMessagesCount();
+
+        if (quotedMessagesCache.size() == 0) {
+            stopMultiQuoteAction();
+        }
+    }
+
+    /**
+     * Starts the multi-quote action mode
+     */
+    private void startMultiQuoteAction() {
+        onBatchOperation(true);
+
+        quoteActionMode = getActivity().startActionMode(new ActionMode.Callback() {
+            @Override
+            public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
+                MenuInflater inflater = actionMode.getMenuInflater();
+                inflater.inflate(R.menu.menu_multi_quote, menu);
+
+                // Initial quotes cache size can be greater than 0, if we are recovering from a
+                // previously saved state.
+                if (quotedMessagesCache.size() > 1) {
+                    actionMode.setTitle(Phrase.from(getContext(), R.string.quoted_messages_plural).put("count", quotedMessagesCache.size()).format());
+                }
+                else {
+                    actionMode.setTitle(R.string.quoted_messages);
+                }
+
+                return true;
+            }
+
+            @Override
+            public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
+                return false;
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
+                switch (menuItem.getItemId()) {
+                    case R.id.action_multiquote:
+                        replyToTopic();
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode actionMode) {
+                stopMultiQuoteAction();
+            }
+        });
+    }
+
+    /**
+     * Starts the multi-quote action mode
+     */
+    private void stopMultiQuoteAction() {
+        if (quoteActionMode != null) {
+            quoteActionMode.finish();
+        }
+
+        // Clear internal quoted messages cache
+        quotedMessagesCache.clear();
+
+        // Notify ViewPager fragments
+        bus.post(new UnquoteAllPostsEvent());
+
+        // Disable PagerIndicator batch color
+        onBatchOperation(false);
+    }
+
+    /**
+     * Updates the quote action mode title with the appropriate number of quoted messages
+     */
+    private void updateQuotedMessagesCount() {
+        if (quoteActionMode != null) {
+            if (quotedMessagesCache.size() > 1) {
+                quoteActionMode.setTitle(Phrase.from(getContext(), R.string.quoted_messages_plural).put("count", quotedMessagesCache.size()).format());
+            }
+            else {
+                quoteActionMode.setTitle(R.string.quoted_messages);
+            }
+        }
+    }
+
+    /**
+     * Starts the reply activity without an initial content (or with the currently quoted context,
+     * if present)
+     */
+    public void replyToTopic() {
+        if (quotedMessagesCache.size() > 0) {
+            String quotedContent = quotedMessagesCache.join();
+            stopMultiQuoteAction();
+            replyToTopic(quotedContent);
+
+        }
+        else {
+            replyToTopic(null);
+        }
+    }
+
+    /**
+     * Starts the reply activity with an initial content
+     */
+    private void replyToTopic(String initialContent) {
+        MultiPaneActivity hostActivity = (MultiPaneActivity) getActivity();
+
+        if (hostActivity.canLaunchReplyActivity()) {
+            hostActivity.setCanLaunchReplyActivity(false);
+
+            Intent intent = new Intent(getActivity(), ReplyActivity.class);
+            intent.putExtra(ARG_TOPIC, topic);
+
+            if (initialContent != null) {
+                intent.putExtra(UIConstants.ARG_REPLY_CONTENT, initialContent);
+            }
+
+            getActivity().startActivityForResult(intent, UIConstants.REPLY_REQUEST_CODE);
+        }
+    }
+
+    /**
+     * Returns a list of all quoted posts for a given page
+     */
+    public List<Long> getPageQuotedPosts(int page) {
+        return quotedMessagesCache.getPageQuotedMessages(page);
     }
 }

@@ -69,6 +69,8 @@ public class HFREndpoints implements MDEndpoints {
 
     public static final String SMILEY_SEARCH_URL = "{base_url}/message-smi-mp-aj.php?config=hfr.inc&findsmilies={search_term}";
 
+    private static final String REMOVE_FLAG_URL = "{base_url}/user/delflag.php?config=hfr.inc&cat={category_id}&post={topic_id}&p=1&sondage=0&owntopic=1&new=0";
+
     /**
      * Homepage URL (with the list of categories)
      */
@@ -320,5 +322,15 @@ public class HFREndpoints implements MDEndpoints {
                 .put("base_url", FORUM_BASE_URL)
                 .put("search_term", encodedTerm)
                 .format().toString();
+    }
+
+    @Override
+    public String removeFlag(Category category, Topic topic) {
+        return Phrase.from(REMOVE_FLAG_URL)
+                .put("base_url", FORUM_BASE_URL)
+                .put("category_id", category.getId())
+                .put("topic_id", topic.getId())
+                .format()
+                .toString();
     }
 }

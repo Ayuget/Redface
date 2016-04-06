@@ -24,6 +24,8 @@ import com.ayuget.redface.ui.UIConstants;
 import java.util.Date;
 
 public class Post implements Parcelable {
+    private static final String MODERATORS_USERNAME = "Modération";
+
     private final long id;
 
     private String author;
@@ -33,8 +35,6 @@ public class Post implements Parcelable {
     private Date postDate;
 
     private Date lastEditionDate;
-
-    private boolean isFromModerators;
 
     private boolean isDeleted;
 
@@ -87,14 +87,6 @@ public class Post implements Parcelable {
         this.lastEditionDate = lastEditionDate;
     }
 
-    public boolean isFromModerators() {
-        return isFromModerators;
-    }
-
-    public void setFromModerators(boolean isFromModerators) {
-        this.isFromModerators = isFromModerators;
-    }
-
     public boolean isDeleted() {
         return isDeleted;
     }
@@ -127,6 +119,10 @@ public class Post implements Parcelable {
         this.topicPagesCount = topicPagesCount;
     }
 
+    public boolean isFromModerators() {
+        return MODERATORS_USERNAME.equals(author);
+    }
+
     @Override
     public String toString() {
         final StringBuffer sb = new StringBuffer("Post{");
@@ -150,7 +146,6 @@ public class Post implements Parcelable {
         dest.writeString(this.avatarUrl);
         dest.writeLong(postDate != null ? postDate.getTime() : -1);
         dest.writeLong(lastEditionDate != null ? lastEditionDate.getTime() : -1);
-        dest.writeByte(isFromModerators ? (byte) 1 : (byte) 0);
         dest.writeByte(isDeleted ? (byte) 1 : (byte) 0);
         dest.writeInt(this.quoteCount);
         dest.writeString(this.htmlContent);
@@ -165,7 +160,6 @@ public class Post implements Parcelable {
         this.postDate = tmpPostDate == -1 ? null : new Date(tmpPostDate);
         long tmpLastEditionDate = in.readLong();
         this.lastEditionDate = tmpLastEditionDate == -1 ? null : new Date(tmpLastEditionDate);
-        this.isFromModerators = in.readByte() != 0;
         this.isDeleted = in.readByte() != 0;
         this.quoteCount = in.readInt();
         this.htmlContent = in.readString();

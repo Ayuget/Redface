@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.ayuget.redface.data.api;
+package com.ayuget.redface.ui.event;
 
-import rx.Observable;
-
-public interface UrlParser {
-    Observable<MDLink> parseUrl(String url);
+/**
+ * Event emitted when all quoted messages must be unquoted
+ */
+public class UnquoteAllPostsEvent {
 }

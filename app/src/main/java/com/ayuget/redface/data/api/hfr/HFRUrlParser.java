@@ -17,13 +17,13 @@
 package com.ayuget.redface.data.api.hfr;
 
 import android.net.Uri;
-import android.util.Log;
 
 import com.ayuget.redface.data.api.MDEndpoints;
 import com.ayuget.redface.data.api.MDLink;
 import com.ayuget.redface.data.api.UrlParser;
 import com.ayuget.redface.data.api.model.Category;
 import com.ayuget.redface.data.state.CategoriesStore;
+import com.ayuget.redface.network.HTTPRedirection;
 import com.ayuget.redface.ui.misc.PagePosition;
 
 import java.util.regex.Matcher;
@@ -31,20 +31,28 @@ import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
+import rx.Observable;
+import rx.functions.Func1;
 import timber.log.Timber;
 
+/**
+ * Analyzes an internal URL (i.e. a forum URL) and extracts useful information from it (topic id,
+ * page number, ...)
+ */
 public class HFRUrlParser implements UrlParser {
-    private static final String REWRITTEN_TOPIC_LIST_REGEX = "([^\\/]+)(?:\\/)(?:([^\\/]+)(?:\\/))?(?:liste_sujet-)(\\d+)(?:.*)";
+    /**
+     * Pattern used to detect URLs that are, in the end, redirected. We need to resolve the
+     * redirection, otherwise the user will be send to a wrong location (those URLs usually only
+     * have a post id, and a page number set to 1)
+     */
+    private static final Pattern REDIRECTED_URL_PATTERN = Pattern.compile("(?:.*)(?:numreponse=)(\\d+)(?:.*)");
 
+    /**
+     * Regex to match a rewritten URL.
+     */
     private static final String REWRITTEN_TOPIC_REGEX = "([^\\/]+)(?:\\/)(?:([^\\/]+)(?:\\/))?(?:[^\\_]+)(?:_)(\\d+)(?:_)(\\d+)(?:\\.htm)";
 
-    private static final String STANDARD_TOPIC_REGEX = "(?:\\/forum2\\.php\\?)(.*)";
-
-    private final Pattern rewrittenTopicListPattern;
-
     private final Pattern rewrittenTopicPattern;
-
-    private final Pattern standardTopicPattern;
 
     private final String baseRewrittenUrlRegex;
 
@@ -61,24 +69,34 @@ public class HFRUrlParser implements UrlParser {
 
         String baseRewrittenRegex = "(?:" + Pattern.quote(mdEndpoints.baseurl() + "/hfr/") + ")";
         baseRewrittenUrlRegex = Pattern.quote(mdEndpoints.baseurl()) + "/hfr/.*";
-        String baseStandardRegex = "(?:" + Pattern.quote(mdEndpoints.baseurl()) + ")";
-        baseStandardUrlRegex = Pattern.quote(mdEndpoints.baseurl()) + "/forum.*";
 
-        rewrittenTopicListPattern = Pattern.compile(baseRewrittenRegex + REWRITTEN_TOPIC_LIST_REGEX);
+        baseStandardUrlRegex = Pattern.quote(mdEndpoints.baseurl()) + "/forum.*";
         rewrittenTopicPattern = Pattern.compile(baseRewrittenRegex + REWRITTEN_TOPIC_REGEX);
-        standardTopicPattern = Pattern.compile(baseStandardRegex + STANDARD_TOPIC_REGEX);
     }
 
     @Override
-    public MDLink parseUrl(String url) {
+    public Observable<MDLink> parseUrl(String url) {
         if (url.matches(baseRewrittenUrlRegex)) {
-            return parseRewrittenUrl(url);
+            return Observable.just(parseRewrittenUrl(url));
         }
         else if (url.matches(baseStandardUrlRegex)){
-            return parseStandardUrl(url);
+            Matcher redirectedMatcher = REDIRECTED_URL_PATTERN.matcher(url);
+
+            if (redirectedMatcher.matches() && !redirectedMatcher.group(1).equals("0")) {
+                return HTTPRedirection.resolve(url)
+                        .map(new Func1<String, MDLink>() {
+                            @Override
+                            public MDLink call(String targetUrl) {
+                                return parseRewrittenUrl(targetUrl);
+                            }
+                        });
+            }
+            else {
+                return Observable.just(parseStandardUrl(url));
+            }
         }
         else {
-            return MDLink.invalid();
+            return Observable.just(MDLink.invalid());
         }
     }
 
@@ -161,7 +179,7 @@ public class HFRUrlParser implements UrlParser {
 
     public PagePosition parseAnchor(String anchor) {
         if (anchor == null || ! (anchor.length() > 1 && anchor.charAt(0) == 't')) {
-            Timber.e("Anchor '%s' is invalid", anchor);
+            Timber.w("Anchor '%s' is invalid", anchor);
             return new PagePosition(PagePosition.TOP);
         }
         else {

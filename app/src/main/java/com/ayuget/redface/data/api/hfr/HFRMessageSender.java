@@ -16,11 +16,8 @@
 
 package com.ayuget.redface.data.api.hfr;
 
-import android.util.Log;
-
 import com.ayuget.redface.data.api.MDEndpoints;
 import com.ayuget.redface.data.api.MDMessageSender;
-import com.ayuget.redface.data.api.model.Post;
 import com.ayuget.redface.data.api.model.Response;
 import com.ayuget.redface.data.api.model.ResponseCode;
 import com.ayuget.redface.data.api.model.Topic;
@@ -49,9 +46,9 @@ public class HFRMessageSender implements MDMessageSender {
     private static final Pattern INVALID_PASSWORD_PATTERN = Pattern.compile("(.*)((Mot de passe incorrect !)|((.*)(Votre mot de passe ou nom d'utilisateur n'est pas valide)(.*)))(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private static final Pattern POST_FLOOD_PATTERN = Pattern.compile("(.*)(réponses consécutives)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private static final Pattern TOPIC_FLOOD_PATTERN = Pattern.compile("(.*)(nouveaux sujets consécutifs)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-    private static final Pattern FAVORITE_SUCCESFULLY_ADDED = Pattern.compile("(.*)(Favori positionné avec succès)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private static final Pattern FAVORITE_SUCCESSFULLY_ADDED = Pattern.compile("(.*)(Favori positionné avec succès)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private static final Pattern MESSAGE_SUCCESSFULLY_DELETED = Pattern.compile("(.*)(Message effacé avec succès)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-
+    private static final Pattern FLAG_SUCCESSFULLY_REMOVED = Pattern.compile("(.*)(Drapeau effacé avec succès)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
     private final HTTPClientProvider httpClientProvider;
 
@@ -250,7 +247,7 @@ public class HFRMessageSender implements MDMessageSender {
 
                     if (response.isSuccessful()) {
                         final String responseBody = response.body().string();
-                        boolean success = matchesPattern(FAVORITE_SUCCESFULLY_ADDED, responseBody);
+                        boolean success = matchesPattern(FAVORITE_SUCCESSFULLY_ADDED, responseBody);
                         subscriber.onNext(success);
                     }
                     else {
@@ -324,6 +321,42 @@ public class HFRMessageSender implements MDMessageSender {
     @Override
     public Observable<Boolean> reportPost(User user, Topic topic, int postId) {
         return null;
+    }
+
+    @Override
+    public Observable<Boolean> unflagTopic(final User user, final Topic topic) {
+        return Observable.create(new Observable.OnSubscribe<Boolean>() {
+            @Override
+            public void call(Subscriber<? super Boolean> subscriber) {
+                Timber.d("Removing flag (or favorite) on topic '%d' for user '%s'", topic.getId(), user.getUsername());
+
+                OkHttpClient httpClient = httpClientProvider.getClientForUser(user);
+
+                Request request = new Request.Builder()
+                        .url(mdEndpoints.removeFlag(topic.getCategory(), topic))
+                        .build();
+
+                try {
+                    com.squareup.okhttp.Response response = httpClient.newCall(request).execute();
+
+                    if (response.isSuccessful()) {
+                        final String responseBody = response.body().string();
+                        boolean success = matchesPattern(FLAG_SUCCESSFULLY_REMOVED, responseBody);
+                        subscriber.onNext(success);
+                    }
+                    else {
+                        Timber.d("Error HTTP Code, response is : %s", response.body().string());
+                        subscriber.onNext(false);
+                    }
+
+                    subscriber.onCompleted();
+                }
+                catch (IOException e) {
+                    Timber.e(e, "Exception while removing flag on topic");
+                    subscriber.onError(e);
+                }
+            }
+        });
     }
 
     private Response buildResponse(String response) {

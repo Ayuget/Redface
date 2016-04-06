@@ -25,59 +25,64 @@ public interface MDEndpoints {
     /**
      * Homepage URL (with the list of categories)
      */
-    public String homepage();
+    String homepage();
 
     /**
      * Category URL (page containing related topics)
      */
-    public String category(Category category, int page, TopicFilter topicFilter);
+    String category(Category category, int page, TopicFilter topicFilter);
 
     /**
      * Subcategory URL (page containing related topics)
      */
-    public String subcategory(Category category, Subcategory subcategory, int page, TopicFilter topicFilter);
+    String subcategory(Category category, Subcategory subcategory, int page, TopicFilter topicFilter);
 
     /**
      * Topic URL
      */
-    public String topic(Topic topic, int page);
-    public String topic(Topic topic);
-    public String topic(Category category, int topicId);
+    String topic(Topic topic, int page);
+    String topic(Topic topic);
+    String topic(Category category, int topicId);
 
     /**
      * Forum's base url
      */
-    public String baseurl();
+    String baseurl();
 
-    public String loginUrl();
+    String loginUrl();
 
-    public String profile(int user_id);
+    String profile(int user_id);
 
-    public String userAvatar(int user_id);
+    String userAvatar(int user_id);
 
-    public String smileyApiHost();
+    String smileyApiHost();
 
-    public String replyUrl();
+    String replyUrl();
 
-    public String editUrl();
+    String editUrl();
 
-    public String quote(Category category, Topic topic, int postId);
+    String quote(Category category, Topic topic, int postId);
 
-    public String editPost(Category category, Topic topic, int postId);
+    String editPost(Category category, Topic topic, int postId);
 
-    public String userForumPreferences();
+    String userForumPreferences();
 
-    public String metaPage(TopicFilter topicFilter);
+    String metaPage(TopicFilter topicFilter);
 
-    public String favorite(Category category, Topic topic, int postId);
+    String favorite(Category category, Topic topic, int postId);
 
-    public String deletePost();
+    String deletePost();
 
-    public String reportPost();
+    String reportPost();
 
-    public String privateMessages();
+    String privateMessages();
 
-    public String privateMessages(int page);
+    String privateMessages(int page);
 
     String smileySearch(String searchTerm);
+
+    /**
+     * URL used to unflag / unfavorite a topic
+     */
+    String removeFlag(Category category, Topic topic);
 }

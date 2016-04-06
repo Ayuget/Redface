@@ -88,7 +88,7 @@ public class HTMLToTopicList extends TopicTransform implements Func1<String, Lis
                 Date lastPostDate = DateUtils.fromHTMLDate(m.group(17), m.group(16), m.group(15), m.group(18), m.group(19));
                 boolean isSticky = m.group(4) != null;
                 boolean isLocked = isTopicLocked(m.group(3));
-                TopicStatus status = isLocked ? TopicStatus.LOCKED : extractTopicStatusFromImageName(m.group(11) != null ? m.group(11) : m.group(5));
+                TopicStatus status = extractTopicStatusFromImageName(m.group(11) != null ? m.group(11) : m.group(5));
                 int lastReadPage = m.group(12) != null ? Integer.parseInt(m.group(12)) : -1;
                 long lastReadPostId = m.group(10) != null ? Long.parseLong(m.group(10)) : -1;
 
