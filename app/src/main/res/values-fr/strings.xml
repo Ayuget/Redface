@@ -206,4 +206,6 @@
     <string name="action_unflag_topic">Effacer le drapeau</string>
     <string name="error_removing_flag">Erreur lors de la suppression du drapeau</string>
     <string name="flag_successfully_removed">Drapeau effacé avec succès</string>
+    <string name="pref_enable_egoquote_title">Activer EgoQuote</string>
+    <string name="pref_enable_egoquote_summary">Mets en évidence les messages dans lesquels vous êtes cité</string>
 </resources>

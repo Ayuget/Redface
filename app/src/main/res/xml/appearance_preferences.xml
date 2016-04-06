@@ -30,6 +30,12 @@
         android:defaultValue="false" />
 
     <CheckBoxPreference
+        android:key="enable_egoquote"
+        android:title="@string/pref_enable_egoquote_title"
+        android:summary="@string/pref_enable_egoquote_summary"
+        android:defaultValue="false" />
+
+    <CheckBoxPreference
         android:key="double_tap_to_refresh_enabled"
         android:title="@string/pref_double_tap_to_refresh_title"
         android:summary="@string/pref_double_tap_to_refresh_summary"

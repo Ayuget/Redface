@@ -95,6 +95,9 @@
     <string name="pref_show_previous_page_last_post_summary">Display the last post of the previous page at the top of the page</string>
     <string name="pref_show_fully_read_topics_summary">This option only works if you are not in the Meta category</string>
 
+    <string name="pref_enable_egoquote_title">Enable EgoQuote</string>
+    <string name="pref_enable_egoquote_summary">Highlights posts in which you are quoted</string>
+
     <string name="pref_default_topic_filter">Default topic filter</string>
     <string name="pref_default_topic_filter_default" translatable="false">NONE</string>
     <string-array name="pref_default_topic_filter_values">

@@ -50,6 +50,10 @@ public class RedfaceSettings {
         return sharedPreferences.getBoolean(SettingsConstants.KEY_ENABLE_INTERNAL_BROWSER, true);
     }
 
+    public boolean isEgoQuoteEnabled() {
+        return sharedPreferences.getBoolean(SettingsConstants.KEY_ENABLE_EGOQUOTE, false);
+    }
+
     public String getProxyHost() {
         return sharedPreferences.getString(SettingsConstants.KEY_PROXY_HOST, null);
     }
