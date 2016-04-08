@@ -58,7 +58,7 @@ public class PostTemplate extends HTMLTemplate<Post> {
         while (quotedMatcher.find()) {
             String quotedUser = quotedMatcher.group(1);
 
-            if (quotedUser.equals(userManager.getActiveUser().getUsername())) {
+            if (userManager.isActiveUser(quotedUser)) {
                 return true;
             }
         }
