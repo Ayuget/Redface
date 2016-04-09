@@ -85,9 +85,6 @@ import timber.log.Timber;
 public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemClickListener {
     private static final String ARG_TOPIC = "topic";
 
-    /**
-     * @todo fix this, ugly...
-     */
     private static final List<Smiley> DEFAULT_SMILEYS = Arrays.asList(
             Smiley.make(":O", "http://forum-images.hardware.fr/icones/redface.gif"),
             Smiley.make(":)", "http://forum-images.hardware.fr/icones/smile.gif"),
@@ -606,7 +603,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
     }
 
     protected void loadUserAvatarInto(User user, ImageView imageView) {
-        if (user.hasAvatar()) {
+        if (user.hasAvatar() && user.getProfile() != null && user.getProfile().getAvatarUrl() != null) {
             Picasso.with(this)
                     .load(user.getProfile().getAvatarUrl())
                     .into(imageView);
