@@ -6,8 +6,8 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.0.0-rc1'
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
+        classpath 'com.android.tools.build:gradle:2.1.0-alpha5'
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
         classpath 'io.fabric.tools:gradle:1.+'
     }
 }
@@ -51,12 +51,12 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
     // Support libraries
-    compile "com.android.support:appcompat-v7:23.2.1"
-    compile "com.android.support:recyclerview-v7:23.2.1"
-    compile "com.android.support:palette-v7:23.2.1"
-    compile 'com.android.support:support-annotations:23.2.1'
-    compile 'com.android.support:design:23.2.1'
-    compile 'com.android.support:customtabs:23.2.1'
+    compile "com.android.support:appcompat-v7:23.3.0"
+    compile "com.android.support:recyclerview-v7:23.3.0"
+    compile "com.android.support:palette-v7:23.3.0"
+    compile 'com.android.support:support-annotations:23.3.0'
+    compile 'com.android.support:design:23.3.0'
+    compile 'com.android.support:customtabs:23.3.0'
 
     // Dependency injection
     compile 'com.squareup.dagger:dagger:1.2.2'
