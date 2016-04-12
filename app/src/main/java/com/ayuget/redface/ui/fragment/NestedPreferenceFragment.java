@@ -36,6 +36,7 @@ import com.ayuget.redface.ui.event.ThemeChangedEvent;
 import com.google.common.collect.ObjectArrays;
 import com.hannesdorfmann.fragmentargs.FragmentArgs;
 import com.hannesdorfmann.fragmentargs.annotation.Arg;
+import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs;
 import com.squareup.otto.Bus;
 
 import java.util.List;
@@ -44,6 +45,7 @@ import javax.inject.Inject;
 
 import timber.log.Timber;
 
+@FragmentWithArgs
 public class NestedPreferenceFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
     @Inject
     Bus bus;

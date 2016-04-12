@@ -63,11 +63,15 @@ dependencies {
     apt 'com.squareup.dagger:dagger-compiler:1.2.2'
 
     // Boilerplate destruction !!
-    compile 'com.jakewharton.timber:timber:4.1.0'
+    compile 'com.jakewharton.timber:timber:4.1.2'
     compile 'net.ypresto.timbertreeutils:timbertreeutils:1.0.0'
     compile 'com.jakewharton:butterknife:6.0.0'
-    compile 'com.hannesdorfmann.fragmentargs:annotation:2.0.1'
-    apt 'com.hannesdorfmann.fragmentargs:processor:2.0.1'
+    compile 'com.hannesdorfmann.fragmentargs:annotation:3.0.2'
+    apt 'com.hannesdorfmann.fragmentargs:processor:3.0.2'
+    provided 'com.google.auto.value:auto-value:1.2'
+    apt 'com.google.auto.value:auto-value:1.2'
+    apt 'com.gabrielittner.auto.value:auto-value-with:0.1.0'
+    apt 'com.ryanharter.auto.value:auto-value-parcel:0.2.1'
 
     // UI-related dependencies
     compile 'com.getbase:floatingactionbutton:1.8.0'

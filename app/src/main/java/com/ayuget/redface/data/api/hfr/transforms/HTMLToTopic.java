@@ -41,9 +41,11 @@ public class HTMLToTopic implements Func1<String, Topic> {
             int pagesCount = pageCountMatcher.find() ? Integer.valueOf(pageCountMatcher.group(1)) : 1;
 
             // Sets up a topic with all vital informations for it to be displayed
-            Topic topic = new Topic(topicId);
-            topic.setSubject(topicSubject);
-            topic.setPagesCount(pagesCount);
+            Topic topic = Topic.builder()
+                    .id(topicId)
+                    .title(topicSubject)
+                    .pagesCount(pagesCount)
+                    .build();
 
             return topic;
         }

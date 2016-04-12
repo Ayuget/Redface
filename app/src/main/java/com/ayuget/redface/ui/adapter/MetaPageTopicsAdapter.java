@@ -49,7 +49,7 @@ public class MetaPageTopicsAdapter extends TopicsAdapter implements StickyRecycl
             return -1;
         }
         else {
-            return getItem(i).getCategory() == null ? -1 : getItem(i).getCategory().getId();
+            return getItem(i).category() == null ? -1 : getItem(i).category().getId();
         }
     }
 
@@ -68,7 +68,7 @@ public class MetaPageTopicsAdapter extends TopicsAdapter implements StickyRecycl
 
     @Override
     public void onBindHeaderViewHolder(HeaderViewHolder holder, int position) {
-        final Category category = getItem(position).getCategory();
+        final Category category = getItem(position).category();
 
         TextView textView = (TextView) holder.itemView;
         textView.setText(category.getName());
@@ -88,7 +88,7 @@ public class MetaPageTopicsAdapter extends TopicsAdapter implements StickyRecycl
     @Override
     int getTopicIcon(Topic topic) {
         if (categoryIconsAsTopicIcons) {
-            return HFRIcons.getCategoryIcon(topic.getCategory());
+            return HFRIcons.getCategoryIcon(topic.category());
         }
         else {
             return super.getTopicIcon(topic);

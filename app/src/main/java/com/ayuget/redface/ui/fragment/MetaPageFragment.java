@@ -36,6 +36,7 @@ import com.ayuget.redface.ui.adapter.MetaPageTopicsAdapter;
 import com.ayuget.redface.ui.misc.MetaPageOrdering;
 import com.ayuget.redface.ui.misc.SnackbarHelper;
 import com.hannesdorfmann.fragmentargs.annotation.FragmentArgsInherited;
+import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs;
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration;
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersTouchListener;
 
@@ -46,7 +47,7 @@ import javax.inject.Inject;
 import timber.log.Timber;
 
 
-@FragmentArgsInherited
+@FragmentWithArgs
 public class MetaPageFragment extends TopicListFragment implements StickyRecyclerHeadersTouchListener.OnHeaderClickListener {
     private static final String ARG_META_PAGE_SORTED_BY_DATE = "meta_page_ordering";
 

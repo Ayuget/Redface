@@ -53,6 +53,7 @@ import com.ayuget.redface.ui.misc.UiUtils;
 import com.ayuget.redface.ui.view.TopicPageView;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.hannesdorfmann.fragmentargs.annotation.Arg;
+import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs;
 import com.squareup.leakcanary.RefWatcher;
 import com.squareup.otto.Subscribe;
 
@@ -64,6 +65,7 @@ import javax.inject.Inject;
 import butterknife.InjectView;
 import timber.log.Timber;
 
+@FragmentWithArgs
 public class PostsFragment extends BaseFragment {
     private static final String ARG_POST_LIST = "post_list";
 
@@ -389,7 +391,7 @@ public class PostsFragment extends BaseFragment {
     }
 
     @Subscribe public void onPageRefreshRequestEvent(PageRefreshRequestEvent event) {
-        if (event.getTopic().getId() == topic.getId() && isVisible()) {
+        if (event.getTopic().id() == topic.id() && isVisible()) {
             Timber.d("@%d -> Fragment(currentPage=%d) -> Refresh requested event", System.identityHashCode(this), currentPage);
 
             savePageScrollPosition();

@@ -288,9 +288,9 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
         int pageToLoad;
         PagePosition pagePosition;
 
-        if (topic.getStatus() == TopicStatus.FAVORITE_NEW_CONTENT || topic.getStatus() == TopicStatus.READ_NEW_CONTENT || topic.getStatus() == TopicStatus.FLAGGED_NEW_CONTENT) {
-            pageToLoad = topic.getLastReadPostPage();
-            pagePosition = new PagePosition(topic.getLastReadPostId());
+        if (topic.status() == TopicStatus.FAVORITE_NEW_CONTENT || topic.status() == TopicStatus.READ_NEW_CONTENT || topic.status() == TopicStatus.FLAGGED_NEW_CONTENT) {
+            pageToLoad = topic.lastReadPage();
+            pagePosition = new PagePosition(topic.lastReadPostId());
         }
         else {
             pageToLoad = 1;
@@ -304,7 +304,7 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
      * Loads a topic in the appropriate panel for a given page and position
      */
     protected void loadTopic(Topic topic, int page, PagePosition pagePosition) {
-        Timber.d("Loading topic '%s' (page %d)", topic.getSubject(), page);
+        Timber.d("Loading topic '%s' (page %d)", topic.title(), page);
         TopicFragment topicFragment = new TopicFragmentBuilder(page, topic).currentPagePosition(pagePosition).build();
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -358,14 +358,14 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
      * on a topic and gives additional actions to the user.
      */
     @Subscribe public void onTopicContextItemSelected(TopicContextItemSelectedEvent event) {
-        Timber.d("Received topic contextItem event : %d for topic %s", event.getItemId(), event.getTopic().getSubject());
+        Timber.d("Received topic contextItem event : %d for topic %s", event.getItemId(), event.getTopic().title());
 
         switch (event.getItemId()) {
             case UIConstants.TOPIC_ACTION_GO_TO_FIRST_PAGE:
                 loadTopic(event.getTopic(), 1, new PagePosition(PagePosition.TOP));
                 break;
             case UIConstants.TOPIC_ACTION_GO_TO_LAST_READ_PAGE:
-                loadTopic(event.getTopic(), event.getTopic().getLastReadPostPage(), new PagePosition(event.getTopic().getLastReadPostId()));
+                loadTopic(event.getTopic(), event.getTopic().lastReadPage(), new PagePosition(event.getTopic().lastReadPostId()));
                 break;
             case UIConstants.TOPIC_ACTION_GO_TO_SPECIFIC_PAGE:
                 showGoToPageDialog(event.getTopic());
@@ -377,7 +377,7 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
                 break;
             }
             case UIConstants.TOPIC_ACTION_GO_TO_LAST_PAGE:
-                loadTopic(event.getTopic(), event.getTopic().getPagesCount(), new PagePosition(PagePosition.TOP));
+                loadTopic(event.getTopic(), event.getTopic().pagesCount(), new PagePosition(PagePosition.TOP));
                 break;
             case UIConstants.TOPIC_ACTION_COPY_LINK:
                 UiUtils.copyToClipboard(this, mdEndpoints.topic(event.getTopic()));
@@ -399,8 +399,8 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
             @Override
             public void onNext(Topic topic) {
                 if (topic != null) {
-                    topic.setCategory(event.getCategory());
-                    loadAnonymousTopic(topic, event.getTopicPage(), event.getPagePosition());
+                    Topic enhancedTopic = topic.withCategory(event.getCategory());
+                    loadAnonymousTopic(enhancedTopic, event.getTopicPage(), event.getPagePosition());
                 }
             }
         }));
@@ -521,7 +521,7 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
         goToPageEditText = (MaterialEditText) dialog.getCustomView().findViewById(R.id.page_number);
 
         TextView pagesCountView = (TextView) dialog.getCustomView().findViewById(R.id.pages_count);
-        pagesCountView.setText(Phrase.from(this, R.string.pages_count).put("page", topic.getPagesCount()).format());
+        pagesCountView.setText(Phrase.from(this, R.string.pages_count).put("page", topic.pagesCount()).format());
 
         goToPageEditText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -534,7 +534,7 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
                 if (s.toString().trim().length() > 0) {
                     try {
                         int pageNumber = Integer.valueOf(s.toString());
-                        positiveAction.setEnabled(pageNumber >= 1 && pageNumber <= topic.getPagesCount());
+                        positiveAction.setEnabled(pageNumber >= 1 && pageNumber <= topic.pagesCount());
                     }
                     catch (NumberFormatException e) {
                         positiveAction.setEnabled(false);

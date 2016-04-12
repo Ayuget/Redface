@@ -244,11 +244,11 @@ public class PrivateMessage implements Parcelable {
     }
 
     public Topic asTopic() {
-        Topic topic = new Topic((int) getId());
-        topic.setSubject(subject);
-        topic.setPagesCount(pagesCount);
-
-        return topic;
+        return Topic.builder()
+            .id((int) getId())
+            .title(subject)
+            .pagesCount(pagesCount)
+            .build();
     }
 
     @Override

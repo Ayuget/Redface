@@ -145,8 +145,8 @@ public class HFREndpoints implements MDEndpoints {
     }
 
     private String getTopicRealCategoryId(Topic topic) {
-        boolean isPrivateMessage = topic.getCategory().getId() == UIConstants.PRIVATE_MESSAGE_CAT_ID;
-        return isPrivateMessage ? PRIVATE_MESSAGE_REAL_CAT_ID : String.valueOf(topic.getCategory().getId());
+        boolean isPrivateMessage = topic.category().getId() == UIConstants.PRIVATE_MESSAGE_CAT_ID;
+        return isPrivateMessage ? PRIVATE_MESSAGE_REAL_CAT_ID : String.valueOf(topic.category().getId());
     }
 
     /**
@@ -157,7 +157,7 @@ public class HFREndpoints implements MDEndpoints {
         return Phrase.from(TOPIC_URL)
                 .put("base_url", FORUM_BASE_URL)
                 .put("category_id", getTopicRealCategoryId(topic))
-                .put("topic_id", topic.getId())
+                .put("topic_id", topic.id())
                 .put("page", page)
                 .format().toString();
     }
@@ -230,7 +230,7 @@ public class HFREndpoints implements MDEndpoints {
         return Phrase.from(QUOTE_URL)
                 .put("base_url", FORUM_BASE_URL)
                 .put("category_id", getTopicRealCategoryId(topic))
-                .put("topic_id", topic.getId())
+                .put("topic_id", topic.id())
                 .put("post_id", postId)
                 .format().toString();
     }
@@ -240,7 +240,7 @@ public class HFREndpoints implements MDEndpoints {
         return Phrase.from(EDIT_URL)
                 .put("base_url", FORUM_BASE_URL)
                 .put("category_id", getTopicRealCategoryId(topic))
-                .put("topic_id", topic.getId())
+                .put("topic_id", topic.id())
                 .put("post_id", postId)
                 .format().toString();
     }
@@ -277,7 +277,7 @@ public class HFREndpoints implements MDEndpoints {
         return Phrase.from(FAVORITE_URL)
                 .put("base_url", FORUM_BASE_URL)
                 .put("category_id", category.getId())
-                .put("topic_id", topic.getId())
+                .put("topic_id", topic.id())
                 .put("post_id", postId)
                 .format().toString();
     }
@@ -329,7 +329,7 @@ public class HFREndpoints implements MDEndpoints {
         return Phrase.from(REMOVE_FLAG_URL)
                 .put("base_url", FORUM_BASE_URL)
                 .put("category_id", category.getId())
-                .put("topic_id", topic.getId())
+                .put("topic_id", topic.id())
                 .format()
                 .toString();
     }

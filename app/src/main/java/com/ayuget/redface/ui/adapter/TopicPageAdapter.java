@@ -41,7 +41,7 @@ public class TopicPageAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return topic.getPagesCount();
+        return topic.pagesCount();
     }
 
     @Override

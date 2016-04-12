@@ -65,6 +65,7 @@ import com.ayuget.redface.ui.misc.TopicPosition;
 import com.ayuget.redface.ui.misc.UiUtils;
 import com.ayuget.redface.ui.view.TopicPageView;
 import com.hannesdorfmann.fragmentargs.annotation.Arg;
+import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.squareup.otto.Subscribe;
 import com.squareup.phrase.Phrase;
@@ -77,6 +78,7 @@ import javax.inject.Inject;
 import butterknife.InjectView;
 import timber.log.Timber;
 
+@FragmentWithArgs
 public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageChangeListener, TopicPageView.OnQuoteListener {
     private static final String ARG_TOPIC_POSITIONS_STACK = "topicPositionsStack";
 
@@ -269,7 +271,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
             showUpButton();
         }
 
-        toolbar.setTitle(topic.getSubject());
+        toolbar.setTitle(topic.title());
     }
 
     /**
@@ -295,7 +297,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
      */
     @Subscribe
     public void onTopicPageLoaded(PageLoadedEvent event) {
-        Timber.d("@%d -> Received topicPageLoaded event (topic='%s', page='%d'), current(topic='%s', page='%d', currentPagePosition='%s')", System.identityHashCode(this), event.getTopic().getSubject(), event.getPage(), topic.getSubject(), currentPage, currentPagePosition);
+        Timber.d("@%d -> Received topicPageLoaded event (topic='%s', page='%d'), current(topic='%s', page='%d', currentPagePosition='%s')", System.identityHashCode(this), event.getTopic().title(), event.getPage(), topic.title(), currentPage, currentPagePosition);
         if (event.getTopic().equals(topic) && event.getPage() == currentPage) {
             if (currentPagePosition != null && !userScrolledViewPager) {
                 event.getTopicPageView().setPagePosition(currentPagePosition);
@@ -311,7 +313,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     @Subscribe
     public void onTopicPageCountUpdated(TopicPageCountUpdatedEvent event) {
         if (event.getTopic() == topic) {
-            topic.setPagesCount(event.getNewPageCount());
+            topic = topic.withPagesCount(event.getNewPageCount());
             topicPageAdapter.notifyDataSetChanged();
         }
     }
@@ -421,7 +423,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
                 pager.setCurrentItem(0);
                 return true;
             case R.id.action_go_to_last_page:
-                pager.setCurrentItem(topic.getPagesCount() - 1);
+                pager.setCurrentItem(topic.pagesCount() - 1);
                 return true;
 
             case R.id.action_go_to_specific_page:
@@ -495,7 +497,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
         goToPageEditText = (MaterialEditText) dialog.getCustomView().findViewById(R.id.page_number);
 
         TextView pagesCountView = (TextView) dialog.getCustomView().findViewById(R.id.pages_count);
-        pagesCountView.setText(Phrase.from(getActivity(), R.string.pages_count_currently).put("current_page", currentPage).put("pages_count", topic.getPagesCount()).format());
+        pagesCountView.setText(Phrase.from(getActivity(), R.string.pages_count_currently).put("current_page", currentPage).put("pages_count", topic.pagesCount()).format());
 
         goToPageEditText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -508,7 +510,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
                 if (s.toString().trim().length() > 0) {
                     try {
                         int pageNumber = Integer.valueOf(s.toString());
-                        positiveAction.setEnabled(pageNumber >= 1 && pageNumber <= topic.getPagesCount());
+                        positiveAction.setEnabled(pageNumber >= 1 && pageNumber <= topic.pagesCount());
                     }
                     catch (NumberFormatException e) {
                         positiveAction.setEnabled(false);
