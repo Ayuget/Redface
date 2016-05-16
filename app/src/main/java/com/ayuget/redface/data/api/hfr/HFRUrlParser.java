@@ -128,7 +128,7 @@ public class HFRUrlParser implements UrlParser {
                 return MDLink.invalid();
             }
             else {
-                Timber.d("Link is for category '%s'", topicCategory.getName());
+                Timber.d("Link is for category '%s'", topicCategory.name());
                 return MDLink.forTopic(topicCategory, topicId)
                         .atPage(pageNumber)
                         .atPost(parseAnchor(anchor))
@@ -164,7 +164,7 @@ public class HFRUrlParser implements UrlParser {
                 Timber.e("Category with id '%s' is unknown", categoryId);
                 return MDLink.invalid();
             } else {
-                Timber.d("Link is for category '%s'", topicCategory.getName());
+                Timber.d("Link is for category '%s'", topicCategory.name());
                 return MDLink.forTopic(topicCategory, Integer.parseInt(topicId))
                         .atPage(Integer.parseInt(pageNumber))
                         .atPost(parseAnchor(anchor))

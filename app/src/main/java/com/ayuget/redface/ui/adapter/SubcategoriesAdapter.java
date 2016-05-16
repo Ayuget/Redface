@@ -60,7 +60,7 @@ public class SubcategoriesAdapter extends BindableAdapter<SelectableItem> {
 
     @Override
     public int getCount() {
-        return 2 + category.getSubcategories().size();
+        return 2 + category.subcategories().size();
     }
 
     @Override
@@ -72,7 +72,7 @@ public class SubcategoriesAdapter extends BindableAdapter<SelectableItem> {
             return null; // Divider
         }
         else {
-            return category.getSubcategories().get(position - 2);
+            return category.subcategories().get(position - 2);
         }
     }
 
@@ -98,7 +98,7 @@ public class SubcategoriesAdapter extends BindableAdapter<SelectableItem> {
     public void bindView(SelectableItem item, int position, View view) {
         if (position != 1) {
             ViewHolder holder = (ViewHolder) view.getTag();
-            holder.itemName.setText(item.getName());
+            holder.itemName.setText(item.name());
             holder.activeTopicFilter.setText(activeTopicFilter);
         }
     }
@@ -133,7 +133,7 @@ public class SubcategoriesAdapter extends BindableAdapter<SelectableItem> {
         DropdownViewHolder holder = (DropdownViewHolder) view.getTag();
 
         if (isCategory(position)) {
-            holder.categoryName.setText(item.getName());
+            holder.categoryName.setText(item.name());
 
             holder.categoryName.setVisibility(View.VISIBLE);
             holder.subcategoryName.setVisibility(View.GONE);
@@ -141,7 +141,7 @@ public class SubcategoriesAdapter extends BindableAdapter<SelectableItem> {
 
         }
         else if (isSubcategory(position)) {
-            holder.subcategoryName.setText(item.getName());
+            holder.subcategoryName.setText(item.name());
 
             holder.categoryName.setVisibility(View.GONE);
             holder.subcategoryName.setVisibility(View.VISIBLE);

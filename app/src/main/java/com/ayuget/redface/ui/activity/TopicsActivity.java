@@ -113,7 +113,7 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
             if (extras != null) {
                 Category savedCategory = extras.getParcelable(UIConstants.ARG_SELECTED_CATEGORY);
                 if (savedCategory != null) {
-                    if (savedCategory.getId() == categoriesStore.getMetaCategory().getId()) {
+                    if (savedCategory.id() == categoriesStore.getMetaCategory().id()) {
                         onMyTopicsClicked();
                     }
                     else {
@@ -145,7 +145,7 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
                         mdLink.ifTopicLink(new MDLink.IfIsTopicLink() {
                             @Override
                             public void call(final Category category, final int topicId, final int topicPage, final PagePosition pagePosition) {
-                                Timber.d("Parsed link for category='%s', topic='%d', page='%d'", category.getName(), topicId, topicPage);
+                                Timber.d("Parsed link for category='%s', topic='%d', page='%d'", category.name(), topicId, topicPage);
                                 onGoToTopicEvent(new GoToTopicEvent(category, topicId, topicPage, pagePosition));
                             }
                         });
@@ -243,7 +243,7 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
         if (defaultCategory == null) {
             Timber.w("Category '%d' not found in cache", defaultCatId);
         }
-        else if (defaultCategory.getId() == CategoriesStore.META_CATEGORY_ID) {
+        else if (defaultCategory.id() == CategoriesStore.META_CATEGORY_ID) {
             onMyTopicsClicked();
         }
         else {
@@ -255,7 +255,7 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
     public void onCategoryClicked(Category category, boolean addToBackstack) {
         currentCategory = category;
 
-        Timber.d("Loading category '%s', with topicFilter='%s'", category.getName(), getSettings().getDefaultTopicFilter().toString());
+        Timber.d("Loading category '%s', with topicFilter='%s'", category.name(), getSettings().getDefaultTopicFilter().toString());
 
         TopicListFragment topicListFragment = new TopicListFragmentBuilder(category).topicFilter(getSettings().getDefaultTopicFilter()).build();
         topicListFragment.addOnTopicClickedListener(this);

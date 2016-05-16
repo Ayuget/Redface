@@ -117,8 +117,8 @@ public class NestedPreferenceFragment extends PreferenceFragment implements Shar
 
             int i = 0;
             for (Category category : guestCategories) {
-                entries[i] = category.getName();
-                values[i] = Integer.toString(category.getId());
+                entries[i] = category.name();
+                values[i] = Integer.toString(category.id());
                 i++;
             }
 

@@ -49,7 +49,7 @@ public class MetaPageTopicsAdapter extends TopicsAdapter implements StickyRecycl
             return -1;
         }
         else {
-            return getItem(i).category() == null ? -1 : getItem(i).category().getId();
+            return getItem(i).category() == null ? -1 : getItem(i).category().id();
         }
     }
 
@@ -71,7 +71,7 @@ public class MetaPageTopicsAdapter extends TopicsAdapter implements StickyRecycl
         final Category category = getItem(position).category();
 
         TextView textView = (TextView) holder.itemView;
-        textView.setText(category.getName());
+        textView.setText(category.name());
     }
 
     @Override

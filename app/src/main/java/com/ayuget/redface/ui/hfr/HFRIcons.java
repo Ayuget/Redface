@@ -51,8 +51,8 @@ public class HFRIcons {
     }
 
     public static int getCategoryIcon(Category category) {
-        if(category != null && categoriesIcons.containsKey(category.getId())) {
-            return categoriesIcons.get(category.getId());
+        if(category != null && categoriesIcons.containsKey(category.id())) {
+            return categoriesIcons.get(category.id());
         }
         else {
             return R.drawable.ic_action_label;

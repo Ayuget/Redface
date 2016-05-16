@@ -66,7 +66,13 @@ public final class HTMLToCategoryList implements Func1<String, List<Category>> {
                 subcategories.add(subcategory);
             }
 
-            Category category = Category.create(categoryId, categoryName, categorySlug, subcategories);
+            Category category = Category.builder()
+                .id(categoryId)
+                .name(categoryName)
+                .slug(categorySlug)
+                .subcategories(subcategories)
+                .build();
+
             categories.add(category);
         }
 

@@ -408,7 +408,7 @@ public class BaseDrawerActivity extends BaseActivity {
             else {
                 CategoryDrawerItem categoryDrawerItem = (CategoryDrawerItem) drawerItem;
                 iconView.setImageResource(categoryDrawerItem.getIconResource());
-                titleView.setText(categoryDrawerItem.getCategory().getName());
+                titleView.setText(categoryDrawerItem.getCategory().name());
             }
         }
 

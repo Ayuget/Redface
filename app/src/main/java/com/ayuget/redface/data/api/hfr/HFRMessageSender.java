@@ -69,7 +69,7 @@ public class HFRMessageSender implements MDMessageSender {
 
                 OkHttpClient httpClient = httpClientProvider.getClientForUser(user);
 
-                boolean isPrivateMessage = topic.category().getId() == UIConstants.PRIVATE_MESSAGE_CAT_ID;
+                boolean isPrivateMessage = topic.category().id() == UIConstants.PRIVATE_MESSAGE_CAT_ID;
 
                 if (isPrivateMessage) {
                     Timber.d("Replying to private message");
@@ -78,7 +78,7 @@ public class HFRMessageSender implements MDMessageSender {
                 RequestBody formBody = new FormEncodingBuilder()
                         .add("hash_check", hashcheck)
                         .add("post", String.valueOf(topic.id()))
-                        .add("cat", isPrivateMessage ? "prive" : String.valueOf(topic.category().getId()))
+                        .add("cat", isPrivateMessage ? "prive" : String.valueOf(topic.category().id()))
                         .add("verifrequet", "1100")
                         .add("MsgIcon", "20")
                         .add("page", String.valueOf(topic.pagesCount()))
@@ -120,7 +120,7 @@ public class HFRMessageSender implements MDMessageSender {
         return Observable.create(new Observable.OnSubscribe<Response>() {
             @Override
             public void call(Subscriber<? super Response> subscriber) {
-                Timber.d("Editing message for user '%s' in topic '%s' (category id : %d)", user.getUsername(), topic.title(), topic.category().getId());
+                Timber.d("Editing message for user '%s' in topic '%s' (category id : %d)", user.getUsername(), topic.title(), topic.category().id());
 
                 StringBuilder parents = new StringBuilder();
                 Matcher m = Pattern.compile("\\[quotemsg=([0-9]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL).matcher(newContent);
@@ -133,7 +133,7 @@ public class HFRMessageSender implements MDMessageSender {
 
                 OkHttpClient httpClient = httpClientProvider.getClientForUser(user);
 
-                boolean isPrivateMessage = topic.category().getId() == UIConstants.PRIVATE_MESSAGE_CAT_ID;
+                boolean isPrivateMessage = topic.category().id() == UIConstants.PRIVATE_MESSAGE_CAT_ID;
 
                 if (isPrivateMessage) {
                     Timber.d("Editing private message");
@@ -142,7 +142,7 @@ public class HFRMessageSender implements MDMessageSender {
                 FormEncodingBuilder formEncodingBuilder = new FormEncodingBuilder();
                 formEncodingBuilder.add("hash_check", hashcheck);
                 formEncodingBuilder.add("post", String.valueOf(topic.id()));
-                formEncodingBuilder.add("cat",  isPrivateMessage ? "prive" : String.valueOf(topic.category().getId()));
+                formEncodingBuilder.add("cat",  isPrivateMessage ? "prive" : String.valueOf(topic.category().id()));
                 formEncodingBuilder.add("verifrequet", "1100");
                 formEncodingBuilder.add("pseudo", user.getUsername());
                 formEncodingBuilder.add("sujet", topic.title());
@@ -274,7 +274,7 @@ public class HFRMessageSender implements MDMessageSender {
 
                 OkHttpClient httpClient = httpClientProvider.getClientForUser(user);
 
-                boolean isPrivateMessage = topic.category().getId() == UIConstants.PRIVATE_MESSAGE_CAT_ID;
+                boolean isPrivateMessage = topic.category().id() == UIConstants.PRIVATE_MESSAGE_CAT_ID;
 
                 if (isPrivateMessage) {
                     Timber.d("Editing private message");
@@ -282,7 +282,7 @@ public class HFRMessageSender implements MDMessageSender {
 
                 FormEncodingBuilder formEncodingBuilder = new FormEncodingBuilder();
                 formEncodingBuilder.add("hash_check", hashcheck);
-                formEncodingBuilder.add("cat", isPrivateMessage ? "prive" : String.valueOf(topic.category().getId()));
+                formEncodingBuilder.add("cat", isPrivateMessage ? "prive" : String.valueOf(topic.category().id()));
                 formEncodingBuilder.add("pseudo", user.getUsername());
                 formEncodingBuilder.add("numreponse", String.valueOf(postId));
                 formEncodingBuilder.add("post", String.valueOf(topic.id()));

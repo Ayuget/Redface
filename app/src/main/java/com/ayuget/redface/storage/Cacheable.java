@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-package com.ayuget.redface.data.api.model;
+package com.ayuget.redface.storage;
 
-public interface SelectableItem {
-    String name();
+public interface Cacheable {
+    String key();
 }

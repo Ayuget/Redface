@@ -356,7 +356,7 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
      * user has to swipe at the bottom of the list to load the next pages
      */
     public void loadTopics() {
-        Timber.d("Loading first page for category '%s' (subcategory: '%s') and replacing current topics (with filter='%s')", category.getName(), subcategory, topicFilter == null ? "null" : topicFilter.toString());
+        Timber.d("Loading first page for category '%s' (subcategory: '%s') and replacing current topics (with filter='%s')", category.name(), subcategory, topicFilter == null ? "null" : topicFilter.toString());
 
         // Load categories for active user
         subscribe(dataService.loadTopics(userManager.getActiveUser(), category, subcategory, 1, topicFilter, new EndlessObserver<List<Topic>>() {
@@ -378,7 +378,7 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
 
             @Override
             public void onError(Throwable throwable) {
-                Timber.e(throwable, "Error loading first page for category '%s', subcategory '%s'", category.getName(), subcategory);
+                Timber.e(throwable, "Error loading first page for category '%s', subcategory '%s'", category.name(), subcategory);
 
                 swipeRefreshLayout.setRefreshing(false);
 
@@ -419,7 +419,7 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
 
             @Override
             public void onError(Throwable throwable) {
-                Timber.e(throwable, "Error loading page '%d' for category '%s', subcategory '%s'", page, category.getName(), subcategory);
+                Timber.e(throwable, "Error loading page '%d' for category '%s', subcategory '%s'", page, category.name(), subcategory);
 
                 swipeRefreshLayout.setRefreshing(false);
 
