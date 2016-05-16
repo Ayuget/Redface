@@ -149,6 +149,10 @@ public class MetaPageFragment extends TopicListFragment implements StickyRecycle
                 pageOrdering = MetaPageOrdering.SORT_BY_DATE;
                 changedPageOrdering = true;
                 break;
+            case R.id.action_refresh_topic_list:
+                dataPresenter.showLoadingView();
+                loadTopics();
+                break;
         }
 
         if (changedPageOrdering) {
