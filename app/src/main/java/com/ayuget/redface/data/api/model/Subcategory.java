@@ -16,7 +16,6 @@
 
 package com.ayuget.redface.data.api.model;
 
-import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.auto.value.AutoValue;

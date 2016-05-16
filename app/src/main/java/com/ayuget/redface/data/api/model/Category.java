@@ -18,7 +18,6 @@ package com.ayuget.redface.data.api.model;
 
 import android.os.Parcelable;
 
-import com.ayuget.redface.storage.Cacheable;
 import com.google.auto.value.AutoValue;
 
 import java.util.List;
