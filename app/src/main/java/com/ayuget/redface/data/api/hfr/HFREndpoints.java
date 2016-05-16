@@ -71,6 +71,8 @@ public class HFREndpoints implements MDEndpoints {
 
     private static final String REMOVE_FLAG_URL = "{base_url}/user/delflag.php?config=hfr.inc&cat={category_id}&post={topic_id}&p=1&sondage=0&owntopic=1&new=0";
 
+    private static final String POST_URL = "{base_url}/forum2.php?config=hfr.inc&cat={category_id}&post={topic_id}&page={page}&p=1&sondage=0&owntopic=1&trash=0&trash_post=0&print=0&numreponse=0&quote_only=0&new=0&nojs=0#t{post_id}";
+
     /**
      * Homepage URL (with the list of categories)
      */
@@ -231,6 +233,17 @@ public class HFREndpoints implements MDEndpoints {
                 .put("base_url", FORUM_BASE_URL)
                 .put("category_id", getTopicRealCategoryId(topic))
                 .put("topic_id", topic.id())
+                .put("post_id", postId)
+                .format().toString();
+    }
+
+    @Override
+    public String post(Category category, Topic topic, int page, int postId) {
+        return Phrase.from(POST_URL)
+                .put("base_url", FORUM_BASE_URL)
+                .put("category_id", getTopicRealCategoryId(topic))
+                .put("topic_id", topic.id())
+                .put("page", page)
                 .put("post_id", postId)
                 .format().toString();
     }

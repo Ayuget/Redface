@@ -23,5 +23,6 @@ public enum PostAction {
     REPORT,
     DELETE,
     FAVORITE,
-    WRITE_PRIVATE_MESSAGE
+    WRITE_PRIVATE_MESSAGE,
+    COPY_LINK_TO_POST
 }

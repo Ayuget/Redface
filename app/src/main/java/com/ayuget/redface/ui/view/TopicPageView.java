@@ -463,6 +463,17 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
         }
 
         @JavascriptInterface
+        public void copyLinkToPost(final int postId) {
+            Timber.d("Copying link to post '%d' in clipboard", postId);
+            TopicPageView.this.post(new Runnable() {
+                @Override
+                public void run() {
+                    UiUtils.copyToClipboard(getContext(), mdEndpoints.post(topic.category(), topic, page, postId));
+                }
+            });
+        }
+
+        @JavascriptInterface
         public void showProfile (String username){
             Timber.d("Profile requested for user '%s'", username);
         }
