@@ -54,7 +54,6 @@ public abstract class AbstractDataProvider<K, V> {
     }
 
     private Observable<V> fromMemory(User user, K key) {
-        Timber.d("Getting value from memory (key = %s)", key);
         UserMemoryCache<K, V> userMemoryCache = userMemoryCaches.get(user);
 
         if (!userMemoryCache.containsKey(key)) {
@@ -76,7 +75,6 @@ public abstract class AbstractDataProvider<K, V> {
     }
 
     private Observable<V> fromDisk(User user, K key) {
-        Timber.d("Getting value from disk (key = %s)", key);
         return boundedDiskCache.get(user, key).filter(new Func1<BoundedDiskCache.CacheEntry<K, V>, Boolean>() {
             @Override
             public Boolean call(BoundedDiskCache.CacheEntry<K, V> kvCacheEntry) {
@@ -101,7 +99,8 @@ public abstract class AbstractDataProvider<K, V> {
             boundedDiskCache.put(user, key, value);
         }
         catch (IOException e) {
-            Timber.e(e, "Unable to cache key '%s' to disk", key);
+            // fixme internal lint error when exception is passed as first argument. Probably a
+            // platform bug, or a bug in the custom Timber Lint rule
         }
     }
 
@@ -127,7 +126,6 @@ public abstract class AbstractDataProvider<K, V> {
     protected abstract Observable<V> fromNetwork(User user, K key);
 
     public Observable<V> get(User user, K key) {
-        Timber.d("Getting value for key = %s", key);
         return Observable
                 .concat(fromMemory(user, key), fromDiskWithCaching(user, key), fromNetworkWithCaching(user, key))
                 .first();

@@ -248,7 +248,7 @@ public class CategoriesStore {
             subcatsSlugs.add(subcategory.slug());
         }
 
-        return Joiner.on(PRIMARY_SEPARATOR).join(category.id(), category.id(), category.id(), Joiner.on(SECONDARY_SEPARATOR).join(subcatsSlugs));
+        return Joiner.on(PRIMARY_SEPARATOR).join(category.id(), category.name(), category.slug(), Joiner.on(SECONDARY_SEPARATOR).join(subcatsSlugs));
     }
 
     protected String serializeSubcategory(Subcategory subcategory) {
