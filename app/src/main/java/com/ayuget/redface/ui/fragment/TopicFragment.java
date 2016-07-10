@@ -254,7 +254,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     public void onCreateOptionsMenu(Toolbar toolbar) {
         toolbar.inflateMenu(R.menu.menu_topic);
 
-        if (userManager.isActiveUserLoggedIn()) {
+        if (userManager.isActiveUserLoggedIn() && !topic.isPrivateMessage()) {
             // Small hack to find the last added item order...
             Menu existingMenu = toolbar.getMenu();
             int lastAction = existingMenu.size() > 0 ? existingMenu.getItem(existingMenu.size() - 1).getOrder() : 0;

@@ -87,6 +87,8 @@ public abstract class Topic implements Parcelable {
     @Nullable
     public abstract Boolean hasUnreadPosts();
 
+    public abstract boolean isPrivateMessage();
+
     public int unreadPagesCount() {
         return pagesCount() - lastReadPage();
     }
@@ -115,6 +117,7 @@ public abstract class Topic implements Parcelable {
         public abstract Builder lastReadPostId(Long lastReadPostId);
         public abstract Builder hasUnreadPosts(Boolean hasUnreadPosts);
         public abstract Builder lastPostAuthor(String lastPostAuthor);
+        public abstract Builder isPrivateMessage(boolean isPrivateMessage);
         public abstract Topic build();
     }
 }

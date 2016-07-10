@@ -42,6 +42,7 @@ public class HTMLToTopic implements Func1<String, Topic> {
 
             // Sets up a topic with all vital informations for it to be displayed
             Topic topic = Topic.builder()
+                    .isPrivateMessage(false)
                     .id(topicId)
                     .title(topicSubject)
                     .pagesCount(pagesCount)

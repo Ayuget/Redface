@@ -107,6 +107,7 @@ public class HTMLToTopicList extends TopicTransform implements Func1<String, Lis
                         .lastReadPostId(lastReadPostId)
                         .hasUnreadPosts(unreadPosts)
                         .category(currentCategory)
+                        .isPrivateMessage(false)
                         .build();
 
                 topics.add(topic);
