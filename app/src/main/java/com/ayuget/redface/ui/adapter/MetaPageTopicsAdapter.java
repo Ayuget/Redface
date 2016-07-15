@@ -71,7 +71,12 @@ public class MetaPageTopicsAdapter extends TopicsAdapter implements StickyRecycl
         final Category category = getItem(position).category();
 
         TextView textView = (TextView) holder.itemView;
-        textView.setText(category.name());
+        if (category == null) {
+            textView.setText(R.string.unknown_category);
+        }
+        else {
+            textView.setText(category.name());
+        }
     }
 
     @Override

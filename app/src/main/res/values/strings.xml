@@ -269,6 +269,8 @@
 
     <string name="relogin_instructions">If your login credentials have changed, or if you wish to re-login, please fill-in the following form</string>
 
+    <string name="unknown_category">Unknown</string>
+
     <!-- Dialogs -->
     <string name="dialog_go_to_page_positive_text">Go !</string>
 
