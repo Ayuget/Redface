@@ -231,6 +231,7 @@
     <string name="title_activity_login">Log in</string>
     <string name="login_username_empty">Username cannot be empty</string>
     <string name="login_password_empty">Password cannot be empty</string>
+    <string name="login_successful">Successfully logged in !</string>
     <string name="login_failed">Failed to login, check username/password</string>
     <string name="connect_to_forum">Add a new account</string>
 
