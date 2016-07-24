@@ -149,6 +149,8 @@
         <item>1 heure</item>
         <item>2 heures</item>
         <item>6 heures</item>
+        <item>12 heures</item>
+        <item>24 heures</item>
     </string-array>
     <string name="pm_recipient">Pseudo du destinataire</string>
     <string name="action_new_private_message">Nouveau message privé</string>
