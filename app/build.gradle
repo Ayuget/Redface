@@ -32,7 +32,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 24
         versionCode 212
-        versionName "2.1.2-beta"
+        versionName "2.1.2"
     }
     buildTypes {
         debug {
