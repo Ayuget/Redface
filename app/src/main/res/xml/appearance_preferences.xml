@@ -48,4 +48,9 @@
         android:defaultValue="@string/pref_font_size_default"
         android:entries="@array/pref_font_size_values"
         android:entryValues="@array/pref_font_size_entries" />
+
+    <CheckBoxPreference
+        android:key="use_modern_quote_style"
+        android:title="@string/pref_use_modern_quote_style"
+        android:defaultValue="true" />
 </PreferenceScreen>

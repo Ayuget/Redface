@@ -56,4 +56,6 @@ public class SettingsConstants {
     public static final String KEY_ENABLE_INTERNAL_BROWSER = "enable_internal_browser";
 
     public static final String KEY_ENABLE_EGOQUOTE = "enable_egoquote";
+
+    public static final String KEY_USE_MODERN_QUOTE_STYLE = "use_modern_quote_style";
 }
