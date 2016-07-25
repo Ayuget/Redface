@@ -56,6 +56,7 @@ import com.ayuget.redface.ui.event.PageLoadedEvent;
 import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
 import com.ayuget.redface.ui.event.PageSelectedEvent;
 import com.ayuget.redface.ui.event.ScrollToPostEvent;
+import com.ayuget.redface.ui.event.ShowAllSpoilersEvent;
 import com.ayuget.redface.ui.event.TopicPageCountUpdatedEvent;
 import com.ayuget.redface.ui.event.UnquoteAllPostsEvent;
 import com.ayuget.redface.ui.event.WritePrivateMessageEvent;
@@ -431,6 +432,9 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
         switch (id) {
             case R.id.action_refresh_topic:
                 bus.post(new PageRefreshRequestEvent(topic));
+                break;
+            case R.id.action_show_all_spoilers:
+                bus.post(new ShowAllSpoilersEvent(topic, currentPage));
                 break;
             case R.id.action_go_to_first_page:
                 pager.setCurrentItem(0);

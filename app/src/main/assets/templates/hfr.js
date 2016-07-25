@@ -39,6 +39,18 @@ function toggleSpoiler(obj){
 }
 
 /**
+* Show all spoilers for this page
+*/
+function showAllSpoilers() {
+    var spoilers = document.getElementsByClassName("spoiler");
+    var i;
+    for (i = 0; i < spoilers.length; i++) {
+        var div = spoilers[i].getElementsByTagName('div');
+        div[0].style.visibility = 'visible';
+    }
+}
+
+/**
 * Deal with the clicked URL by calling the Java callback defined
 * in the Javascript interface of the webview.
 *

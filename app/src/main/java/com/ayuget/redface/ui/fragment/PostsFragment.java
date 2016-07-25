@@ -47,6 +47,7 @@ import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
 import com.ayuget.redface.ui.event.PageSelectedEvent;
 import com.ayuget.redface.ui.event.ScrollToPostEvent;
+import com.ayuget.redface.ui.event.ShowAllSpoilersEvent;
 import com.ayuget.redface.ui.event.UnquoteAllPostsEvent;
 import com.ayuget.redface.ui.misc.ImageMenuHandler;
 import com.ayuget.redface.ui.misc.UiUtils;
@@ -406,8 +407,15 @@ public class PostsFragment extends BaseFragment {
         }
     }
 
+    @Subscribe public void onShowAllSpoilersEvent(ShowAllSpoilersEvent event) {
+        if (event.getTopic().id() == topic.id() && isVisible() && event.getCurrentPage() == currentPage) {
+            Timber.d("@%d -> Fragment(currentPage=%d) -> Show all spoilers event", System.identityHashCode(this), currentPage);
+            topicPageView.showAllSpoilers();
+        }
+    }
+
     /**
-     * Event fired by the host {@link com.ayuget.redface.ui.fragment.TopicFragment} to indicate
+     * Event fired by the host {@link com.ayuget.redface.ui.fragment.TopicFragment} to notify
      * that multi-quote mode has been turned off and that posts UI should be updated accordingly.
      */
     @Subscribe

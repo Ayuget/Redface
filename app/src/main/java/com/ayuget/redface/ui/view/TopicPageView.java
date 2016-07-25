@@ -351,6 +351,11 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
         JsExecutor.execute(this, String.format("scrollToElement('post%d')", postId));
     }
 
+    public void showAllSpoilers() {
+        Timber.d("Showing all spoilers for current page");
+        JsExecutor.execute(this, "showAllSpoilers()");
+    }
+
     /**
      * Sets the posts that are currently quoted
      */
