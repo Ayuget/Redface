@@ -47,4 +47,11 @@
                 android:id="@+id/action_topics_filter_read" />
         </menu>
     </item>
+
+    <item
+        android:id="@+id/action_refresh_topic_list"
+        android:title="@string/action_refresh_topic"
+        android:icon="@drawable/ic_refresh_white_24dp"
+        android:orderInCategory="50"
+        app:showAsAction="ifRoom" />
 </menu>

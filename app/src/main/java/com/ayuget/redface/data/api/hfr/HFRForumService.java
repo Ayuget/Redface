@@ -144,8 +144,7 @@ public class HFRForumService implements MDService {
                 .map(new Func1<Topic, Topic>() {
                     @Override
                     public Topic call(Topic topic) {
-                        topic.setCategory(category);
-                        return topic;
+                        return topic.withCategory(category);
                     }
                 })
                 .toList();
@@ -173,7 +172,7 @@ public class HFRForumService implements MDService {
             return metaPageTopics.toSortedList(new Func2<Topic, Topic, Integer>() {
                 @Override
                 public Integer call(Topic topic, Topic topic2) {
-                    return topic2.getLastPostDate().compareTo(topic.getLastPostDate());
+                    return topic2.lastPostDate().compareTo(topic.lastPostDate());
                 }
             });
         }
@@ -217,7 +216,7 @@ public class HFRForumService implements MDService {
                             // If the topic pages count is known and different from the one we have,
                             // it usually means new pages have been added since. The event emitted
                             // below can be catched by the UI to update itself.
-                            if (newTopicPagesCount != UIConstants.UNKNOWN_PAGES_COUNT && newTopicPagesCount != topic.getPagesCount()) {
+                            if (newTopicPagesCount != UIConstants.UNKNOWN_PAGES_COUNT && newTopicPagesCount != topic.pagesCount()) {
                                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                                     @Override
                                     public void run() {
@@ -234,13 +233,13 @@ public class HFRForumService implements MDService {
 
     @Override
     public Observable<String> getQuote(User user, Topic topic, int postId) {
-        return pageFetcher.fetchSource(user, mdEndpoints.quote(topic.getCategory(), topic, postId))
+        return pageFetcher.fetchSource(user, mdEndpoints.quote(topic.category(), topic, postId))
                 .map(new HTMLToBBCode());
     }
 
     @Override
     public Observable<String> getPostContent(User user, Topic topic, int postId) {
-        return pageFetcher.fetchSource(user, mdEndpoints.editPost(topic.getCategory(), topic, postId))
+        return pageFetcher.fetchSource(user, mdEndpoints.editPost(topic.category(), topic, postId))
                 .map(new HTMLToBBCode());
     }
 

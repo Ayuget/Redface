@@ -65,11 +65,11 @@ public class HFRMessageSender implements MDMessageSender {
         return Observable.create(new Observable.OnSubscribe<Response>() {
             @Override
             public void call(Subscriber<? super Response> subscriber) {
-                Timber.d("Posting message for user '%s' in topic '%s'", user.getUsername(), topic.getSubject());
+                Timber.d("Posting message for user '%s' in topic '%s'", user.getUsername(), topic.title());
 
                 OkHttpClient httpClient = httpClientProvider.getClientForUser(user);
 
-                boolean isPrivateMessage = topic.getCategory().getId() == UIConstants.PRIVATE_MESSAGE_CAT_ID;
+                boolean isPrivateMessage = topic.category().id() == UIConstants.PRIVATE_MESSAGE_CAT_ID;
 
                 if (isPrivateMessage) {
                     Timber.d("Replying to private message");
@@ -77,13 +77,13 @@ public class HFRMessageSender implements MDMessageSender {
 
                 RequestBody formBody = new FormEncodingBuilder()
                         .add("hash_check", hashcheck)
-                        .add("post", String.valueOf(topic.getId()))
-                        .add("cat", isPrivateMessage ? "prive" : String.valueOf(topic.getCategory().getId()))
+                        .add("post", String.valueOf(topic.id()))
+                        .add("cat", isPrivateMessage ? "prive" : String.valueOf(topic.category().id()))
                         .add("verifrequet", "1100")
                         .add("MsgIcon", "20")
-                        .add("page", String.valueOf(topic.getPagesCount()))
+                        .add("page", String.valueOf(topic.pagesCount()))
                         .add("pseudo", user.getUsername())
-                        .add("sujet", topic.getSubject())
+                        .add("sujet", topic.title())
                         .add("signature", includeSignature ? "1" : "0")
                         .add("content_form", message)
                         .add("emaill", "0")
@@ -120,7 +120,7 @@ public class HFRMessageSender implements MDMessageSender {
         return Observable.create(new Observable.OnSubscribe<Response>() {
             @Override
             public void call(Subscriber<? super Response> subscriber) {
-                Timber.d("Editing message for user '%s' in topic '%s' (category id : %d)", user.getUsername(), topic.getSubject(), topic.getCategory().getId());
+                Timber.d("Editing message for user '%s' in topic '%s' (category id : %d)", user.getUsername(), topic.title(), topic.category().id());
 
                 StringBuilder parents = new StringBuilder();
                 Matcher m = Pattern.compile("\\[quotemsg=([0-9]+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL).matcher(newContent);
@@ -133,7 +133,7 @@ public class HFRMessageSender implements MDMessageSender {
 
                 OkHttpClient httpClient = httpClientProvider.getClientForUser(user);
 
-                boolean isPrivateMessage = topic.getCategory().getId() == UIConstants.PRIVATE_MESSAGE_CAT_ID;
+                boolean isPrivateMessage = topic.category().id() == UIConstants.PRIVATE_MESSAGE_CAT_ID;
 
                 if (isPrivateMessage) {
                     Timber.d("Editing private message");
@@ -141,16 +141,16 @@ public class HFRMessageSender implements MDMessageSender {
 
                 FormEncodingBuilder formEncodingBuilder = new FormEncodingBuilder();
                 formEncodingBuilder.add("hash_check", hashcheck);
-                formEncodingBuilder.add("post", String.valueOf(topic.getId()));
-                formEncodingBuilder.add("cat",  isPrivateMessage ? "prive" : String.valueOf(topic.getCategory().getId()));
+                formEncodingBuilder.add("post", String.valueOf(topic.id()));
+                formEncodingBuilder.add("cat",  isPrivateMessage ? "prive" : String.valueOf(topic.category().id()));
                 formEncodingBuilder.add("verifrequet", "1100");
                 formEncodingBuilder.add("pseudo", user.getUsername());
-                formEncodingBuilder.add("sujet", topic.getSubject());
+                formEncodingBuilder.add("sujet", topic.title());
                 formEncodingBuilder.add("signature", includeSignature ? "1" : "0");
                 formEncodingBuilder.add("content_form", newContent);
                 formEncodingBuilder.add("parents", parents.toString());
-                formEncodingBuilder.add("post", String.valueOf(topic.getId()));
-                formEncodingBuilder.add("sujet", topic.getSubject());
+                formEncodingBuilder.add("post", String.valueOf(topic.id()));
+                formEncodingBuilder.add("sujet", topic.title());
                 formEncodingBuilder.add("numreponse", String.valueOf(postId));
                 formEncodingBuilder.add("emaill", "0");
                 RequestBody formBody = formEncodingBuilder.build();
@@ -234,12 +234,12 @@ public class HFRMessageSender implements MDMessageSender {
         return Observable.create(new Observable.OnSubscribe<Boolean>() {
             @Override
             public void call(Subscriber<? super Boolean> subscriber) {
-                Timber.d("Marking message '%d' as favorite for user '%s' in topic '%s'", postId, user.getUsername(), topic.getSubject());
+                Timber.d("Marking message '%d' as favorite for user '%s' in topic '%s'", postId, user.getUsername(), topic.title());
 
                 OkHttpClient httpClient = httpClientProvider.getClientForUser(user);
 
                 Request request = new Request.Builder()
-                        .url(mdEndpoints.favorite(topic.getCategory(), topic, postId))
+                        .url(mdEndpoints.favorite(topic.category(), topic, postId))
                         .build();
 
                 try {
@@ -270,11 +270,11 @@ public class HFRMessageSender implements MDMessageSender {
         return Observable.create(new Observable.OnSubscribe<Boolean>() {
             @Override
             public void call(Subscriber<? super Boolean> subscriber) {
-                Timber.d("Deleting post '%d' as user '%s' in topic '%s'", postId, user.getUsername(), topic.getSubject());
+                Timber.d("Deleting post '%d' as user '%s' in topic '%s'", postId, user.getUsername(), topic.title());
 
                 OkHttpClient httpClient = httpClientProvider.getClientForUser(user);
 
-                boolean isPrivateMessage = topic.getCategory().getId() == UIConstants.PRIVATE_MESSAGE_CAT_ID;
+                boolean isPrivateMessage = topic.category().id() == UIConstants.PRIVATE_MESSAGE_CAT_ID;
 
                 if (isPrivateMessage) {
                     Timber.d("Editing private message");
@@ -282,10 +282,10 @@ public class HFRMessageSender implements MDMessageSender {
 
                 FormEncodingBuilder formEncodingBuilder = new FormEncodingBuilder();
                 formEncodingBuilder.add("hash_check", hashcheck);
-                formEncodingBuilder.add("cat", isPrivateMessage ? "prive" : String.valueOf(topic.getCategory().getId()));
+                formEncodingBuilder.add("cat", isPrivateMessage ? "prive" : String.valueOf(topic.category().id()));
                 formEncodingBuilder.add("pseudo", user.getUsername());
                 formEncodingBuilder.add("numreponse", String.valueOf(postId));
-                formEncodingBuilder.add("post", String.valueOf(topic.getId()));
+                formEncodingBuilder.add("post", String.valueOf(topic.id()));
                 formEncodingBuilder.add("delete", "1");
 
                 RequestBody formBody = formEncodingBuilder.build();
@@ -328,12 +328,12 @@ public class HFRMessageSender implements MDMessageSender {
         return Observable.create(new Observable.OnSubscribe<Boolean>() {
             @Override
             public void call(Subscriber<? super Boolean> subscriber) {
-                Timber.d("Removing flag (or favorite) on topic '%d' for user '%s'", topic.getId(), user.getUsername());
+                Timber.d("Removing flag (or favorite) on topic '%d' for user '%s'", topic.id(), user.getUsername());
 
                 OkHttpClient httpClient = httpClientProvider.getClientForUser(user);
 
                 Request request = new Request.Builder()
-                        .url(mdEndpoints.removeFlag(topic.getCategory(), topic))
+                        .url(mdEndpoints.removeFlag(topic.category(), topic))
                         .build();
 
                 try {

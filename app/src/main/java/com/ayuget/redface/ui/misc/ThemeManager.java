@@ -25,6 +25,8 @@ public class ThemeManager {
     private static final String LIGHT_THEME_CSS_CLASS = "redface-light";
     private static final String DARK_THEME_CSS_CLASS = "redface-dark";
     private static final String NIGHT_THEME_CSS_CLASS = "redface-night";
+    private static final String MODERN_QUOTE_STYLE_CLASS = "modern-quotes";
+    private static final String OLD_QUOTE_STYLE_CLASS = "old-quotes";
 
     private final RedfaceSettings settings;
 
@@ -119,6 +121,10 @@ public class ThemeManager {
         else {
             return R.drawable.private_message_unread_dark;
         }
+    }
+
+    public String getQuoteStyleExtraClass() {
+        return settings.isUseModernQuoteStyleEnabled() ? MODERN_QUOTE_STYLE_CLASS : OLD_QUOTE_STYLE_CLASS;
     }
 
     public boolean isRefreshNeeded() {

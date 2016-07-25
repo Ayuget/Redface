@@ -14,15 +14,8 @@
  * limitations under the License.
  */
 
-package com.ayuget.redface.data.api.model.misc;
+package com.ayuget.redface.storage;
 
-public enum PostAction {
-    EDIT,
-    MULTIQUOTE_ADD,
-    MULTIQUOTE_REMOVE,
-    REPORT,
-    DELETE,
-    FAVORITE,
-    WRITE_PRIVATE_MESSAGE,
-    COPY_LINK_TO_POST
+public interface Cacheable {
+    String key();
 }

@@ -198,8 +198,7 @@ public class PrivateMessagesActivity extends MultiPaneActivity implements Privat
         Timber.d("Loading private message '%s' at page '%d'", privateMessage.getSubject(), page);
 
         // Mask private message as a regular topic (kinda ugly, btw...)
-        Topic pmAsTopic = privateMessage.asTopic();
-        pmAsTopic.setCategory(categoriesStore.getPrivateMessagesCategory());
+        Topic pmAsTopic = privateMessage.asTopic().withCategory(categoriesStore.getPrivateMessagesCategory());
 
         TopicFragment topicFragment = new TopicFragmentBuilder(page, pmAsTopic).currentPagePosition(pagePosition).build();
 

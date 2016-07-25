@@ -71,6 +71,8 @@ public class HFREndpoints implements MDEndpoints {
 
     private static final String REMOVE_FLAG_URL = "{base_url}/user/delflag.php?config=hfr.inc&cat={category_id}&post={topic_id}&p=1&sondage=0&owntopic=1&new=0";
 
+    private static final String POST_URL = "{base_url}/forum2.php?config=hfr.inc&cat={category_id}&post={topic_id}&page={page}&p=1&sondage=0&owntopic=1&trash=0&trash_post=0&print=0&numreponse=0&quote_only=0&new=0&nojs=0#t{post_id}";
+
     /**
      * Homepage URL (with the list of categories)
      */
@@ -104,14 +106,14 @@ public class HFREndpoints implements MDEndpoints {
         if (topicFilter == TopicFilter.NONE || !filterId.isPresent()) {
             return Phrase.from(CATEGORY_URL)
                     .put("base_url", FORUM_BASE_URL)
-                    .put("category_slug", category.getSlug())
+                    .put("category_slug", category.slug())
                     .put("page", page)
                     .format().toString();
         }
         else {
             return Phrase.from(FILTERED_URL)
                     .put("base_url", FORUM_BASE_URL)
-                    .put("category_id", category.getId())
+                    .put("category_id", category.id())
                     .put("subcategory_id", 0)
                     .put("page", page)
                     .put("filter_id", filterId.get())
@@ -128,15 +130,15 @@ public class HFREndpoints implements MDEndpoints {
         if (topicFilter == TopicFilter.NONE || !filterId.isPresent()) {
             return Phrase.from(SUBCATEGORY_URL)
                     .put("base_url", FORUM_BASE_URL)
-                    .put("category_slug", category.getSlug())
-                    .put("subcategory_slug", subcategory.getSlug())
+                    .put("category_slug", category.slug())
+                    .put("subcategory_slug", subcategory.slug())
                     .put("page", page)
                     .format().toString();
         }
         else {
             return Phrase.from(FILTERED_URL)
                     .put("base_url", FORUM_BASE_URL)
-                    .put("category_id", category.getId())
+                    .put("category_id", category.id())
                     .put("subcategory_id", 0) // FIXME fetch subcategory id properly
                     .put("page", page)
                     .put("filter_id", filterId.get())
@@ -145,8 +147,8 @@ public class HFREndpoints implements MDEndpoints {
     }
 
     private String getTopicRealCategoryId(Topic topic) {
-        boolean isPrivateMessage = topic.getCategory().getId() == UIConstants.PRIVATE_MESSAGE_CAT_ID;
-        return isPrivateMessage ? PRIVATE_MESSAGE_REAL_CAT_ID : String.valueOf(topic.getCategory().getId());
+        boolean isPrivateMessage = topic.category().id() == UIConstants.PRIVATE_MESSAGE_CAT_ID;
+        return isPrivateMessage ? PRIVATE_MESSAGE_REAL_CAT_ID : String.valueOf(topic.category().id());
     }
 
     /**
@@ -157,7 +159,7 @@ public class HFREndpoints implements MDEndpoints {
         return Phrase.from(TOPIC_URL)
                 .put("base_url", FORUM_BASE_URL)
                 .put("category_id", getTopicRealCategoryId(topic))
-                .put("topic_id", topic.getId())
+                .put("topic_id", topic.id())
                 .put("page", page)
                 .format().toString();
     }
@@ -171,7 +173,7 @@ public class HFREndpoints implements MDEndpoints {
     public String topic(Category category, int topicId) {
         return Phrase.from(TOPIC_URL)
                 .put("base_url", FORUM_BASE_URL)
-                .put("category_id", category.getId())
+                .put("category_id", category.id())
                 .put("topic_id", topicId)
                 .put("page", 1)
                 .format().toString();
@@ -230,7 +232,18 @@ public class HFREndpoints implements MDEndpoints {
         return Phrase.from(QUOTE_URL)
                 .put("base_url", FORUM_BASE_URL)
                 .put("category_id", getTopicRealCategoryId(topic))
-                .put("topic_id", topic.getId())
+                .put("topic_id", topic.id())
+                .put("post_id", postId)
+                .format().toString();
+    }
+
+    @Override
+    public String post(Category category, Topic topic, int page, int postId) {
+        return Phrase.from(POST_URL)
+                .put("base_url", FORUM_BASE_URL)
+                .put("category_id", getTopicRealCategoryId(topic))
+                .put("topic_id", topic.id())
+                .put("page", page)
                 .put("post_id", postId)
                 .format().toString();
     }
@@ -240,7 +253,7 @@ public class HFREndpoints implements MDEndpoints {
         return Phrase.from(EDIT_URL)
                 .put("base_url", FORUM_BASE_URL)
                 .put("category_id", getTopicRealCategoryId(topic))
-                .put("topic_id", topic.getId())
+                .put("topic_id", topic.id())
                 .put("post_id", postId)
                 .format().toString();
     }
@@ -276,8 +289,8 @@ public class HFREndpoints implements MDEndpoints {
     public String favorite(Category category, Topic topic, int postId) {
         return Phrase.from(FAVORITE_URL)
                 .put("base_url", FORUM_BASE_URL)
-                .put("category_id", category.getId())
-                .put("topic_id", topic.getId())
+                .put("category_id", category.id())
+                .put("topic_id", topic.id())
                 .put("post_id", postId)
                 .format().toString();
     }
@@ -328,8 +341,8 @@ public class HFREndpoints implements MDEndpoints {
     public String removeFlag(Category category, Topic topic) {
         return Phrase.from(REMOVE_FLAG_URL)
                 .put("base_url", FORUM_BASE_URL)
-                .put("category_id", category.getId())
-                .put("topic_id", topic.getId())
+                .put("category_id", category.id())
+                .put("topic_id", topic.id())
                 .format()
                 .toString();
     }

@@ -23,8 +23,6 @@ import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.graphics.Palette;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,7 +46,6 @@ import com.ayuget.redface.ui.drawer.CategoryDrawerItem;
 import com.ayuget.redface.ui.drawer.DrawerItem;
 import com.ayuget.redface.ui.drawer.SimpleDrawerItem;
 import com.ayuget.redface.ui.hfr.HFRIcons;
-import com.ayuget.redface.ui.misc.PaletteTransformation;
 import com.ayuget.redface.ui.misc.UiUtils;
 import com.ayuget.redface.util.UserUtils;
 import com.google.common.base.Optional;
@@ -112,6 +109,8 @@ public class BaseDrawerActivity extends BaseActivity {
     @InjectView(R.id.hfr_drawer_layout)
     DrawerLayout drawerLayout;
 
+    private User currentDrawerUser;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -123,8 +122,6 @@ public class BaseDrawerActivity extends BaseActivity {
     public void setContentView(int layoutResID) {
         super.setContentView(layoutResID);
 
-        Timber.d("setContentView(int layoutResID)");
-
         setupNavigationDrawer();
         setupAccountBox();
     }
@@ -132,8 +129,6 @@ public class BaseDrawerActivity extends BaseActivity {
     @Override
     public void setContentView(int layoutResID, Bundle savedInstanceState) {
         super.setContentView(layoutResID, savedInstanceState);
-
-        Timber.d("setContentView(int layoutResID, Bundle savedInstanceState)");
 
         setupNavigationDrawer();
         setupAccountBox();
@@ -155,15 +150,29 @@ public class BaseDrawerActivity extends BaseActivity {
         updateActiveUser();
     }
 
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        updateUserIfNeeded();
+    }
+
+    private void updateUserIfNeeded() {
+        if (currentDrawerUser == null || !currentDrawerUser.equals(userManager.getActiveUser())) {
+            Timber.d("Updating active user and drawer categories");
+            onActiveUserChanged();
+        }
+    }
+
     private void updateActiveUser() {
-        Timber.d("Updating active user");
-        final User activeUser = userManager.getActiveUser();
+        Timber.d("Updating active user to %s (@%d)", userManager.getActiveUser(), System.identityHashCode(this));
+        currentDrawerUser = userManager.getActiveUser();
 
         // Reset categories
         initiateNavDrawer();
 
         // Load categories for active user
-        subscribe(dataService.loadCategories(activeUser, new EndlessObserver<List<Category>>() {
+        subscribe(dataService.loadCategories(currentDrawerUser, new EndlessObserver<List<Category>>() {
             @Override
             public void onNext(List<Category> categories) {
                 populateNavDrawerCategories(categories);
@@ -172,53 +181,47 @@ public class BaseDrawerActivity extends BaseActivity {
 
             @Override
             public void onError(Throwable throwable) {
-                Timber.e(throwable, "Error on retrieving categories for user '%s'", activeUser);
+                Timber.e(throwable, "Error on retrieving categories for user '%s'", currentDrawerUser);
             }
         }));
 
-        activeUserName.setText(activeUser.getDisplayUsername(this));
+        activeUserName.setText(currentDrawerUser.getDisplayUsername(this));
 
+        displayUserAvatar();
+    }
+
+    private void displayUserAvatar() {
         Optional<Integer> userId = Optional.absent();
-        if (! activeUser.isGuest() && activeUser.hasAvatar()) {
-            userId = UserUtils.getLoggedInUserId(activeUser, httpClientProvider.getClientForUser(activeUser));
+        if (! currentDrawerUser.isGuest() && currentDrawerUser.hasAvatar()) {
+            userId = UserUtils.getLoggedInUserId(currentDrawerUser, httpClientProvider.getClientForUser(currentDrawerUser));
         }
 
         if (userId.isPresent()) {
-            Timber.d("Loading profile for user '%s' (id: '%d')", activeUser.getUsername(), userId.get());
-            // Load active user profile
-            subscribe(dataService.loadProfile(activeUser, userId.get(), new EndlessObserver<Profile>() {
-                @Override
-                public void onNext(Profile profile) {
-                    // TODO: cache users in UserManager
-                    // TODO: currently, users are loaded from the account manager, thus modifying a user here
-                    // TODO: may be useless when accessing it later.
-                    activeUser.setProfile(profile);
-                    Picasso.with(BaseDrawerActivity.this)
-                            .load(profile.getAvatarUrl())
-                            .into(activeUserPicture, new PaletteTransformation.PaletteCallback(activeUserPicture) {
-                                @Override
-                                protected void onSuccess(Palette palette) {
-                                    if (palette != null) {
-                                        choseAccountView.setBackgroundColor(palette.getDarkVibrantColor(getResources().getColor(R.color.theme_primary)));
-                                    }
-                                }
-
-                                @Override
-                                public void onError() {
-                                    activeUser.setHasAvatar(false);
-                                    loadDefaultProfileImage();
-                                }
-                            });
-                }
-
-                @Override
-                public void onError(Throwable throwable) {
-                    Timber.e(throwable, "Error on retrieving profile for user '%s'", activeUser);
-                }
-            }));
-        } else {
+            loadUserAvatarFromProfile(userId.get());
+        }
+        else {
             loadDefaultProfileImage();
         }
+    }
+
+    private void loadUserAvatarFromProfile(int userId) {
+        Timber.d("Loading profile for user '%s' (id: '%d')", currentDrawerUser.getUsername(), userId);
+        // TODO cache profile
+        subscribe(dataService.loadProfile(currentDrawerUser, userId, new EndlessObserver<Profile>() {
+            @Override
+            public void onNext(Profile profile) {
+                currentDrawerUser.setProfile(profile);
+                Picasso.with(BaseDrawerActivity.this)
+                        .load(profile.getAvatarUrl())
+                        .into(activeUserPicture);
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                Timber.e(throwable, "Error on retrieving profile for user '%s'", currentDrawerUser);
+                loadDefaultProfileImage();
+            }
+        }));
     }
 
     private void loadDefaultProfileImage() {
@@ -331,15 +334,20 @@ public class BaseDrawerActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 userManager.setActiveUser(user);
-                updateActiveUser();
-                onUserSwitched(user);
-
-                accountBoxExpanded = false;
-                setupAccountBoxToggle();
+                onActiveUserChanged();
             }
         });
 
         accountListContainer.addView(accountView);
+    }
+
+    private void onActiveUserChanged() {
+        currentDrawerUser = userManager.getActiveUser();
+
+        updateActiveUser(); // Sets up avatar (drawer header)
+        onUserSwitched(currentDrawerUser);
+        accountBoxExpanded = false;
+        setupAccountBoxToggle(); // Hide account box toggle
     }
 
     private void initiateNavDrawer() {
@@ -408,7 +416,7 @@ public class BaseDrawerActivity extends BaseActivity {
             else {
                 CategoryDrawerItem categoryDrawerItem = (CategoryDrawerItem) drawerItem;
                 iconView.setImageResource(categoryDrawerItem.getIconResource());
-                titleView.setText(categoryDrawerItem.getCategory().getName());
+                titleView.setText(categoryDrawerItem.getCategory().name());
             }
         }
 

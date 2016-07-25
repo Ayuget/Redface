@@ -25,8 +25,8 @@ import android.support.v4.view.MotionEventCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -85,9 +85,6 @@ import timber.log.Timber;
 public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemClickListener {
     private static final String ARG_TOPIC = "topic";
 
-    /**
-     * @todo fix this, ugly...
-     */
     private static final List<Smiley> DEFAULT_SMILEYS = Arrays.asList(
             Smiley.make(":O", "http://forum-images.hardware.fr/icones/redface.gif"),
             Smiley.make(":)", "http://forum-images.hardware.fr/icones/smile.gif"),
@@ -606,7 +603,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
     }
 
     protected void loadUserAvatarInto(User user, ImageView imageView) {
-        if (user.hasAvatar()) {
+        if (user.hasAvatar() && user.getProfile() != null && user.getProfile().getAvatarUrl() != null) {
             Picasso.with(this)
                     .load(user.getProfile().getAvatarUrl())
                     .into(imageView);
@@ -629,12 +626,19 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
     protected void insertText(String text) {
         int selectionStart = replyEditText.getSelectionStart();
         int selectionEnd = replyEditText.getSelectionEnd();
+        Editable replyText = replyEditText.getText();
 
         if (selectionStart != -1 && selectionEnd != -1) {
-            replyEditText.getText().replace(selectionStart, selectionEnd, text);
+            // Some text has been selected by the user
+            replyText.replace(selectionStart, selectionEnd, text);
         }
         else if (selectionStart != -1) {
-            replyEditText.getText().insert(selectionStart, text);
+            // EditText has focus, insert at caret
+            replyText.insert(selectionStart, text);
+        }
+        else {
+            // No focus
+            replyEditText.append(text);
         }
     }
 

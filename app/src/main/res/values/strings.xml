@@ -30,6 +30,7 @@
     <string name="action_copy_link">Copy a link to this topic</string>
     <string name="action_share">Share</string>
     <string name="action_refresh_topic">Refresh</string>
+    <string name="action_show_all_spoilers">Show all spoilers</string>
     <string name="action_unflag_topic">Remove flag</string>
     <string name="link_sucessfully_copied">Link copied to clipboard</string>
     <string name="flag_successfully_removed">Flag successfully removed</string>
@@ -94,6 +95,7 @@
     <string name="pref_show_previous_page_last_post_title">Show previous page last post</string>
     <string name="pref_show_previous_page_last_post_summary">Display the last post of the previous page at the top of the page</string>
     <string name="pref_show_fully_read_topics_summary">This option only works if you are not in the Meta category</string>
+    <string name="pref_use_modern_quote_style">Use modern quote style</string>
 
     <string name="pref_enable_egoquote_title">Enable EgoQuote</string>
     <string name="pref_enable_egoquote_summary">Highlights posts in which you are quoted</string>
@@ -174,6 +176,8 @@
         <item>60</item>
         <item>@string/pref_pm_notification_frequency_default</item>
         <item>360</item>
+        <item>720</item>
+        <item>1440</item>
     </string-array>
     <string-array name="pref_pm_notification_frequency_entries">
         <item>15 minutes</item>
@@ -181,6 +185,8 @@
         <item>1 hour</item>
         <item>2 hours</item>
         <item>6 hours</item>
+        <item>12 hours</item>
+        <item>24 hours</item>
     </string-array>
 
     <!-- About page -->
@@ -231,6 +237,7 @@
     <string name="title_activity_login">Log in</string>
     <string name="login_username_empty">Username cannot be empty</string>
     <string name="login_password_empty">Password cannot be empty</string>
+    <string name="login_successful">Successfully logged in !</string>
     <string name="login_failed">Failed to login, check username/password</string>
     <string name="connect_to_forum">Add a new account</string>
 
@@ -268,6 +275,8 @@
     <string name="error_sending_pm">Failed to send private message</string>
 
     <string name="relogin_instructions">If your login credentials have changed, or if you wish to re-login, please fill-in the following form</string>
+
+    <string name="unknown_category">Unknown</string>
 
     <!-- Dialogs -->
     <string name="dialog_go_to_page_positive_text">Go !</string>

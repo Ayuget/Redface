@@ -47,12 +47,14 @@ import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
 import com.ayuget.redface.ui.event.PageSelectedEvent;
 import com.ayuget.redface.ui.event.ScrollToPostEvent;
+import com.ayuget.redface.ui.event.ShowAllSpoilersEvent;
 import com.ayuget.redface.ui.event.UnquoteAllPostsEvent;
 import com.ayuget.redface.ui.misc.ImageMenuHandler;
 import com.ayuget.redface.ui.misc.UiUtils;
 import com.ayuget.redface.ui.view.TopicPageView;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.hannesdorfmann.fragmentargs.annotation.Arg;
+import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs;
 import com.squareup.leakcanary.RefWatcher;
 import com.squareup.otto.Subscribe;
 
@@ -64,6 +66,7 @@ import javax.inject.Inject;
 import butterknife.InjectView;
 import timber.log.Timber;
 
+@FragmentWithArgs
 public class PostsFragment extends BaseFragment {
     private static final String ARG_POST_LIST = "post_list";
 
@@ -212,17 +215,6 @@ public class PostsFragment extends BaseFragment {
             }
         });
 
-        topicPageView.setOnPageLoadedListener(new TopicPageView.OnPageLoadedListener() {
-            @Override
-            public void onPageLoaded() {
-                if (currentScrollPosition > 0) {
-                    restorePageScrollPosition();
-                }
-
-                updateQuotedPostsStatus();
-            }
-        });
-
         if (userManager.getActiveUser().isGuest()) {
             replyButton.setVisibility(View.INVISIBLE);
         }
@@ -239,11 +231,28 @@ public class PostsFragment extends BaseFragment {
 
         topicPageView.setOnQuoteListener((TopicFragment)getParentFragment());
 
+        topicPageView.setOnPageLoadedListener(new TopicPageView.OnPageLoadedListener() {
+            @Override
+            public void onPageLoaded() {
+                if (currentScrollPosition > 0) {
+                    restorePageScrollPosition();
+                }
+
+                updateQuotedPostsStatus();
+            }
+        });
+
+        boolean hasLoadedPosts = displayedPosts != null && displayedPosts.size() > 0;
+        boolean hasNoVisiblePosts = displayedPosts != null && displayedPosts.size() == 0;
+
         // Page is loaded instantly only if it's the initial page requested on topic load. Other
         // pages will be loaded once selected in the ViewPager
-        if (isInitialPage() && ((displayedPosts != null && displayedPosts.size() == 0) || displayedPosts == null)) {
+        if (isInitialPage() && (hasNoVisiblePosts || displayedPosts == null)) {
             showLoadingIndicator();
             loadPage(currentPage);
+        }
+        else if (hasLoadedPosts){
+            updateQuotedPostsStatus();
         }
     }
 
@@ -389,7 +398,7 @@ public class PostsFragment extends BaseFragment {
     }
 
     @Subscribe public void onPageRefreshRequestEvent(PageRefreshRequestEvent event) {
-        if (event.getTopic().getId() == topic.getId() && isVisible()) {
+        if (event.getTopic().id() == topic.id() && isVisible()) {
             Timber.d("@%d -> Fragment(currentPage=%d) -> Refresh requested event", System.identityHashCode(this), currentPage);
 
             savePageScrollPosition();
@@ -398,8 +407,15 @@ public class PostsFragment extends BaseFragment {
         }
     }
 
+    @Subscribe public void onShowAllSpoilersEvent(ShowAllSpoilersEvent event) {
+        if (event.getTopic().id() == topic.id() && isVisible() && event.getCurrentPage() == currentPage) {
+            Timber.d("@%d -> Fragment(currentPage=%d) -> Show all spoilers event", System.identityHashCode(this), currentPage);
+            topicPageView.showAllSpoilers();
+        }
+    }
+
     /**
-     * Event fired by the host {@link com.ayuget.redface.ui.fragment.TopicFragment} to indicate
+     * Event fired by the host {@link com.ayuget.redface.ui.fragment.TopicFragment} to notify
      * that multi-quote mode has been turned off and that posts UI should be updated accordingly.
      */
     @Subscribe

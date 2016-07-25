@@ -14,15 +14,24 @@
  * limitations under the License.
  */
 
-package com.ayuget.redface.data.api.model.misc;
+package com.ayuget.redface.ui.event;
 
-public enum PostAction {
-    EDIT,
-    MULTIQUOTE_ADD,
-    MULTIQUOTE_REMOVE,
-    REPORT,
-    DELETE,
-    FAVORITE,
-    WRITE_PRIVATE_MESSAGE,
-    COPY_LINK_TO_POST
+import com.ayuget.redface.data.api.model.Topic;
+
+public class ShowAllSpoilersEvent {
+    private final Topic topic;
+    private final long currentPage;
+
+    public ShowAllSpoilersEvent(Topic topic, long currentPage) {
+        this.topic = topic;
+        this.currentPage = currentPage;
+    }
+
+    public Topic getTopic() {
+        return topic;
+    }
+
+    public long getCurrentPage() {
+        return currentPage;
+    }
 }

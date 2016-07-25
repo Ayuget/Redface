@@ -40,9 +40,9 @@ public class HTMLToTopicTest extends BaseTestCase {
         Topic topic = htmlToTopic.call(readAssetFile("hfr_topic.html"));
 
         assertThat(topic).isNotNull();
-        assertThat(topic.getId()).isEqualTo(21748);
-        assertThat(topic.getSubject()).isEqualTo("[Projet] HFR4droid 0.8.6 - 10k downloads, merci à tous");
-        assertThat(topic.getPagesCount()).isEqualTo(419);
+        assertThat(topic.id()).isEqualTo(21748);
+        assertThat(topic.title()).isEqualTo("[Projet] HFR4droid 0.8.6 - 10k downloads, merci à tous");
+        assertThat(topic.pagesCount()).isEqualTo(419);
     }
 
     @Test
@@ -52,8 +52,8 @@ public class HTMLToTopicTest extends BaseTestCase {
         Topic topic = htmlToTopic.call(readAssetFile("hfr_single_page_topic.html"));
 
         assertThat(topic).isNotNull();
-        assertThat(topic.getId()).isEqualTo(999395);
-        assertThat(topic.getSubject()).isEqualTo("S'allume difficilement et garde les actions du bouton de démarrage!");
-        assertThat(topic.getPagesCount()).isEqualTo(1);
+        assertThat(topic.id()).isEqualTo(999395);
+        assertThat(topic.title()).isEqualTo("S'allume difficilement et garde les actions du bouton de démarrage!");
+        assertThat(topic.pagesCount()).isEqualTo(1);
     }
 }

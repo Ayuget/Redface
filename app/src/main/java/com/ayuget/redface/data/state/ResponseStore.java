@@ -82,7 +82,7 @@ public class ResponseStore {
     }
 
     public String getResponse(User user, Topic topic) {
-        CacheKey key = new CacheKey(user.getUsername(), topic.getId());
+        CacheKey key = new CacheKey(user.getUsername(), topic.id());
         if (responsesCache.containsKey(key)) {
             return responsesCache.get(key);
         }
@@ -92,12 +92,12 @@ public class ResponseStore {
     }
 
     private String getPrefsKey(User user, Topic topic) {
-        return RESPONSE_NAME_PREFIX + user.getUsername() + "_" + topic.getId();
+        return RESPONSE_NAME_PREFIX + user.getUsername() + "_" + topic.id();
     }
 
     public void storeResponse(User user, Topic topic, String message) {
         String prefsKey = getPrefsKey(user,  topic);
-        CacheKey cacheKey = new CacheKey(user.getUsername(), topic.getId());
+        CacheKey cacheKey = new CacheKey(user.getUsername(), topic.id());
 
         responsesCache.put(cacheKey, message);
 
@@ -108,7 +108,7 @@ public class ResponseStore {
 
     public void removeResponse(User user, Topic topic) {
         String prefsKey = getPrefsKey(user,  topic);
-        CacheKey cacheKey = new CacheKey(user.getUsername(), topic.getId());
+        CacheKey cacheKey = new CacheKey(user.getUsername(), topic.id());
 
         responsesCache.remove(cacheKey);
 

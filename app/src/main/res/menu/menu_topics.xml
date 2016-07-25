@@ -42,6 +42,7 @@
     <item
         android:id="@+id/action_refresh_topic_list"
         android:title="@string/action_refresh_topic"
+        android:icon="@drawable/ic_refresh_white_24dp"
         android:orderInCategory="50"
-        app:showAsAction="never" />
+        app:showAsAction="ifRoom" />
 </menu>

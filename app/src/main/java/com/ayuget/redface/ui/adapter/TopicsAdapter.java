@@ -141,11 +141,11 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ViewHolder
     public void onBindViewHolder(ViewHolder viewHolder, final int i) {
         final Topic topic = topics.get(i);
 
-        viewHolder.topicSubject.setText(topic.getSubject());
+        viewHolder.topicSubject.setText(topic.title());
 
         if (! isCompactMode) {
-            viewHolder.topicLastPostInfos.setText(topic.getLastPostAuthor() + " - " + formatLastPostDate(topic));
-            viewHolder.topicPagesCount.setText(String.valueOf(topic.getPagesCount()) + " p");
+            viewHolder.topicLastPostInfos.setText(topic.lastPostAuthor() + " - " + formatLastPostDate(topic));
+            viewHolder.topicPagesCount.setText(String.valueOf(topic.pagesCount()) + " p");
         }
 
         GradientDrawable topicIconCircle = (GradientDrawable) viewHolder.topicIcon.getBackground();
@@ -173,7 +173,7 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ViewHolder
 
         if (topic.hasUnreadPosts()) {
             viewHolder.unreadPagesCount.setVisibility(View.VISIBLE);
-            viewHolder.unreadPagesCount.setText(getPrintableUnreadPagesCount(topic.getUnreadPagesCount()));
+            viewHolder.unreadPagesCount.setText(getPrintableUnreadPagesCount(topic.unreadPagesCount()));
             viewHolder.topicSubject.setTextColor(primaryTextColor);
 
             if (! isCompactMode) {
@@ -222,7 +222,7 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ViewHolder
         else if (topic.isSticky()) {
             return R.drawable.ic_action_pin;
         }
-        else if (topic.getStatus() == TopicStatus.FAVORITE_NEW_CONTENT) {
+        else if (topic.status() == TopicStatus.FAVORITE_NEW_CONTENT) {
             return R.drawable.ic_action_star_10;
         }
         else if (topic.hasUnreadPosts()) {
@@ -234,13 +234,13 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ViewHolder
     }
 
     int getTopicIconBackgroundColor(Topic topic) {
-        if (topic.getStatus() == TopicStatus.FAVORITE_NEW_CONTENT) {
+        if (topic.status() == TopicStatus.FAVORITE_NEW_CONTENT) {
             return context.getResources().getColor(R.color.topic_icon_favorite_bg);
         }
-        else if (topic.getStatus() == TopicStatus.FLAGGED_NEW_CONTENT) {
+        else if (topic.status() == TopicStatus.FLAGGED_NEW_CONTENT) {
             return context.getResources().getColor(R.color.topic_icon_flagged_bg);
         }
-        else if (topic.getStatus() == TopicStatus.READ_NEW_CONTENT) {
+        else if (topic.status() == TopicStatus.READ_NEW_CONTENT) {
             return UiUtils.getReadTopicIconBackgroundColor(context);
         }
         else if (topic.isSticky()) {
@@ -258,13 +258,13 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ViewHolder
         if (topic.isSticky()) {
             return context.getResources().getColor(R.color.topic_icon_sticky_color);
         }
-        else if (topic.getStatus() == TopicStatus.FAVORITE_NEW_CONTENT) {
+        else if (topic.status() == TopicStatus.FAVORITE_NEW_CONTENT) {
             return context.getResources().getColor(R.color.topic_icon_favorite_color);
         }
-        else if (topic.getStatus() == TopicStatus.FLAGGED_NEW_CONTENT) {
+        else if (topic.status() == TopicStatus.FLAGGED_NEW_CONTENT) {
             return context.getResources().getColor(R.color.topic_icon_flagged_color);
         }
-        else if (topic.getStatus() == TopicStatus.READ_NEW_CONTENT) {
+        else if (topic.status() == TopicStatus.READ_NEW_CONTENT) {
             return UiUtils.getReadTopicIconTextColor(context);
         }
         else {
@@ -273,6 +273,6 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ViewHolder
     }
 
     private CharSequence formatLastPostDate(Topic topic) {
-        return DateUtils.getRelativeTimeSpanString(topic.getLastPostDate().getTime(), new Date().getTime(), 0, 0);
+        return DateUtils.getRelativeTimeSpanString(topic.lastPostDate().getTime(), new Date().getTime(), 0, 0);
     }
 }

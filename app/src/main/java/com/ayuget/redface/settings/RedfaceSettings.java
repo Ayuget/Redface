@@ -113,4 +113,8 @@ public class RedfaceSettings {
     public boolean isDoubleTapToRefreshEnabled() {
         return sharedPreferences.getBoolean(SettingsConstants.KEY_DOUBLE_TAP_TO_REFRESH_ENABLED, true);
     }
+
+    public boolean isUseModernQuoteStyleEnabled() {
+        return sharedPreferences.getBoolean(SettingsConstants.KEY_USE_MODERN_QUOTE_STYLE, true);
+    }
 }

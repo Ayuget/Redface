@@ -63,6 +63,8 @@ public interface MDEndpoints {
 
     String quote(Category category, Topic topic, int postId);
 
+    String post(Category category, Topic topic, int page, int postId);
+
     String editPost(Category category, Topic topic, int postId);
 
     String userForumPreferences();

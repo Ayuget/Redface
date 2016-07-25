@@ -351,10 +351,16 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
         JsExecutor.execute(this, String.format("scrollToElement('post%d')", postId));
     }
 
+    public void showAllSpoilers() {
+        Timber.d("Showing all spoilers for current page");
+        JsExecutor.execute(this, "showAllSpoilers()");
+    }
+
     /**
-     * Sets the posts that are actually quoted
+     * Sets the posts that are currently quoted
      */
     public void setQuotedPosts(List<Long> posts) {
+        Timber.d("Settings quoted posts for page %d (quoted count = %d)", page, posts.size());
         quotedMessages.clear();
         quotedMessages.addAll(posts);
 
@@ -365,6 +371,7 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
      * Unquotes all previously quoted posts for the given page
      */
     public void clearQuotedPosts() {
+        Timber.d("Clearing quoted posts for page %d", page);
         quotedMessages.clear();
         JsExecutor.execute(this, "clearQuotedMessages()");
     }
@@ -463,6 +470,17 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
         }
 
         @JavascriptInterface
+        public void copyLinkToPost(final int postId) {
+            Timber.d("Copying link to post '%d' in clipboard", postId);
+            TopicPageView.this.post(new Runnable() {
+                @Override
+                public void run() {
+                    UiUtils.copyToClipboard(getContext(), mdEndpoints.post(topic.category(), topic, page, postId));
+                }
+            });
+        }
+
+        @JavascriptInterface
         public void showProfile (String username){
             Timber.d("Profile requested for user '%s'", username);
         }
@@ -487,11 +505,11 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
                                 public void call(Category category, int topicId, int topicPage, PagePosition pagePosition) {
                                     // Action can take a few seconds to process, depending on target and on network quality,
                                     // we need to do something to indicate that we handled the event
-                                    if (topicId != topic.getId()) {
+                                    if (topicId != topic.id()) {
                                         Toast.makeText(getContext(), R.string.topic_loading_message, Toast.LENGTH_SHORT).show();
                                     }
 
-                                    if (topic.getId() == topicId) {
+                                    if (topic.id() == topicId) {
                                         int destinationPage = topicPage;
                                         PagePosition targetPagePosition = pagePosition;
 

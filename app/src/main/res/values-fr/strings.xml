@@ -149,6 +149,8 @@
         <item>1 heure</item>
         <item>2 heures</item>
         <item>6 heures</item>
+        <item>12 heures</item>
+        <item>24 heures</item>
     </string-array>
     <string name="pm_recipient">Pseudo du destinataire</string>
     <string name="action_new_private_message">Nouveau message privé</string>
@@ -208,4 +210,8 @@
     <string name="flag_successfully_removed">Drapeau effacé avec succès</string>
     <string name="pref_enable_egoquote_title">Activer EgoQuote</string>
     <string name="pref_enable_egoquote_summary">Mets en évidence les messages dans lesquels vous êtes cité</string>
+    <string name="unknown_category">Inconnue</string>
+    <string name="login_successful">Identification avec succès !</string>
+    <string name="pref_use_modern_quote_style">Affichage "moderne" des citations</string>
+    <string name="action_show_all_spoilers">Afficher tous les spoilers</string>
 </resources>

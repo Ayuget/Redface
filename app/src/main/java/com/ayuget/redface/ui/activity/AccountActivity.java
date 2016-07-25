@@ -125,6 +125,9 @@ public class AccountActivity extends BaseActivity {
                    }
 
                    userManager.setActiveUser(user);
+
+                   SnackbarHelper.make(AccountActivity.this, R.string.login_successful).show();
+
                    Intent intent = new Intent(AccountActivity.this, TopicsActivity.class);
                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

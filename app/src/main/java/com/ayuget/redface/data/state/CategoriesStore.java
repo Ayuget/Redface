@@ -73,8 +73,19 @@ public class CategoriesStore {
 
         this.categoriesPrefs = context.getSharedPreferences(CATEGORIES_PREFS, 0);
 
-        this.metaCategory = Category.create(META_CATEGORY_ID, context.getResources().getString(R.string.navdrawer_item_my_topics), "meta", Collections.<Subcategory>emptyList());
-        this.privateMessagesCategory = Category.create(UIConstants.PRIVATE_MESSAGE_CAT_ID, context.getResources().getString(R.string.navdrawer_item_private_messages), "pm", Collections.<Subcategory>emptyList());
+        this.metaCategory = Category.builder()
+            .id(META_CATEGORY_ID)
+            .name(context.getResources().getString(R.string.navdrawer_item_my_topics))
+            .slug("meta")
+            .subcategories(Collections.<Subcategory>emptyList())
+            .build();
+
+        this.privateMessagesCategory = Category.builder()
+                .id(UIConstants.PRIVATE_MESSAGE_CAT_ID)
+                .name(context.getResources().getString(R.string.navdrawer_item_private_messages))
+                .slug("pm")
+                .subcategories(Collections.<Subcategory>emptyList())
+                .build();
 
         loadFromSharedPreferences();
     }
@@ -107,7 +118,7 @@ public class CategoriesStore {
 
     public Category getCategoryBySlug(String categorySlug) {
         for (Category category : categoriesCache.values()) {
-            if (category.getSlug().equals(categorySlug)) {
+            if (category.slug().equals(categorySlug)) {
                 return category;
             }
         }
@@ -150,7 +161,14 @@ public class CategoriesStore {
                     }
                     Timber.d("Successfully loaded category '%s' from SharedPreferences", catName);
 
-                    categoriesCache.put(catId, Category.create(catId, catName, catSlug, subcategories));
+                    Category category = Category.builder()
+                            .id(catId)
+                            .name(catName)
+                            .slug(catSlug)
+                            .subcategories(subcategories)
+                            .build();
+
+                    categoriesCache.put(catId, category);
                 }
                 else {
                     Timber.e("Error while deserializing category '%s'", entryValue);
@@ -195,13 +213,13 @@ public class CategoriesStore {
             userCategoriesCache.put(user.getUsername(), categories);
 
             for (Category category : categories) {
-                categoriesCache.put(category.getId(), category);
+                categoriesCache.put(category.id(), category);
             }
 
             SharedPreferences.Editor editor = categoriesPrefs.edit();
-            
+
             for (Category category : categories) {
-                String categoryKey = CATEGORY_NAME_PREFIX + category.getId();
+                String categoryKey = CATEGORY_NAME_PREFIX + category.id();
 
                 if (! categoriesPrefs.contains(categoryKey)) {
                     storeCategory(editor, categoryKey, category);
@@ -216,8 +234,8 @@ public class CategoriesStore {
     }
 
     protected void storeCategory(SharedPreferences.Editor editor, String categoryKey, Category category) {
-        for (Subcategory subcategory : category.getSubcategories()) {
-            String subcategoryKey = SUBCATEGORY_NAME_PREFIX + subcategory.getSlug();
+        for (Subcategory subcategory : category.subcategories()) {
+            String subcategoryKey = SUBCATEGORY_NAME_PREFIX + subcategory.slug();
             editor.putString(subcategoryKey, serializeSubcategory(subcategory));
         }
 
@@ -226,21 +244,21 @@ public class CategoriesStore {
 
     protected String serializeCategory(Category category) {
         List<String> subcatsSlugs = new LinkedList<>();
-        for (Subcategory subcategory : category.getSubcategories()) {
-            subcatsSlugs.add(subcategory.getSlug());
+        for (Subcategory subcategory : category.subcategories()) {
+            subcatsSlugs.add(subcategory.slug());
         }
 
-        return Joiner.on(PRIMARY_SEPARATOR).join(category.getId(), category.getName(), category.getSlug(), Joiner.on(SECONDARY_SEPARATOR).join(subcatsSlugs));
+        return Joiner.on(PRIMARY_SEPARATOR).join(category.id(), category.name(), category.slug(), Joiner.on(SECONDARY_SEPARATOR).join(subcatsSlugs));
     }
 
     protected String serializeSubcategory(Subcategory subcategory) {
-        return Joiner.on(PRIMARY_SEPARATOR).join(subcategory.getName(), subcategory.getSlug());
+        return Joiner.on(PRIMARY_SEPARATOR).join(subcategory.name(), subcategory.slug());
     }
 
     protected String serializeCategoryIds(List<Category> categories) {
         List<String> categoriesIds = new LinkedList<>();
         for (Category category : categories) {
-            categoriesIds.add(String.valueOf(category.getId()));
+            categoriesIds.add(String.valueOf(category.id()));
         }
 
         return Joiner.on(PRIMARY_SEPARATOR).join(categoriesIds);

@@ -53,7 +53,12 @@ public class HFRUrlParserTest extends BaseTestCase {
 
     public HFRUrlParserTest() {
         this.hfrEndpoints = new HFREndpoints();
-        dummyCat = Category.create(66, "Dummy", "Dummy", new LinkedList<Subcategory>());
+        dummyCat = Category.builder()
+                .id(66)
+                .name("Dummy")
+                .slug("Dummy")
+                .subcategories(new LinkedList<Subcategory>())
+                .build();
     }
 
     @Before

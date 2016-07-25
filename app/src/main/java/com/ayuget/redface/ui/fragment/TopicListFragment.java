@@ -54,6 +54,7 @@ import com.ayuget.redface.ui.misc.SnackbarHelper;
 import com.ayuget.redface.ui.misc.UiUtils;
 import com.ayuget.redface.ui.view.ContextMenuRecyclerView;
 import com.hannesdorfmann.fragmentargs.annotation.Arg;
+import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs;
 import com.squareup.phrase.Phrase;
 
 import java.util.ArrayList;
@@ -64,6 +65,7 @@ import javax.inject.Inject;
 import butterknife.InjectView;
 import timber.log.Timber;
 
+@FragmentWithArgs
 public class TopicListFragment extends ToggleToolbarFragment implements TopicsAdapter.OnTopicClickedListener, TopicsAdapter.OnTopicLongClickListener {
     private static final String ARG_TOPIC_LIST = "topic_list";
 
@@ -354,7 +356,7 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
      * user has to swipe at the bottom of the list to load the next pages
      */
     public void loadTopics() {
-        Timber.d("Loading first page for category '%s' (subcategory: '%s') and replacing current topics (with filter='%s')", category.getName(), subcategory, topicFilter == null ? "null" : topicFilter.toString());
+        Timber.d("Loading first page for category '%s' (subcategory: '%s') and replacing current topics (with filter='%s')", category.name(), subcategory, topicFilter == null ? "null" : topicFilter.toString());
 
         // Load categories for active user
         subscribe(dataService.loadTopics(userManager.getActiveUser(), category, subcategory, 1, topicFilter, new EndlessObserver<List<Topic>>() {
@@ -376,7 +378,7 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
 
             @Override
             public void onError(Throwable throwable) {
-                Timber.e(throwable, "Error loading first page for category '%s', subcategory '%s'", category.getName(), subcategory);
+                Timber.e(throwable, "Error loading first page for category '%s', subcategory '%s'", category.name(), subcategory);
 
                 swipeRefreshLayout.setRefreshing(false);
 
@@ -417,7 +419,7 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
 
             @Override
             public void onError(Throwable throwable) {
-                Timber.e(throwable, "Error loading page '%d' for category '%s', subcategory '%s'", page, category.getName(), subcategory);
+                Timber.e(throwable, "Error loading page '%d' for category '%s', subcategory '%s'", page, category.name(), subcategory);
 
                 swipeRefreshLayout.setRefreshing(false);
 

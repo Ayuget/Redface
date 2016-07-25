@@ -47,7 +47,7 @@ public class SettingsConstants {
 
     public static final String KEY_ENABLE_PRIVATE_MESSAGES_NOTIFICATIONS = "enable_pm_notifications";
 
-    public static final String KEY_PRIVATE_MESSAGES_POLLING_FREQUENCY = "pm_notification_delay";
+    public static final String KEY_PRIVATE_MESSAGES_POLLING_FREQUENCY = "pm_notification_polling_frequency";
 
     public static final String KEY_DOUBLE_TAP_TO_REFRESH_ENABLED = "double_tap_to_refresh_enabled";
 
@@ -56,4 +56,6 @@ public class SettingsConstants {
     public static final String KEY_ENABLE_INTERNAL_BROWSER = "enable_internal_browser";
 
     public static final String KEY_ENABLE_EGOQUOTE = "enable_egoquote";
+
+    public static final String KEY_USE_MODERN_QUOTE_STYLE = "use_modern_quote_style";
 }

@@ -138,8 +138,20 @@ img {
 /*
 * Citations
 */
+.modern-quotes .post-content > .quote, .modern-quotes .post-content > .spoiler, .modern-quotes .post-content > .code {
+    margin-left: -8px;
+    margin-right: -8px;
+}
 
-.quote, .spoiler, .code {
+.modern-quotes .quote, .modern-quotes .spoiler, .modern-quotes .code {
+    border-left: 6px solid #757575;
+    background: #EBEBEB;
+    min-height: 40px;
+    padding-bottom: 2px;
+    margin-left: 2px;
+}
+
+.old-quotes .quote, .old-quotes .spoiler, .old-quotes .code {
     transition: box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     transition-delay: 0.2s;
     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
@@ -149,7 +161,7 @@ img {
     display: none;
 }
 
-.quote, .spoiler, .code {
+.old-quotes .quote, .old-quotes .spoiler, .old-quotes .code {
     border: 1px solid #d4d4d4;
     background: #FAFAFA;
     min-height: 40px;
@@ -168,14 +180,28 @@ img {
 
 .redface-dark .quote, .redface-dark .spoiler, .redface-dark .code {
     background: #181820;
-    border: 1px solid #3a3a41;
     color: #ffffff;
+}
+
+.redface-dark.old-quotes .quote, .redface-dark.old-quotes .spoiler, .redface-dark.old-quotes .code {
+    border: 1px solid #3a3a41;
+}
+
+.redface-dark.modern-quotes .quote, .redface-dark.modern-quotes .spoiler, .redface-dark.modern-quotes .code {
+    border-left: 6px solid #3a3a41;
 }
 
 .redface-night .quote, .redface-night .spoiler, .redface-night .code {
     background: #181820;
-    border: 1px solid #3a3a41;
     color: #ffffff;
+}
+
+.redface-night.old-quotes .quote, .redface-night.old-quotes .spoiler, .redface-night.old-quotes .code {
+    border: 1px solid #3a3a41;
+}
+
+.redface-night.modern-quotes .quote, .redface-night.modern-quotes .spoiler, .redface-night.modern-quotes .code {
+    border-left: 6px solid #4e4e56;
 }
 
 .quote b.s1, .spoiler b.s1Topic {
@@ -184,7 +210,7 @@ img {
     color: #757575;
     margin-bottom: 8px;
     padding: 8px;
-    background: #FAFAFA;
+    background: #EBEBEB;
 }
 
 .redface-dark .quote b.s1, .redface-dark .spoiler b.s1Topic {

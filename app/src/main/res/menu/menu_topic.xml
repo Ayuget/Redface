@@ -26,6 +26,12 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/action_show_all_spoilers"
+        android:title="@string/action_show_all_spoilers"
+        android:orderInCategory="75"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/action_go_to_first_page"
         android:title="@string/action_go_to_first_page"
         android:orderInCategory="100"

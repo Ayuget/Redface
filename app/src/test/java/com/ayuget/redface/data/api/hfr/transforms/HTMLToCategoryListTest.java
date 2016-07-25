@@ -57,7 +57,12 @@ public class HTMLToCategoryListTest extends BaseTestCase {
                 Subcategory.create("VB/VBA/VBS", "VB-VBA-VBS")
         );
 
-        Category catProgramming = Category.create(10, "Programmation", "Programmation", subcatsProgramming);
+        Category catProgramming = Category.builder()
+                .id(10)
+                .name("Programmation")
+                .slug("Programmation")
+                .subcategories(subcatsProgramming)
+                .build();
 
         assertThat(categories).contains(catProgramming);
     }

@@ -101,7 +101,7 @@ public class MultiPaneActivity extends BaseDrawerActivity {
                     Timber.e("topic is null in onActivityResult");
                 }
                 else {
-                    Timber.d("Requesting refresh for topic : %s", topic.getSubject());
+                    Timber.d("Requesting refresh for topic : %s", topic.title());
 
                     // Deferring event posting until onResume() is called, otherwise inner fragments
                     // won't get the event.

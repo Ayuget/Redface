@@ -6,8 +6,8 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.0.0-rc1'
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
+        classpath 'com.android.tools.build:gradle:2.1.2'
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
         classpath 'io.fabric.tools:gradle:1.+'
     }
 }
@@ -24,15 +24,15 @@ apply plugin: 'com.neenbedankt.android-apt'
 apply plugin: 'io.fabric'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion '23.0.2'
+    compileSdkVersion 24
+    buildToolsVersion '24.0.1'
 
     defaultConfig {
         applicationId "com.ayuget.redface"
         minSdkVersion 16
-        targetSdkVersion 23
-        versionCode 211
-        versionName "2.1.1"
+        targetSdkVersion 24
+        versionCode 212
+        versionName "2.1.2"
     }
     buildTypes {
         debug {
@@ -45,29 +45,37 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    lintOptions {
+        abortOnError false
+    }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
     // Support libraries
-    compile "com.android.support:appcompat-v7:23.2.1"
-    compile "com.android.support:recyclerview-v7:23.2.1"
-    compile "com.android.support:palette-v7:23.2.1"
-    compile 'com.android.support:support-annotations:23.2.1'
-    compile 'com.android.support:design:23.2.1'
-    compile 'com.android.support:customtabs:23.2.1'
+    compile "com.android.support:appcompat-v7:24.1.0"
+    compile "com.android.support:recyclerview-v7:24.1.0"
+    compile "com.android.support:palette-v7:24.1.0"
+    compile 'com.android.support:support-annotations:24.1.0'
+    compile 'com.android.support:design:24.1.0'
+    compile 'com.android.support:customtabs:24.1.0'
 
     // Dependency injection
     compile 'com.squareup.dagger:dagger:1.2.2'
     apt 'com.squareup.dagger:dagger-compiler:1.2.2'
 
     // Boilerplate destruction !!
-    compile 'com.jakewharton.timber:timber:4.1.0'
+    compile 'com.jakewharton.timber:timber:4.1.2'
     compile 'net.ypresto.timbertreeutils:timbertreeutils:1.0.0'
     compile 'com.jakewharton:butterknife:6.0.0'
-    compile 'com.hannesdorfmann.fragmentargs:annotation:2.0.1'
-    apt 'com.hannesdorfmann.fragmentargs:processor:2.0.1'
+    compile 'com.hannesdorfmann.fragmentargs:annotation:3.0.2'
+    apt 'com.hannesdorfmann.fragmentargs:processor:3.0.2'
+    provided 'com.google.auto.value:auto-value:1.2'
+    apt 'com.google.auto.value:auto-value:1.2'
+    apt 'com.gabrielittner.auto.value:auto-value-with:0.1.0'
+    apt 'com.ryanharter.auto.value:auto-value-parcel:0.2.1'
 
     // UI-related dependencies
     compile 'com.getbase:floatingactionbutton:1.8.0'
@@ -88,7 +96,7 @@ dependencies {
     compile 'io.reactivex:rxjava:1.0.2'
     compile 'io.reactivex:rxandroid:0.23.0'
     compile 'com.squareup.phrase:phrase:1.0.3'
-    compile 'com.google.guava:guava:18.+'
+    compile 'com.google.guava:guava:19.0'
     compile 'com.uwetrottmann:androidutils:2.0.0'
     compile 'com.squareup.moshi:moshi:1.1.0'
     compile 'com.jakewharton:disklrucache:2.0.2'
@@ -107,8 +115,8 @@ dependencies {
         transitive = true
     }
 
-    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4-beta1'
-    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
+    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4-beta2'
+    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
 
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:1.10.19'

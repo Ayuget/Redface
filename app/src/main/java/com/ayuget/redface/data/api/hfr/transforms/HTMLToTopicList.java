@@ -91,23 +91,24 @@ public class HTMLToTopicList extends TopicTransform implements Func1<String, Lis
                 TopicStatus status = extractTopicStatusFromImageName(m.group(11) != null ? m.group(11) : m.group(5));
                 int lastReadPage = m.group(12) != null ? Integer.parseInt(m.group(12)) : -1;
                 long lastReadPostId = m.group(10) != null ? Long.parseLong(m.group(10)) : -1;
+                boolean unreadPosts = hasUnreadPosts(m.group(3));
 
-                Topic topic = new Topic(topicId);
-                topic.setSubject(subject);
-                topic.setPagesCount(pagesCount);
-                topic.setAuthor(author);
-                topic.setStatus(status);
-                topic.setLastPostAuthor(lastPostAuthor);
-                topic.setLastPostDate(lastPostDate);
-                topic.setSticky(isSticky);
-                topic.setLocked(isLocked);
-                topic.setLastReadPostPage(lastReadPage);
-                topic.setLastReadPostId(lastReadPostId);
-                topic.setHasUnreadPosts(hasUnreadPosts(m.group(3)));
-
-                if (currentCategory != null) {
-                    topic.setCategory(currentCategory);
-                }
+                Topic topic = Topic.builder()
+                        .id(topicId)
+                        .title(subject)
+                        .pagesCount(pagesCount)
+                        .author(author)
+                        .status(status)
+                        .lastPostAuthor(lastPostAuthor)
+                        .lastPostDate(lastPostDate)
+                        .isSticky(isSticky)
+                        .isLocked(isLocked)
+                        .lastReadPage(lastReadPage)
+                        .lastReadPostId(lastReadPostId)
+                        .hasUnreadPosts(unreadPosts)
+                        .category(currentCategory)
+                        .isPrivateMessage(false)
+                        .build();
 
                 topics.add(topic);
             }

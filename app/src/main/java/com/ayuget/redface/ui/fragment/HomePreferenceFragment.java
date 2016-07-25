@@ -26,12 +26,14 @@ import com.ayuget.redface.R;
 import com.ayuget.redface.settings.SettingsConstants;
 import com.ayuget.redface.ui.event.NestedPreferenceSelectedEvent;
 import com.hannesdorfmann.fragmentargs.FragmentArgs;
+import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs;
 import com.squareup.otto.Bus;
 
 import javax.inject.Inject;
 
 import timber.log.Timber;
 
+@FragmentWithArgs
 public class HomePreferenceFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener {
     @Inject
     Bus bus;
