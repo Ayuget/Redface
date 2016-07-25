@@ -352,9 +352,10 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
     }
 
     /**
-     * Sets the posts that are actually quoted
+     * Sets the posts that are currently quoted
      */
     public void setQuotedPosts(List<Long> posts) {
+        Timber.d("Settings quoted posts for page %d (quoted count = %d)", page, posts.size());
         quotedMessages.clear();
         quotedMessages.addAll(posts);
 
@@ -365,6 +366,7 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
      * Unquotes all previously quoted posts for the given page
      */
     public void clearQuotedPosts() {
+        Timber.d("Clearing quoted posts for page %d", page);
         quotedMessages.clear();
         JsExecutor.execute(this, "clearQuotedMessages()");
     }

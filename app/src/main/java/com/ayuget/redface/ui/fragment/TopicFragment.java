@@ -84,6 +84,8 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
     private static final String ARG_QUOTED_MESSAGES_CACHE = "quotedMessagesCache";
 
+    private static final String ARG_IS_IN_ACTION_MODE = "isInActionMode";
+
     private static final String ARG_TOPIC = "topic";
 
     private static final int UNFLAG_ACTION = 42;
@@ -151,6 +153,8 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     @Arg(required = false)
     PagePosition currentPagePosition;
 
+    private boolean isInActionMode = false;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -162,6 +166,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
         if (savedInstanceState != null) {
             topicPositionsStack = savedInstanceState.getParcelableArrayList(ARG_TOPIC_POSITIONS_STACK);
             quotedMessagesCache = savedInstanceState.getParcelable(ARG_QUOTED_MESSAGES_CACHE);
+            isInActionMode = savedInstanceState.getBoolean(ARG_IS_IN_ACTION_MODE);
         }
 
         if (topicPositionsStack == null) {
@@ -190,8 +195,9 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     public void onResume() {
         super.onResume();
 
-        if (quotedMessagesCache.size() > 0) {
-            startMultiQuoteAction();
+        if (quotedMessagesCache.size() > 0 && isInActionMode) {
+            Timber.d("Restarting action mode");
+            startMultiQuoteAction(false);
         }
 
         pager.addOnPageChangeListener(this);
@@ -218,7 +224,14 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
         super.onSaveInstanceState(outState);
 
         outState.putParcelableArrayList(ARG_TOPIC_POSITIONS_STACK, topicPositionsStack);
-        outState.putParcelable(ARG_QUOTED_MESSAGES_CACHE, quotedMessagesCache);
+
+        if (isInActionMode) {
+            outState.putParcelable(ARG_QUOTED_MESSAGES_CACHE, quotedMessagesCache);
+            outState.putBoolean(ARG_IS_IN_ACTION_MODE, isInActionMode);
+        }
+        else {
+            quotedMessagesCache.clear();
+        }
     }
 
     @Override
@@ -533,8 +546,8 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
     @Override
     public void onPostQuoted(final int page, final long postId) {
-        if (quotedMessagesCache.size() == 0) {
-            startMultiQuoteAction();
+        if (! isInActionMode) {
+            startMultiQuoteAction(true);
         }
 
         subscribe(quoteHandler.load(postId, mdService.getQuote(userManager.getActiveUser(), topic, (int) postId), new EndlessObserver<String>() {
@@ -565,8 +578,12 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     /**
      * Starts the multi-quote action mode
      */
-    private void startMultiQuoteAction() {
+    private void startMultiQuoteAction(boolean resetQuotedMessages) {
         onBatchOperation(true);
+
+        if (resetQuotedMessages) {
+            quotedMessagesCache.clear();
+        }
 
         quoteActionMode = getActivity().startActionMode(new ActionMode.Callback() {
             @Override
@@ -582,6 +599,8 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
                 else {
                     actionMode.setTitle(R.string.quoted_messages);
                 }
+
+                isInActionMode = true;
 
                 return true;
             }
@@ -604,21 +623,24 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
             @Override
             public void onDestroyActionMode(ActionMode actionMode) {
+                Timber.d("Destroying action mode");
                 stopMultiQuoteAction();
+                isInActionMode = false;
             }
         });
     }
 
     /**
-     * Starts the multi-quote action mode
+     * Starts the multi-quote action mode.
+     *
+     * Note : quoted messages cache is not cleared, because it's impossible (without hacks) to
+     * differentiate when the action mode is actually destroyed by the user (back button pressed,
+     * or close button in the CAB) from configuration changes (rotation, change of context, ...)
      */
     private void stopMultiQuoteAction() {
         if (quoteActionMode != null) {
             quoteActionMode.finish();
         }
-
-        // Clear internal quoted messages cache
-        quotedMessagesCache.clear();
 
         // Notify ViewPager fragments
         bus.post(new UnquoteAllPostsEvent());
@@ -646,13 +668,14 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
      * if present)
      */
     public void replyToTopic() {
-        if (quotedMessagesCache.size() > 0) {
+        if (quotedMessagesCache.size() > 0 && isInActionMode) {
             String quotedContent = quotedMessagesCache.join();
             stopMultiQuoteAction();
             replyToTopic(quotedContent);
 
         }
         else {
+            quotedMessagesCache.clear();
             replyToTopic(null);
         }
     }

@@ -214,17 +214,6 @@ public class PostsFragment extends BaseFragment {
             }
         });
 
-        topicPageView.setOnPageLoadedListener(new TopicPageView.OnPageLoadedListener() {
-            @Override
-            public void onPageLoaded() {
-                if (currentScrollPosition > 0) {
-                    restorePageScrollPosition();
-                }
-
-                updateQuotedPostsStatus();
-            }
-        });
-
         if (userManager.getActiveUser().isGuest()) {
             replyButton.setVisibility(View.INVISIBLE);
         }
@@ -241,11 +230,28 @@ public class PostsFragment extends BaseFragment {
 
         topicPageView.setOnQuoteListener((TopicFragment)getParentFragment());
 
+        topicPageView.setOnPageLoadedListener(new TopicPageView.OnPageLoadedListener() {
+            @Override
+            public void onPageLoaded() {
+                if (currentScrollPosition > 0) {
+                    restorePageScrollPosition();
+                }
+
+                updateQuotedPostsStatus();
+            }
+        });
+
+        boolean hasLoadedPosts = displayedPosts != null && displayedPosts.size() > 0;
+        boolean hasNoVisiblePosts = displayedPosts != null && displayedPosts.size() == 0;
+
         // Page is loaded instantly only if it's the initial page requested on topic load. Other
         // pages will be loaded once selected in the ViewPager
-        if (isInitialPage() && ((displayedPosts != null && displayedPosts.size() == 0) || displayedPosts == null)) {
+        if (isInitialPage() && (hasNoVisiblePosts || displayedPosts == null)) {
             showLoadingIndicator();
             loadPage(currentPage);
+        }
+        else if (hasLoadedPosts){
+            updateQuotedPostsStatus();
         }
     }
 
