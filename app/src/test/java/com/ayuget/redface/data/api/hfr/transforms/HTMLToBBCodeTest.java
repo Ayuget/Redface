@@ -23,6 +23,7 @@ import com.ayuget.redface.BuildConfig;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
@@ -30,8 +31,8 @@ import org.robolectric.annotation.Config;
 import java.io.IOException;
 import static org.assertj.core.api.Assertions.*;
 
-@RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = Build.VERSION_CODES.LOLLIPOP)
+@RunWith(RobolectricTestRunner.class)
+@Config(constants = BuildConfig.class, sdk = Build.VERSION_CODES.M)
 public class HTMLToBBCodeTest extends BaseTestCase {
     @Test
     public void test_quoteParsing() throws IOException {

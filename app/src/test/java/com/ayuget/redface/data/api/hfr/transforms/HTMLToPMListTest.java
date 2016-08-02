@@ -24,8 +24,7 @@ import com.ayuget.redface.data.api.model.PrivateMessage;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
-import org.robolectric.annotation.Config;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -33,8 +32,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 
-@RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = Build.VERSION_CODES.LOLLIPOP)
+@RunWith(MockitoJUnitRunner.class)
 public class HTMLToPMListTest extends BaseTestCase {
     HTMLToPrivateMessageList htmlToPrivateMessageList = new HTMLToPrivateMessageList();
     @Test

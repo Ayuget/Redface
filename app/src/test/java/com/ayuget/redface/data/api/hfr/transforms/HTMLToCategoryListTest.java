@@ -25,9 +25,7 @@ import com.ayuget.redface.data.api.model.Subcategory;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
-import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -35,8 +33,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-@RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = Build.VERSION_CODES.LOLLIPOP)
+@RunWith(MockitoJUnitRunner.class)
 public class HTMLToCategoryListTest extends BaseTestCase {
     @Test
     public void test_parseHFRCategories() throws IOException {
