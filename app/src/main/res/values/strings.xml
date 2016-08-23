@@ -299,4 +299,9 @@
     <string name="image_saved_successfully">Image successfully saved !</string>
     <string name="action_snackbar_open_image">Open</string>
     <string name="gallery_image_loading_error">Error loading image</string>
+
+    <!-- Insert image menu -->
+    <string name="insert_image_from_url">URL</string>
+    <string name="insert_image_from_favorites">Favorites</string>
+    <string name="insert_image_from_gallery">Gallery (via reho.st)</string>
 </resources>

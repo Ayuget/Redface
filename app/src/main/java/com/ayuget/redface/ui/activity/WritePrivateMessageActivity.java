@@ -103,15 +103,12 @@ public class WritePrivateMessageActivity extends ReplyActivity {
     }
 
     /**
-     * Duplicated from ReplyActivity because Otto subscriptions don't play
+     * Overrides the implementation from ReplyActivity because Otto subscriptions don't play
      * well with inheritance
      */
     @Subscribe
     public void smileySelected(SmileySelectedEvent event) {
-        insertText(String.format(" %s ", event.getSmileyCode()));
-
-        replaceSmileySelector();
-        hideSmileysToolbar();
+        insertSmiley(event.getSmileyCode());
     }
 
     @Override

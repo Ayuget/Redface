@@ -21,8 +21,11 @@ import android.content.Intent;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -596,7 +599,11 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
 
     @Subscribe
     public void smileySelected(SmileySelectedEvent event) {
-        insertText(String.format(" %s ", event.getSmileyCode()));
+        insertSmiley(event.getSmileyCode());
+    }
+
+    protected void insertSmiley(String smileyCode) {
+        insertText(String.format(" %s ", smileyCode));
 
         replaceSmileySelector();
         hideSmileysToolbar();
@@ -682,7 +689,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
         return false;
     }
 
-    @OnClick({R.id.insert_manual_smiley_button, R.id.make_text_bold_button, R.id.make_text_italic_button, R.id.insert_quote_button, R.id.insert_link_button, R.id.insert_spoiler_button, R.id.insert_image_button})
+    @OnClick({R.id.insert_manual_smiley_button, R.id.make_text_bold_button, R.id.make_text_italic_button, R.id.insert_quote_button, R.id.insert_link_button, R.id.insert_spoiler_button})
     public void onExtraToolbarButtonClicked(ImageButton button) {
         switch (button.getId()) {
             case R.id.insert_manual_smiley_button:
@@ -707,6 +714,15 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
                 insertSmileyOrTag(false, "i");
                 break;
         }
+    }
+
+    @OnClick(R.id.insert_image_button)
+    public void onImageInsertionRequested() {
+        View view = getLayoutInflater().inflate(R.layout.insert_image_bottom_sheet, null);
+
+        BottomSheetDialog dialog = new BottomSheetDialog(this);
+        dialog.setContentView(view);
+        dialog.show();
     }
 
     /**

@@ -70,6 +70,12 @@
                         android:src="@drawable/ic_action_insert_emoticon" />
 
                     <ImageButton
+                        android:id="@+id/insert_image_button"
+                        android:contentDescription="@string/insert_image_description"
+                        style="@style/ReplyOptionsIcon"
+                        android:src="@drawable/ic_action_insert_photo" />
+
+                    <ImageButton
                         android:id="@+id/insert_manual_smiley_button"
                         android:contentDescription="@string/insert_smiley_tag_button_description"
                         style="@style/ReplyOptionsIcon"
@@ -104,12 +110,6 @@
                         android:contentDescription="@string/insert_spoiler_button_description"
                         style="@style/ReplyOptionsIcon"
                         android:src="@drawable/ic_action_crop_square" />
-
-                    <ImageButton
-                        android:id="@+id/insert_image_button"
-                        android:contentDescription="@string/insert_image_description"
-                        style="@style/ReplyOptionsIcon"
-                        android:src="@drawable/ic_action_insert_photo" />
                 </LinearLayout>
 
             </HorizontalScrollView>
