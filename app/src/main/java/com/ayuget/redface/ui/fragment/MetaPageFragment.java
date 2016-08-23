@@ -65,7 +65,6 @@ public class MetaPageFragment extends TopicListFragment implements StickyRecycle
     protected void initializeAdapters() {
         topicsAdapter = new MetaPageTopicsAdapter(new ContextThemeWrapper(getActivity(), themeManager.getActiveThemeStyle()), themeManager, settings.isCompactModeEnabled());
         topicsAdapter.setOnTopicClickedListener(this);
-        topicsAdapter.setOnTopicLongClickListener(this);
     }
 
     @Override
