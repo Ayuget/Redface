@@ -20,6 +20,7 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.ContextMenu;
+import android.view.View;
 
 public class ContextMenuRecyclerView extends RecyclerView {
     public ContextMenuRecyclerView(Context context) {
@@ -41,19 +42,16 @@ public class ContextMenuRecyclerView extends RecyclerView {
         return contextMenuInfo;
     }
 
-    /**
-     * Used to initialize before creating context menu and Bring up the context menu for this view.
-     *
-     * @param position for ContextMenuInfo
-     */
-    public void showContextMenuForPosition(int position) {
-        if (position >= 0) {
-            final long childId = getAdapter().getItemId(position);
-            contextMenuInfo = createContextMenuInfo(position, childId);
+    @Override
+    public boolean showContextMenuForChild(View originalView) {
+        final int longPressPosition = getChildAdapterPosition(originalView);
+        if (longPressPosition >= 0) {
+            final long longPressId = getAdapter().getItemId(longPressPosition);
+            contextMenuInfo = createContextMenuInfo(longPressPosition, longPressId);
+            return super.showContextMenuForChild(originalView);
         }
-        showContextMenu();
+        return false;
     }
-
 
     private ContextMenu.ContextMenuInfo createContextMenuInfo(int position, long id) {
         return new RecyclerContextMenuInfo(position, id);

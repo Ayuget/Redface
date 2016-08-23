@@ -24,14 +24,11 @@ import com.ayuget.redface.data.api.model.Topic;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
-import org.robolectric.annotation.Config;
-
+import org.mockito.runners.MockitoJUnitRunner;
 import static org.assertj.core.api.Assertions.*;
 import java.io.IOException;
 
-@RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = Build.VERSION_CODES.LOLLIPOP)
+@RunWith(MockitoJUnitRunner.class)
 public class HTMLToTopicTest extends BaseTestCase {
     @Test
     public void test_parseTopicDetails() throws IOException {

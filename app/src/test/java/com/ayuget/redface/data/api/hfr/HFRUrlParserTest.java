@@ -21,7 +21,6 @@ import android.os.Build;
 import com.ayuget.redface.BaseTestCase;
 import com.ayuget.redface.BuildConfig;
 import com.ayuget.redface.data.api.MDLink;
-import com.ayuget.redface.data.api.MDService;
 import com.ayuget.redface.data.api.model.Category;
 import com.ayuget.redface.data.api.model.Subcategory;
 import com.ayuget.redface.data.state.CategoriesStore;
@@ -33,16 +32,16 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import java.util.LinkedList;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
-import static org.mockito.Matchers.*;
 
-@RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = Build.VERSION_CODES.LOLLIPOP)
+@RunWith(RobolectricTestRunner.class)
+@Config(constants = BuildConfig.class, sdk = Build.VERSION_CODES.M)
 public class HFRUrlParserTest extends BaseTestCase {
     HFREndpoints hfrEndpoints;
 
