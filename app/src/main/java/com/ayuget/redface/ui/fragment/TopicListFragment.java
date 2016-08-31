@@ -271,12 +271,14 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
         Spinner spinner = (Spinner) spinnerContainer.findViewById(R.id.actionbar_spinner);
         spinner.setAdapter(subcategoriesAdapter);
 
-        // "Hack to avoid onItemSelected to be fired off on spinner instantiation
-        spinner.setSelection(0, false);
-
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            boolean first = true;
             @Override
             public void onItemSelected(AdapterView<?> spinner, View view, int position, long itemId) {
+                if (first) {
+                    first = false;
+                    return;
+                }
 
                 if (subcategoriesAdapter.getItemViewType(position) == SubcategoriesAdapter.TYPE_CATEGORY) {
                     subcategory = null; // Reset subcategory filtering
