@@ -68,6 +68,7 @@
         <item name="generalIconDrawable">@drawable/ic_action_emo_wonder</item>
         <item name="appearanceIconDrawable">@drawable/ic_action_emo_cool</item>
         <item name="networkIconDrawable">@drawable/ic_action_cloud</item>
+        <item name="blacklistIconDrawable">@drawable/ic_action_block</item>
     </style>
 
     <!-- Light theme -->
@@ -118,6 +119,7 @@
         <item name="generalIconDrawable">@drawable/ic_action_emo_wonder_light</item>
         <item name="appearanceIconDrawable">@drawable/ic_action_emo_cool_light</item>
         <item name="networkIconDrawable">@drawable/ic_action_cloud_light</item>
+        <item name="blacklistIconDrawable">@drawable/ic_action_block_light</item>
     </style>
 
     <!-- Dark theme -->
@@ -168,6 +170,7 @@
         <item name="generalIconDrawable">@drawable/ic_action_emo_wonder</item>
         <item name="appearanceIconDrawable">@drawable/ic_action_emo_cool</item>
         <item name="networkIconDrawable">@drawable/ic_action_cloud</item>
+        <item name="blacklistIconDrawable">@drawable/ic_action_block</item>
     </style>
 
     <style name="Theme.Redface.Transparent.Dark" parent="Theme.Redface.Dark">

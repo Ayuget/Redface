@@ -161,6 +161,10 @@ img {
     display: none;
 }
 
+.quote-hidden {
+    display: none;
+}
+
 .old-quotes .quote, .old-quotes .spoiler, .old-quotes .code {
     border: 1px solid #d4d4d4;
     background: #FAFAFA;

@@ -18,18 +18,20 @@ package com.ayuget.redface.ui.fragment;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
-import android.util.Log;
+import android.preference.PreferenceScreen;
 
 import com.ayuget.redface.RedfaceApp;
 import com.ayuget.redface.R;
 import com.ayuget.redface.account.UserManager;
 import com.ayuget.redface.data.api.model.Category;
 import com.ayuget.redface.data.state.CategoriesStore;
+import com.ayuget.redface.settings.Blacklist;
 import com.ayuget.redface.settings.ProxySettingsChangedEvent;
 import com.ayuget.redface.settings.SettingsConstants;
 import com.ayuget.redface.ui.event.ThemeChangedEvent;
@@ -40,6 +42,7 @@ import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs;
 import com.squareup.otto.Bus;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -58,6 +61,9 @@ public class NestedPreferenceFragment extends PreferenceFragment implements Shar
 
     @Arg
     String fragmentKey;
+
+    @Inject
+    Blacklist blacklist;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -94,12 +100,14 @@ public class NestedPreferenceFragment extends PreferenceFragment implements Shar
                 addPreferencesFromResource(R.xml.general_preferences);
                 populateDefaultCategoriesPref();
                 break;
-
             case SettingsConstants.KEY_APPEARANCE_PREFERENCES:
                 addPreferencesFromResource(R.xml.appearance_preferences);
                 break;
             case SettingsConstants.KEY_NETWORK_PREFERENCES:
                 addPreferencesFromResource(R.xml.network_preferences);
+                break;
+            case SettingsConstants.KEY_BLACKLIST_PREFERENCES:
+                createBlacklistPreferenceScreen();
                 break;
             default:
                 break;
@@ -157,6 +165,48 @@ public class NestedPreferenceFragment extends PreferenceFragment implements Shar
             EditTextPreference editTextPref = (EditTextPreference) pref;
             editTextPref.setSummary(editTextPref.getText());
         }
+    }
+
+    /**
+     * Create a preference screen based on the blacklist.
+     */
+    private void createBlacklistPreferenceScreen()
+    {
+        PreferenceScreen preferenceScreen = getPreferenceManager().createPreferenceScreen(getActivity());
+
+        CheckBoxPreference checkbox = new CheckBoxPreference(getActivity());
+        checkbox.setTitle(R.string.pref_blacklist_activate);
+        checkbox.setSummary(R.string.pref_blacklist_activate_summary);
+        checkbox.setKey(SettingsConstants.KEY_ENABLE_BLACKLIST);
+        preferenceScreen.addPreference(checkbox);
+
+        PreferenceCategory category = new PreferenceCategory(getActivity());
+        category.setTitle(R.string.pref_blacklist_users);
+        preferenceScreen.addPreference(category);
+
+        Set<String> blockedUser = blacklist.getAll();
+        if (blockedUser.isEmpty()) {
+            Preference author = new Preference(getActivity());
+            author.setTitle(R.string.pref_blacklist_empty);
+            author.setEnabled(false);
+            category.addPreference(author);
+        } else {
+            for (final String name : blockedUser) {
+                Preference author = new Preference(getActivity());
+                author.setTitle(name);
+                author.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                    @Override
+                    public boolean onPreferenceClick(Preference preference) {
+                        blacklist.unblockAuthor(name);
+                        createBlacklistPreferenceScreen();
+                        return true;
+                    }
+                });
+                category.addPreference(author);
+            }
+        }
+
+        setPreferenceScreen(preferenceScreen);
     }
 
     @Override

@@ -16,14 +16,15 @@
 
 package com.ayuget.redface.data.api.hfr;
 
-import android.util.Log;
-
 import com.ayuget.redface.data.api.MDEndpoints;
 import com.ayuget.redface.data.api.model.Post;
+import com.ayuget.redface.settings.Blacklist;
+import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.util.CallbackMatcher;
 
 import java.util.List;
 import java.util.regex.MatchResult;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
@@ -37,10 +38,15 @@ import rx.functions.Func1;
 public final class PostsTweaker implements Func1<List<Post>, List<Post>> {
     private static final String REGULAR_LINK_REGEX = "<a\\s*href=\"(http://forum\\.hardware\\.fr.*?)\"\\s*target=\"_blank\"\\s*class=\"cLink\">";
     private static final CallbackMatcher SMILEYS_REGEX = new CallbackMatcher("<img\\s*src=\"(http://forum\\-images\\.hardware\\.fr.*?)\"\\s*alt=\"(.*?)\".*?/>");
-    private static final CallbackMatcher QUOTES_AND_SPOILERS = new CallbackMatcher("(?:<div class=\\\"container\\\"><table class=\\\")(oldcitation|citation|spoiler)(?:[^>]+)(?:>)(?:.*?)(?:<b class=\\\")(s1|s1Topic)(?:\\\">)(?:(?:<a href=\")([^\\\"]+)(?:\")(?:[^>]+)(?:>))?", Pattern.DOTALL);
+    private static final CallbackMatcher QUOTES_AND_SPOILERS = new CallbackMatcher("(?:<div class=\\\"container\\\"><table class=\\\")(oldcitation|citation|spoiler)(?:[^>]+)(?:>)(?:.*?)(?:<b class=\\\")(s1|s1Topic)(?:\\\">)(?:(?:<a href=\")([^\\\"]+)(?:\")(?:[^>]+)(?:>))?((.+?)(?: a écrit :))?", Pattern.DOTALL);
     private static final CallbackMatcher END_OF_QUOTES = new CallbackMatcher("(?:</td></tr></tbody></table>)", Pattern.DOTALL);
+    final Pattern IS_QUOTED_PATTERN = Pattern.compile("(?:<a)(?:[^>]*)(?:>)(.+?)(?: a écrit :)(?:</a>)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
     @Inject MDEndpoints mdEndpoints;
+
+    @Inject Blacklist blacklist;
+
+    @Inject RedfaceSettings appSettings;
 
     @Override
     public List<Post> call(List<Post> posts) {
@@ -57,12 +63,15 @@ public final class PostsTweaker implements Func1<List<Post>, List<Post>> {
                 @Override
                 public String foundMatch(MatchResult matchResult) {
                     boolean isQuote = matchResult.group(1).equals("citation") || matchResult.group(1).equals("oldcitation");
+
                     String onClickEvent = isQuote ? "" : " onClick=\"toggleSpoiler(this)\"";
 
-                    String output = "<div class=\"" + (isQuote ? "quote" : "spoiler") + "\"" + onClickEvent + "><b class=\"" + (isQuote ? "s1": "s1Topic") +"\">";
+                    String quote = isQuote ? (appSettings.isBlacklistEnabled() && blacklist.isAuthorBlocked(matchResult.group(5)) ? "quote-hidden" : "quote") : "spoiler";
+
+                    String output = "<div class=\"" + quote + "\"" + onClickEvent + "><b class=\"" + (isQuote ? "s1": "s1Topic") + "\">";
 
                     if (isQuote) {
-                        output += "<a onclick=\"handleUrl(event, " + post.getId() + ", '" + mdEndpoints.baseurl() + matchResult.group(3) + "')\">";
+                        output += "<a onclick=\"handleUrl(event, " + post.getId() + ", '" + mdEndpoints.baseurl() + matchResult.group(3) + "')\">" + matchResult.group(4);
                     }
 
                     return output;

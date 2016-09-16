@@ -47,6 +47,7 @@ import com.ayuget.redface.data.api.model.misc.SmileyResponse;
 import com.ayuget.redface.data.state.CategoriesStore;
 import com.ayuget.redface.network.HTTPClientProvider;
 import com.ayuget.redface.network.PageFetcher;
+import com.ayuget.redface.settings.Blacklist;
 import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.event.TopicPageCountUpdatedEvent;
@@ -54,6 +55,7 @@ import com.ayuget.redface.util.UserUtils;
 import com.google.common.base.Optional;
 import com.squareup.otto.Bus;
 
+import java.util.Iterator;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -89,6 +91,8 @@ public class HFRForumService implements MDService {
     @Inject MDMessageSender mdMessageSender;
 
     @Inject RedfaceSettings appSettings;
+
+    @Inject Blacklist blacklist;
 
     private String currentHashcheck;
 
@@ -205,6 +209,21 @@ public class HFRForumService implements MDService {
                         else {
                             return posts;
                         }
+                    }
+                })
+                .map(new Func1<List<Post>, List<Post>>() {
+                    @Override
+                    public List<Post> call(List<Post> posts) {
+                        if (appSettings.isBlacklistEnabled()) {
+                            // Remove blocked user posts.
+                            for (Iterator<Post> iterator = posts.iterator(); iterator.hasNext(); ) {
+                                Post p = iterator.next();
+                                if (blacklist.isAuthorBlocked(p.getAuthor())) {
+                                    iterator.remove();
+                                }
+                            }
+                        }
+                        return posts;
                     }
                 })
                 .map(new Func1<List<Post>, List<Post>>() {

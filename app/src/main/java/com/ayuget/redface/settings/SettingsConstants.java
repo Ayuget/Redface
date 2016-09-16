@@ -35,6 +35,8 @@ public class SettingsConstants {
 
     public static final String KEY_NETWORK_PREFERENCES = "network_preferences";
 
+    public static final String KEY_BLACKLIST_PREFERENCES = "black_list_preferences";
+
     public static final String KEY_SHOW_FULLY_READ_TOPICS = "show_fully_read_topics";
 
     public static final String KEY_SHOW_PREVIOUS_PAGE_LAST_POST = "show_previous_page_last_post";
@@ -58,4 +60,6 @@ public class SettingsConstants {
     public static final String KEY_ENABLE_EGOQUOTE = "enable_egoquote";
 
     public static final String KEY_USE_MODERN_QUOTE_STYLE = "use_modern_quote_style";
+
+    public static final String KEY_ENABLE_BLACKLIST = "enable_blacklist";
 }

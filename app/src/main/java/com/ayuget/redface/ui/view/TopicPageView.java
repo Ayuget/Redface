@@ -25,9 +25,6 @@ import android.os.Build;
 import android.util.AttributeSet;
 import android.view.ActionMode;
 import android.view.GestureDetector;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.JavascriptInterface;
@@ -49,6 +46,7 @@ import com.ayuget.redface.data.rx.RxUtils;
 import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.activity.BaseActivity;
+import com.ayuget.redface.ui.event.BlockUserEvent;
 import com.ayuget.redface.ui.event.EditPostEvent;
 import com.ayuget.redface.ui.event.GoToPostEvent;
 import com.ayuget.redface.ui.event.GoToTopicEvent;
@@ -57,7 +55,6 @@ import com.ayuget.redface.ui.event.PageLoadedEvent;
 import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
 import com.ayuget.redface.ui.event.PostActionEvent;
 import com.ayuget.redface.ui.event.QuotePostEvent;
-import com.ayuget.redface.ui.event.UnquoteAllPostsEvent;
 import com.ayuget.redface.ui.event.WritePrivateMessageEvent;
 import com.ayuget.redface.ui.misc.DummyGestureListener;
 import com.ayuget.redface.ui.misc.PagePosition;
@@ -67,7 +64,6 @@ import com.ayuget.redface.ui.template.PostsTemplate;
 import com.ayuget.redface.util.JsExecutor;
 import com.google.common.base.Joiner;
 import com.squareup.otto.Bus;
-import com.squareup.otto.Subscribe;
 import com.squareup.phrase.Phrase;
 
 import java.util.ArrayList;
@@ -463,6 +459,20 @@ public class TopicPageView extends WebView implements View.OnTouchListener {
                         @Override
                         public void run() {
                             bus.post(new WritePrivateMessageEvent(post.getAuthor()));
+                        }
+                    });
+                }
+            }
+        }
+
+        @JavascriptInterface
+        public void blockUser(final int postId) {
+            for (final Post post : posts) {
+                if (post.getId() == postId) {
+                    TopicPageView.this.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            bus.post(new BlockUserEvent(post.getAuthor()));
                         }
                     });
                 }

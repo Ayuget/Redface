@@ -214,4 +214,11 @@
     <string name="login_successful">Identification avec succès !</string>
     <string name="pref_use_modern_quote_style">Affichage "moderne" des citations</string>
     <string name="action_show_all_spoilers">Afficher tous les spoilers</string>
+    <string name="pref_blacklist_summary">Gestion des utilisateurs bloqués</string>
+    <string name="pref_blacklist_title">Liste noire</string>
+    <string name="user_blocked">Utilisateur %1$s bloqué !</string>
+    <string name="pref_blacklist_activate">Activer la liste noire</string>
+    <string name="pref_blacklist_activate_summary">Autorise le bloquage des noms contenus dans la liste noire</string>
+    <string name="pref_blacklist_users">Utilisateurs</string>
+    <string name="pref_blacklist_empty">Pas d\'utilisateurs bloqués</string>
 </resources>
