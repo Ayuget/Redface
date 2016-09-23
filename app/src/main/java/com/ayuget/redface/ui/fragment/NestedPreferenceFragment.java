@@ -16,6 +16,7 @@
 
 package com.ayuget.redface.ui.fragment;
 
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
@@ -25,6 +26,7 @@ import android.preference.Preference;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
+import android.support.v7.app.AlertDialog;
 
 import com.ayuget.redface.RedfaceApp;
 import com.ayuget.redface.R;
@@ -35,6 +37,7 @@ import com.ayuget.redface.settings.Blacklist;
 import com.ayuget.redface.settings.ProxySettingsChangedEvent;
 import com.ayuget.redface.settings.SettingsConstants;
 import com.ayuget.redface.ui.event.ThemeChangedEvent;
+import com.google.common.base.Strings;
 import com.google.common.collect.ObjectArrays;
 import com.hannesdorfmann.fragmentargs.FragmentArgs;
 import com.hannesdorfmann.fragmentargs.annotation.Arg;
@@ -191,22 +194,39 @@ public class NestedPreferenceFragment extends PreferenceFragment implements Shar
             author.setEnabled(false);
             category.addPreference(author);
         } else {
-            for (final String name : blockedUser) {
-                Preference author = new Preference(getActivity());
-                author.setTitle(name);
-                author.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            for (final String author : blockedUser) {
+                Preference preference = new Preference(getActivity());
+                preference.setTitle(author);
+                preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                     @Override
                     public boolean onPreferenceClick(Preference preference) {
-                        blacklist.unblockAuthor(name);
-                        createBlacklistPreferenceScreen();
+                        showAlertDialog(author);
                         return true;
                     }
                 });
-                category.addPreference(author);
+                category.addPreference(preference);
             }
         }
 
         setPreferenceScreen(preferenceScreen);
+    }
+
+    private void showAlertDialog(final String author) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage(String.format(getString(R.string.pref_alertdialog), author))
+                .setPositiveButton(getString(R.string.pref_alertdialog_positive), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        blacklist.unblockAuthor(author);
+                        createBlacklistPreferenceScreen();
+                    }
+                })
+                .setNegativeButton(getString(R.string.pref_alertdialog_negative), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+        builder.show();
     }
 
     @Override
