@@ -177,10 +177,13 @@ public class NestedPreferenceFragment extends PreferenceFragment implements Shar
     {
         PreferenceScreen preferenceScreen = getPreferenceManager().createPreferenceScreen(getActivity());
 
+        Preference blacklistEnablePref = findPreference(SettingsConstants.KEY_BLACKLIST_PREFERENCES);
+
         CheckBoxPreference checkbox = new CheckBoxPreference(getActivity());
         checkbox.setTitle(R.string.pref_blacklist_activate);
         checkbox.setSummary(R.string.pref_blacklist_activate_summary);
         checkbox.setKey(SettingsConstants.KEY_ENABLE_BLACKLIST);
+        checkbox.setDefaultValue(true);
         preferenceScreen.addPreference(checkbox);
 
         PreferenceCategory category = new PreferenceCategory(getActivity());
