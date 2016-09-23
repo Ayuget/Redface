@@ -65,9 +65,9 @@ public final class PostsTweaker implements Func1<List<Post>, List<Post>> {
                     boolean isQuote = matchResult.group(1).equals("citation") || matchResult.group(1).equals("oldcitation");
                     boolean isBlocked = isQuote && author_matcher.matches() && appSettings.isBlacklistEnabled() && blacklist.isAuthorBlocked(author_matcher.group(1));
 
-                    String onClickEvent = isQuote ? (isBlocked ? " onClick=\"showBlockedQuote\"" : "") : " onClick=\"toggleSpoiler(this)\"";
+                    String onClickEvent = isQuote ? (isBlocked ? " onClick=\"showBlockedQuote(this)\"" : "") : " onClick=\"toggleSpoiler(this)\"";
 
-                    String quote = isQuote ? (isBlocked ? "quote-blocked" : "quote") : "spoiler";
+                    String quote = isQuote ? (isBlocked ? "quote blocked" : "quote") : "spoiler";
 
                     String output = "<div class=\"" + quote + "\"" + onClickEvent + "><b class=\"" + (isQuote ? "s1": "s1Topic") + "\">";
 
