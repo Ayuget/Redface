@@ -517,8 +517,8 @@ img {
 }
 
 .post.blocked .post-toolbar {
-    background: #424242;
-    color: #000000;
+    background: #000000;
+    color: #ffffff;
     height: 48px;
     box-sizing: border-box;
 }
