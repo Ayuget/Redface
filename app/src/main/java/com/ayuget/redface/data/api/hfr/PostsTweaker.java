@@ -38,10 +38,9 @@ import rx.functions.Func1;
 public final class PostsTweaker implements Func1<List<Post>, List<Post>> {
     private static final String REGULAR_LINK_REGEX = "<a\\s*href=\"(http://forum\\.hardware\\.fr.*?)\"\\s*target=\"_blank\"\\s*class=\"cLink\">";
     private static final CallbackMatcher SMILEYS_REGEX = new CallbackMatcher("<img\\s*src=\"(http://forum\\-images\\.hardware\\.fr.*?)\"\\s*alt=\"(.*?)\".*?/>");
-    private static final CallbackMatcher QUOTES_AND_SPOILERS = new CallbackMatcher("(?:<div class=\\\"container\\\"><table class=\\\")(oldcitation|citation|spoiler)(?:[^>]+)(?:>)(?:.*?)(?:<b class=\\\")(s1|s1Topic)(?:\\\">)(?:(?:<a href=\")([^\\\"]+)(?:\")(?:[^>]+)(?:>))?((.+?)(?: a écrit :))?", Pattern.DOTALL);
+    private static final CallbackMatcher QUOTES_AND_SPOILERS = new CallbackMatcher("(?:<div class=\\\"container\\\"><table class=\\\")(oldcitation|citation|spoiler)(?:[^>]+)(?:>)(?:.*?)(?:<b class=\\\")(s1|s1Topic)(?:\\\">)(?:(?:<a href=\")([^\\\"]+)(?:\")(?:[^>]+)(?:>))?(.+?:)?", Pattern.DOTALL);
     private static final CallbackMatcher END_OF_QUOTES = new CallbackMatcher("(?:</td></tr></tbody></table>)", Pattern.DOTALL);
-    final Pattern IS_QUOTED_PATTERN = Pattern.compile("(?:<a)(?:[^>]*)(?:>)(.+?)(?: a écrit :)(?:</a>)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-
+    private static final Pattern AUTHOR_NAME = Pattern.compile("(.+?) a écrit :");
     @Inject MDEndpoints mdEndpoints;
 
     @Inject Blacklist blacklist;
@@ -62,17 +61,28 @@ public final class PostsTweaker implements Func1<List<Post>, List<Post>> {
             htmlContent = QUOTES_AND_SPOILERS.replaceAll(htmlContent, new CallbackMatcher.Callback() {
                 @Override
                 public String foundMatch(MatchResult matchResult) {
+                    Matcher author_matcher = AUTHOR_NAME.matcher(matchResult.group(4));
                     boolean isQuote = matchResult.group(1).equals("citation") || matchResult.group(1).equals("oldcitation");
+                    boolean isBlocked = isQuote && author_matcher.matches() && appSettings.isBlacklistEnabled() && blacklist.isAuthorBlocked(author_matcher.group(1));
 
-                    String onClickEvent = isQuote ? "" : " onClick=\"toggleSpoiler(this)\"";
+                    String onClickEvent = isQuote ? (isBlocked ? " onClick=\"showBlockedQuote\"" : "") : " onClick=\"toggleSpoiler(this)\"";
 
-                    String quote = isQuote ? (appSettings.isBlacklistEnabled() && blacklist.isAuthorBlocked(matchResult.group(5)) ? "quote-hidden" : "quote") : "spoiler";
+                    String quote = isQuote ? (isBlocked ? "quote-blocked" : "quote") : "spoiler";
 
                     String output = "<div class=\"" + quote + "\"" + onClickEvent + "><b class=\"" + (isQuote ? "s1": "s1Topic") + "\">";
 
-                    if (isQuote) {
-                        output += "<a onclick=\"handleUrl(event, " + post.getId() + ", '" + mdEndpoints.baseurl() + matchResult.group(3) + "')\">" + matchResult.group(4);
+                    String user;
+                    if (isBlocked) {
+                        user = author_matcher.group(1) + " a été bloqué";
+                    } else {
+                        user = matchResult.group(4);
                     }
+
+                    if (isQuote) {
+                        output += "<a onclick=\"handleUrl(event, " + post.getId() + ", '" + mdEndpoints.baseurl() + matchResult.group(3) + "')\">";
+                    }
+
+                    output += user;
 
                     return output;
                 }

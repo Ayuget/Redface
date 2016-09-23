@@ -1,3 +1,4 @@
+
 body {
     font-family: Roboto, sans-serif;
     margin: 0;
@@ -138,12 +139,12 @@ img {
 /*
 * Citations
 */
-.modern-quotes .post-content > .quote, .modern-quotes .post-content > .spoiler, .modern-quotes .post-content > .code {
+.modern-quotes .post-content > .quote, .modern-quotes .post-content > .quote-blocked, .modern-quotes .post-content > .spoiler, .modern-quotes .post-content > .code {
     margin-left: -8px;
     margin-right: -8px;
 }
 
-.modern-quotes .quote, .modern-quotes .spoiler, .modern-quotes .code {
+.modern-quotes .quote, .modern-quotes .quote-blocked, .modern-quotes .spoiler, .modern-quotes .code {
     border-left: 6px solid #757575;
     background: #EBEBEB;
     min-height: 40px;
@@ -151,21 +152,21 @@ img {
     margin-left: 2px;
 }
 
-.old-quotes .quote, .old-quotes .spoiler, .old-quotes .code {
+.old-quotes .quote, .old-quotes .quote-blocked, .old-quotes .spoiler, .old-quotes .code {
     transition: box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     transition-delay: 0.2s;
     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
 }
 
-.quote hr {
+.quote hr, .quote-blocked hr {
     display: none;
 }
 
-.quote-hidden {
+.quote-blocked p {
     display: none;
 }
 
-.old-quotes .quote, .old-quotes .spoiler, .old-quotes .code {
+.old-quotes .quote, .old-quotes .quote-blocked, .old-quotes .spoiler, .old-quotes .code {
     border: 1px solid #d4d4d4;
     background: #FAFAFA;
     min-height: 40px;
@@ -174,7 +175,7 @@ img {
     padding: 0;
 }
 
-.quote br:nth-of-type(1), .quote br:nth-of-type(2) {
+.quote br:nth-of-type(1), .quote-blocked br:nth-of-type(1), .quote br:nth-of-type(2),  .quote-blocked br:nth-of-type(2) {
     display: none;
 }
 
@@ -182,33 +183,33 @@ img {
     padding: 4px 10px 4px 10px;
 }
 
-.redface-dark .quote, .redface-dark .spoiler, .redface-dark .code {
+.redface-dark .quote, .redface-dark .quote-blocked, .redface-dark .spoiler, .redface-dark .code {
     background: #181820;
     color: #ffffff;
 }
 
-.redface-dark.old-quotes .quote, .redface-dark.old-quotes .spoiler, .redface-dark.old-quotes .code {
+.redface-dark.old-quotes .quote, .redface-dark.old-quotes .quote-blocked, .redface-dark.old-quotes .spoiler, .redface-dark.old-quotes .code {
     border: 1px solid #3a3a41;
 }
 
-.redface-dark.modern-quotes .quote, .redface-dark.modern-quotes .spoiler, .redface-dark.modern-quotes .code {
+.redface-dark.modern-quotes .quote, .redface-dark.modern-quotes .quote-blocked, .redface-dark.modern-quotes .spoiler, .redface-dark.modern-quotes .code {
     border-left: 6px solid #3a3a41;
 }
 
-.redface-night .quote, .redface-night .spoiler, .redface-night .code {
+.redface-night .quote, .redface-night .quote-blocked, .redface-night .spoiler, .redface-night .code {
     background: #181820;
     color: #ffffff;
 }
 
-.redface-night.old-quotes .quote, .redface-night.old-quotes .spoiler, .redface-night.old-quotes .code {
+.redface-night.old-quotes .quote, .redface-night.old-quotes .quote-blocked, .redface-night.old-quotes .spoiler, .redface-night.old-quotes .code {
     border: 1px solid #3a3a41;
 }
 
-.redface-night.modern-quotes .quote, .redface-night.modern-quotes .spoiler, .redface-night.modern-quotes .code {
+.redface-night.modern-quotes .quote, .redface-night.modern-quotes .quote-blocked, .redface-night.modern-quotes .spoiler, .redface-night.modern-quotes .code {
     border-left: 6px solid #4e4e56;
 }
 
-.quote b.s1, .spoiler b.s1Topic {
+.quote b.s1, .quote-blocked b.s1, .spoiler b.s1Topic {
     display: block;
     font-size: 0.9em;
     color: #757575;
@@ -217,17 +218,17 @@ img {
     background: #EBEBEB;
 }
 
-.redface-dark .quote b.s1, .redface-dark .spoiler b.s1Topic {
+.redface-dark .quote b.s1, .redface-dark .quote-blocked b.s1, .redface-dark .spoiler b.s1Topic {
     background: #181820;
     color: #a8a8ac;
 }
 
-.redface-night .quote b.s1, .redface-night .spoiler b.s1Topic {
+.redface-night .quote b.s1, .redface-night .quote-blocked b.s1, .redface-night .spoiler b.s1Topic {
     background: #181820;
     color: #a8a8ac;
 }
 
-.quote b.s1 a {
+.quote b.s1 a, .quote-blocked b.s1 a {
     text-decoration: none;
     color: #757575;
     font-weight: bold;
@@ -329,12 +330,12 @@ img {
     color: #ffffff;
 }
 
-.post.moderation .quote, .post.moderation .spoiler, .post.moderation .code {
+.post.moderation .quote, .post.moderation .quote-blocked, .post.moderation .spoiler, .post.moderation .code {
     background: #C62828;
     color: #ffffff;
 }
 
-.post.moderation .quote b.s1, .post.moderation .spoiler b.s1Topic {
+.post.moderation .quote b.s1, .post.moderation .quote-blocked b.s1, .post.moderation .spoiler b.s1Topic {
     background: #C62828;
     color: #ffffff;
 }
@@ -354,17 +355,17 @@ img {
     color: #ffffff;
 }
 
-.redface-dark div.post.quoted .quote, .redface-dark div.post.quoted .spoiler, .redface-dark div.post.quoted .code, .redface-night div.post.quoted .quote, .redface-night div.post.quoted .spoiler, .redface-night div.post.quoted .code {
+.redface-dark div.post.quoted .quote, .redface-dark div.post.quoted .quote-blocked, .redface-dark div.post.quoted .spoiler, .redface-dark div.post.quoted .code, .redface-night div.post.quoted .quote, .redface-night div.post.quoted .quote-blocked, .redface-night div.post.quoted .spoiler, .redface-night div.post.quoted .code {
     background: #5D4037;
     color: #ffffff;
 }
 
-.redface-dark div.post.quoted .quote b.s1, .redface-dark div.post.quoted .spoiler b.s1Topic, .redface-night div.post.quoted .quote b.s1, .redface-night div.post.quoted .spoiler b.s1Topic {
+.redface-dark div.post.quoted .quote b.s1, .redface-dark div.post.quoted .quote-blocked b.s1, .redface-dark div.post.quoted .spoiler b.s1Topic, .redface-night div.post.quoted .quote b.s1, .redface-night div.post.quoted .quote-blocked b.s1, .redface-night div.post.quoted .spoiler b.s1Topic {
     background: #5D4037;
     color: #ffffff;
 }
 
-.redface-dark divdiv.post.quoted .quote b.s1 a, .redface-night divdiv.post.quoted .quote b.s1 a {
+.redface-dark divdiv.post.quoted .quote b.s1 a, .redface-dark divdiv.post.quoted .quote-blocked b.s1 a, .redface-night divdiv.post.quoted .quote b.s1 a, .redface-night divdiv.post.quoted .quote-blocked b.s1 a {
     color: #EFEBE9;
 }
 
@@ -388,12 +389,12 @@ img {
     color: #000000;
 }
 
-.redface-light div.post.quoted .quote, .redface-light div.post.quoted .spoiler, .redface-light div.post.quoted .code {
+.redface-light div.post.quoted .quote, .redface-light div.post.quoted .quote-blocked, .redface-light div.post.quoted .spoiler, .redface-light div.post.quoted .code {
     background: #e3daf1;
     color: #000000;
 }
 
-.redface-light div.post.quoted .quote b.s1, .redface-light div.post.quoted .spoiler b.s1Topic {
+.redface-light div.post.quoted .quote b.s1, .redface-light div.post.quoted .quote-blocked b.s1, .redface-light div.post.quoted .spoiler b.s1Topic {
     background: #e3daf1;
     color: #000000;
 }
@@ -417,17 +418,17 @@ img {
     color: #ffffff;
 }
 
-.redface-dark .post.egoQuote .quote, .redface-dark .post.egoQuote .spoiler, .redface-dark .post.egoQuote .code, .redface-night .post.egoQuote .quote, .redface-night .post.egoQuote .spoiler, .redface-night .post.egoQuote .code {
+.redface-dark .post.egoQuote .quote, .redface-dark .post.egoQuote .quote-blocked, .redface-dark .post.egoQuote .spoiler, .redface-dark .post.egoQuote .code, .redface-night .post.egoQuote .quote, .redface-night .post.egoQuote .quote-blocked, .redface-night .post.egoQuote .spoiler, .redface-night .post.egoQuote .code {
     background: #283593;
     color: #ffffff;
 }
 
-.redface-dark .post.egoQuote .quote b.s1, .redface-dark .post.egoQuote .spoiler b.s1Topic, .redface-night .post.egoQuote .quote b.s1, .redface-night .post.egoQuote .spoiler b.s1Topic {
+.redface-dark .post.egoQuote .quote b.s1, .redface-dark .post.egoQuote .quote-blocked b.s1, .redface-dark .post.egoQuote .spoiler b.s1Topic, .redface-night .post.egoQuote .quote b.s1, .redface-night .post.egoQuote .quote-blocked b.s1, .redface-night .post.egoQuote .spoiler b.s1Topic {
     background: #283593;
     color: #ffffff;
 }
 
-.redface-dark .post.egoQuote .quote b.s1 a, .redface-night .post.egoQuote .quote b.s1 a {
+.redface-dark .post.egoQuote .quote b.s1 a, .redface-dark .post.egoQuote .quote-blocked b.s1 a, .redface-night .post.egoQuote .quote b.s1 a, .redface-night .post.egoQuote .quote-blocked b.s1 a {
     color: #E8EAF6;
 }
 
@@ -452,12 +453,12 @@ img {
     color: #000000;
 }
 
-.redface-light .post.egoQuote .quote, .redface-light .post.egoQuote .spoiler, .redface-light .post.egoQuote .code {
+.redface-light .post.egoQuote .quote, .redface-light .post.egoQuote .quote-blocked, .redface-light .post.egoQuote .spoiler, .redface-light .post.egoQuote .code {
     background: #e9f4fc;
     color: #000000;
 }
 
-.redface-light .post.egoQuote .quote b.s1, .redface-light .post.egoQuote .spoiler b.s1Topic {
+.redface-light .post.egoQuote .quote b.s1, .redface-light .post.egoQuote .quote-blocked b.s1, .redface-light .post.egoQuote .spoiler b.s1Topic {
     background: #e9f4fc;
     color: #000000;
 }

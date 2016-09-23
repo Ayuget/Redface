@@ -50,6 +50,10 @@ function showAllSpoilers() {
     }
 }
 
+function showBlockedQuote() {
+
+}
+
 /**
 * Deal with the clicked URL by calling the Java callback defined
 * in the Javascript interface of the webview.

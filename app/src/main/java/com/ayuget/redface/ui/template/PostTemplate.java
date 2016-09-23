@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
 public class PostTemplate extends HTMLTemplate<Post> {
     private static final String POST_TEMPLATE = "post.html";
 
-    private static final Pattern IS_QUOTED_PATTERN = Pattern.compile("(?:<a)(?:[^>]*)(?:>)(.+?)(?: a écrit :)(?:</a>)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private static final Pattern IS_QUOTED_PATTERN = Pattern.compile("(?:<b class=\"(?:s1|s1Topic)\">)(?:<a)(?:[^>]*?)(?:>)(.+?)(?: a écrit :)(?:</a>)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
     private AvatarTemplate avatarTemplate;
 
