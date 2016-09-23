@@ -213,21 +213,6 @@ public class HFRForumService implements MDService {
                 })
                 .map(new Func1<List<Post>, List<Post>>() {
                     @Override
-                    public List<Post> call(List<Post> posts) {
-                        if (appSettings.isBlacklistEnabled()) {
-                            // Remove blocked user posts.
-                            for (Iterator<Post> iterator = posts.iterator(); iterator.hasNext(); ) {
-                                Post p = iterator.next();
-                                if (blacklist.isAuthorBlocked(p.getAuthor())) {
-                                    iterator.remove();
-                                }
-                            }
-                        }
-                        return posts;
-                    }
-                })
-                .map(new Func1<List<Post>, List<Post>>() {
-                    @Override
                     public List<Post> call(final List<Post> posts) {
                         if (posts.size() > 0) {
                             int newTopicPagesCount = posts.get(0).getTopicPagesCount();
