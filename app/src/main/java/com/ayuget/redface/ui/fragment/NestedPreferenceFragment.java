@@ -173,6 +173,8 @@ public class NestedPreferenceFragment extends PreferenceFragment implements Shar
      */
     private void createBlacklistPreferenceScreen()
     {
+        /* erase old list in case it already exists */
+        setPreferenceScreen(null);
         addPreferencesFromResource(R.xml.blacklist_preference);
         PreferenceScreen preferenceScreen = getPreferenceScreen();
 
