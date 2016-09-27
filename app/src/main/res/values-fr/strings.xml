@@ -221,7 +221,9 @@
     <string name="pref_blacklist_activate_summary">Autorise le bloquage des noms contenus dans la liste noire</string>
     <string name="pref_blacklist_users">Utilisateurs</string>
     <string name="pref_blacklist_empty">Pas d\'utilisateurs bloqués</string>
-    <string name="pref_alertdialog" formatted="false">Débloquer %s ?</string>
-    <string name="pref_alertdialog_positive">ok</string>
-    <string name="pref_alertdialog_negative">annuler</string>
+    <string name="pref_blacklist_alertdialog_message" formatted="false">Retirer de la liste noire ?</string>
+    <string name="pref_blacklist_alertdialog_positive">ok</string>
+    <string name="pref_blacklist_alertdialog_negative">annuler</string>
+    <string name="pref_blacklist_show_blocked">Afficher les utilisateurs bloqués</string>
+    <string name="pref_blaclist_show_blocked_summary">Affiche le nom des utilisateurs bloqués lorsqu\'ils postent un message</string>
 </resources>

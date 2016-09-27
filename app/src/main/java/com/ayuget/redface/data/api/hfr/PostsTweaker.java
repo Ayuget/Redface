@@ -67,16 +67,17 @@ public final class PostsTweaker implements Func1<List<Post>, List<Post>> {
 
                     String onClickEvent = isQuote ? (isBlocked ? " onClick=\"showBlockedQuote(this)\"" : "") : " onClick=\"toggleSpoiler(this)\"";
 
-                    String quote = isQuote ? (isBlocked ? "quote blocked" : "quote") : "spoiler";
-
-                    String output = "<div class=\"" + quote + "\"" + onClickEvent + "><b class=\"" + (isQuote ? "s1": "s1Topic") + "\">";
+                    String quote = isQuote ? "quote" : "spoiler";
 
                     String user;
                     if (isBlocked) {
+                        quote += appSettings.showBlockedUser() ? " blocked" : " hidden";
                         user = author_matcher.group(1) + " a été bloqué";
                     } else {
                         user = matchResult.group(4);
                     }
+
+                    String output = "<div class=\"" + quote + "\"" + onClickEvent + "><b class=\"" + (isQuote ? "s1": "s1Topic") + "\">";
 
                     if (isQuote) {
                         output += "<a onclick=\"handleUrl(event, " + post.getId() + ", '" + mdEndpoints.baseurl() + matchResult.group(3) + "')\">";

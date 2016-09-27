@@ -512,7 +512,15 @@ img {
     display: none;
 }
 
+.quote.hidden {
+    display: none
+}
+
 .post.blocked .profile-picture-container, .post.blocked .post-content, .post.blocked .post-date, .post.blocked .post-actions, .post.blocked .post-overflow-icons {
+    display: none
+}
+
+.post.hidden {
     display: none
 }
 

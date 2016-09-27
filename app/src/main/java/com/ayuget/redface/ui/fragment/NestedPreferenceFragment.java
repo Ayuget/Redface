@@ -19,7 +19,6 @@ package com.ayuget.redface.ui.fragment;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
@@ -37,7 +36,6 @@ import com.ayuget.redface.settings.Blacklist;
 import com.ayuget.redface.settings.ProxySettingsChangedEvent;
 import com.ayuget.redface.settings.SettingsConstants;
 import com.ayuget.redface.ui.event.ThemeChangedEvent;
-import com.google.common.base.Strings;
 import com.google.common.collect.ObjectArrays;
 import com.hannesdorfmann.fragmentargs.FragmentArgs;
 import com.hannesdorfmann.fragmentargs.annotation.Arg;
@@ -175,16 +173,8 @@ public class NestedPreferenceFragment extends PreferenceFragment implements Shar
      */
     private void createBlacklistPreferenceScreen()
     {
-        PreferenceScreen preferenceScreen = getPreferenceManager().createPreferenceScreen(getActivity());
-
-        Preference blacklistEnablePref = findPreference(SettingsConstants.KEY_BLACKLIST_PREFERENCES);
-
-        CheckBoxPreference checkbox = new CheckBoxPreference(getActivity());
-        checkbox.setTitle(R.string.pref_blacklist_activate);
-        checkbox.setSummary(R.string.pref_blacklist_activate_summary);
-        checkbox.setKey(SettingsConstants.KEY_ENABLE_BLACKLIST);
-        checkbox.setDefaultValue(true);
-        preferenceScreen.addPreference(checkbox);
+        addPreferencesFromResource(R.xml.blacklist_preference);
+        PreferenceScreen preferenceScreen = getPreferenceScreen();
 
         PreferenceCategory category = new PreferenceCategory(getActivity());
         category.setTitle(R.string.pref_blacklist_users);
@@ -216,14 +206,15 @@ public class NestedPreferenceFragment extends PreferenceFragment implements Shar
 
     private void showAlertDialog(final String author) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage(String.format(getString(R.string.pref_alertdialog), author))
-                .setPositiveButton(getString(R.string.pref_alertdialog_positive), new DialogInterface.OnClickListener() {
+        builder.setTitle(author)
+                .setMessage(getString(R.string.pref_blacklist_alertdialog_message))
+                .setPositiveButton(getString(R.string.pref_blacklist_alertdialog_positive), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         blacklist.unblockAuthor(author);
                         createBlacklistPreferenceScreen();
                     }
                 })
-                .setNegativeButton(getString(R.string.pref_alertdialog_negative), new DialogInterface.OnClickListener() {
+                .setNegativeButton(getString(R.string.pref_blacklist_alertdialog_negative), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
@@ -244,6 +235,11 @@ public class NestedPreferenceFragment extends PreferenceFragment implements Shar
         if (key.equals(SettingsConstants.KEY_THEME)) {
             Timber.d("Posting theme changed event");
             bus.post(new ThemeChangedEvent());
+        }
+
+        if (key.equals(SettingsConstants.KEY_ENABLE_BLACKLIST)) {
+            boolean enable = sharedPreferences.getBoolean(key, true);
+            findPreference(SettingsConstants.KEY_SHOW_BLOCKED_USER).setEnabled(enable);
         }
 
         updatePreferenceSummary(sharedPreferences, findPreference(key));

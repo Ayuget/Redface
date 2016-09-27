@@ -81,7 +81,13 @@ public class PostTemplate extends HTMLTemplate<Post> {
         }
 
         if (appSettings.isBlacklistEnabled() && blacklist.isAuthorBlocked(post.getAuthor())) {
-            extraClasses = extraClasses + " blocked";
+            String extClass;
+            if (appSettings.showBlockedUser()) {
+                extClass = " blocked";
+            } else {
+                extClass = " hidden";
+            }
+            extraClasses = extraClasses + extClass;
         }
 
         stream.append(

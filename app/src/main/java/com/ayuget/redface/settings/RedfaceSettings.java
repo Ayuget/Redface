@@ -121,4 +121,8 @@ public class RedfaceSettings {
     public boolean isBlacklistEnabled() {
         return sharedPreferences.getBoolean(SettingsConstants.KEY_ENABLE_BLACKLIST, true);
     }
+
+    public boolean showBlockedUser() {
+        return sharedPreferences.getBoolean(SettingsConstants.KEY_SHOW_BLOCKED_USER, true);
+    }
 }
