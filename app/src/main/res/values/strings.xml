@@ -196,7 +196,7 @@
     <string name="pref_blacklist_activate_summary">Authorize blaclist members to be blocked</string>
     <string name="pref_blacklist_empty">No blocked user</string>
     <string name="pref_blacklist_users">Users</string>
-    <string name="pref_blacklist_alertdialog_message" formatted="false">Delete from blacklist?</string>
+    <string name="pref_blacklist_alertdialog_message">Delete from blacklist?</string>
     <string name="pref_blacklist_alertdialog_positive">@android:string/ok</string>
     <string name="pref_blacklist_alertdialog_negative">@android:string/cancel</string>
     <string name="pref_blacklist_show_blocked">Show blocked user</string>
