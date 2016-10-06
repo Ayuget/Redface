@@ -34,6 +34,7 @@ import com.ayuget.redface.storage.StorageHelper;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.activity.BaseActivity;
 import com.ayuget.redface.ui.activity.ExifDetailsActivity;
+import com.ayuget.redface.util.ImageUtils;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -76,7 +77,7 @@ public class ImageMenuHandler {
                             final Bitmap.CompressFormat targetFormat = compressAsPng ? Bitmap.CompressFormat.PNG : Bitmap.CompressFormat.JPEG;
 
                             // When compressing image as PNG, we need to make sure the file extension is ".png"
-                            final String imageName = compressAsPng ?  replaceExtensionWithPng(imageOriginalName) : imageOriginalName;
+                            final String imageName = compressAsPng ? ImageUtils.replaceExtensionWithPng(imageOriginalName) : imageOriginalName;
 
                             // Images can be already stored locally so they are only downloaded from the network
                             // if necessary.
@@ -195,17 +196,6 @@ public class ImageMenuHandler {
                     imageSavedCallback.onImageSaved(mediaFile, targetFormat);
                 }
             });
-        }
-    }
-
-    private String replaceExtensionWithPng(String imageName) {
-        int dotIndex = imageName.lastIndexOf('.');
-
-        if (dotIndex >= 0) {
-            return imageName.substring(0, imageName.lastIndexOf('.')) + PNG_FILE_EXTENSION;
-        }
-        else {
-            return imageName + PNG_FILE_EXTENSION;
         }
     }
 

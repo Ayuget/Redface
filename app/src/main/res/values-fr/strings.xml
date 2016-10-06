@@ -215,6 +215,6 @@
     <string name="pref_use_modern_quote_style">Affichage "moderne" des citations</string>
     <string name="action_show_all_spoilers">Afficher tous les spoilers</string>
     <string name="insert_image_from_favorites">Favoris</string>
-    <string name="insert_image_from_gallery">Gallerie (via reho.st)</string>
+    <string name="insert_image_from_gallery">Gallerie</string>
     <string name="insert_image_from_url">URL</string>
 </resources>

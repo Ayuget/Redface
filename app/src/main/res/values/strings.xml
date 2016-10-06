@@ -303,5 +303,5 @@
     <!-- Insert image menu -->
     <string name="insert_image_from_url">URL</string>
     <string name="insert_image_from_favorites">Favorites</string>
-    <string name="insert_image_from_gallery">Gallery (via reho.st)</string>
+    <string name="insert_image_from_gallery">Gallery</string>
 </resources>

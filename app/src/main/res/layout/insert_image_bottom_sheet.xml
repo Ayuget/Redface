@@ -19,34 +19,23 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="4dp"
-    android:gravity="top"
-    android:weightSum="3">
+    android:paddingTop="@dimen/image_bottom_sheet_margin"
+    android:paddingLeft="@dimen/image_bottom_sheet_margin"
+    android:gravity="top">
     <TextView
         android:id="@+id/add_image_from_url"
-        android:layout_weight="1"
-        android:layout_width="0dp"
+        android:layout_width="96dp"
         android:layout_height="120dp"
         android:gravity="center"
         android:drawableTop="@drawable/from_link_button"
         android:text="@string/insert_image_from_url"
         />
     <TextView
-        android:id="@+id/add_image_from_favorites"
-        android:layout_weight="1"
-        android:layout_width="0dp"
-        android:layout_height="120dp"
-        android:gravity="center"
-        android:drawableTop="@drawable/from_link_button"
-        android:text="@string/insert_image_from_favorites"
-        />
-    <TextView
         android:id="@+id/add_image_from_gallery"
-        android:layout_weight="1"
-        android:layout_width="0dp"
+        android:layout_width="96dp"
         android:layout_height="120dp"
         android:gravity="center"
-        android:drawableTop="@drawable/from_link_button"
+        android:drawableTop="@drawable/from_gallery_button"
         android:text="@string/insert_image_from_gallery"
         />
 </LinearLayout>

@@ -6,7 +6,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.1.3'
+        classpath 'com.android.tools.build:gradle:2.2.0'
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
         classpath 'io.fabric.tools:gradle:1.+'
     }
@@ -90,7 +90,7 @@ dependencies {
 
     // Reactive programming
     compile 'io.reactivex:rxandroid:1.2.0'
-    compile 'io.reactivex:rxjava:1.1.6'
+    compile 'io.reactivex:rxjava:1.1.8'
 
     // Misc...
     compile 'com.squareup:otto:1.3.5'
@@ -102,6 +102,7 @@ dependencies {
     compile 'com.uwetrottmann:androidutils:2.0.0'
     compile 'com.squareup.moshi:moshi:1.1.0'
     compile 'com.jakewharton:disklrucache:2.0.2'
+    compile "com.github.VictorAlbertos:RxActivityResult:0.3.4"
 
     // Deal with Android M new-style permissions
     compile 'com.tbruyelle.rxpermissions:rxpermissions:0.5.1@aar'

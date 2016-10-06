@@ -68,4 +68,7 @@
     <dimen name="image_detail_item_height">72dp</dimen>
     <dimen name="image_detail_item_main_text_size">16sp</dimen>
     <dimen name="image_detail_item_secondary_text_size">13sp</dimen>
+
+    <!-- Insert image bottom sheet -->
+    <dimen name="image_bottom_sheet_margin">16dp</dimen>
 </resources>
