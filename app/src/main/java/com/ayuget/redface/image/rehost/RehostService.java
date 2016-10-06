@@ -3,10 +3,11 @@ package com.ayuget.redface.image.rehost;
 import com.ayuget.redface.image.HostedImage;
 import com.ayuget.redface.image.ImageHostingService;
 import com.ayuget.redface.util.ImageUtils;
-import com.squareup.okhttp.OkHttpClient;
 
 import java.io.File;
 import java.util.concurrent.Callable;
+
+import okhttp3.OkHttpClient;
 import rx.Single;
 
 public class RehostService implements ImageHostingService {

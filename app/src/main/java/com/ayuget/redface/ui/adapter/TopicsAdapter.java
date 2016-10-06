@@ -50,8 +50,6 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ViewHolder
 
     private OnTopicClickedListener onTopicClickedListener;
 
-    private OnTopicLongClickListener onTopicLongClickListener;
-
     private final int primaryTextColor;
 
     private final int secondaryTextColor;
@@ -78,14 +76,11 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ViewHolder
             topicLastPostInfos = (TextView) itemView.findViewById(R.id.topic_last_post_infos);
             topicPagesCount = (TextView) itemView.findViewById(R.id.topic_pages_count);
             unreadPagesCount = (TextView) itemView.findViewById(R.id.topic_unread_count);
+            itemView.setLongClickable(true);
         }
 
         public void setOnTopicClickedListener(View.OnClickListener listener) {
             parent.setOnClickListener(listener);
-        }
-
-        public void setOnLongClickListener(View.OnLongClickListener listener) {
-            parent.setOnLongClickListener(listener);
         }
     }
 
@@ -95,13 +90,6 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ViewHolder
      */
     public interface OnTopicClickedListener {
         void onTopicClicked(Topic topic);
-    }
-
-    /**
-     * Interface definition for a callback to be invoked when a long-press on a topic has been made
-     */
-    public interface OnTopicLongClickListener {
-        void onTopicLongClick(int position);
     }
 
     public TopicsAdapter(Context context, ThemeManager themeManager, boolean isCompactMode) {
@@ -115,10 +103,6 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ViewHolder
 
     public void setOnTopicClickedListener(OnTopicClickedListener onTopicClickedListener) {
         this.onTopicClickedListener = onTopicClickedListener;
-    }
-
-    public void setOnTopicLongClickListener(OnTopicLongClickListener onTopicLongClickListener) {
-        this.onTopicLongClickListener = onTopicLongClickListener;
     }
 
     @Override
@@ -163,13 +147,6 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ViewHolder
             }
         });
 
-        viewHolder.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                onTopicLongClickListener.onTopicLongClick(i);
-                return false;
-            }
-        });
 
         if (topic.hasUnreadPosts()) {
             viewHolder.unreadPagesCount.setVisibility(View.VISIBLE);

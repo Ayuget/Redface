@@ -18,7 +18,6 @@ package com.ayuget.redface.data.api.hfr;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 
 import com.ayuget.redface.data.api.MDAuthenticator;
 import com.ayuget.redface.data.api.MDEndpoints;
@@ -58,9 +57,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import retrofit.RestAdapter;
-import retrofit.http.GET;
-import retrofit.http.Path;
 import rx.Observable;
 import rx.functions.Func1;
 import rx.functions.Func2;
@@ -249,7 +245,7 @@ public class HFRForumService implements MDService {
             return Observable.empty();
         }
         else {
-            Optional<Integer> userId = UserUtils.getLoggedInUserId(user, httpClientProvider.getClientForUser(user));
+            Optional<Integer> userId = UserUtils.identifyUserFromCookies(httpClientProvider.getUserCookieStore(user));
 
             if (userId.isPresent()) {
                 return smileyService.getUserSmileys(userId.get()).map(new Func1<SmileyResponse, List<Smiley>>() {

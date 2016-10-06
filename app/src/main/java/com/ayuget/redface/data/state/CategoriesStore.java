@@ -18,7 +18,6 @@ package com.ayuget.redface.data.state;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import com.ayuget.redface.R;
 import com.ayuget.redface.data.api.model.Category;
@@ -27,7 +26,6 @@ import com.ayuget.redface.data.api.model.User;
 import com.ayuget.redface.ui.UIConstants;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
-import com.squareup.okhttp.internal.DiskLruCache;
 
 import java.util.Collections;
 import java.util.HashMap;

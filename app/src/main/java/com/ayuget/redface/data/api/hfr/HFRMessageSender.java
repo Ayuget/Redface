@@ -24,10 +24,6 @@ import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.api.model.User;
 import com.ayuget.redface.network.HTTPClientProvider;
 import com.ayuget.redface.ui.UIConstants;
-import com.squareup.okhttp.FormEncodingBuilder;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
 
 import java.io.IOException;
 import java.util.regex.Matcher;
@@ -35,6 +31,10 @@ import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 import rx.Observable;
 import rx.Subscriber;
 import timber.log.Timber;
@@ -75,7 +75,7 @@ public class HFRMessageSender implements MDMessageSender {
                     Timber.d("Replying to private message");
                 }
 
-                RequestBody formBody = new FormEncodingBuilder()
+                RequestBody formBody = new FormBody.Builder()
                         .add("hash_check", hashcheck)
                         .add("post", String.valueOf(topic.id()))
                         .add("cat", isPrivateMessage ? "prive" : String.valueOf(topic.category().id()))
@@ -95,7 +95,7 @@ public class HFRMessageSender implements MDMessageSender {
                         .build();
 
                 try {
-                    com.squareup.okhttp.Response response = httpClient.newCall(request).execute();
+                    okhttp3.Response response = httpClient.newCall(request).execute();
 
                     if (response.isSuccessful()) {
                         subscriber.onNext(buildResponse(response.body().string()));
@@ -139,21 +139,21 @@ public class HFRMessageSender implements MDMessageSender {
                     Timber.d("Editing private message");
                 }
 
-                FormEncodingBuilder formEncodingBuilder = new FormEncodingBuilder();
-                formEncodingBuilder.add("hash_check", hashcheck);
-                formEncodingBuilder.add("post", String.valueOf(topic.id()));
-                formEncodingBuilder.add("cat",  isPrivateMessage ? "prive" : String.valueOf(topic.category().id()));
-                formEncodingBuilder.add("verifrequet", "1100");
-                formEncodingBuilder.add("pseudo", user.getUsername());
-                formEncodingBuilder.add("sujet", topic.title());
-                formEncodingBuilder.add("signature", includeSignature ? "1" : "0");
-                formEncodingBuilder.add("content_form", newContent);
-                formEncodingBuilder.add("parents", parents.toString());
-                formEncodingBuilder.add("post", String.valueOf(topic.id()));
-                formEncodingBuilder.add("sujet", topic.title());
-                formEncodingBuilder.add("numreponse", String.valueOf(postId));
-                formEncodingBuilder.add("emaill", "0");
-                RequestBody formBody = formEncodingBuilder.build();
+                RequestBody formBody = new FormBody.Builder()
+                        .add("hash_check", hashcheck)
+                        .add("post", String.valueOf(topic.id()))
+                        .add("cat",  isPrivateMessage ? "prive" : String.valueOf(topic.category().id()))
+                        .add("verifrequet", "1100")
+                        .add("pseudo", user.getUsername())
+                        .add("sujet", topic.title())
+                        .add("signature", includeSignature ? "1" : "0")
+                        .add("content_form", newContent)
+                        .add("parents", parents.toString())
+                        .add("post", String.valueOf(topic.id()))
+                        .add("sujet", topic.title())
+                        .add("numreponse", String.valueOf(postId))
+                        .add("emaill", "0")
+                        .build();
 
                 Request request = new Request.Builder()
                         .url(mdEndpoints.editUrl())
@@ -161,7 +161,7 @@ public class HFRMessageSender implements MDMessageSender {
                         .build();
 
                 try {
-                    com.squareup.okhttp.Response response = httpClient.newCall(request).execute();
+                    okhttp3.Response response = httpClient.newCall(request).execute();
 
                     if (response.isSuccessful()) {
                         subscriber.onNext(buildResponse(response.body().string()));
@@ -190,18 +190,18 @@ public class HFRMessageSender implements MDMessageSender {
 
                 OkHttpClient httpClient = httpClientProvider.getClientForUser(user);
 
-                FormEncodingBuilder formEncodingBuilder = new FormEncodingBuilder();
-                formEncodingBuilder.add("hash_check", hashcheck);
-                formEncodingBuilder.add("cat", "prive");
-                formEncodingBuilder.add("verifrequet", "1100");
-                formEncodingBuilder.add("pseudo", user.getUsername());
-                formEncodingBuilder.add("dest", recipientUsername);
-                formEncodingBuilder.add("signature", includeSignature ? "1" : "0");
-                formEncodingBuilder.add("content_form", message);
-                formEncodingBuilder.add("sujet", subject);
-                formEncodingBuilder.add("emaill", "0");
-                formEncodingBuilder.add("MsgIcon", "20");
-                RequestBody formBody = formEncodingBuilder.build();
+                RequestBody formBody = new FormBody.Builder()
+                        .add("hash_check", hashcheck)
+                        .add("cat", "prive")
+                        .add("verifrequet", "1100")
+                        .add("pseudo", user.getUsername())
+                        .add("dest", recipientUsername)
+                        .add("signature", includeSignature ? "1" : "0")
+                        .add("content_form", message)
+                        .add("sujet", subject)
+                        .add("emaill", "0")
+                        .add("MsgIcon", "20")
+                        .build();
 
                 Request request = new Request.Builder()
                         .url(mdEndpoints.replyUrl())
@@ -209,7 +209,7 @@ public class HFRMessageSender implements MDMessageSender {
                         .build();
 
                 try {
-                    com.squareup.okhttp.Response response = httpClient.newCall(request).execute();
+                    okhttp3.Response response = httpClient.newCall(request).execute();
 
                     if (response.isSuccessful()) {
                         subscriber.onNext(buildResponse(response.body().string()));
@@ -243,7 +243,7 @@ public class HFRMessageSender implements MDMessageSender {
                         .build();
 
                 try {
-                    com.squareup.okhttp.Response response = httpClient.newCall(request).execute();
+                    okhttp3.Response response = httpClient.newCall(request).execute();
 
                     if (response.isSuccessful()) {
                         final String responseBody = response.body().string();
@@ -280,15 +280,14 @@ public class HFRMessageSender implements MDMessageSender {
                     Timber.d("Editing private message");
                 }
 
-                FormEncodingBuilder formEncodingBuilder = new FormEncodingBuilder();
-                formEncodingBuilder.add("hash_check", hashcheck);
-                formEncodingBuilder.add("cat", isPrivateMessage ? "prive" : String.valueOf(topic.category().id()));
-                formEncodingBuilder.add("pseudo", user.getUsername());
-                formEncodingBuilder.add("numreponse", String.valueOf(postId));
-                formEncodingBuilder.add("post", String.valueOf(topic.id()));
-                formEncodingBuilder.add("delete", "1");
-
-                RequestBody formBody = formEncodingBuilder.build();
+                RequestBody formBody = new FormBody.Builder()
+                        .add("hash_check", hashcheck)
+                        .add("cat", isPrivateMessage ? "prive" : String.valueOf(topic.category().id()))
+                        .add("pseudo", user.getUsername())
+                        .add("numreponse", String.valueOf(postId))
+                        .add("post", String.valueOf(topic.id()))
+                        .add("delete", "1")
+                        .build();
 
                 Request request = new Request.Builder()
                         .url(mdEndpoints.deletePost())
@@ -296,7 +295,7 @@ public class HFRMessageSender implements MDMessageSender {
                         .build();
 
                 try {
-                    com.squareup.okhttp.Response response = httpClient.newCall(request).execute();
+                    okhttp3.Response response = httpClient.newCall(request).execute();
 
                     if (response.isSuccessful()) {
                         final String responseBody = response.body().string();
@@ -337,7 +336,7 @@ public class HFRMessageSender implements MDMessageSender {
                         .build();
 
                 try {
-                    com.squareup.okhttp.Response response = httpClient.newCall(request).execute();
+                    okhttp3.Response response = httpClient.newCall(request).execute();
 
                     if (response.isSuccessful()) {
                         final String responseBody = response.body().string();

@@ -66,7 +66,7 @@ import butterknife.InjectView;
 import timber.log.Timber;
 
 @FragmentWithArgs
-public class TopicListFragment extends ToggleToolbarFragment implements TopicsAdapter.OnTopicClickedListener, TopicsAdapter.OnTopicLongClickListener {
+public class TopicListFragment extends ToggleToolbarFragment implements TopicsAdapter.OnTopicClickedListener {
     private static final String ARG_TOPIC_LIST = "topic_list";
 
     private static final String ARG_LAST_LOADED_PAGE = "last_loaded_page";
@@ -147,7 +147,6 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
 
         if (topicsAdapter != null) {
             topicsAdapter.setOnTopicClickedListener(null);
-            topicsAdapter.setOnTopicLongClickListener(null);
         }
     }
 
@@ -157,7 +156,6 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
 
         topicsAdapter = new TopicsAdapter(new ContextThemeWrapper(getActivity(), themeManager.getActiveThemeStyle()), themeManager, settings.isCompactModeEnabled());
         topicsAdapter.setOnTopicClickedListener(this);
-        topicsAdapter.setOnTopicLongClickListener(this);
     }
 
     @Override
@@ -473,11 +471,6 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
         menu.add(0, UIConstants.TOPIC_ACTION_REPLY_TO_TOPIC, 4, getResources().getString(R.string.action_reply_to_topic));
         menu.add(0, UIConstants.TOPIC_ACTION_COPY_LINK, 5, getResources().getString(R.string.action_copy_link));
         menu.add(0, UIConstants.TOPIC_ACTION_SHARE, 6, getResources().getString(R.string.action_share));
-    }
-
-    @Override
-    public void onTopicLongClick(int position) {
-        topicsRecyclerView.showContextMenuForPosition(position);
     }
 
     @Override
