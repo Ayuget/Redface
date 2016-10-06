@@ -2,6 +2,8 @@ package com.ayuget.redface.image;
 
 import com.google.auto.value.AutoValue;
 
+import java.util.AbstractMap;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Nullable;
@@ -9,16 +11,21 @@ import javax.annotation.Nullable;
 @AutoValue
 public abstract class HostedImage {
     /**
-     * Image URL, at it's original size
+     * Image URL in full resolution
      */
-    abstract String url();
-
+    public abstract String url();
     /**
      * Available variants (in size) for this image
      */
-    @Nullable abstract Map<ImageQuality, String> variants();
+    public abstract Map<ImageQuality, String> variants();
 
-    public static HostedImage create(String url, Map<ImageQuality, String> variants) {
-        return null;
+    public static HostedImage create(String originalUrl) {
+        return create(originalUrl, new HashMap<ImageQuality, String>());
     }
+
+    public static HostedImage create(String originalUrl, Map<ImageQuality, String> variants) {
+        return new AutoValue_HostedImage(originalUrl, variants);
+    }
+
+
 }

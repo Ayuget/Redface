@@ -1,6 +1,5 @@
 package com.ayuget.redface.image;
 
-
 import java.io.File;
 import rx.Single;
 
