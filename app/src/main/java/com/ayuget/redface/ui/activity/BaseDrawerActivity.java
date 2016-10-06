@@ -193,7 +193,7 @@ public class BaseDrawerActivity extends BaseActivity {
     private void displayUserAvatar() {
         Optional<Integer> userId = Optional.absent();
         if (! currentDrawerUser.isGuest() && currentDrawerUser.hasAvatar()) {
-            userId = UserUtils.getLoggedInUserId(currentDrawerUser, httpClientProvider.getClientForUser(currentDrawerUser));
+            userId = UserUtils.getLoggedInUserId(currentDrawerUser, httpClientProvider.getUserCookieStore(currentDrawerUser));
         }
 
         if (userId.isPresent()) {

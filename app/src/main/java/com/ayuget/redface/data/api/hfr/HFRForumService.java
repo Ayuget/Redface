@@ -249,7 +249,7 @@ public class HFRForumService implements MDService {
             return Observable.empty();
         }
         else {
-            Optional<Integer> userId = UserUtils.getLoggedInUserId(user, httpClientProvider.getClientForUser(user));
+            Optional<Integer> userId = UserUtils.getLoggedInUserId(user, httpClientProvider.getUserCookieStore(user));
 
             if (userId.isPresent()) {
                 return smileyService.getUserSmileys(userId.get()).map(new Func1<SmileyResponse, List<Smiley>>() {

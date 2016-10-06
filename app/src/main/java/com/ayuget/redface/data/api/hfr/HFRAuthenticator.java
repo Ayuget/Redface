@@ -23,11 +23,6 @@ import com.ayuget.redface.data.api.MDAuthenticator;
 import com.ayuget.redface.data.api.MDEndpoints;
 import com.ayuget.redface.data.api.model.User;
 import com.ayuget.redface.network.HTTPClientProvider;
-import com.squareup.okhttp.FormEncodingBuilder;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
 
 import java.io.IOException;
 import java.net.CookieManager;
@@ -38,6 +33,11 @@ import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import rx.Observable;
 import rx.Subscriber;
 import timber.log.Timber;
@@ -64,7 +64,7 @@ public class HFRAuthenticator implements MDAuthenticator {
 
                 OkHttpClient httpClient = httpClientProvider.getClientForUser(user);
 
-                RequestBody formBody = new FormEncodingBuilder()
+                RequestBody formBody = new FormBody.Builder()
                         .add("pseudo", user.getUsername())
                         .add("password", user.getPassword())
                         .build();
@@ -85,7 +85,7 @@ public class HFRAuthenticator implements MDAuthenticator {
                         Timber.d("User '%s' was successfully logged in", user.getUsername());
 
                         if (BuildConfig.DEBUG) {
-                            printReceivedCookies(httpClient);
+                            printReceivedCookies(user);
                         }
 
                         subscriber.onNext(true);
@@ -104,9 +104,8 @@ public class HFRAuthenticator implements MDAuthenticator {
         });
     }
 
-    private void printReceivedCookies(OkHttpClient httpClient) {
-        CookieManager cookieManager = (CookieManager) httpClient.getCookieHandler();
-        CookieStore cookieStore = cookieManager.getCookieStore();
+    private void printReceivedCookies(User user) {
+        CookieStore cookieStore = httpClientProvider.getUserCookieStore(user);
         for (HttpCookie cookie : cookieStore.getCookies()) {
             Timber.d("Received cookie '%s'", cookie.getName());
         }
