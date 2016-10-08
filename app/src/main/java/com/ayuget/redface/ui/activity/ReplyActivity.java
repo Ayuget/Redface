@@ -22,12 +22,9 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v7.app.ActionBar;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -67,9 +64,7 @@ import com.ayuget.redface.data.api.model.User;
 import com.ayuget.redface.data.rx.EndlessObserver;
 import com.ayuget.redface.data.rx.SubscriptionHandler;
 import com.ayuget.redface.data.state.ResponseStore;
-import com.ayuget.redface.image.HostedImage;
 import com.ayuget.redface.image.ImageHostingService;
-import com.ayuget.redface.image.rehost.RehostHostingService;
 import com.ayuget.redface.network.HTTPClientProvider;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.event.SmileySelectedEvent;
@@ -77,16 +72,10 @@ import com.ayuget.redface.ui.misc.BindableAdapter;
 import com.ayuget.redface.ui.misc.UiUtils;
 import com.ayuget.redface.ui.template.SmileysTemplate;
 import com.ayuget.redface.ui.view.SmileySelectorView;
-import com.ayuget.redface.util.UserUtils;
-import com.google.common.base.Optional;
-import com.google.common.io.ByteStreams;
+import com.ayuget.redface.util.ImageUtils;
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -94,10 +83,8 @@ import javax.inject.Inject;
 
 import butterknife.InjectView;
 import butterknife.OnClick;
-import okio.ByteString;
+import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx_activity_result.Result;
 import rx_activity_result.RxActivityResult;
 import timber.log.Timber;
 
@@ -758,7 +745,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
                         int resultCode = result.resultCode();
 
                         if (resultCode == RESULT_OK) {
-                            uploadSelectedImage(data.getData());
+                            uploadImageToHostingService(data.getData());
                         }
                         else {
                             Timber.d("Got an error :(");
@@ -770,24 +757,21 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
 
     }
 
-    private void uploadSelectedImage(Uri selectedImageUri) {
+    /**
+     * Uploads user selected image to remote hosting service
+     */
+    private void uploadImageToHostingService(Uri selectedImageUri) {
         Timber.d("Uploading selected image '%s'", selectedImageUri);
 
-        try {
-            InputStream is = getContentResolver().openInputStream(selectedImageUri);
-
-            if (is == null) {
-                Timber.e("Unable to open stream selected file '%s' from gallery", selectedImageUri);
-            }
-            else {
-                imageHostingService.hostFromLocalImage(ByteString.of(ByteStreams.toByteArray(is)))
-                        .subscribeOn(AndroidSchedulers.mainThread())
-                        .subscribe(hostedImage -> Timber.d("Successfully uploaded image ! -> %s", hostedImage), t -> Timber.e(t, "Got and error while uploading image"));
-            }
-        }
-        catch (IOException e) {
-            Timber.e(e, "Unable to read selected file '%s' from gallery", selectedImageUri);
-        }
+        Observable.fromCallable(() -> getContentResolver().openInputStream(selectedImageUri))
+                .map(ImageUtils::readStreamFully)
+                .map(b -> imageHostingService.hostFromLocalImage(b))
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe(hostedImage -> {
+                    Timber.d("Successfully uploaded image ! -> %s", hostedImage);
+                }, t -> {
+                    Timber.e(t, "Got and error while uploading image");
+                });
     }
 
     /**

@@ -5,11 +5,13 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 import com.ayuget.redface.storage.StorageHelper;
+import com.google.common.io.ByteStreams;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.concurrent.Callable;
 
@@ -20,6 +22,7 @@ import okio.ByteString;
 import okio.Okio;
 import okio.Sink;
 import rx.Single;
+import rx.exceptions.Exceptions;
 
 public class ImageUtils {
     private static final String PNG_FILE_EXTENSION = ".png";
@@ -67,6 +70,15 @@ public class ImageUtils {
         }
         else {
             return imageName + PNG_FILE_EXTENSION;
+        }
+    }
+
+    public static ByteString readStreamFully(InputStream inputStream) {
+        try {
+            return ByteString.of(ByteStreams.toByteArray(inputStream));
+        }
+        catch (IOException e) {
+            throw Exceptions.propagate(e);
         }
     }
 }
