@@ -746,38 +746,27 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
         Button addImageFromGalleryButton = (Button) view.findViewById(R.id.add_image_from_gallery);
         Button addImageFromUrlButton = (Button) view.findViewById(R.id.add_image_from_url);
 
-        addImageFromGalleryButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Timber.d("Inserting image from gallery !");
+        addImageFromGalleryButton.setOnClickListener(v -> {
+            Timber.d("Inserting image from gallery !");
 
-                Intent galleryIntent = new Intent(Intent.ACTION_GET_CONTENT);
-                galleryIntent.setType("image/*");
+            Intent galleryIntent = new Intent(Intent.ACTION_GET_CONTENT);
+            galleryIntent.setType("image/*");
 
-                RxActivityResult.on(ReplyActivity.this).startIntent(galleryIntent)
-                        .subscribe(new Action1<Result<ReplyActivity>>() {
-                            @Override
-                            public void call(Result<ReplyActivity> result) {
-                                Intent data = result.data();
-                                int resultCode = result.resultCode();
+            RxActivityResult.on(ReplyActivity.this).startIntent(galleryIntent)
+                    .subscribe(result -> {
+                        Intent data = result.data();
+                        int resultCode = result.resultCode();
 
-                                if (resultCode == RESULT_OK) {
-                                    uploadSelectedImage(data.getData());
-                                }
-                                else {
-                                    Timber.d("Got an error :(");
-                                }
-                            }
-                        });
-            }
+                        if (resultCode == RESULT_OK) {
+                            uploadSelectedImage(data.getData());
+                        }
+                        else {
+                            Timber.d("Got an error :(");
+                        }
+                    });
         });
 
-        addImageFromUrlButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Timber.d("Inserting image from URL !");
-            }
-        });
+        addImageFromUrlButton.setOnClickListener(v -> Timber.d("Inserting image from URL !"));
 
     }
 
@@ -793,17 +782,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
             else {
                 imageHostingService.hostFromLocalImage(ByteString.of(ByteStreams.toByteArray(is)))
                         .subscribeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Action1<HostedImage>() {
-                            @Override
-                            public void call(HostedImage hostedImage) {
-                                Timber.d("Successfully uploaded image ! -> %s", hostedImage);
-                            }
-                        }, new Action1<Throwable>() {
-                            @Override
-                            public void call(Throwable throwable) {
-                                Timber.e(throwable, "Got and error while uploading image");
-                            }
-                        });
+                        .subscribe(hostedImage -> Timber.d("Successfully uploaded image ! -> %s", hostedImage), t -> Timber.e(t, "Got and error while uploading image"));
             }
         }
         catch (IOException e) {

@@ -43,21 +43,13 @@ public class RehostHostingService implements ImageHostingService {
     @Override
     public Single<HostedImage> hostFromLocalImage(final ByteString localImage) {
         return Single
-                .defer(new Callable<Single<ByteString>>() {
-                    @Override
-                    public Single<ByteString> call() throws Exception {
-                        return Single.just(ImageUtils.compressIfNeeded(localImage, REHOST_UPLOADED_FILES_MAX_SIZE));
-                    }
-                })
+                .defer(() -> Single.just(ImageUtils.compressIfNeeded(localImage, REHOST_UPLOADED_FILES_MAX_SIZE)))
                 .observeOn(Schedulers.computation())
-                .map(new Func1<ByteString, HostedImage>() {
-                    @Override
-                    public HostedImage call(ByteString image) {
-                        try {
-                            return uploadToRehost(image);
-                        } catch (IOException e) {
-                            throw Exceptions.propagate(e);
-                        }
+                .map(image -> {
+                    try {
+                        return uploadToRehost(image);
+                    } catch (IOException e) {
+                        throw Exceptions.propagate(e);
                     }
                 })
                 .observeOn(Schedulers.io());
