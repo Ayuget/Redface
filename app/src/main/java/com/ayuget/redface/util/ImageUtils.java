@@ -6,12 +6,19 @@ import android.graphics.BitmapFactory;
 
 import com.ayuget.redface.storage.StorageHelper;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.concurrent.Callable;
 
+import okio.Buffer;
+import okio.BufferedSink;
+import okio.BufferedSource;
+import okio.ByteString;
+import okio.Okio;
+import okio.Sink;
 import rx.Single;
 
 public class ImageUtils {
@@ -25,33 +32,31 @@ public class ImageUtils {
      * Input image will not be modified in any way, the compressed version will be stored independently
      * in application's storage directory.
      */
-    public static File compressIfNeeded(final File inputImage, final long maxSizeBytes) throws IOException {
+    public static ByteString compressIfNeeded(final ByteString inputImage, final long maxSizeBytes) throws IOException {
         int sampleSize = INITIAL_SAMPLE_SIZE;
-        File compressedImage = inputImage;
+        ByteString compressedImage = inputImage;
 
-        while (compressedImage.length() > maxSizeBytes) {
+        while (compressedImage.size() > maxSizeBytes) {
             compressedImage = compress(compressedImage, sampleSize++);
         }
 
         return compressedImage;
     }
 
-    private static File compress(File inputImage, int sampleSize) throws IOException {
-        File compressedImage = StorageHelper.getMediaFile(inputImage.getName() + COMPRESSED_EXTENSION);
-
+    private static ByteString compress(ByteString inputImage, int sampleSize) throws IOException {
         Bitmap imgBitmap = createBitmap(inputImage, sampleSize);
 
-        OutputStream fos = new FileOutputStream(compressedImage);
-        imgBitmap.compress(Bitmap.CompressFormat.PNG, 90, fos);
-        fos.close();
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        imgBitmap.compress(Bitmap.CompressFormat.PNG, 90, outputStream);
 
-        return compressedImage;
+        return ByteString.of(outputStream.toByteArray());
     }
 
-    private static Bitmap createBitmap(File inputImage, int sampleSize) {
+    private static Bitmap createBitmap(ByteString inputImage, int sampleSize) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inSampleSize = sampleSize;
-        return BitmapFactory.decodeFile(inputImage.getAbsolutePath(), options);
+        byte[] image = inputImage.toByteArray();
+        return BitmapFactory.decodeByteArray(image, 0, image.length);
     }
 
     public static String replaceExtensionWithPng(String imageName) {

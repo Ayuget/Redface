@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-class RehostResultParser {
+public class RehostResultParser {
     private static final Pattern REHOST_RESULTS_PATTERN = Pattern.compile("(?:<h4>)([^<]+)(?:<\\/h4>)(?s:.*?)(?:<code>)(?s:.*?)(?:\\[url=)([^\\]]+)(?:\\])(?s:.*?)(?:\\[img\\])([^\\]]+)(?:\\[\\/img\\])(?:[^<]+)(?:<\\/code>)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private static final Map<String, ImageQuality> QUALITY_MAPPINGS = new ImmutableMap.Builder<String, ImageQuality>()
             .put("Taille reelle", ImageQuality.ORIGINAL)

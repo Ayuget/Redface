@@ -19,6 +19,7 @@ package com.ayuget.redface.ui;
 import com.ayuget.redface.RedfaceApp;
 import com.ayuget.redface.account.AccountModule;
 import com.ayuget.redface.account.UserManager;
+import com.ayuget.redface.image.ImageModule;
 import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.ui.activity.AccountActivity;
 import com.ayuget.redface.ui.activity.EditPostActivity;
@@ -58,6 +59,7 @@ import dagger.Provides;
 @Module(
         includes = {
                 AccountModule.class,
+                ImageModule.class
         },
         injects = {
                 TopicsActivity.class,

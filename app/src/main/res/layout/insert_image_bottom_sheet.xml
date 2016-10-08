@@ -22,19 +22,21 @@
     android:paddingTop="@dimen/image_bottom_sheet_margin"
     android:paddingLeft="@dimen/image_bottom_sheet_margin"
     android:gravity="top">
-    <TextView
+    <Button
         android:id="@+id/add_image_from_url"
         android:layout_width="96dp"
         android:layout_height="120dp"
         android:gravity="center"
+        android:background="@null"
         android:drawableTop="@drawable/from_link_button"
         android:text="@string/insert_image_from_url"
         />
-    <TextView
+    <Button
         android:id="@+id/add_image_from_gallery"
         android:layout_width="96dp"
         android:layout_height="120dp"
         android:gravity="center"
+        android:background="@null"
         android:drawableTop="@drawable/from_gallery_button"
         android:text="@string/insert_image_from_gallery"
         />

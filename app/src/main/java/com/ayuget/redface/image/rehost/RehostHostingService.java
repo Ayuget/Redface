@@ -15,6 +15,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okio.ByteString;
 import rx.Single;
 import rx.exceptions.Exceptions;
 import rx.functions.Func1;
@@ -40,20 +41,20 @@ public class RehostHostingService implements ImageHostingService {
     }
 
     @Override
-    public Single<HostedImage> hostFromLocalImage(final File localImage) {
+    public Single<HostedImage> hostFromLocalImage(final ByteString localImage) {
         return Single
-                .defer(new Callable<Single<File>>() {
+                .defer(new Callable<Single<ByteString>>() {
                     @Override
-                    public Single<File> call() throws Exception {
+                    public Single<ByteString> call() throws Exception {
                         return Single.just(ImageUtils.compressIfNeeded(localImage, REHOST_UPLOADED_FILES_MAX_SIZE));
                     }
                 })
                 .observeOn(Schedulers.computation())
-                .map(new Func1<File, HostedImage>() {
+                .map(new Func1<ByteString, HostedImage>() {
                     @Override
-                    public HostedImage call(File file) {
+                    public HostedImage call(ByteString image) {
                         try {
-                            return uploadToRehost(file);
+                            return uploadToRehost(image);
                         } catch (IOException e) {
                             throw Exceptions.propagate(e);
                         }
@@ -62,12 +63,12 @@ public class RehostHostingService implements ImageHostingService {
                 .observeOn(Schedulers.io());
     }
 
-    private HostedImage uploadToRehost(File localImage) throws IOException {
+    private HostedImage uploadToRehost(ByteString localImage) throws IOException {
         RequestBody imageRequest = RequestBody.create(MediaType.parse("image/jpeg"), localImage);
 
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
-                .addFormDataPart("fichier", localImage.getName(), imageRequest)
+                .addFormDataPart("fichier", "redface", imageRequest)
                 .build();
 
         OkHttpClient uploadClient = httpClient.newBuilder()
