@@ -16,6 +16,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okio.ByteString;
+import rx.Observable;
 import rx.Single;
 import rx.exceptions.Exceptions;
 import rx.functions.Func1;
@@ -36,15 +37,22 @@ public class RehostHostingService implements ImageHostingService {
     }
 
     @Override
-    public Single<HostedImage> hostFromUrl(String url) {
-        return Single.just(HostedImage.create(REHOST_BASE_URL + url));
+    public Observable<HostedImage> hostFromUrl(String url) {
+        return Observable.just(HostedImage.create(REHOST_BASE_URL + url));
     }
 
     @Override
-    public Single<HostedImage> hostFromLocalImage(final ByteString localImage) {
-        return Single
-                .defer(() -> Single.just(ImageUtils.compressIfNeeded(localImage, REHOST_UPLOADED_FILES_MAX_SIZE)))
-                .observeOn(Schedulers.computation())
+    public Observable<HostedImage> hostFromLocalImage(final ByteString localImage) {
+        return Observable
+                .defer(() -> {
+                    try {
+                        return Observable.just(ImageUtils.compressIfNeeded(localImage, REHOST_UPLOADED_FILES_MAX_SIZE));
+                    }
+                    catch (IOException e) {
+                        throw Exceptions.propagate(e);
+                    }
+                })
+                .subscribeOn(Schedulers.computation())
                 .map(image -> {
                     try {
                         return uploadToRehost(image);

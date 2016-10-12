@@ -116,6 +116,8 @@
 
             </android.support.v7.widget.Toolbar>
 
+
+
         <EditText
             android:id="@+id/reply_text"
             android:layout_above="@id/toolbar_reply_extra"
@@ -127,6 +129,8 @@
             android:inputType="textMultiLine|textCapSentences"
             android:background="@null"
             android:padding="@dimen/reply_edit_text_padding" />
+
+        <include layout="@layout/image_selection_view" />
     </RelativeLayout>
 
     <!-- Smiley selector -->

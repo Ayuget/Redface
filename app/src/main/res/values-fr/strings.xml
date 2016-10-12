@@ -217,4 +217,8 @@
     <string name="insert_image_from_favorites">Favoris</string>
     <string name="insert_image_from_gallery">Gallerie</string>
     <string name="insert_image_from_url">URL</string>
+    <string name="image_upload_failed">Erreur d\'upload de l\'image</string>
+    <string name="image_upload_in_progress">Upload de l\'image en cours</string>
+    <string name="image_upload_success">Image uploadée avec succès !</string>
+    <string name="image_upload_variants">Variantes</string>
 </resources>

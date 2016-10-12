@@ -261,6 +261,11 @@
     <string name="show_smileys_picker">Show smileys picker</string>
     <string name="no_smileys_found">No result</string>
 
+    <string name="image_upload_in_progress">Uploading image…</string>
+    <string name="image_upload_failed">Failed to upload image</string>
+    <string name="image_upload_success">Image successfully uploaded !</string>
+    <string name="image_upload_variants">Variants</string>
+
     <string name="reply_successfully_posted">Reply successfully posted</string>
     <string name="reply_post_failure">Failed to post reply</string>
     <string name="message_successfully_edited">Reply successfully posted</string>
