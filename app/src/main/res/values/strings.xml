@@ -271,6 +271,11 @@
     <string name="image_uploaded_preview">Preview</string>
     <string name="image_uploaded_thumbnail">Thumbnail</string>
 
+    <string name="image_enter_url">Enter image URL</string>
+    <string name="image_enter_url_ok">OK</string>
+    <string name="image_enter_url_cancel">Cancel</string>
+    <string name="image_enter_url_text" translatable="false">http://</string>
+
     <string name="reply_successfully_posted">Reply successfully posted</string>
     <string name="reply_post_failure">Failed to post reply</string>
     <string name="message_successfully_edited">Reply successfully posted</string>

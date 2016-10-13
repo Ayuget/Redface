@@ -26,7 +26,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -41,7 +40,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewPropertyAnimator;
-import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
@@ -84,21 +82,16 @@ import com.ayuget.redface.ui.misc.UiUtils;
 import com.ayuget.redface.ui.template.SmileysTemplate;
 import com.ayuget.redface.ui.view.SmileySelectorView;
 import com.ayuget.redface.util.ImageUtils;
-import com.google.common.base.Converter;
-import com.google.common.base.Function;
+import com.ayuget.redface.util.RetainedFragment;
+import com.ayuget.redface.util.RetainedFragmentHelper;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 import butterknife.InjectView;
@@ -114,6 +107,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
     private static final String ARG_TOPIC = "topic";
     private static final long IMAGE_SELECTION_VIEW_ANIMATION_TRANSITION_TIME = 300;
     private static final String UPLOADED_IMAGE_BB_CODE = "[url=%s][img]%s[/img][/url]";
+    private static final String IMAGE_FROM_URL_BB_CODE = "[img]%s[/img]";
 
     /**
      * The active pointer is the one currently use to move the smiley view
@@ -264,6 +258,8 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
             }
         }
 
+        restoreImageUploadObservableSubscription(savedInstanceState);
+
         DisplayMetrics metrics = getResources().getDisplayMetrics();
         screenHeight = metrics.heightPixels;
         smileySelectorTopOffset = (int) (metrics.heightPixels * 0.75);
@@ -330,14 +326,24 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
             }
         });
 
-
-
-        // Load  default smileys
+        // Load default smileys
         loadDefaultSmileys();
     }
 
     protected int getLayoutResource() {
         return R.layout.dialog_reply;
+    }
+
+    private void restoreImageUploadObservableSubscription(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            Observable<HostedImage> imageUploadObservable = RetainedFragmentHelper.recover(this, getSupportFragmentManager());
+            if (imageUploadObservable != null) {
+                showImageSelectionView();
+                showImageUploadIndicator();
+
+                subscribeToImageUploadObservable(imageUploadObservable);
+            }
+        }
     }
 
     @Override
@@ -390,24 +396,17 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
         styleImageSelectionButtons(addImageFromGalleryButton);
         styleImageSelectionButtons(addImageFromUrlButton);
 
-        addImageFromGalleryButton.setOnClickListener(v -> {
-            Timber.d("Inserting image from gallery !");
+        addImageFromGalleryButton.setOnClickListener(v -> RxActivityResult.on(ReplyActivity.this).startIntent(buildImageSelectionIntent())
+                .subscribe(result -> {
+                    Intent data = result.data();
+                    int resultCode = result.resultCode();
 
-            RxActivityResult.on(ReplyActivity.this).startIntent(buildImageSelectionIntent())
-                    .subscribe(result -> {
-                        Intent data = result.data();
-                        int resultCode = result.resultCode();
+                    if (resultCode == RESULT_OK) {
+                        result.targetUI().uploadImageToHostingService(data.getData());
+                    }
+                }));
 
-                        if (resultCode == RESULT_OK) {
-                            uploadImageToHostingService(data.getData());
-                        }
-                        else {
-                            Timber.d("Got an error :(");
-                        }
-                    });
-        });
-
-        addImageFromUrlButton.setOnClickListener(v -> Timber.d("Inserting image from URL !"));
+        addImageFromUrlButton.setOnClickListener(v -> insertImageFromUrl());
 
     }
     /**
@@ -825,6 +824,41 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
         return imageSelectionView.getVisibility() == View.VISIBLE;
     }
 
+    private void subscribeToImageUploadObservable(Observable<HostedImage> imageUploadObservable) {
+        imageUploadObservable.subscribe(hostedImage -> {
+            Timber.d("Successfully uploaded image ! -> %s", hostedImage);
+
+            String replyTextBefore = replyEditText.getText().toString();
+            insertText(String.format(UPLOADED_IMAGE_BB_CODE, hostedImage.url(), hostedImage.url()));
+
+            RetainedFragmentHelper.remove(this, getSupportFragmentManager());
+
+            SnackbarHelper.makeWithAction(ReplyActivity.this, R.string.image_upload_success, R.string.image_upload_variants, c -> showImageVariantsPicker(hostedImage, replyTextBefore)).show();
+
+            hideImageSelectionView();
+        }, t -> {
+            Timber.e(t, "Got an error while uploading image");
+            SnackbarHelper.makeError(ReplyActivity.this, R.string.image_upload_failed).show();
+            hideImageSelectionView();
+        });
+    }
+
+    private void insertImageFromUrl() {
+        Timber.d("Inserting image from URL !");
+
+        final View insertImageView = LayoutInflater.from(this).inflate(R.layout.insert_image_from_url, null);
+        final EditText editText = (EditText) insertImageView.findViewById(R.id.image_to_insert_url);
+
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.image_enter_url)
+                .setView(insertImageView)
+                .setPositiveButton(R.string.image_enter_url_ok, (dialog, which) -> {
+                    insertText(String.format(IMAGE_FROM_URL_BB_CODE, editText.getText().toString()));
+                    hideImageSelectionView();
+                })
+                .setNegativeButton(R.string.image_enter_url_cancel, (dialog, which) -> hideImageSelectionView())
+                .show();
+    }
     /**
      * Uploads user selected image to remote hosting service
      */
@@ -832,28 +866,15 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
         Timber.d("Uploading selected image '%s'", selectedImageUri);
         showImageUploadIndicator();
 
-        Observable.fromCallable(() -> getContentResolver().openInputStream(selectedImageUri))
+        Observable<HostedImage> imageUploadObservable = Observable.fromCallable(() -> getContentResolver().openInputStream(selectedImageUri))
                 .map(ImageUtils::readStreamFully)
                 .flatMap(b -> imageHostingService.hostFromLocalImage(b))
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(hostedImage -> {
-                    Timber.d("Successfully uploaded image ! -> %s", hostedImage);
+                .cache();
 
+        RetainedFragmentHelper.retain(this, getSupportFragmentManager(), imageUploadObservable);
 
-
-                    String replyTextBefore = replyEditText.getText().toString();
-                    insertText(String.format(UPLOADED_IMAGE_BB_CODE, hostedImage.url(), hostedImage.url()));
-
-                    SnackbarHelper.makeWithAction(ReplyActivity.this, R.string.image_upload_success, R.string.image_upload_variants, c -> {
-                        showImageVariantsPicker(hostedImage, replyTextBefore);
-                    }).show();
-
-                    hideImageSelectionView();
-                }, t -> {
-                    Timber.e(t, "Got an error while uploading image");
-                    SnackbarHelper.makeError(ReplyActivity.this, R.string.image_upload_failed).show();
-                    hideImageSelectionView();
-                });
+        subscribeToImageUploadObservable(imageUploadObservable);
     }
 
     private void showImageUploadIndicator() {

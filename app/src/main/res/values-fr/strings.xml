@@ -226,4 +226,7 @@
     <string name="insert_image_from_favorites">Favoris</string>
     <string name="insert_image_from_gallery">Galerie</string>
     <string name="insert_image_from_url">URL</string>
+    <string name="image_enter_url">Entrer l\'URL de l\'image</string>
+    <string name="image_enter_url_cancel">Annuler</string>
+    <string name="image_enter_url_ok">OK</string>
 </resources>
