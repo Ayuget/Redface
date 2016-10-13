@@ -76,6 +76,7 @@ import com.ayuget.redface.network.HTTPClientProvider;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.event.SmileySelectedEvent;
 import com.ayuget.redface.ui.misc.BindableAdapter;
+import com.ayuget.redface.ui.misc.EditTextState;
 import com.ayuget.redface.ui.misc.Smileys;
 import com.ayuget.redface.ui.misc.SnackbarHelper;
 import com.ayuget.redface.ui.misc.UiUtils;
@@ -658,7 +659,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
     }
 
     protected void insertSmiley(String smileyCode) {
-        insertText(String.format(" %s ", smileyCode));
+        UiUtils.insertText(replyEditText, String.format(" %s ", smileyCode));
 
         replaceSmileySelector();
         hideSmileysToolbar();
@@ -681,29 +682,6 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
         return getResources().getDimensionPixelSize(tv.resourceId);
     }
 
-    /**
-     * Inserts a text at current caret position
-     * @param text text to insert
-     */
-    protected void insertText(String text) {
-        int selectionStart = replyEditText.getSelectionStart();
-        int selectionEnd = replyEditText.getSelectionEnd();
-        Editable replyText = replyEditText.getText();
-
-        if (selectionStart != -1 && selectionEnd != -1) {
-            // Some text has been selected by the user
-            replyText.replace(selectionStart, selectionEnd, text);
-        }
-        else if (selectionStart != -1) {
-            // EditText has focus, insert at caret
-            replyText.insert(selectionStart, text);
-        }
-        else {
-            // No focus
-            replyEditText.append(text);
-        }
-    }
-
     protected void insertSmileyOrTag(boolean isSmiley, String tag) {
         int selectionStart = replyEditText.getSelectionStart();
         int selectionEnd = replyEditText.getSelectionEnd();
@@ -712,7 +690,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
 
         String tagOpen = isSmiley ? "[:" : String.format("[%s]", tag);
         String tagClose = isSmiley ? "]" : String.format("[/%s]", tag);
-        insertText(tagOpen + selectedText + tagClose);
+        UiUtils.insertText(replyEditText, tagOpen + selectedText + tagClose);
 
         replyEditText.setSelection(selectionStart + tagOpen.length() + selectedText.length());
     }
@@ -828,13 +806,12 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
         imageUploadObservable.subscribe(hostedImage -> {
             Timber.d("Successfully uploaded image ! -> %s", hostedImage);
 
-            String replyTextBefore = replyEditText.getText().toString();
-            insertText(String.format(UPLOADED_IMAGE_BB_CODE, hostedImage.url(), hostedImage.url()));
+            EditTextState editTextState = UiUtils.insertTextAndSaveState(replyEditText, String.format(UPLOADED_IMAGE_BB_CODE, hostedImage.url(), hostedImage.url()));
 
+            // No need to restore background job anymore
             RetainedFragmentHelper.remove(this, getSupportFragmentManager());
 
-            SnackbarHelper.makeWithAction(ReplyActivity.this, R.string.image_upload_success, R.string.image_upload_variants, c -> showImageVariantsPicker(hostedImage, replyTextBefore)).show();
-
+            SnackbarHelper.makeWithAction(ReplyActivity.this, R.string.image_upload_success, R.string.image_upload_variants, c -> showImageVariantsPicker(hostedImage, editTextState)).show();
             hideImageSelectionView();
         }, t -> {
             Timber.e(t, "Got an error while uploading image");
@@ -853,7 +830,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
                 .setTitle(R.string.image_enter_url)
                 .setView(insertImageView)
                 .setPositiveButton(R.string.image_enter_url_ok, (dialog, which) -> {
-                    insertText(String.format(IMAGE_FROM_URL_BB_CODE, editText.getText().toString()));
+                    UiUtils.insertText(replyEditText, String.format(IMAGE_FROM_URL_BB_CODE, editText.getText().toString()));
                     hideImageSelectionView();
                 })
                 .setNegativeButton(R.string.image_enter_url_cancel, (dialog, which) -> hideImageSelectionView())
@@ -886,7 +863,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
     }
 
     @SuppressWarnings("StaticPseudoFunctionalStyleMethod")
-    private void showImageVariantsPicker(HostedImage hostedImage, String replyTextBefore) {
+    private void showImageVariantsPicker(HostedImage hostedImage, EditTextState editTextState) {
         Timber.d("Requesting variants !!");
 
         List<Map.Entry<ImageQuality, Integer>> availableVariants = Lists.newArrayList(imageHostingService.availableImageVariants().entrySet());
@@ -906,7 +883,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
                     variantUrl = hostedImage.url();
                 }
 
-                replyEditText.setText(replyTextBefore + " " + String.format(UPLOADED_IMAGE_BB_CODE, hostedImage.url(), variantUrl));
+                UiUtils.insertTextFromState(replyEditText, String.format(UPLOADED_IMAGE_BB_CODE, hostedImage.url(), variantUrl), editTextState);
             })
             .show();
     }
