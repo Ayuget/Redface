@@ -81,6 +81,14 @@
             </intent-filter>
         </receiver>
 
+        <activity android:name="com.ayuget.redface.ui.activity.ImageSharingActivity" android:icon="@drawable/ic_rehost" android:theme="@android:style/Theme.Translucent.NoTitleBar">
+            <intent-filter android:label="@string/upload_on_hfr_rehost">
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="image/*" />
+            </intent-filter>
+        </activity>
+
         <meta-data android:name="com.crashlytics.ApiKey" android:value="b1f369fddd2fed6f71072ef7db728637b1c633bc"/>
     </application>
 

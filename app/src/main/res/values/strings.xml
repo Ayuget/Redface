@@ -276,6 +276,10 @@
     <string name="image_enter_url_cancel">Cancel</string>
     <string name="image_enter_url_text" translatable="false">http://</string>
 
+    <string name="image_shared_success">Link to image has been copied to clipboard</string>
+    <string name="image_shared_failure">Failed to share image</string>
+    <string name="upload_on_hfr_rehost">Upload on hfrRehost</string>
+
     <string name="reply_successfully_posted">Reply successfully posted</string>
     <string name="reply_post_failure">Failed to post reply</string>
     <string name="message_successfully_edited">Reply successfully posted</string>

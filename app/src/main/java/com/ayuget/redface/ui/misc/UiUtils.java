@@ -36,11 +36,17 @@ public class UiUtils {
      * Copies text into user clipboard
      */
     public static void copyToClipboard(Context context, String text) {
+        copyToClipboard(context, text, true);
+    }
+
+    public static void copyToClipboard(Context context, String text, boolean showToast) {
         ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clip = ClipData.newPlainText(context.getString(R.string.link_sucessfully_copied), text);
         clipboard.setPrimaryClip(clip);
 
-        Toast.makeText(context, R.string.link_sucessfully_copied, Toast.LENGTH_SHORT).show();
+        if (showToast) {
+            Toast.makeText(context, R.string.link_sucessfully_copied, Toast.LENGTH_SHORT).show();
+        }
     }
 
     /**

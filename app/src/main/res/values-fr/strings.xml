@@ -229,4 +229,7 @@
     <string name="image_enter_url">Entrer l\'URL de l\'image</string>
     <string name="image_enter_url_cancel">Annuler</string>
     <string name="image_enter_url_ok">OK</string>
+    <string name="image_shared_success">Lien vers l\'image copié dans le presse-papier</string>
+    <string name="image_shared_failure">Erreur de partage de l\'image</string>
+    <string name="upload_on_hfr_rehost">Upload sur hfrRehost</string>
 </resources>
