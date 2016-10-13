@@ -48,6 +48,7 @@ import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
 import com.ayuget.redface.ui.event.PageSelectedEvent;
 import com.ayuget.redface.ui.event.ScrollToPostEvent;
 import com.ayuget.redface.ui.event.ShowAllSpoilersEvent;
+import com.ayuget.redface.ui.event.TopicPageCountUpdatedEvent;
 import com.ayuget.redface.ui.event.UnquoteAllPostsEvent;
 import com.ayuget.redface.ui.misc.ImageMenuHandler;
 import com.ayuget.redface.ui.misc.UiUtils;
@@ -433,6 +434,13 @@ public class PostsFragment extends BaseFragment {
     @Subscribe public void onScrollToPost(ScrollToPostEvent event) {
         if (event.getTopic().id() == topic.id() && event.getPage() == currentPage) {
             topicPageView.setPagePosition(event.getPagePosition());
+        }
+    }
+
+    @Subscribe
+    public void onTopicPageCountUpdated(TopicPageCountUpdatedEvent event) {
+        if (event.getTopic().id() == topic.id()) {
+            topic = topic.withPagesCount(event.getNewPageCount());
         }
     }
 
