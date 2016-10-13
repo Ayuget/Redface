@@ -312,7 +312,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     @Subscribe
     public void onTopicPageLoaded(PageLoadedEvent event) {
         Timber.d("@%d -> Received topicPageLoaded event (topic='%s', page='%d'), current(topic='%s', page='%d', currentPagePosition='%s')", System.identityHashCode(this), event.getTopic().title(), event.getPage(), topic.title(), currentPage, currentPagePosition);
-        if (event.getTopic().equals(topic) && event.getPage() == currentPage) {
+        if (event.getTopic().id() == topic.id() && event.getPage() == currentPage) {
             if (currentPagePosition != null && !userScrolledViewPager) {
                 event.getTopicPageView().setPagePosition(currentPagePosition);
             }
@@ -326,9 +326,9 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
      */
     @Subscribe
     public void onTopicPageCountUpdated(TopicPageCountUpdatedEvent event) {
-        if (event.getTopic() == topic) {
+        if (event.getTopic().id() == topic.id()) {
             topic = topic.withPagesCount(event.getNewPageCount());
-            topicPageAdapter.notifyDataSetChanged();
+            topicPageAdapter.notifyTopicUpdated(topic);
         }
     }
 

@@ -388,7 +388,7 @@ public class PostsFragment extends BaseFragment {
      * forum's read/unread markers.
      */
     @Subscribe public void onPageSelectedEvent(PageSelectedEvent event) {
-        if (! isInitialPage() && event.getTopic() == topic && event.getPage() == currentPage && isVisible()) {
+        if (! isInitialPage() && event.getTopic().id() == topic.id() && event.getPage() == currentPage && isVisible()) {
             Timber.d("@%d -> Fragment(currentPage=%d) received event for page %d selected", System.identityHashCode(this), currentPage, event.getPage());
 
             if (displayedPosts != null && displayedPosts.size() == 0) {
@@ -431,7 +431,7 @@ public class PostsFragment extends BaseFragment {
      * scroll position like this.
      */
     @Subscribe public void onScrollToPost(ScrollToPostEvent event) {
-        if (event.getTopic() == topic && event.getPage() == currentPage) {
+        if (event.getTopic().id() == topic.id() && event.getPage() == currentPage) {
             topicPageView.setPagePosition(event.getPagePosition());
         }
     }

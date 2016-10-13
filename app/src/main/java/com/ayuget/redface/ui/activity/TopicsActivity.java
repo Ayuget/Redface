@@ -414,7 +414,7 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
     @Subscribe
     public void onInternalLinkClicked(InternalLinkClickedEvent event) {
         TopicFragment topicFragment = (TopicFragment) getSupportFragmentManager().findFragmentByTag(TOPIC_FRAGMENT_TAG);
-        if (topicFragment != null && event.getTopic() == topicFragment.getTopic() && event.getPage() == topicFragment.getCurrentPage()) {
+        if (topicFragment != null && event.getTopic().id() == topicFragment.getTopic().id() && event.getPage() == topicFragment.getCurrentPage()) {
             topicFragment.setCurrentPagePosition(event.getPagePosition());
         }
     }
