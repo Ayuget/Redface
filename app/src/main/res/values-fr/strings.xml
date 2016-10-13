@@ -215,7 +215,7 @@
     <string name="pref_use_modern_quote_style">Affichage "moderne" des citations</string>
     <string name="action_show_all_spoilers">Afficher tous les spoilers</string>
     <string name="insert_image_from_favorites">Favoris</string>
-    <string name="insert_image_from_gallery">Gallerie</string>
+    <string name="insert_image_from_gallery">Galerie</string>
     <string name="insert_image_from_url">URL</string>
     <string name="image_upload_failed">Erreur d\'upload de l\'image</string>
     <string name="image_upload_in_progress">Upload de l\'image en cours</string>
