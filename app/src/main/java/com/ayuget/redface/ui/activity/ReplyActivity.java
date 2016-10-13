@@ -19,6 +19,7 @@ package com.ayuget.redface.ui.activity;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -28,6 +29,7 @@ import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -44,6 +46,7 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -68,7 +71,9 @@ import com.ayuget.redface.data.api.model.User;
 import com.ayuget.redface.data.rx.EndlessObserver;
 import com.ayuget.redface.data.rx.SubscriptionHandler;
 import com.ayuget.redface.data.state.ResponseStore;
+import com.ayuget.redface.image.HostedImage;
 import com.ayuget.redface.image.ImageHostingService;
+import com.ayuget.redface.image.ImageQuality;
 import com.ayuget.redface.network.HTTPClientProvider;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.event.SmileySelectedEvent;
@@ -79,12 +84,21 @@ import com.ayuget.redface.ui.misc.UiUtils;
 import com.ayuget.redface.ui.template.SmileysTemplate;
 import com.ayuget.redface.ui.view.SmileySelectorView;
 import com.ayuget.redface.util.ImageUtils;
+import com.google.common.base.Converter;
+import com.google.common.base.Function;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 import butterknife.InjectView;
@@ -99,6 +113,7 @@ import static android.os.Build.VERSION_CODES.KITKAT;
 public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemClickListener {
     private static final String ARG_TOPIC = "topic";
     private static final long IMAGE_SELECTION_VIEW_ANIMATION_TRANSITION_TIME = 300;
+    private static final String UPLOADED_IMAGE_BB_CODE = "[url=%s][img]%s[/img][/url]";
 
     /**
      * The active pointer is the one currently use to move the smiley view
@@ -824,10 +839,13 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
                 .subscribe(hostedImage -> {
                     Timber.d("Successfully uploaded image ! -> %s", hostedImage);
 
-                    insertText(String.format("[img]%s[/img]", hostedImage.url()));
+
+
+                    String replyTextBefore = replyEditText.getText().toString();
+                    insertText(String.format(UPLOADED_IMAGE_BB_CODE, hostedImage.url(), hostedImage.url()));
 
                     SnackbarHelper.makeWithAction(ReplyActivity.this, R.string.image_upload_success, R.string.image_upload_variants, c -> {
-                        Timber.d("Requesting variants !!");
+                        showImageVariantsPicker(hostedImage, replyTextBefore);
                     }).show();
 
                     hideImageSelectionView();
@@ -844,6 +862,32 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
 
     private void hideImageUploadIndicator() {
         imageUploadProgressBar.setVisibility(View.GONE);
+    }
+
+    @SuppressWarnings("StaticPseudoFunctionalStyleMethod")
+    private void showImageVariantsPicker(HostedImage hostedImage, String replyTextBefore) {
+        Timber.d("Requesting variants !!");
+
+        List<Map.Entry<ImageQuality, Integer>> availableVariants = Lists.newArrayList(imageHostingService.availableImageVariants().entrySet());
+
+        Iterable<String> collection = Iterables.transform(availableVariants, e -> getString(e.getValue()));
+
+        ArrayAdapter<String> imageVariantsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, Lists.newArrayList(collection));
+
+        new AlertDialog.Builder(this)
+            .setTitle(R.string.image_upload_select_variant)
+            .setAdapter(imageVariantsAdapter, (dialog, which) -> {
+                ImageQuality selectedImageQuality = availableVariants.get(which).getKey();
+                Timber.d("Selected '%s' image quality !", selectedImageQuality);
+
+                String variantUrl = hostedImage.variant(selectedImageQuality);
+                if (variantUrl == null) {
+                    variantUrl = hostedImage.url();
+                }
+
+                replyEditText.setText(replyTextBefore + " " + String.format(UPLOADED_IMAGE_BB_CODE, hostedImage.url(), variantUrl));
+            })
+            .show();
     }
 
     /**

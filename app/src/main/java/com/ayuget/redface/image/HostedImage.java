@@ -20,12 +20,14 @@ public abstract class HostedImage {
     public abstract Map<ImageQuality, String> variants();
 
     public static HostedImage create(String originalUrl) {
-        return create(originalUrl, new HashMap<ImageQuality, String>());
+        return create(originalUrl, new HashMap<>());
     }
 
     public static HostedImage create(String originalUrl, Map<ImageQuality, String> variants) {
         return new AutoValue_HostedImage(originalUrl, variants);
     }
 
-
+    public String variant(ImageQuality imageQuality) {
+        return variants().get(imageQuality);
+    }
 }

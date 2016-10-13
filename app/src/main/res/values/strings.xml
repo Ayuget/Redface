@@ -265,6 +265,11 @@
     <string name="image_upload_failed">Failed to upload image</string>
     <string name="image_upload_success">Image successfully uploaded !</string>
     <string name="image_upload_variants">Variants</string>
+    <string name="image_upload_select_variant">Select a variant</string>
+    <string name="image_uploaded_original">Original</string>
+    <string name="image_uploaded_medium">Medium</string>
+    <string name="image_uploaded_preview">Preview</string>
+    <string name="image_uploaded_thumbnail">Thumbnail</string>
 
     <string name="reply_successfully_posted">Reply successfully posted</string>
     <string name="reply_post_failure">Failed to post reply</string>

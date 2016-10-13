@@ -214,11 +214,16 @@
     <string name="login_successful">Identification avec succès !</string>
     <string name="pref_use_modern_quote_style">Affichage "moderne" des citations</string>
     <string name="action_show_all_spoilers">Afficher tous les spoilers</string>
-    <string name="insert_image_from_favorites">Favoris</string>
-    <string name="insert_image_from_gallery">Galerie</string>
-    <string name="insert_image_from_url">URL</string>
     <string name="image_upload_failed">Erreur d\'upload de l\'image</string>
     <string name="image_upload_in_progress">Upload de l\'image en cours</string>
     <string name="image_upload_success">Image uploadée avec succès !</string>
     <string name="image_upload_variants">Variantes</string>
+    <string name="image_upload_select_variant">Sélectionner une variante</string>
+    <string name="image_uploaded_medium">Moyen (800px)</string>
+    <string name="image_uploaded_original">Taille réelle</string>
+    <string name="image_uploaded_preview">Preview (600px)</string>
+    <string name="image_uploaded_thumbnail">Miniature</string>
+    <string name="insert_image_from_favorites">Favoris</string>
+    <string name="insert_image_from_gallery">Galerie</string>
+    <string name="insert_image_from_url">URL</string>
 </resources>
