@@ -81,7 +81,7 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name="com.ayuget.redface.ui.activity.ImageSharingActivity" android:icon="@drawable/ic_rehost" android:theme="@android:style/Theme.Translucent.NoTitleBar">
+        <activity android:name="com.ayuget.redface.ui.activity.ImageSharingActivity" android:icon="@drawable/ic_rehost" android:theme="@style/Theme.AppCompat.Translucent">
             <intent-filter android:label="@string/upload_on_hfr_rehost">
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />
