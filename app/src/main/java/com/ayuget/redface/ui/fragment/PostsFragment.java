@@ -316,7 +316,7 @@ public class PostsFragment extends BaseFragment {
     }
 
     protected void hideReplyButton() {
-        moveReplyButton(UiUtils.dpToPx(getActivity(), 100));
+        moveReplyButton(UiUtils.dpToPx(getActivity(), 148));
     }
 
     protected void showReplyButton() {

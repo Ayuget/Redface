@@ -15,28 +15,33 @@
   ~ limitations under the License.
   -->
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/appBackgroundColor"
-    >
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="?attr/appBackgroundColor">
 
-    <!-- No include like in other fragments because we have a PagerTitleStrip below and don't want
-    two shadows drawn -->
-    <android.support.v7.widget.Toolbar
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/toolbar_actionbar"
-        android:layout_height="wrap_content"
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
-        android:minHeight="?attr/actionBarSize"
-        style="@style/RedfaceToolbar"
-        />
+        android:layout_height="wrap_content"
+        app:elevation="0dp">
+        <!-- No include like in other fragments because we have a PagerTitleStrip below and don't want
+        two shadows drawn -->
+        <android.support.v7.widget.Toolbar
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/toolbar_actionbar"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:minHeight="?attr/actionBarSize"
+            app:layout_scrollFlags="scroll|enterAlways"
+            style="@style/RedfaceToolbar"
+            />
+    </android.support.design.widget.AppBarLayout>
 
     <android.support.v4.view.ViewPager
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/pager"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <android.support.v4.view.PagerTabStrip
@@ -48,4 +53,4 @@
             style="@style/RedfaceTopicPagerStrip"
             />
     </android.support.v4.view.ViewPager>
-</LinearLayout>
+</android.support.design.widget.CoordinatorLayout>
