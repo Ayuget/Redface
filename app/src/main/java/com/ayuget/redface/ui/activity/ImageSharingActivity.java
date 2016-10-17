@@ -59,14 +59,19 @@ public class ImageSharingActivity extends BaseActivity {
                         });
             }
             else {
-                finish();
+                finishWithoutAnimation();
             }
         }
         else {
-            finish();
+            finishWithoutAnimation();
         }
     }
 
+
+    private void finishWithoutAnimation() {
+        finish();
+        overridePendingTransition(0, 0);
+    }
     private boolean uriStartsWithHTTPProtocol(Uri uri) {
         return uri.toString().startsWith("http://") || uri.toString().startsWith("https://");
     }
