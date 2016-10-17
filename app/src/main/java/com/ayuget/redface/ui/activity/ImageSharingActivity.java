@@ -4,6 +4,7 @@ package com.ayuget.redface.ui.activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.widget.Toast;
 
 import com.ayuget.redface.R;
@@ -26,47 +27,53 @@ public class ImageSharingActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Intent intent = getIntent();
-        if (intent != null && intent.getAction() !=null && intent.getAction().equals(Intent.ACTION_SEND)) {
-            Bundle extras = intent.getExtras();
-            Uri imageUri = (Uri) extras.get(Intent.EXTRA_STREAM);
-
-            if (imageUri != null) {
-                Timber.d("Sharing image with URI = %s", imageUri);
-
-                Observable<HostedImage> hostedImageObservable;
-
-                if (uriStartsWithHTTPProtocol(imageUri)) {
-                    // Image is already hosted somewhere...
-                    hostedImageObservable = imageHostingService.hostFromUrl(imageUri.toString());
-                } else {
-                    // Local image, needs to be uploaded
-                    hostedImageObservable = Observable.fromCallable(() -> getContentResolver().openInputStream(imageUri))
-                            .map(ImageUtils::readStreamFully)
-                            .flatMap(b -> imageHostingService.hostFromLocalImage(b));
-                }
-
-                hostedImageObservable
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(hostedImage -> {
-                            Timber.d("Successfully shared image ! -> %s", hostedImage);
-                            UiUtils.copyToClipboard(this, hostedImage.url(), false);
-                            Toast.makeText(ImageSharingActivity.this, R.string.image_shared_success, Toast.LENGTH_LONG).show();
-                            finish();
-                        }, error -> {
-                            Toast.makeText(ImageSharingActivity.this, R.string.image_shared_failure, Toast.LENGTH_LONG).show();
-                            finish();
-                        });
-            }
-            else {
-                finishWithoutAnimation();
-            }
+        Uri imageUri = parseUriFromIntent();
+        if (imageUri == null) {
+            finishWithoutAnimation();
         }
         else {
-            finishWithoutAnimation();
+            shareImage(imageUri);
         }
     }
 
+    private Uri parseUriFromIntent() {
+        Intent intent = getIntent();
+        if (intent != null && intent.getAction() !=null && intent.getAction().equals(Intent.ACTION_SEND)) {
+            Bundle extras = intent.getExtras();
+            return (Uri) extras.get(Intent.EXTRA_STREAM);
+        }
+        else {
+            return null;
+        }
+    }
+
+    private void shareImage(@NonNull Uri imageUri) {
+        Timber.d("Sharing image with URI = %s", imageUri);
+
+        Observable<HostedImage> hostedImageObservable;
+
+        if (uriStartsWithHTTPProtocol(imageUri)) {
+            // Image is already hosted somewhere...
+            hostedImageObservable = imageHostingService.hostFromUrl(imageUri.toString());
+        } else {
+            // Local image, needs to be uploaded
+            hostedImageObservable = Observable.fromCallable(() -> getContentResolver().openInputStream(imageUri))
+                    .map(ImageUtils::readStreamFully)
+                    .flatMap(b -> imageHostingService.hostFromLocalImage(b));
+        }
+
+        hostedImageObservable
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(hostedImage -> {
+                    Timber.d("Successfully shared image ! -> %s", hostedImage);
+                    UiUtils.copyToClipboard(this, hostedImage.url(), false);
+                    Toast.makeText(ImageSharingActivity.this, R.string.image_shared_success, Toast.LENGTH_LONG).show();
+                    finishWithoutAnimation();
+                }, error -> {
+                    Toast.makeText(ImageSharingActivity.this, R.string.image_shared_failure, Toast.LENGTH_LONG).show();
+                    finishWithoutAnimation();
+                });
+    }
 
     private void finishWithoutAnimation() {
         finish();
