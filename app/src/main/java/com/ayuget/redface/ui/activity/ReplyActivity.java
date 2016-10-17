@@ -810,7 +810,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
         imageUploadObservable.subscribe(hostedImage -> {
             Timber.d("Successfully uploaded image ! -> %s", hostedImage);
 
-            EditTextState editTextState = UiUtils.insertTextAndSaveState(replyEditText, String.format(UPLOADED_IMAGE_BB_CODE, hostedImage.url(), hostedImage.url()));
+            EditTextState editTextState = UiUtils.insertTextAndSaveState(replyEditText, String.format(UPLOADED_IMAGE_BB_CODE, hostedImage.url(), hostedImage.variant(settings.getDefaultRehostImageQuality())));
 
             // No need to restore background job anymore
             RetainedFragmentHelper.remove(this, getSupportFragmentManager());

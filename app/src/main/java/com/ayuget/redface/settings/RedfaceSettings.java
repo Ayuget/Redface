@@ -21,6 +21,7 @@ import android.content.SharedPreferences;
 
 import com.ayuget.redface.R;
 import com.ayuget.redface.data.api.model.TopicFilter;
+import com.ayuget.redface.image.ImageQuality;
 import com.ayuget.redface.ui.theme.FontSize;
 import com.ayuget.redface.ui.theme.RedfaceTheme;
 import com.ayuget.redface.ui.misc.MetaPageOrdering;
@@ -66,6 +67,11 @@ public class RedfaceSettings {
     public FontSize getFontSize() {
         String fontSizeValue = sharedPreferences.getString(SettingsConstants.KEY_FONT_SIZE, context.getString(R.string.pref_font_size_default));
         return FontSize.valueOf(fontSizeValue);
+    }
+
+    public ImageQuality getDefaultRehostImageQuality() {
+        String imageQualityValue = sharedPreferences.getString(SettingsConstants.KEY_REHOST_DEFAULT_VARIANT, context.getString(R.string.pref_default_uploaded_image_variant_default));
+        return ImageQuality.valueOf(imageQualityValue);
     }
 
     public int getProxyPort() {

@@ -165,6 +165,24 @@
         <item>GROUP_BY_CATS</item>
     </string-array>
 
+    <string name="pref_rehost_settings">Reho.st (image service)</string>
+    <string name="pref_default_uploaded_image_variant">Default quality for uploaded images</string>
+    <string name="pref_default_uploaded_image_variant_summary">Choose which quality gets automatically inserted in the message right after the upload</string>
+    <string name="pref_default_uploaded_image_variant_default" translatable="false">PREVIEW</string>
+    <string-array name="pref_default_uploaded_image_variant_values">
+        <item>@string/image_uploaded_original</item>
+        <item>@string/image_uploaded_medium</item>
+        <item>@string/image_uploaded_preview</item>
+        <item>@string/image_uploaded_thumbnail</item>
+    </string-array>
+    <string-array name="pref_default_uploaded_image_variant_entries" translatable="false">
+        <item>ORIGINAL</item>
+        <item>MEDIUM</item>
+        <item>@string/pref_default_uploaded_image_variant_default</item>
+        <item>THUMBNAIL</item>
+    </string-array>
+
+
     <string name="pref_notification_settings">Notifications</string>
     <string name="pref_enable_pm_notifications_title">Enable private messages notifications</string>
     <string name="pref_enable_pm_notifications_summary">Be notified when you receive a new private message</string>
@@ -267,8 +285,8 @@
     <string name="image_upload_variants">Variants</string>
     <string name="image_upload_select_variant">Select a variant</string>
     <string name="image_uploaded_original">Original</string>
-    <string name="image_uploaded_medium">Medium</string>
-    <string name="image_uploaded_preview">Preview</string>
+    <string name="image_uploaded_medium">Medium (800px)</string>
+    <string name="image_uploaded_preview">Preview (600px)</string>
     <string name="image_uploaded_thumbnail">Thumbnail</string>
 
     <string name="image_enter_url">Enter image URL</string>
