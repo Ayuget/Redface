@@ -403,13 +403,17 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
                     int resultCode = result.resultCode();
 
                     if (resultCode == RESULT_OK) {
-                        result.targetUI().uploadImageToHostingService(data.getData());
+                        new AlertDialog.Builder(this)
+                                .setPositiveButton(R.string.image_sharing_confirmation_positive, (dialog, which) -> result.targetUI().uploadImageToHostingService(data.getData()))
+                                .setNegativeButton(R.string.image_sharing_confirmation_negative, (dialog, which) -> hideImageSelectionView())
+                                .setMessage(R.string.image_sharing_confirmation)
+                                .show();
                     }
                 }));
 
         addImageFromUrlButton.setOnClickListener(v -> insertImageFromUrl());
-
     }
+
     /**
      * Loads default smileys in the smiley selector
      */

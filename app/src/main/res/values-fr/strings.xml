@@ -232,4 +232,7 @@
     <string name="image_shared_success">Lien vers l\'image copié dans le presse-papier</string>
     <string name="image_shared_failure">Erreur de partage de l\'image</string>
     <string name="upload_on_hfr_rehost">Upload sur hfrRehost</string>
+    <string name="image_sharing_confirmation">Uploader cette image sur reho.st ?</string>
+    <string name="image_sharing_confirmation_negative">Non</string>
+    <string name="image_sharing_confirmation_positive">Oui</string>
 </resources>

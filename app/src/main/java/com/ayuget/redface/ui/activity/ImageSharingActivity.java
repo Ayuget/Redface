@@ -1,13 +1,17 @@
 package com.ayuget.redface.ui.activity;
 
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import com.ayuget.redface.R;
+import com.ayuget.redface.RedfaceApp;
 import com.ayuget.redface.image.HostedImage;
 import com.ayuget.redface.image.ImageHostingService;
 import com.ayuget.redface.ui.misc.UiUtils;
@@ -19,7 +23,7 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import timber.log.Timber;
 
-public class ImageSharingActivity extends BaseActivity {
+public class ImageSharingActivity extends AppCompatActivity {
     @Inject
     ImageHostingService imageHostingService;
 
@@ -27,12 +31,19 @@ public class ImageSharingActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        RedfaceApp app = RedfaceApp.get(this);
+        app.inject(this);
+
         Uri imageUri = parseUriFromIntent();
         if (imageUri == null) {
             finishWithoutAnimation();
         }
         else {
-            shareImage(imageUri);
+            new AlertDialog.Builder(this)
+                    .setPositiveButton(R.string.image_sharing_confirmation_positive, (dialog, which) -> shareImage(imageUri))
+                    .setNegativeButton(R.string.image_sharing_confirmation_negative, (dialog, which) -> finishWithoutAnimation())
+                    .setMessage(R.string.image_sharing_confirmation)
+                    .show();
         }
     }
 
