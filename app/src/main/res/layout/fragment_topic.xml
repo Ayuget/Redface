@@ -53,4 +53,19 @@
             style="@style/RedfaceTopicPagerStrip"
             />
     </android.support.v4.view.ViewPager>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/reply_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_create_white_24dp"
+        app:useCompatPadding="true"
+        app:layout_behavior="com.ayuget.redface.ui.misc.ScrollAwareFABBehavior"
+        app:backgroundTint="@color/theme_primary"
+        app:elevation="@dimen/fab_elevation"
+        app:pressedTranslationZ="@dimen/fab_pressed_translation_z"
+        app:borderWidth="0dp"
+        android:layout_marginRight="@dimen/fab_padding"
+        android:layout_marginBottom="@dimen/fab_padding"
+        android:layout_gravity="bottom|right|end"/>
 </android.support.design.widget.CoordinatorLayout>

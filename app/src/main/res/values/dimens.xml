@@ -58,6 +58,10 @@
     <dimen name="swipe_refresh_progress_bar_start_margin">40dp</dimen>
     <dimen name="swipe_refresh_progress_bar_end_margin">72dp</dimen>
 
+    <dimen name="fab_padding">16dp</dimen>
+    <dimen name="fab_elevation">6dp</dimen>
+    <dimen name="fab_pressed_translation_z">12dp</dimen>
+
     <!-- Reply dialog -->
     <dimen name="reply_edit_text_padding">12dp</dimen>
     <dimen name="reply_dialog_avatar_padding">8dp</dimen>

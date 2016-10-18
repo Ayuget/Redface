@@ -16,12 +16,11 @@
 
 package com.ayuget.redface.ui.fragment;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -51,9 +50,7 @@ import com.ayuget.redface.ui.event.ShowAllSpoilersEvent;
 import com.ayuget.redface.ui.event.TopicPageCountUpdatedEvent;
 import com.ayuget.redface.ui.event.UnquoteAllPostsEvent;
 import com.ayuget.redface.ui.misc.ImageMenuHandler;
-import com.ayuget.redface.ui.misc.UiUtils;
 import com.ayuget.redface.ui.view.TopicPageView;
-import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.hannesdorfmann.fragmentargs.annotation.Arg;
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs;
 import com.squareup.leakcanary.RefWatcher;
@@ -99,7 +96,6 @@ public class PostsFragment extends BaseFragment {
     @InjectView(R.id.topic_list_swipe_refresh_layout)
     SwipeRefreshLayout swipeRefreshLayout;
 
-    @InjectView(R.id.reply_button)
     FloatingActionButton replyButton;
 
     private ArrayList<Post> displayedPosts = new ArrayList<>();
@@ -120,14 +116,6 @@ public class PostsFragment extends BaseFragment {
      * Current scroll position in the webview.
      */
     private int currentScrollPosition;
-
-    private boolean animationInProgress = false;
-
-    ValueAnimator replyButtonAnimator;
-
-    private boolean restoredPosts = false;
-
-    private SubscriptionHandler<Long, String> quoteHandler = new SubscriptionHandler<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -155,7 +143,7 @@ public class PostsFragment extends BaseFragment {
         showLoadingIndicator();
 
         // Restore the list of posts when the fragment is recreated by the framework
-        restoredPosts = false;
+        boolean restoredPosts = false;
 
         if (savedInstanceState != null) {
             Timber.d("@%d -> Fragment(currentPage=%d) -> trying to restore state", System.identityHashCode(this), currentPage);
@@ -177,44 +165,23 @@ public class PostsFragment extends BaseFragment {
         }
 
         // Implement swipe to refresh
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                savePageScrollPosition();
-                Timber.d("Refreshing topic page '%d' for topic %s", currentPage, topic);
-                loadPage(currentPage);
-            }
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            savePageScrollPosition();
+            Timber.d("Refreshing topic page '%d' for topic %s", currentPage, topic);
+            loadPage(currentPage);
         });
         swipeRefreshLayout.setColorSchemeResources(R.color.theme_primary, R.color.theme_primary_dark);
 
         if (errorReloadButton != null) {
-            errorReloadButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Timber.d("Refreshing topic page '%d' for topic %s", currentPage, topic);
-                    showLoadingIndicator();
-                    loadPage(currentPage);
-                }
+            errorReloadButton.setOnClickListener(v -> {
+                Timber.d("Refreshing topic page '%d' for topic %s", currentPage, topic);
+                showLoadingIndicator();
+                loadPage(currentPage);
             });
         }
 
-        replyButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((TopicFragment)getParentFragment()).replyToTopic();
-            }
-        });
-
-        topicPageView.setOnScrollListener(new TopicPageView.OnScrollListener() {
-            @Override
-            public void onScrolled(int dx, int dy) {
-                if (dy < 0) {
-                    hideReplyButton();
-                } else {
-                    showReplyButton();
-                }
-            }
-        });
+        replyButton = (FloatingActionButton) getActivity().findViewById(R.id.reply_button);
+        replyButton.setOnClickListener(v -> ((TopicFragment)getParentFragment()).replyToTopic());
 
         if (userManager.getActiveUser().isGuest()) {
             replyButton.setVisibility(View.INVISIBLE);
@@ -313,49 +280,6 @@ public class PostsFragment extends BaseFragment {
 
     private boolean isInitialPage() {
         return initialPage == currentPage;
-    }
-
-    protected void hideReplyButton() {
-        moveReplyButton(UiUtils.dpToPx(getActivity(), 148));
-    }
-
-    protected void showReplyButton() {
-        moveReplyButton(0);
-    }
-
-    private void moveReplyButton(final float toTranslationY) {
-        if (replyButton.getTranslationY() == toTranslationY) {
-            return;
-        }
-        if (! animationInProgress) {
-            replyButtonAnimator = ValueAnimator.ofFloat(replyButton.getTranslationY(), toTranslationY).setDuration(200);
-
-            replyButtonAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    float translationY = (float) animation.getAnimatedValue();
-                    replyButton.setTranslationY(translationY);
-                }
-            });
-            replyButtonAnimator.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationStart(Animator animation) {
-                    animationInProgress = true;
-                }
-
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    animationInProgress = false;
-                }
-
-                @Override
-                public void onAnimationCancel(Animator animation) {
-                    animationInProgress = false;
-                }
-            });
-
-            replyButtonAnimator.start();
-        }
     }
 
     @Override

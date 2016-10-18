@@ -10,6 +10,8 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.webkit.WebView;
 
+import timber.log.Timber;
+
 public class NestedScrollingWebView extends WebView implements NestedScrollingChild {
     private int lastY;
     private final int[] scrollingOffset = new int[2];
@@ -88,6 +90,7 @@ public class NestedScrollingWebView extends WebView implements NestedScrollingCh
 
     @Override
     public boolean startNestedScroll(int axes) {
+        Timber.d("Starting nested scrolling");
         return childHelper.startNestedScroll(axes);
     }
 
