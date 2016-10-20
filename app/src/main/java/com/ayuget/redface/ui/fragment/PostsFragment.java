@@ -180,12 +180,10 @@ public class PostsFragment extends BaseFragment {
             });
         }
 
-        replyButton = (FloatingActionButton) getActivity().findViewById(R.id.reply_button);
-        replyButton.setOnClickListener(v -> ((TopicFragment)getParentFragment()).replyToTopic());
-
         if (userManager.getActiveUser().isGuest()) {
             replyButton.setVisibility(View.INVISIBLE);
         }
+
 
         // Deal with long-press actions on images inside the WebView
         setupImagesInteractions();
@@ -198,16 +196,12 @@ public class PostsFragment extends BaseFragment {
         super.onResume();
 
         topicPageView.setOnQuoteListener((TopicFragment)getParentFragment());
-
-        topicPageView.setOnPageLoadedListener(new TopicPageView.OnPageLoadedListener() {
-            @Override
-            public void onPageLoaded() {
-                if (currentScrollPosition > 0) {
-                    restorePageScrollPosition();
-                }
-
-                updateQuotedPostsStatus();
+        topicPageView.setOnPageLoadedListener(() -> {
+            if (currentScrollPosition > 0) {
+                restorePageScrollPosition();
             }
+
+            updateQuotedPostsStatus();
         });
 
         boolean hasLoadedPosts = displayedPosts != null && displayedPosts.size() > 0;
@@ -289,23 +283,6 @@ public class PostsFragment extends BaseFragment {
 
         outState.putParcelableArrayList(ARG_POST_LIST, displayedPosts);
         outState.putInt(ARG_SAVED_SCROLL_POSITION, currentScrollPosition);
-    }
-
-    private void startReplyActivity(String initialContent) {
-        MultiPaneActivity hostActivity = (MultiPaneActivity) getActivity();
-
-        if (hostActivity.canLaunchReplyActivity()) {
-            hostActivity.setCanLaunchReplyActivity(false);
-
-            Intent intent = new Intent(getActivity(), ReplyActivity.class);
-            intent.putExtra(ARG_TOPIC, topic);
-
-            if (initialContent != null) {
-                intent.putExtra(UIConstants.ARG_REPLY_CONTENT, initialContent);
-            }
-
-            getActivity().startActivityForResult(intent, UIConstants.REPLY_REQUEST_CODE);
-        }
     }
 
     /**

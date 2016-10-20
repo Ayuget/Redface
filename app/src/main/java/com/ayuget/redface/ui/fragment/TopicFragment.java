@@ -20,6 +20,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
@@ -136,6 +137,9 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     @InjectView(R.id.titlestrip)
     PagerTabStrip pagerTitleStrip;
 
+    @InjectView(R.id.reply_button)
+    FloatingActionButton replyButton;
+
     /**
      * Topic currently displayed
      */
@@ -188,6 +192,8 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
         pagerTitleStrip.setTabIndicatorColor(getResources().getColor(R.color.theme_primary));
         pager.setAdapter(topicPageAdapter);
         pager.setCurrentItem(currentPage - 1);
+
+        replyButton.setOnClickListener((v) -> replyToTopic());
 
         return rootView;
     }
