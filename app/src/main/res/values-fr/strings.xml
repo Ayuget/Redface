@@ -245,4 +245,6 @@
         <item>@string/image_uploaded_preview</item>
         <item>@string/image_uploaded_thumbnail</item>
     </string-array>
+    <string name="pref_show_navigation_buttons_summary">Affiche des boutons de navigation rapide pour scroller directement en haut ou en bas d\'une page d\'un sujet</string>
+    <string name="pref_show_navigation_buttons_title">Afficher les boutons de navigation</string>
 </resources>

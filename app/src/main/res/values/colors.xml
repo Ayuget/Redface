@@ -102,4 +102,6 @@
     <color name="reply_toolbar_icons_color_dark">#ffffff</color>
 
     <color name="empty_view_image_color">#BDBDBD</color>
+
+    <color name="quick_navigation_button_color">#757575</color>
 </resources>

@@ -62,6 +62,9 @@
     <dimen name="fab_elevation">6dp</dimen>
     <dimen name="fab_pressed_translation_z">12dp</dimen>
 
+    <dimen name="move_to_top_top_padding">102dp</dimen>
+    <dimen name="move_to_bottom_bottom_padding">86dp</dimen>
+
     <!-- Reply dialog -->
     <dimen name="reply_edit_text_padding">12dp</dimen>
     <dimen name="reply_dialog_avatar_padding">8dp</dimen>

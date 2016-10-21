@@ -15,10 +15,11 @@
   ~ limitations under the License.
   -->
 
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="?attr/appBackgroundColor">
 
     <android.support.design.widget.AppBarLayout
@@ -68,4 +69,32 @@
         android:layout_marginRight="@dimen/fab_padding"
         android:layout_marginBottom="@dimen/fab_padding"
         android:layout_gravity="bottom|right|end"/>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/move_to_bottom_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_arrow_downward_white_24dp"
+        app:useCompatPadding="true"
+        app:backgroundTint="@color/quick_navigation_button_color"
+        app:elevation="@dimen/fab_elevation"
+        app:pressedTranslationZ="@dimen/fab_pressed_translation_z"
+        app:borderWidth="0dp"
+        android:layout_marginRight="@dimen/fab_padding"
+        android:layout_marginBottom="@dimen/move_to_bottom_bottom_padding"
+        android:layout_gravity="bottom|right|end"/>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/move_to_top_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_arrow_upward_white_24dp"
+        app:useCompatPadding="true"
+        app:backgroundTint="@color/quick_navigation_button_color"
+        app:elevation="@dimen/fab_elevation"
+        app:pressedTranslationZ="@dimen/fab_pressed_translation_z"
+        app:borderWidth="0dp"
+        android:layout_marginRight="@dimen/fab_padding"
+        android:layout_marginTop="@dimen/move_to_top_top_padding"
+        android:layout_gravity="top|right|end"/>
 </android.support.design.widget.CoordinatorLayout>

@@ -108,6 +108,10 @@ public class RedfaceSettings {
         return sharedPreferences.getBoolean(SettingsConstants.KEY_ENABLE_COMPACT_MODE, false);
     }
 
+    public boolean areNavigationButtonsEnabled() {
+        return sharedPreferences.getBoolean(SettingsConstants.KEY_SHOW_NAVIGATION_BUTTONS, false);
+    }
+
     public boolean arePrivateMessagesNoticationsEnabled() {
         return sharedPreferences.getBoolean(SettingsConstants.KEY_ENABLE_PRIVATE_MESSAGES_NOTIFICATIONS, true);
     }

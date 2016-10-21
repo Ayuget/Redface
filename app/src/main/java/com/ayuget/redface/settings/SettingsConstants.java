@@ -60,4 +60,6 @@ public class SettingsConstants {
     public static final String KEY_USE_MODERN_QUOTE_STYLE = "use_modern_quote_style";
 
     public static final String KEY_REHOST_DEFAULT_VARIANT = "rehost_default_variant";
+
+    public static final String KEY_SHOW_NAVIGATION_BUTTONS = "show_navigation_buttons";
 }
