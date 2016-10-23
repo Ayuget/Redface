@@ -83,7 +83,6 @@ import com.ayuget.redface.ui.misc.UiUtils;
 import com.ayuget.redface.ui.template.SmileysTemplate;
 import com.ayuget.redface.ui.view.SmileySelectorView;
 import com.ayuget.redface.util.ImageUtils;
-import com.ayuget.redface.util.RetainedFragment;
 import com.ayuget.redface.util.RetainedFragmentHelper;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
