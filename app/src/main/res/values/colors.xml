@@ -103,5 +103,6 @@
 
     <color name="empty_view_image_color">#BDBDBD</color>
 
-    <color name="quick_navigation_button_color">#757575</color>
+    <color name="quick_navigation_button_color_light">#757575</color>
+    <color name="quick_navigation_button_color_dark">#9E9E9E</color>
 </resources>
