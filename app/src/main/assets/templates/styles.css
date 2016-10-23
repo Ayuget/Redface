@@ -89,6 +89,14 @@ body.redface-night {
     font-size: 16px;
 }
 
+.font-morehuge .post-content {
+    font-size: 20px;
+}
+
+.font-reallyhuge .post-content {
+    font-size: 24px;
+}
+
 .post-author {
     font-family: 'Roboto', sans-serif;
 }

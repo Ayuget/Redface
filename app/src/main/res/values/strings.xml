@@ -148,12 +148,16 @@
         <item>Normal</item>
         <item>Big</item>
         <item>Huge</item>
+        <item>More Huge</item>
+        <item>Really Huge</item>
     </string-array>
     <string-array name="pref_font_size_entries" translatable="false">
         <item>SMALL</item>
         <item>@string/pref_font_size_default</item>
         <item>BIG</item>
         <item>HUGE</item>
+        <item>MOREHUGE</item>
+        <item>REALLYHUGE</item>
     </string-array>
 
     <string name="pref_default_meta_ordering">Default ordering for \"My topics\" screen</string>
