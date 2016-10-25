@@ -25,9 +25,6 @@ import android.os.Build;
 import android.util.AttributeSet;
 import android.view.ActionMode;
 import android.view.GestureDetector;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.JavascriptInterface;
@@ -57,9 +54,9 @@ import com.ayuget.redface.ui.event.PageLoadedEvent;
 import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
 import com.ayuget.redface.ui.event.PostActionEvent;
 import com.ayuget.redface.ui.event.QuotePostEvent;
-import com.ayuget.redface.ui.event.UnquoteAllPostsEvent;
 import com.ayuget.redface.ui.event.WritePrivateMessageEvent;
 import com.ayuget.redface.ui.misc.DummyGestureListener;
+import com.ayuget.redface.ui.misc.NestedScrollingWebView;
 import com.ayuget.redface.ui.misc.PagePosition;
 import com.ayuget.redface.ui.misc.ThemeManager;
 import com.ayuget.redface.ui.misc.UiUtils;
@@ -67,7 +64,6 @@ import com.ayuget.redface.ui.template.PostsTemplate;
 import com.ayuget.redface.util.JsExecutor;
 import com.google.common.base.Joiner;
 import com.squareup.otto.Bus;
-import com.squareup.otto.Subscribe;
 import com.squareup.phrase.Phrase;
 
 import java.util.ArrayList;
@@ -78,7 +74,7 @@ import javax.inject.Inject;
 import rx.functions.Action1;
 import timber.log.Timber;
 
-public class TopicPageView extends WebView implements View.OnTouchListener {
+public class TopicPageView extends NestedScrollingWebView implements View.OnTouchListener {
     /**
      * The post currently displayed in the webview. These posts will be encoded to HTML with
      * specific {@link com.ayuget.redface.ui.template.HTMLTemplate} classes.

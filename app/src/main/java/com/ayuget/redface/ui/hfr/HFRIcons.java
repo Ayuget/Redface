@@ -47,6 +47,8 @@ public class HFRIcons {
         category2Icon.put(22, R.drawable.ic_action_cloud);
         category2Icon.put(23, R.drawable.ic_action_smartphone);
         category2Icon.put(25, R.drawable.ic_action_apple);
+        category2Icon.put(30, R.drawable.ic_developer_board_white_24dp);
+        category2Icon.put(31, R.drawable.ic_shopping_basket_white_24dp);
         categoriesIcons = Collections.unmodifiableMap(category2Icon);
     }
 

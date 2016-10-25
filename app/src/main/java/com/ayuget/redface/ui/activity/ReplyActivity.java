@@ -16,13 +16,19 @@
 
 package com.ayuget.redface.ui.activity;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -34,17 +40,19 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewPropertyAnimator;
-import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -61,61 +69,45 @@ import com.ayuget.redface.data.api.model.User;
 import com.ayuget.redface.data.rx.EndlessObserver;
 import com.ayuget.redface.data.rx.SubscriptionHandler;
 import com.ayuget.redface.data.state.ResponseStore;
+import com.ayuget.redface.image.HostedImage;
+import com.ayuget.redface.image.ImageHostingService;
+import com.ayuget.redface.image.ImageQuality;
 import com.ayuget.redface.network.HTTPClientProvider;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.event.SmileySelectedEvent;
 import com.ayuget.redface.ui.misc.BindableAdapter;
+import com.ayuget.redface.ui.misc.EditTextState;
+import com.ayuget.redface.ui.misc.Smileys;
+import com.ayuget.redface.ui.misc.SnackbarHelper;
 import com.ayuget.redface.ui.misc.UiUtils;
 import com.ayuget.redface.ui.template.SmileysTemplate;
 import com.ayuget.redface.ui.view.SmileySelectorView;
-import com.ayuget.redface.util.UserUtils;
-import com.google.common.base.Optional;
+import com.ayuget.redface.util.ImageUtils;
+import com.ayuget.redface.util.RetainedFragmentHelper;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
 import butterknife.InjectView;
 import butterknife.OnClick;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx_activity_result.RxActivityResult;
 import timber.log.Timber;
+
+import static android.os.Build.VERSION_CODES.KITKAT;
 
 public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemClickListener {
     private static final String ARG_TOPIC = "topic";
-
-    private static final List<Smiley> DEFAULT_SMILEYS = Arrays.asList(
-            Smiley.make(":O", "http://forum-images.hardware.fr/icones/redface.gif"),
-            Smiley.make(":)", "http://forum-images.hardware.fr/icones/smile.gif"),
-            Smiley.make(":(", "http://forum-images.hardware.fr/icones/frown.gif"),
-            Smiley.make(":D", "http://forum-images.hardware.fr/icones/biggrin.gif"),
-            Smiley.make(";)", "http://forum-images.hardware.fr/icones/wink.gif"),
-            Smiley.make(":ouch:", "http://forum-images.hardware.fr/icones/smilies/ouch.gif"),
-            Smiley.make(":??:", "http://forum-images.hardware.fr/icones/confused.gif"),
-            Smiley.make(":p", "http://forum-images.hardware.fr/icones/tongue.gif"),
-            Smiley.make(":pfff:", "http://forum-images.hardware.fr/icones/smilies/pfff.gif"),
-            Smiley.make(":ange:", "http://forum-images.hardware.fr/icones/smilies/ange.gif"),
-            Smiley.make(":non:", "http://forum-images.hardware.fr/icones/smilies/non.gif"),
-            Smiley.make(":bounce:", "http://forum-images.hardware.fr/icones/smilies/bounce.gif"),
-            Smiley.make(":fou:", "http://forum-images.hardware.fr/icones/smilies/fou.gif"),
-            Smiley.make(":jap:", "http://forum-images.hardware.fr/icones/smilies/jap.gif"),
-            Smiley.make(":lol:", "http://forum-images.hardware.fr/icones/smilies/lol.gif"),
-            Smiley.make(":wahoo:", "http://forum-images.hardware.fr/icones/smilies/wahoo.gif"),
-            Smiley.make(":kaola:", "http://forum-images.hardware.fr/icones/smilies/kaola.gif"),
-            Smiley.make(":love:", "http://forum-images.hardware.fr/icones/smilies/love.gif"),
-            Smiley.make(":heink:", "http://forum-images.hardware.fr/icones/smilies/heink.gif"),
-            Smiley.make(":cry:", "http://forum-images.hardware.fr/icones/smilies/cry.gif"),
-            Smiley.make(":whistle:", "http://forum-images.hardware.fr/icones/smilies/whistle.gif"),
-            Smiley.make(":sol:", "http://forum-images.hardware.fr/icones/smilies/sol.gif"),
-            Smiley.make(":pt1cable:", "http://forum-images.hardware.fr/icones/smilies/pt1cable.gif"),
-            Smiley.make(":sleep:", "http://forum-images.hardware.fr/icones/smilies/sleep.gif"),
-            Smiley.make(":sweat:", "http://forum-images.hardware.fr/icones/smilies/sweat.gif"),
-            Smiley.make(":hello:", "http://forum-images.hardware.fr/icones/smilies/hello.gif"),
-            Smiley.make(":na:", "http://forum-images.hardware.fr/icones/smilies/na.gif"),
-            Smiley.make(":sarcastic:", "http://forum-images.hardware.fr/icones/smilies/sarcastic.gif")
-    );
-
+    private static final long IMAGE_SELECTION_VIEW_ANIMATION_TRANSITION_TIME = 300;
+    private static final String UPLOADED_IMAGE_BB_CODE = "[url=%s][img]%s[/img][/url]";
+    private static final String IMAGE_FROM_URL_BB_CODE = "[img]%s[/img]";
 
     /**
      * The active pointer is the one currently use to move the smiley view
@@ -206,6 +198,18 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
     @InjectView(R.id.sending_message_spinner)
     View sendingMessageSpinner;
 
+    @InjectView(R.id.image_selection_view)
+    View imageSelectionView;
+
+    @InjectView(R.id.add_image_from_gallery)
+    Button addImageFromGalleryButton;
+
+    @InjectView(R.id.add_image_from_url)
+    Button addImageFromUrlButton;
+
+    @InjectView(R.id.image_upload_progress_bar)
+    ProgressBar imageUploadProgressBar;
+
     @Inject
     UserManager userManager;
 
@@ -226,6 +230,9 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
 
     @Inject
     ResponseStore responseStore;
+
+    @Inject
+    ImageHostingService imageHostingService;
 
     private Topic currentTopic;
 
@@ -251,6 +258,8 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
             }
         }
 
+        restoreImageUploadObservableSubscription(savedInstanceState);
+
         DisplayMetrics metrics = getResources().getDisplayMetrics();
         screenHeight = metrics.heightPixels;
         smileySelectorTopOffset = (int) (metrics.heightPixels * 0.75);
@@ -270,31 +279,29 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
         // and usable.
         //
         // As any hack, this method is probably very buggy...
-        replyWindowRoot.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                Rect r = new Rect();
-                replyWindowRoot.getWindowVisibleDisplayFrame(r);
+        replyWindowRoot.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+            Rect r = new Rect();
+            replyWindowRoot.getWindowVisibleDisplayFrame(r);
 
-                FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) mainReplyFrame.getLayoutParams();
-                boolean keyboardIsOpen = r.height() < replyWindowMaxHeight;
+            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) mainReplyFrame.getLayoutParams();
+            boolean keyboardIsOpen = r.height() < replyWindowMaxHeight;
 
-                if (keyboardIsOpen) {
-                    if (lp.height != ViewGroup.LayoutParams.MATCH_PARENT) {
-                        lp.height = ViewGroup.LayoutParams.MATCH_PARENT;
-                        mainReplyFrame.setLayoutParams(lp);
-                    }
-                } else {
-                    if (lp.height != replyWindowMaxHeight) {
-                        lp.height = replyWindowMaxHeight;
-                        mainReplyFrame.setLayoutParams(lp);
-                    }
+            if (keyboardIsOpen) {
+                if (lp.height != ViewGroup.LayoutParams.MATCH_PARENT) {
+                    lp.height = ViewGroup.LayoutParams.MATCH_PARENT;
+                    mainReplyFrame.setLayoutParams(lp);
+                }
+            } else {
+                if (lp.height != replyWindowMaxHeight) {
+                    lp.height = replyWindowMaxHeight;
+                    mainReplyFrame.setLayoutParams(lp);
                 }
             }
         });
 
         styleToolbarButtons(extrasToolbar);
         styleToolbarMenu(actionsToolbar);
+        setupImageSelectionButtons();
 
         smileysSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -319,12 +326,24 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
             }
         });
 
-        // Load  default smileys
+        // Load default smileys
         loadDefaultSmileys();
     }
 
     protected int getLayoutResource() {
         return R.layout.dialog_reply;
+    }
+
+    private void restoreImageUploadObservableSubscription(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            Observable<HostedImage> imageUploadObservable = RetainedFragmentHelper.recover(this, getSupportFragmentManager());
+            if (imageUploadObservable != null) {
+                showImageSelectionView();
+                showImageUploadIndicator();
+
+                subscribeToImageUploadObservable(imageUploadObservable);
+            }
+        }
     }
 
     @Override
@@ -359,12 +378,47 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
         }
     }
 
+    private Intent buildImageSelectionIntent() {
+        Intent intent;
+        if (Build.VERSION.SDK_INT < KITKAT) {
+            intent = new Intent(Intent.ACTION_GET_CONTENT);
+        }
+        else {
+            intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+        }
+
+        intent.setType("image/*");
+        return intent;
+    }
+
+    private void setupImageSelectionButtons() {
+        styleImageSelectionButtons(addImageFromGalleryButton);
+        styleImageSelectionButtons(addImageFromUrlButton);
+
+        addImageFromGalleryButton.setOnClickListener(v -> RxActivityResult.on(ReplyActivity.this).startIntent(buildImageSelectionIntent())
+                .subscribe(result -> {
+                    Intent data = result.data();
+                    int resultCode = result.resultCode();
+
+                    if (resultCode == RESULT_OK) {
+                        new AlertDialog.Builder(this)
+                                .setPositiveButton(R.string.image_sharing_confirmation_positive, (dialog, which) -> result.targetUI().uploadImageToHostingService(data.getData()))
+                                .setNegativeButton(R.string.image_sharing_confirmation_negative, (dialog, which) -> hideImageSelectionView())
+                                .setMessage(R.string.image_sharing_confirmation)
+                                .show();
+                    }
+                }));
+
+        addImageFromUrlButton.setOnClickListener(v -> insertImageFromUrl());
+    }
+
     /**
      * Loads default smileys in the smiley selector
      */
     @OnClick(R.id.default_smileys)
     protected void loadDefaultSmileys() {
-        smileyList.setSmileys(DEFAULT_SMILEYS);
+        smileyList.setSmileys(Smileys.defaultSmileys());
     }
 
     /**
@@ -413,88 +467,85 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
      * Initializes both the smiley selector
      */
     protected void setupSmileySelector() {
-        smileyList.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                final int action = MotionEventCompat.getActionMasked(event);
+        smileyList.setOnTouchListener((v, event) -> {
+            final int action = MotionEventCompat.getActionMasked(event);
 
-                switch (action) {
-                    case MotionEvent.ACTION_DOWN: {
-                        final int pointerIndex = MotionEventCompat.getActionIndex(event);
-                        lastTouchY = MotionEventCompat.getY(event, pointerIndex);
-                        activePointerId = MotionEventCompat.getPointerId(event, 0);
-                        break;
-                    }
-                    case MotionEvent.ACTION_MOVE: {
-                        if (smileyList.getScrollY() == 0) {
-                            final int pointerIndex = MotionEventCompat.findPointerIndex(event, activePointerId);
+            switch (action) {
+                case MotionEvent.ACTION_DOWN: {
+                    final int pointerIndex = MotionEventCompat.getActionIndex(event);
+                    lastTouchY = MotionEventCompat.getY(event, pointerIndex);
+                    activePointerId = MotionEventCompat.getPointerId(event, 0);
+                    break;
+                }
+                case MotionEvent.ACTION_MOVE: {
+                    if (smileyList.getScrollY() == 0) {
+                        final int pointerIndex = MotionEventCompat.findPointerIndex(event, activePointerId);
 
-                            if (pointerIndex != -1) {
-                                final float y = MotionEventCompat.getY(event, pointerIndex);
+                        if (pointerIndex != -1) {
+                            final float y = MotionEventCompat.getY(event, pointerIndex);
 
-                                // Distance
-                                float dy = y - lastTouchY;
-                                isUpwardMovement = dy < 0;
-                                float targetY = smileysSelector.getY() + dy;
+                            // Distance
+                            float dy = y - lastTouchY;
+                            isUpwardMovement = dy < 0;
+                            float targetY = smileysSelector.getY() + dy;
 
-                                if (targetY < toolbarHeight) {
-                                    float difference = toolbarHeight - targetY;
-                                    dy += difference;
-                                } else if (targetY > smileySelectorTopOffset) {
-                                    float difference = targetY - smileySelectorTopOffset;
-                                    dy -= difference;
-                                }
-
-                                smileysSelector.setY(smileysSelector.getY() + dy);
-
-                                // Show or hide the smileys toolbar based on current position
-                                if (isUpwardMovement && smileysSelector.getY() < replyWindowMaxHeight) {
-                                    showSmileysToolbar();
-                                } else {
-                                    hideSmileysToolbar();
-                                }
+                            if (targetY < toolbarHeight) {
+                                float difference = toolbarHeight - targetY;
+                                dy += difference;
+                            } else if (targetY > smileySelectorTopOffset) {
+                                float difference = targetY - smileySelectorTopOffset;
+                                dy -= difference;
                             }
 
-                            break;
-                        }
-                    }
-                    case MotionEvent.ACTION_UP: {
-                        int upAnimationThreshold = replyWindowMaxHeight - toolbarHeight;
+                            smileysSelector.setY(smileysSelector.getY() + dy);
 
-                        float yTranslation;
-                        ViewPropertyAnimator viewPropertyAnimator = smileysSelector.animate();
-
-                        if (isUpwardMovement && smileysSelector.getY() == upAnimationThreshold) {
-                            // Do not move in that case
-                            yTranslation = 0;
-                        } else if (isUpwardMovement && smileysSelector.getY() < upAnimationThreshold) {
-                            // Moving too far, let's avoid this
-                            yTranslation = -(smileysSelector.getY() - toolbarHeight);
-                        } else {
-                            // Replace the smiley selector at its original position
-                            yTranslation = smileySelectorTopOffset - smileysSelector.getY();
-                        }
-
-                        if (yTranslation != 0) {
-                            viewPropertyAnimator
-                                    .translationYBy(yTranslation)
-                                    .setDuration(150)
-                                    .start();
+                            // Show or hide the smileys toolbar based on current position
+                            if (isUpwardMovement && smileysSelector.getY() < replyWindowMaxHeight) {
+                                showSmileysToolbar();
+                            } else {
+                                hideSmileysToolbar();
+                            }
                         }
 
                         break;
                     }
                 }
+                case MotionEvent.ACTION_UP: {
+                    int upAnimationThreshold = replyWindowMaxHeight - toolbarHeight;
 
-                boolean touchConsumed;
-                if (smileysSelector.getY() != smileySelectorTopOffset) {
-                    touchConsumed = (smileysSelector.getY() != toolbarHeight);
-                } else {
-                    touchConsumed = false;
+                    float yTranslation;
+                    ViewPropertyAnimator viewPropertyAnimator = smileysSelector.animate();
+
+                    if (isUpwardMovement && smileysSelector.getY() == upAnimationThreshold) {
+                        // Do not move in that case
+                        yTranslation = 0;
+                    } else if (isUpwardMovement && smileysSelector.getY() < upAnimationThreshold) {
+                        // Moving too far, let's avoid this
+                        yTranslation = -(smileysSelector.getY() - toolbarHeight);
+                    } else {
+                        // Replace the smiley selector at its original position
+                        yTranslation = smileySelectorTopOffset - smileysSelector.getY();
+                    }
+
+                    if (yTranslation != 0) {
+                        viewPropertyAnimator
+                                .translationYBy(yTranslation)
+                                .setDuration(150)
+                                .start();
+                    }
+
+                    break;
                 }
-
-                return touchConsumed;
             }
+
+            boolean touchConsumed;
+            if (smileysSelector.getY() != smileySelectorTopOffset) {
+                touchConsumed = (smileysSelector.getY() != toolbarHeight);
+            } else {
+                touchConsumed = false;
+            }
+
+            return touchConsumed;
         });
     }
 
@@ -579,6 +630,17 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        if (isImageSelectionViewVisible()) {
+            hideImageSelectionView();
+        }
+        else {
+            super.onBackPressed();
+        }
+
+    }
+
     protected View setupUserView(LayoutInflater inflater, User user) {
         View userView = inflater.inflate(R.layout.dialog_reply_spinner_item, actionsToolbar, false);
         ImageView avatarView = (ImageView) userView.findViewById(R.id.user_avatar);
@@ -596,7 +658,11 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
 
     @Subscribe
     public void smileySelected(SmileySelectedEvent event) {
-        insertText(String.format(" %s ", event.getSmileyCode()));
+        insertSmiley(event.getSmileyCode());
+    }
+
+    protected void insertSmiley(String smileyCode) {
+        UiUtils.insertText(replyEditText, String.format(" %s ", smileyCode));
 
         replaceSmileySelector();
         hideSmileysToolbar();
@@ -619,29 +685,6 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
         return getResources().getDimensionPixelSize(tv.resourceId);
     }
 
-    /**
-     * Inserts a text at current caret position
-     * @param text text to insert
-     */
-    protected void insertText(String text) {
-        int selectionStart = replyEditText.getSelectionStart();
-        int selectionEnd = replyEditText.getSelectionEnd();
-        Editable replyText = replyEditText.getText();
-
-        if (selectionStart != -1 && selectionEnd != -1) {
-            // Some text has been selected by the user
-            replyText.replace(selectionStart, selectionEnd, text);
-        }
-        else if (selectionStart != -1) {
-            // EditText has focus, insert at caret
-            replyText.insert(selectionStart, text);
-        }
-        else {
-            // No focus
-            replyEditText.append(text);
-        }
-    }
-
     protected void insertSmileyOrTag(boolean isSmiley, String tag) {
         int selectionStart = replyEditText.getSelectionStart();
         int selectionEnd = replyEditText.getSelectionEnd();
@@ -650,7 +693,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
 
         String tagOpen = isSmiley ? "[:" : String.format("[%s]", tag);
         String tagClose = isSmiley ? "]" : String.format("[/%s]", tag);
-        insertText(tagOpen + selectedText + tagClose);
+        UiUtils.insertText(replyEditText, tagOpen + selectedText + tagClose);
 
         replyEditText.setSelection(selectionStart + tagOpen.length() + selectedText.length());
     }
@@ -682,7 +725,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
         return false;
     }
 
-    @OnClick({R.id.insert_manual_smiley_button, R.id.make_text_bold_button, R.id.make_text_italic_button, R.id.insert_quote_button, R.id.insert_link_button, R.id.insert_spoiler_button, R.id.insert_image_button})
+    @OnClick({R.id.insert_manual_smiley_button, R.id.make_text_bold_button, R.id.make_text_italic_button, R.id.insert_quote_button, R.id.insert_link_button, R.id.insert_spoiler_button})
     public void onExtraToolbarButtonClicked(ImageButton button) {
         switch (button.getId()) {
             case R.id.insert_manual_smiley_button:
@@ -707,6 +750,145 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
                 insertSmileyOrTag(false, "i");
                 break;
         }
+    }
+
+    @OnClick(R.id.insert_image_button)
+    public void onImageInsertionRequested() {
+        if (isImageSelectionViewVisible()) {
+            hideImageSelectionView();
+        }
+        else {
+            showImageSelectionView();
+        }
+    }
+
+    private void showImageSelectionView() {
+        if (isImageSelectionViewVisible()) {
+            return;
+        }
+
+        imageSelectionView.setVisibility(View.VISIBLE);
+        imageSelectionView.setAlpha(0.0f);
+        imageSelectionView
+                .animate()
+                .setDuration(IMAGE_SELECTION_VIEW_ANIMATION_TRANSITION_TIME)
+                .alpha(1.0f)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        Timber.d("Image selection view is now visible");
+                    }
+                });
+    }
+
+    private void hideImageSelectionView() {
+        if (! isImageSelectionViewVisible()) {
+            return;
+        }
+
+        hideImageUploadIndicator();
+
+        imageSelectionView
+                .animate()
+                .setDuration(IMAGE_SELECTION_VIEW_ANIMATION_TRANSITION_TIME)
+                .alpha(0.0f)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        imageSelectionView.setVisibility(View.GONE);
+                        Timber.d("Image selection view is now hidden");
+                    }
+                });
+    }
+
+    private boolean isImageSelectionViewVisible() {
+        return imageSelectionView.getVisibility() == View.VISIBLE;
+    }
+
+    private void subscribeToImageUploadObservable(Observable<HostedImage> imageUploadObservable) {
+        imageUploadObservable.subscribe(hostedImage -> {
+            Timber.d("Successfully uploaded image ! -> %s", hostedImage);
+
+            EditTextState editTextState = UiUtils.insertTextAndSaveState(replyEditText, String.format(UPLOADED_IMAGE_BB_CODE, hostedImage.url(), hostedImage.variant(settings.getDefaultRehostImageQuality())));
+
+            // No need to restore background job anymore
+            RetainedFragmentHelper.remove(this, getSupportFragmentManager());
+
+            SnackbarHelper.makeWithAction(ReplyActivity.this, R.string.image_upload_success, R.string.image_upload_variants, c -> showImageVariantsPicker(hostedImage, editTextState)).show();
+            hideImageSelectionView();
+        }, t -> {
+            Timber.e(t, "Got an error while uploading image");
+            SnackbarHelper.makeError(ReplyActivity.this, R.string.image_upload_failed).show();
+            hideImageSelectionView();
+        });
+    }
+
+    private void insertImageFromUrl() {
+        Timber.d("Inserting image from URL !");
+
+        final View insertImageView = LayoutInflater.from(this).inflate(R.layout.insert_image_from_url, null);
+        final EditText editText = (EditText) insertImageView.findViewById(R.id.image_to_insert_url);
+
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.image_enter_url)
+                .setView(insertImageView)
+                .setPositiveButton(R.string.image_enter_url_ok, (dialog, which) -> {
+                    UiUtils.insertText(replyEditText, String.format(IMAGE_FROM_URL_BB_CODE, editText.getText().toString()));
+                    hideImageSelectionView();
+                })
+                .setNegativeButton(R.string.image_enter_url_cancel, (dialog, which) -> hideImageSelectionView())
+                .show();
+    }
+    /**
+     * Uploads user selected image to remote hosting service
+     */
+    private void uploadImageToHostingService(Uri selectedImageUri) {
+        Timber.d("Uploading selected image '%s'", selectedImageUri);
+        showImageUploadIndicator();
+
+        Observable<HostedImage> imageUploadObservable = Observable.fromCallable(() -> getContentResolver().openInputStream(selectedImageUri))
+                .map(ImageUtils::readStreamFully)
+                .flatMap(b -> imageHostingService.hostFromLocalImage(b))
+                .observeOn(AndroidSchedulers.mainThread())
+                .cache();
+
+        RetainedFragmentHelper.retain(this, getSupportFragmentManager(), imageUploadObservable);
+
+        subscribeToImageUploadObservable(imageUploadObservable);
+    }
+
+    private void showImageUploadIndicator() {
+        imageUploadProgressBar.setVisibility(View.VISIBLE);
+    }
+
+    private void hideImageUploadIndicator() {
+        imageUploadProgressBar.setVisibility(View.GONE);
+    }
+
+    @SuppressWarnings("StaticPseudoFunctionalStyleMethod")
+    private void showImageVariantsPicker(HostedImage hostedImage, EditTextState editTextState) {
+        Timber.d("Requesting variants !!");
+
+        List<Map.Entry<ImageQuality, Integer>> availableVariants = Lists.newArrayList(imageHostingService.availableImageVariants().entrySet());
+
+        Iterable<String> collection = Iterables.transform(availableVariants, e -> getString(e.getValue()));
+
+        ArrayAdapter<String> imageVariantsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, Lists.newArrayList(collection));
+
+        new AlertDialog.Builder(this)
+            .setTitle(R.string.image_upload_select_variant)
+            .setAdapter(imageVariantsAdapter, (dialog, which) -> {
+                ImageQuality selectedImageQuality = availableVariants.get(which).getKey();
+                Timber.d("Selected '%s' image quality !", selectedImageQuality);
+
+                String variantUrl = hostedImage.variant(selectedImageQuality);
+                if (variantUrl == null) {
+                    variantUrl = hostedImage.url();
+                }
+
+                UiUtils.insertTextFromState(replyEditText, String.format(UPLOADED_IMAGE_BB_CODE, hostedImage.url(), variantUrl), editTextState);
+            })
+            .show();
     }
 
     /**
@@ -786,6 +968,14 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
 
             if (itemIcon != null) {
                 UiUtils.setDrawableColor(itemIcon, UiUtils.getReplyToolbarIconsColor(ReplyActivity.this));
+            }
+        }
+    }
+
+    private void styleImageSelectionButtons(Button button) {
+        for (Drawable drawable : button.getCompoundDrawables()) {
+            if (drawable != null) {
+                UiUtils.setDrawableColor(drawable, UiUtils.getReplyToolbarIconsColor(ReplyActivity.this));
             }
         }
     }

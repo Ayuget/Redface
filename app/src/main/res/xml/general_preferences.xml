@@ -77,4 +77,14 @@
             android:entryValues="@array/pref_pm_notification_frequency_values"
             android:dependency="enable_pm_notifications" />
     </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pref_rehost_settings">
+        <ListPreference
+            android:key="rehost_default_variant"
+            android:title="@string/pref_default_uploaded_image_variant"
+            android:defaultValue="@string/pref_default_uploaded_image_variant_default"
+            android:entries="@array/pref_default_uploaded_image_variant_values"
+            android:entryValues="@array/pref_default_uploaded_image_variant_entries" />
+    </PreferenceCategory>
 </PreferenceScreen>

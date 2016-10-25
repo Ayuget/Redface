@@ -16,9 +16,11 @@
 
 package com.ayuget.redface.data.api.hfr.transforms;
 
+import com.ayuget.redface.data.api.hfr.HFRForumService;
 import com.ayuget.redface.data.api.model.Category;
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.api.model.TopicStatus;
+import com.ayuget.redface.data.api.model.User;
 import com.ayuget.redface.data.state.CategoriesStore;
 import com.ayuget.redface.util.DateUtils;
 import com.ayuget.redface.util.HTMLUtils;
@@ -28,6 +30,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 
+import rx.functions.Action0;
 import rx.functions.Func1;
 
 public class HTMLToTopicList extends TopicTransform implements Func1<String, List<Topic>> {
@@ -37,10 +40,16 @@ public class HTMLToTopicList extends TopicTransform implements Func1<String, Lis
      */
     private static final int DEFAULT_TOPICS_COUNT = 50;
 
-    private CategoriesStore categoriesStore;
+    private final CategoriesStore categoriesStore;
 
-    public HTMLToTopicList(CategoriesStore categoriesStore) {
+    private final HFRForumService hfrForumService;
+
+    private final User user;
+
+    public HTMLToTopicList(CategoriesStore categoriesStore, HFRForumService hfrForumService, User user) {
         this.categoriesStore = categoriesStore;
+        this.hfrForumService = hfrForumService;
+        this.user = user;
     }
 
     private TopicStatus extractTopicStatusFromImageName(String imageName) {
@@ -77,6 +86,13 @@ public class HTMLToTopicList extends TopicTransform implements Func1<String, Lis
 
                 if (categoriesStore != null) {
                     currentCategory = categoriesStore.getCategoryById(categoryId);
+
+                    // fixme super ugly : force a refresh of the categories cache if no category is
+                    // found (can happen when new categories are created)
+                    if (currentCategory == null) {
+                        hfrForumService.refreshCategories(user).toBlocking().first();
+                        currentCategory = categoriesStore.getCategoryById(categoryId);
+                    }
                 }
             }
             else {

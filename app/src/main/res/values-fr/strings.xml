@@ -178,6 +178,8 @@
         <item>Normale</item>
         <item>Grosse</item>
         <item>Enorme</item>
+        <item>Très Enorme</item>
+        <item>Très très énorme</item>
     </string-array>
     <string name="relogin_instructions">Si vos identifiants ont changés ou que vous souhaitez vous ré-authentifier, vous pouvez le faire en remplissant le formulaire ci-dessous</string>
     <string name="action_copy_link">Copier un lien vers ce sujet</string>
@@ -214,4 +216,37 @@
     <string name="login_successful">Identification avec succès !</string>
     <string name="pref_use_modern_quote_style">Affichage "moderne" des citations</string>
     <string name="action_show_all_spoilers">Afficher tous les spoilers</string>
+    <string name="image_upload_failed">Erreur d\'upload de l\'image</string>
+    <string name="image_upload_in_progress">Upload de l\'image en cours</string>
+    <string name="image_upload_success">Image uploadée avec succès !</string>
+    <string name="image_upload_variants">Variantes</string>
+    <string name="image_upload_select_variant">Sélectionner une variante</string>
+    <string name="image_uploaded_medium">Moyen (800px)</string>
+    <string name="image_uploaded_original">Taille réelle</string>
+    <string name="image_uploaded_preview">Preview (600px)</string>
+    <string name="image_uploaded_thumbnail">Miniature</string>
+    <string name="insert_image_from_favorites">Favoris</string>
+    <string name="insert_image_from_gallery">Galerie</string>
+    <string name="insert_image_from_url">URL</string>
+    <string name="image_enter_url">Entrer l\'URL de l\'image</string>
+    <string name="image_enter_url_cancel">Annuler</string>
+    <string name="image_enter_url_ok">OK</string>
+    <string name="image_shared_success">Lien vers l\'image copié dans le presse-papier</string>
+    <string name="image_shared_failure">Erreur de partage de l\'image</string>
+    <string name="upload_on_hfr_rehost">Upload sur hfrRehost</string>
+    <string name="image_sharing_confirmation">Uploader cette image sur reho.st ?</string>
+    <string name="image_sharing_confirmation_negative">Non</string>
+    <string name="image_sharing_confirmation_positive">Oui</string>
+
+    <string name="pref_rehost_settings">Reho.st (hébergement d\'images)</string>
+    <string name="pref_default_uploaded_image_variant">Qualité par défaut</string>
+    <string name="pref_default_uploaded_image_variant_summary">Qualité d\'image qui sera ajoutée automatiquement aux messages une fois l\'upload sur reho.st terminé</string>
+    <string-array name="pref_default_uploaded_image_variant_values">
+        <item>@string/image_uploaded_original</item>
+        <item>@string/image_uploaded_medium</item>
+        <item>@string/image_uploaded_preview</item>
+        <item>@string/image_uploaded_thumbnail</item>
+    </string-array>
+    <string name="pref_show_navigation_buttons_summary">Affiche des boutons de navigation rapide pour scroller directement en haut ou en bas d\'une page d\'un sujet</string>
+    <string name="pref_show_navigation_buttons_title">Afficher les boutons de navigation</string>
 </resources>

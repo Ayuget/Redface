@@ -19,10 +19,12 @@ package com.ayuget.redface.ui;
 import com.ayuget.redface.RedfaceApp;
 import com.ayuget.redface.account.AccountModule;
 import com.ayuget.redface.account.UserManager;
+import com.ayuget.redface.image.ImageModule;
 import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.ui.activity.AccountActivity;
 import com.ayuget.redface.ui.activity.EditPostActivity;
 import com.ayuget.redface.ui.activity.ExifDetailsActivity;
+import com.ayuget.redface.ui.activity.ImageSharingActivity;
 import com.ayuget.redface.ui.activity.PrivateMessagesActivity;
 import com.ayuget.redface.ui.activity.ReplyActivity;
 import com.ayuget.redface.ui.activity.SettingsActivity;
@@ -58,6 +60,7 @@ import dagger.Provides;
 @Module(
         includes = {
                 AccountModule.class,
+                ImageModule.class
         },
         injects = {
                 TopicsActivity.class,
@@ -78,7 +81,8 @@ import dagger.Provides;
                 PrivateMessagesActivity.class,
                 PrivateMessageListFragment.class,
                 WritePrivateMessageActivity.class,
-                ExifDetailsActivity.class
+                ExifDetailsActivity.class,
+                ImageSharingActivity.class
         },
         library =  true,
         complete = false

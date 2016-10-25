@@ -41,6 +41,12 @@
         android:summary="@string/pref_double_tap_to_refresh_summary"
         android:defaultValue="true" />
 
+    <CheckBoxPreference
+        android:key="show_navigation_buttons"
+        android:title="@string/pref_show_navigation_buttons_title"
+        android:summary="@string/pref_show_navigation_buttons_summary"
+        android:defaultValue="false" />
+
     <ListPreference
         android:key="font_size"
         android:title="@string/pref_font_size_title"

@@ -20,12 +20,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.ActionMode;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -46,6 +49,7 @@ import com.ayuget.redface.data.api.model.User;
 import com.ayuget.redface.data.quote.QuotedMessagesCache;
 import com.ayuget.redface.data.rx.EndlessObserver;
 import com.ayuget.redface.data.rx.SubscriptionHandler;
+import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.activity.MultiPaneActivity;
 import com.ayuget.redface.ui.activity.ReplyActivity;
@@ -130,11 +134,23 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     @Inject
     MDService mdService;
 
+    @Inject
+    RedfaceSettings settings;
+
     @InjectView(R.id.pager)
     ViewPager pager;
 
     @InjectView(R.id.titlestrip)
     PagerTabStrip pagerTitleStrip;
+
+    @InjectView(R.id.reply_button)
+    FloatingActionButton replyButton;
+
+    @InjectView(R.id.move_to_top_button)
+    FloatingActionButton moveToTopButton;
+
+    @InjectView(R.id.move_to_bottom_button)
+    FloatingActionButton moveToBottomButton;
 
     /**
      * Topic currently displayed
@@ -188,6 +204,10 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
         pagerTitleStrip.setTabIndicatorColor(getResources().getColor(R.color.theme_primary));
         pager.setAdapter(topicPageAdapter);
         pager.setCurrentItem(currentPage - 1);
+
+        replyButton.setOnClickListener((v) -> replyToTopic());
+
+        setupQuickNavigationButtons();
 
         return rootView;
     }
@@ -312,7 +332,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     @Subscribe
     public void onTopicPageLoaded(PageLoadedEvent event) {
         Timber.d("@%d -> Received topicPageLoaded event (topic='%s', page='%d'), current(topic='%s', page='%d', currentPagePosition='%s')", System.identityHashCode(this), event.getTopic().title(), event.getPage(), topic.title(), currentPage, currentPagePosition);
-        if (event.getTopic().equals(topic) && event.getPage() == currentPage) {
+        if (event.getTopic().id() == topic.id() && event.getPage() == currentPage) {
             if (currentPagePosition != null && !userScrolledViewPager) {
                 event.getTopicPageView().setPagePosition(currentPagePosition);
             }
@@ -326,9 +346,9 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
      */
     @Subscribe
     public void onTopicPageCountUpdated(TopicPageCountUpdatedEvent event) {
-        if (event.getTopic() == topic) {
+        if (event.getTopic().id() == topic.id()) {
             topic = topic.withPagesCount(event.getNewPageCount());
-            topicPageAdapter.notifyDataSetChanged();
+            topicPageAdapter.notifyTopicUpdated(topic);
         }
     }
 
@@ -486,6 +506,22 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     @Override
     public void clearInternalStack() {
         topicPositionsStack.clear();
+    }
+
+
+    private void setupQuickNavigationButtons() {
+        if (settings.areNavigationButtonsEnabled()) {
+            float buttonsAlpha = 0.30f;
+            moveToTopButton.setAlpha(buttonsAlpha);
+            moveToBottomButton.setAlpha(buttonsAlpha);
+
+            moveToTopButton.setOnClickListener((c) -> bus.post(new ScrollToPostEvent(topic, currentPage, PagePosition.top())));
+            moveToBottomButton.setOnClickListener((c) -> bus.post(new ScrollToPostEvent(topic, currentPage, PagePosition.bottom())));
+        }
+        else {
+            moveToBottomButton.setVisibility(View.GONE);
+            moveToTopButton.setVisibility(View.GONE);
+        }
     }
 
     public void showGoToPageDialog() {

@@ -16,16 +16,17 @@
 
 package com.ayuget.redface.network;
 
-import com.squareup.okhttp.Interceptor;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
 
 import java.io.IOException;
 
-public class UserAgentInterceptor implements Interceptor {
+import okhttp3.Interceptor;
+import okhttp3.Request;
+import okhttp3.Response;
+
+class UserAgentInterceptor implements Interceptor {
     private final String userAgent;
 
-    public UserAgentInterceptor(String userAgent) {
+    UserAgentInterceptor(String userAgent) {
         this.userAgent = userAgent;
     }
 

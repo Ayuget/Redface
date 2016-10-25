@@ -21,6 +21,7 @@ import android.content.SharedPreferences;
 
 import com.ayuget.redface.R;
 import com.ayuget.redface.data.api.model.TopicFilter;
+import com.ayuget.redface.image.ImageQuality;
 import com.ayuget.redface.ui.theme.FontSize;
 import com.ayuget.redface.ui.theme.RedfaceTheme;
 import com.ayuget.redface.ui.misc.MetaPageOrdering;
@@ -68,6 +69,11 @@ public class RedfaceSettings {
         return FontSize.valueOf(fontSizeValue);
     }
 
+    public ImageQuality getDefaultRehostImageQuality() {
+        String imageQualityValue = sharedPreferences.getString(SettingsConstants.KEY_REHOST_DEFAULT_VARIANT, context.getString(R.string.pref_default_uploaded_image_variant_default));
+        return ImageQuality.valueOf(imageQualityValue);
+    }
+
     public int getProxyPort() {
         return Integer.valueOf(sharedPreferences.getString(SettingsConstants.KEY_PROXY_PORT, "0"));
     }
@@ -100,6 +106,10 @@ public class RedfaceSettings {
 
     public boolean isCompactModeEnabled() {
         return sharedPreferences.getBoolean(SettingsConstants.KEY_ENABLE_COMPACT_MODE, false);
+    }
+
+    public boolean areNavigationButtonsEnabled() {
+        return sharedPreferences.getBoolean(SettingsConstants.KEY_SHOW_NAVIGATION_BUTTONS, false);
     }
 
     public boolean arePrivateMessagesNoticationsEnabled() {

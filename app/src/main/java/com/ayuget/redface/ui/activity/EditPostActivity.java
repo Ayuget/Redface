@@ -26,6 +26,7 @@ import com.ayuget.redface.data.rx.EndlessObserver;
 import com.ayuget.redface.data.rx.SubscriptionHandler;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.event.SmileySelectedEvent;
+import com.ayuget.redface.ui.misc.UiUtils;
 import com.squareup.otto.Subscribe;
 
 import timber.log.Timber;
@@ -79,7 +80,7 @@ public class EditPostActivity extends ReplyActivity {
      */
     @Subscribe
     public void smileySelected(SmileySelectedEvent event) {
-        insertText(String.format(" %s ", event.getSmileyCode()));
+        UiUtils.insertText(replyEditText, String.format(" %s ", event.getSmileyCode()));
 
         replaceSmileySelector();
         hideSmileysToolbar();
