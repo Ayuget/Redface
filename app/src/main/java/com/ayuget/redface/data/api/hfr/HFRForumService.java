@@ -57,7 +57,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import rx.Completable;
 import rx.Observable;
+import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.functions.Func2;
 import timber.log.Timber;
@@ -120,7 +122,7 @@ public class HFRForumService implements MDService {
     @Override
     public Observable<List<Topic>> listTopics(User user, final Category category, final Subcategory subcategory, int page, final TopicFilter filter) {
         return pageFetcher.fetchSource(user, getTopicListEndpoint(category, subcategory, page, filter))
-                .map(new HTMLToTopicList(categoriesStore))
+                .map(new HTMLToTopicList(categoriesStore, this, user))
                 .flatMap(new Func1<List<Topic>, Observable<Topic>>() {
                     @Override
                     public Observable<Topic> call(List<Topic> topics) {
@@ -134,9 +136,8 @@ public class HFRForumService implements MDService {
 
     @Override
     public Observable<List<Topic>> listMetaPageTopics(User user, TopicFilter filter, boolean sortByDate) {
-        Observable<Topic> metaPageTopics =
-                pageFetcher.fetchSource(user, mdEndpoints.metaPage(filter))
-                .map(new HTMLToTopicList(categoriesStore))
+        Observable<Topic> metaPageTopics = pageFetcher.fetchSource(user, mdEndpoints.metaPage(filter))
+                .map(new HTMLToTopicList(categoriesStore, this, user))
                 .flatMap(new Func1<List<Topic>, Observable<Topic>>() {
                     @Override
                     public Observable<Topic> call(List<Topic> topics) {
@@ -151,6 +152,13 @@ public class HFRForumService implements MDService {
         else {
             return metaPageTopics.toList();
         }
+    }
+
+    public Observable<List<Category>> refreshCategories(User user) {
+        return Observable.defer(() -> {
+            categoriesStore.clearCategories(user);
+            return listCategories(user);
+        });
     }
 
     @Override

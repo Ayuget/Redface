@@ -231,6 +231,30 @@ public class CategoriesStore {
         }
     }
 
+    public void clearCategories(User user) {
+        if (userCategoriesCache.containsKey(user.getUsername())) {
+            List<Category> userCategories = getCategories(user);
+
+            for (Category category : userCategories) {
+                categoriesCache.remove(category.id());
+            }
+
+            SharedPreferences.Editor editor = categoriesPrefs.edit();
+            for (Category category : userCategories) {
+                String categoryKey = CATEGORY_NAME_PREFIX + category.id();
+                if (categoriesPrefs.contains(categoryKey)) {
+                    deleteCategory(editor, categoryKey, category);
+                }
+            }
+
+            String userRelationshipKey = USER_MAPPING_NAME_PREFIX + user.getUsername();
+            editor.remove(userRelationshipKey);
+            editor.apply();
+
+            userCategoriesCache.remove(user.getUsername());
+        }
+    }
+
     protected void storeCategory(SharedPreferences.Editor editor, String categoryKey, Category category) {
         for (Subcategory subcategory : category.subcategories()) {
             String subcategoryKey = SUBCATEGORY_NAME_PREFIX + subcategory.slug();
@@ -238,6 +262,14 @@ public class CategoriesStore {
         }
 
         editor.putString(categoryKey, serializeCategory(category));
+    }
+
+    protected void deleteCategory(SharedPreferences.Editor editor, String categoryKey, Category category) {
+        for (Subcategory subcategory : category.subcategories()) {
+            String subcategoryKey = SUBCATEGORY_NAME_PREFIX + subcategory.slug();
+            editor.remove(subcategoryKey);
+        }
+        editor.remove(categoryKey);
     }
 
     protected String serializeCategory(Category category) {
