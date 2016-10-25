@@ -59,7 +59,7 @@
 }
 
 # OkHttp has some internal stuff not available on Android.
--dontwarn com.squareup.okhttp.internal.**
+-dontwarn okhttp3.internal.**
 
 # Okio has some stuff not available on Android.
 -dontwarn java.nio.file.*
@@ -78,6 +78,8 @@
 # Retrofit has some optional dependencies we don't use.
 -dontwarn rx.**
 -dontwarn retrofit.appengine.**
+-dontwarn retrofit.client.**
+-dontwarn com.squareup.picasso.**
 
 # LeakCanary
 -dontwarn com.squareup.haha.guava.**
