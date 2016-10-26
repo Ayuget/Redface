@@ -177,8 +177,8 @@
         <item>Petite</item>
         <item>Normale</item>
         <item>Grosse</item>
-        <item>Enorme</item>
-        <item>Très Enorme</item>
+        <item>Énorme</item>
+        <item>Très énorme</item>
         <item>Très très énorme</item>
     </string-array>
     <string name="relogin_instructions">Si vos identifiants ont changés ou que vous souhaitez vous ré-authentifier, vous pouvez le faire en remplissant le formulaire ci-dessous</string>
