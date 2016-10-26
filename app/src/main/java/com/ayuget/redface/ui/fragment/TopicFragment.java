@@ -205,7 +205,11 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
         pager.setAdapter(topicPageAdapter);
         pager.setCurrentItem(currentPage - 1);
 
-        replyButton.setOnClickListener((v) -> replyToTopic());
+        if (userManager.getActiveUser().isGuest()) {
+            replyButton.setVisibility(View.INVISIBLE);
+        } else {
+            replyButton.setOnClickListener((v) -> replyToTopic());
+        }
 
         setupQuickNavigationButtons();
 

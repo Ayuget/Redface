@@ -39,10 +39,6 @@ import com.ayuget.redface.data.api.MDService;
 import com.ayuget.redface.data.api.model.Post;
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.rx.EndlessObserver;
-import com.ayuget.redface.data.rx.SubscriptionHandler;
-import com.ayuget.redface.ui.activity.MultiPaneActivity;
-import com.ayuget.redface.ui.activity.ReplyActivity;
-import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
 import com.ayuget.redface.ui.event.PageSelectedEvent;
 import com.ayuget.redface.ui.event.ScrollToPostEvent;
@@ -95,8 +91,6 @@ public class PostsFragment extends BaseFragment {
 
     @InjectView(R.id.topic_list_swipe_refresh_layout)
     SwipeRefreshLayout swipeRefreshLayout;
-
-    FloatingActionButton replyButton;
 
     private ArrayList<Post> displayedPosts = new ArrayList<>();
 
@@ -180,11 +174,6 @@ public class PostsFragment extends BaseFragment {
             });
         }
 
-        if (userManager.getActiveUser().isGuest()) {
-            replyButton.setVisibility(View.INVISIBLE);
-        }
-
-
         // Deal with long-press actions on images inside the WebView
         setupImagesInteractions();
 
@@ -247,10 +236,6 @@ public class PostsFragment extends BaseFragment {
 
         if (swipeRefreshLayout != null) {
             swipeRefreshLayout.setOnRefreshListener(null);
-        }
-
-        if (replyButton != null) {
-            replyButton.setOnClickListener(null);
         }
 
         if (errorReloadButton != null) {
