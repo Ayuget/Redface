@@ -37,6 +37,8 @@ public class HFREndpoints implements MDEndpoints {
 
     private static final String SUBCATEGORY_URL = "{base_url}/hfr/{category_slug}/{subcategory_slug}/liste_sujet-{page}.htm";
 
+    private static final String SUBCATEGORY_BY_ID_URL = "{base_url}/message.php?&config=hfr.inc&cat={category_id}";
+
     private static final String TOPIC_URL = "{base_url}/forum2.php?config=hfr.inc&cat={category_id}&post={topic_id}&page={page}";
 
     private static final String PRIVATE_MESSAGES_URL = "{base_url}/forum1.php?config=hfr.inc&cat=prive&page={page}&subcat=&sondage=0&owntopic=0&trash=0&trash_post=0&moderation=0&new=0&nojs=0&subcatgroup=0";
@@ -122,6 +124,18 @@ public class HFREndpoints implements MDEndpoints {
     }
 
     /**
+     * Category URL to retrieve subcategory ids
+     */
+    @Override
+    public String subcategoryById(int id) {
+
+        return Phrase.from(SUBCATEGORY_BY_ID_URL)
+                .put("base_url", FORUM_BASE_URL)
+                .put("category_id", id)
+                .format().toString();
+    }
+
+    /**
      * Subcategory URL (page containing related topics)
      */
     @Override
@@ -139,7 +153,7 @@ public class HFREndpoints implements MDEndpoints {
             return Phrase.from(FILTERED_URL)
                     .put("base_url", FORUM_BASE_URL)
                     .put("category_id", category.id())
-                    .put("subcategory_id", 0) // FIXME fetch subcategory id properly
+                    .put("subcategory_id", subcategory.id())
                     .put("page", page)
                     .put("filter_id", filterId.get())
                     .format().toString();

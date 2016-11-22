@@ -33,7 +33,20 @@ public abstract class Subcategory implements Parcelable, SelectableItem {
      */
     public abstract String slug();
 
+    /**
+     * Subcategory id, e.g "331"
+     */
+    public abstract int id();
+
     public static Subcategory create(String name, String slug) {
-        return new AutoValue_Subcategory(name, slug);
+        return new AutoValue_Subcategory(name, slug, -1);
+    }
+
+    public static Subcategory create(String name, int id) {
+        return new AutoValue_Subcategory(name, "", id);
+    }
+
+    public static Subcategory create(String name, String slug, int id) {
+        return new AutoValue_Subcategory(name, slug, id);
     }
 }

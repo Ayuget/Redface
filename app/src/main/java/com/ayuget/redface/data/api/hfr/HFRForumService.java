@@ -19,16 +19,17 @@ package com.ayuget.redface.data.api.hfr;
 import android.os.Handler;
 import android.os.Looper;
 
-import com.ayuget.redface.data.api.MDAuthenticator;
 import com.ayuget.redface.data.api.MDEndpoints;
 import com.ayuget.redface.data.api.MDMessageSender;
 import com.ayuget.redface.data.api.MDService;
 import com.ayuget.redface.data.api.SmileyService;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToBBCode;
+import com.ayuget.redface.data.api.hfr.transforms.HTMLToCategoryList;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToPostList;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToPrivateMessageList;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToProfile;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToSmileyList;
+import com.ayuget.redface.data.api.hfr.transforms.HTMLToSubcategoryIdList;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToTopic;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToTopicList;
 import com.ayuget.redface.data.api.model.Category;
@@ -41,7 +42,6 @@ import com.ayuget.redface.data.api.model.Subcategory;
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.api.model.TopicFilter;
 import com.ayuget.redface.data.api.model.User;
-import com.ayuget.redface.data.api.hfr.transforms.HTMLToCategoryList;
 import com.ayuget.redface.data.api.model.misc.SmileyResponse;
 import com.ayuget.redface.data.state.CategoriesStore;
 import com.ayuget.redface.network.HTTPClientProvider;
@@ -53,13 +53,12 @@ import com.ayuget.redface.util.UserUtils;
 import com.google.common.base.Optional;
 import com.squareup.otto.Bus;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import rx.Completable;
 import rx.Observable;
-import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.functions.Func2;
 import timber.log.Timber;
@@ -98,6 +97,14 @@ public class HFRForumService implements MDService {
         if (cachedCategories == null) {
             return pageFetcher.fetchSource(user, mdEndpoints.homepage())
                     .map(new HTMLToCategoryList())
+                    .flatMap(new Func1<List<Category>, Observable<Category>>() {
+                        @Override
+                        public Observable<Category> call(List<Category> categories) {
+                            return Observable.from(categories);
+                        }
+                    })
+                    .zipWith(listSubCategories(user), new MergeSubcategories())
+                    .toList()
                     .map(categories -> {
                         Timber.d("Successfully retrieved '%d' categories from network for user '%s', caching them", categories.size(), user.getUsername());
                         categoriesStore.storeCategories(user, categories);
@@ -108,6 +115,57 @@ public class HFRForumService implements MDService {
             Timber.d("Successfully retrieved '%d' categories from cache for user '%s'", cachedCategories.size(), user.getUsername());
             return Observable.just(cachedCategories);
         }
+    }
+
+    private class MergeSubcategories implements Func2<Category, List<Subcategory>, Category> {
+        @Override
+        public Category call(Category category, List<Subcategory> subcategories) {
+            Category updatedCategory;
+            List<Subcategory> updatedSubcategories = new ArrayList<>();
+
+            for (int i = 0; i < category.subcategories().size(); i++) {
+                Subcategory updatedSubcategory = Subcategory.create(
+                        category.subcategories().get(i).name(),
+                        category.subcategories().get(i).slug(),
+                        subcategories.get(i).id()
+                );
+                updatedSubcategories.add(updatedSubcategory);
+
+            }
+            updatedCategory = Category.builder()
+                    .id(category.id())
+                    .name(category.name())
+                    .slug(category.slug())
+                    .subcategories(updatedSubcategories)
+                    .build();
+            return updatedCategory;
+        }
+    }
+
+    private Observable<List<Category>> getCategoryList(User user) {
+        return pageFetcher.fetchSource(user, mdEndpoints.homepage())
+                .map(new HTMLToCategoryList());
+    }
+
+    @Override
+    public Observable<List<Subcategory>> listSubCategories(final User user) {
+        Timber.d("Retrieving subcategories for user '%s'", user.getUsername());
+
+        return pageFetcher.fetchSource(user, mdEndpoints.homepage())
+                .map(new HTMLToCategoryList())
+                .flatMap(new Func1<List<Category>, Observable<Category>>() {
+                    @Override
+                    public Observable<Category> call(List<Category> categories) {
+                        return Observable.from(categories);
+                    }
+                })
+                .flatMap(new Func1<Category, Observable<String>>() {
+                    @Override
+                    public Observable<String> call(Category category) {
+                        return pageFetcher.fetchSource(user, mdEndpoints.subcategoryById(category.id()));
+                    }
+                })
+                .map(new HTMLToSubcategoryIdList());
     }
 
     private String getTopicListEndpoint(final Category category, final Subcategory subcategory, int page, final TopicFilter filter) {
