@@ -60,7 +60,6 @@ import javax.inject.Inject;
 
 import rx.Observable;
 import rx.functions.Func1;
-import rx.functions.Func2;
 import timber.log.Timber;
 
 /**
@@ -98,7 +97,7 @@ public class HFRForumService implements MDService {
             return pageFetcher.fetchSource(user, mdEndpoints.homepage())
                     .map(new HTMLToCategoryList())
                     .flatMap(Observable::from)
-                    .zipWith(listSubCategories(user), new MergeSubcategories())
+                    .zipWith(listSubCategories(user), this::mergeSubcategories)
                     .toList()
                     .map(categories -> {
                         Timber.d("Successfully retrieved '%d' categories from network for" +
@@ -113,29 +112,28 @@ public class HFRForumService implements MDService {
         }
     }
 
-    private class MergeSubcategories implements Func2<Category, List<Subcategory>, Category> {
-        @Override
-        public Category call(Category category, List<Subcategory> subcategories) {
-            Category updatedCategory;
-            List<Subcategory> updatedSubcategories = new ArrayList<>();
+    private Category mergeSubcategories(Category category, List<Subcategory> subcategories) {
+        Category updatedCategory;
+        List<Subcategory> updatedSubcategories = new ArrayList<>();
 
-            for (int i = 0; i < category.subcategories().size(); i++) {
-                Subcategory updatedSubcategory = Subcategory.create(
-                        category.subcategories().get(i).name(),
-                        category.subcategories().get(i).slug(),
-                        subcategories.get(i).id()
-                );
-                updatedSubcategories.add(updatedSubcategory);
+        for (int i = 0; i < category.subcategories().size(); i++) {
+            Subcategory updatedSubcategory = Subcategory.create(
+                    category.subcategories().get(i).name(),
+                    category.subcategories().get(i).slug(),
+                    subcategories.get(i).id()
+            );
+            updatedSubcategories.add(updatedSubcategory);
 
-            }
-            updatedCategory = Category.builder()
-                    .id(category.id())
-                    .name(category.name())
-                    .slug(category.slug())
-                    .subcategories(updatedSubcategories)
-                    .build();
-            return updatedCategory;
         }
+
+        updatedCategory = Category.builder()
+                .id(category.id())
+                .name(category.name())
+                .slug(category.slug())
+                .subcategories(updatedSubcategories)
+                .build();
+
+        return updatedCategory;
     }
 
     @Override
