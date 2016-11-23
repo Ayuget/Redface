@@ -47,6 +47,7 @@ public class UIConstants {
     public static final int TOPIC_ACTION_REPLY_TO_TOPIC = 5;
     public static final int TOPIC_ACTION_COPY_LINK = 6;
     public static final int TOPIC_ACTION_SHARE = 7;
+    public static final int TOPIC_ACTION_UNFLAG = 8;
 
     /**
      * Reply intent
