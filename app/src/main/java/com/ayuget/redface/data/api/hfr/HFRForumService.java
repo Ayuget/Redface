@@ -97,16 +97,12 @@ public class HFRForumService implements MDService {
         if (cachedCategories == null) {
             return pageFetcher.fetchSource(user, mdEndpoints.homepage())
                     .map(new HTMLToCategoryList())
-                    .flatMap(new Func1<List<Category>, Observable<Category>>() {
-                        @Override
-                        public Observable<Category> call(List<Category> categories) {
-                            return Observable.from(categories);
-                        }
-                    })
+                    .flatMap(Observable::from)
                     .zipWith(listSubCategories(user), new MergeSubcategories())
                     .toList()
                     .map(categories -> {
-                        Timber.d("Successfully retrieved '%d' categories from network for user '%s', caching them", categories.size(), user.getUsername());
+                        Timber.d("Successfully retrieved '%d' categories from network for" +
+                                " user '%s', caching them", categories.size(), user.getUsername());
                         categoriesStore.storeCategories(user, categories);
                         return categories;
                     });
@@ -142,29 +138,14 @@ public class HFRForumService implements MDService {
         }
     }
 
-    private Observable<List<Category>> getCategoryList(User user) {
-        return pageFetcher.fetchSource(user, mdEndpoints.homepage())
-                .map(new HTMLToCategoryList());
-    }
-
     @Override
     public Observable<List<Subcategory>> listSubCategories(final User user) {
         Timber.d("Retrieving subcategories for user '%s'", user.getUsername());
 
         return pageFetcher.fetchSource(user, mdEndpoints.homepage())
                 .map(new HTMLToCategoryList())
-                .flatMap(new Func1<List<Category>, Observable<Category>>() {
-                    @Override
-                    public Observable<Category> call(List<Category> categories) {
-                        return Observable.from(categories);
-                    }
-                })
-                .flatMap(new Func1<Category, Observable<String>>() {
-                    @Override
-                    public Observable<String> call(Category category) {
-                        return pageFetcher.fetchSource(user, mdEndpoints.subcategoryById(category.id()));
-                    }
-                })
+                .flatMap(Observable::from)
+                .flatMap(category -> pageFetcher.fetchSource(user, mdEndpoints.subcategoryById(category.id())))
                 .map(new HTMLToSubcategoryIdList());
     }
 
