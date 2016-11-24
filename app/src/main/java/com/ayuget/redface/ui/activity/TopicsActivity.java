@@ -20,11 +20,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentTransaction;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
-import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
@@ -54,12 +49,11 @@ import com.ayuget.redface.ui.fragment.TopicFragment;
 import com.ayuget.redface.ui.fragment.TopicFragmentBuilder;
 import com.ayuget.redface.ui.fragment.TopicListFragment;
 import com.ayuget.redface.ui.fragment.TopicListFragmentBuilder;
-import com.ayuget.redface.ui.misc.SnackbarHelper;
 import com.ayuget.redface.ui.misc.PagePosition;
+import com.ayuget.redface.ui.misc.SnackbarHelper;
 import com.ayuget.redface.ui.misc.UiUtils;
-import com.rengwuxian.materialedittext.MaterialEditText;
+import com.ayuget.redface.util.GoToPageDialog;
 import com.squareup.otto.Subscribe;
-import com.squareup.phrase.Phrase;
 
 import javax.inject.Inject;
 
@@ -80,8 +74,6 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
     private static final String ARG_TOPIC = "topic";
 
     private static final String ARG_CURRENT_CATEGORY = "currentCategory";
-
-    private MaterialEditText goToPageEditText;
 
     private SubscriptionHandler<Integer, Topic> topicDetailsSearchHandler = new SubscriptionHandler<>();
 
@@ -368,7 +360,19 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
                 loadTopic(event.getTopic(), event.getTopic().lastReadPage(), new PagePosition(event.getTopic().lastReadPostId()));
                 break;
             case UIConstants.TOPIC_ACTION_GO_TO_SPECIFIC_PAGE:
-                showGoToPageDialog(event.getTopic());
+                GoToPageDialog goToPageDialog = new GoToPageDialog(this, themeManager, event.getTopic().pagesCount(),
+                        new GoToPageDialog.GoToPageDialogCallback() {
+                            @Override
+                            public void onSuccess(int pageNumber) {
+                                loadTopic(event.getTopic(), pageNumber, new PagePosition(PagePosition.TOP));
+                            }
+
+                            @Override
+                            public void onError() {
+                                SnackbarHelper.makeError(TopicsActivity.this, R.string.invalid_page_number).show();
+                            }
+                        });
+                goToPageDialog.show();
                 break;
             case UIConstants.TOPIC_ACTION_REPLY_TO_TOPIC: {
                 Intent intent = new Intent(this, ReplyActivity.class);
@@ -490,68 +494,5 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
                         Toast.makeText(TopicsActivity.this, R.string.mark_as_favorite_failed, Toast.LENGTH_SHORT).show();
                     }
                 }));
-    }
-
-    /**
-     * Shows the "Go to page" dialog where the user can enter the page he wants to consult.
-     * @param topic topic concerned by the action
-     */
-    public void showGoToPageDialog(final Topic topic) {
-        MaterialDialog dialog = new MaterialDialog.Builder(this)
-                .customView(R.layout.dialog_go_to_page, true)
-                .positiveText(R.string.dialog_go_to_page_positive_text)
-                .negativeText(android.R.string.cancel)
-                .theme(themeManager.getMaterialDialogTheme())
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        try {
-                            int pageNumber = Integer.valueOf(goToPageEditText.getText().toString());
-                            loadTopic(topic, pageNumber, new PagePosition(PagePosition.TOP));
-                        } catch (NumberFormatException e) {
-                            Timber.e(e, "Invalid page number entered : %s", goToPageEditText.getText().toString());
-                            SnackbarHelper.makeError(TopicsActivity.this, R.string.invalid_page_number).show();
-                        }
-                    }
-                })
-                .build();
-
-
-        final View positiveAction = dialog.getActionButton(DialogAction.POSITIVE);
-        goToPageEditText = (MaterialEditText) dialog.getCustomView().findViewById(R.id.page_number);
-
-        TextView pagesCountView = (TextView) dialog.getCustomView().findViewById(R.id.pages_count);
-        pagesCountView.setText(Phrase.from(this, R.string.pages_count).put("page", topic.pagesCount()).format());
-
-        goToPageEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.toString().trim().length() > 0) {
-                    try {
-                        int pageNumber = Integer.valueOf(s.toString());
-                        positiveAction.setEnabled(pageNumber >= 1 && pageNumber <= topic.pagesCount());
-                    }
-                    catch (NumberFormatException e) {
-                        positiveAction.setEnabled(false);
-                    }
-                }
-                else {
-                    positiveAction.setEnabled(false);
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-
-        dialog.show();
-        positiveAction.setEnabled(false);
     }
 }
