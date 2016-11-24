@@ -16,7 +16,6 @@
 
 package com.ayuget.redface.data.api.hfr.transforms;
 
-import com.ayuget.redface.data.api.model.Subcategory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,22 +24,22 @@ import java.util.regex.Pattern;
 
 import rx.functions.Func1;
 
-public class HTMLToSubcategoryIdList implements Func1<String, List<Subcategory>> {
+public class HTMLToSucategoriesIds implements Func1<String, List<Integer>> {
 
     private static Pattern subcategoryId = Pattern.compile("<option\\s*value=\"([0-9]+)\"\\s*>(.+?)</option>",
             Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
     @Override
-    public List<Subcategory> call(String source) {
-        List<Subcategory> subcategories = new ArrayList<>();
+    public List<Integer> call(String source) {
+        List<Integer> ids = new ArrayList<>();
 
         Matcher m = subcategoryId.matcher(source);
 
         while (m.find()) {
-            Subcategory subcategory = Subcategory.create(m.group(2), Integer.parseInt(m.group(1)));
-            subcategories.add(subcategory);
+            int id = Integer.parseInt(m.group(1));
+            ids.add(id);
         }
 
-        return subcategories;
+        return ids;
     }
 }

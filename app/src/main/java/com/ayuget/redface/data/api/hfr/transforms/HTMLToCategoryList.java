@@ -17,10 +17,10 @@
 package com.ayuget.redface.data.api.hfr.transforms;
 
 import com.ayuget.redface.data.api.model.Category;
-import com.ayuget.redface.data.api.model.Subcategory;
 import com.ayuget.redface.util.HTMLUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -56,21 +56,11 @@ public final class HTMLToCategoryList implements Func1<String, List<Category>> {
             String categoryName = HTMLUtils.escapeHTML(m.group(3).trim());
             String categorySlug = m.group(2);
 
-            // Parse subcategories directly, and save an HTTP request !
-            List<Subcategory> subcategories = new ArrayList<>();
-            String subcatsHTML = m.group(4);
-
-            Matcher submatchs = subcategoryPattern.matcher(subcatsHTML);
-            while (submatchs.find()) {
-                Subcategory subcategory = Subcategory.create(HTMLUtils.escapeHTML(submatchs.group(2)), submatchs.group(1));
-                subcategories.add(subcategory);
-            }
-
             Category category = Category.builder()
                 .id(categoryId)
                 .name(categoryName)
                 .slug(categorySlug)
-                .subcategories(subcategories)
+                .subcategories(Collections.emptyList())
                 .build();
 
             categories.add(category);

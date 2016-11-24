@@ -29,7 +29,8 @@ import com.ayuget.redface.data.api.hfr.transforms.HTMLToPostList;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToPrivateMessageList;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToProfile;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToSmileyList;
-import com.ayuget.redface.data.api.hfr.transforms.HTMLToSubcategoryIdList;
+import com.ayuget.redface.data.api.hfr.transforms.HTMLToSubcategoriesNameSlug;
+import com.ayuget.redface.data.api.hfr.transforms.HTMLToSucategoriesIds;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToTopic;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToTopicList;
 import com.ayuget.redface.data.api.model.Category;
@@ -88,6 +89,8 @@ public class HFRForumService implements MDService {
     private String currentHashcheck;
 
     @Override
+    /* Fixme: can be very long and if, by any means, slug and id lists are not in the same order
+     * on server, we are screwed. */
     public Observable<List<Category>> listCategories(final User user) {
         Timber.d("Retrieving categories for user '%s'", user.getUsername());
 
@@ -97,7 +100,12 @@ public class HFRForumService implements MDService {
             return pageFetcher.fetchSource(user, mdEndpoints.homepage())
                     .map(new HTMLToCategoryList())
                     .flatMap(Observable::from)
-                    .zipWith(listSubCategories(user), this::mergeSubcategories)
+                    .flatMap(category ->
+                            Observable.zip(
+                                    listSubCategoriesBySlug(user, category),
+                                    listSubCategoriesById(user, category),
+                                    (slugs, ids) -> mergeSubcategories(category, slugs, ids)
+                            ))
                     .toList()
                     .map(categories -> {
                         Timber.d("Successfully retrieved '%d' categories from network for" +
@@ -112,18 +120,17 @@ public class HFRForumService implements MDService {
         }
     }
 
-    private Category mergeSubcategories(Category category, List<Subcategory> subcategories) {
+    private Category mergeSubcategories(Category category, List<Subcategory> subcategories, List<Integer> ids) {
         Category updatedCategory;
         List<Subcategory> updatedSubcategories = new ArrayList<>();
 
-        for (int i = 0; i < category.subcategories().size(); i++) {
+        for (int i = 0; i < subcategories.size(); i++) {
             Subcategory updatedSubcategory = Subcategory.create(
-                    category.subcategories().get(i).name(),
-                    category.subcategories().get(i).slug(),
-                    subcategories.get(i).id()
+                    subcategories.get(i).name(),
+                    subcategories.get(i).slug(),
+                    ids.get(i)
             );
             updatedSubcategories.add(updatedSubcategory);
-
         }
 
         updatedCategory = Category.builder()
@@ -136,15 +143,18 @@ public class HFRForumService implements MDService {
         return updatedCategory;
     }
 
-    @Override
-    public Observable<List<Subcategory>> listSubCategories(final User user) {
+    private Observable<List<Subcategory>> listSubCategoriesBySlug(final User user, Category category) {
+        Timber.d("Retrieving subcategories slugs and name for user '%s'", user.getUsername());
+
+        return pageFetcher.fetchSource(user, mdEndpoints.category(category, 1, TopicFilter.NONE))
+                .map(new HTMLToSubcategoriesNameSlug());
+    }
+
+    private Observable<List<Integer>> listSubCategoriesById(final User user, Category category) {
         Timber.d("Retrieving subcategories for user '%s'", user.getUsername());
 
-        return pageFetcher.fetchSource(user, mdEndpoints.homepage())
-                .map(new HTMLToCategoryList())
-                .flatMap(Observable::from)
-                .flatMap(category -> pageFetcher.fetchSource(user, mdEndpoints.subcategoryById(category.id())))
-                .map(new HTMLToSubcategoryIdList());
+        return pageFetcher.fetchSource(user, mdEndpoints.subcategoryById(category.id()))
+                .map(new HTMLToSucategoriesIds());
     }
 
     private String getTopicListEndpoint(final Category category, final Subcategory subcategory, int page, final TopicFilter filter) {

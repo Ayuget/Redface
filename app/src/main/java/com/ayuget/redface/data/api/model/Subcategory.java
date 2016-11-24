@@ -42,10 +42,6 @@ public abstract class Subcategory implements Parcelable, SelectableItem {
         return new AutoValue_Subcategory(name, slug, -1);
     }
 
-    public static Subcategory create(String name, int id) {
-        return new AutoValue_Subcategory(name, "", id);
-    }
-
     public static Subcategory create(String name, String slug, int id) {
         return new AutoValue_Subcategory(name, slug, id);
     }

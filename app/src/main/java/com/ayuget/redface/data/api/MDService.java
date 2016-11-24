@@ -39,11 +39,6 @@ public interface MDService {
     Observable<List<Category>> listCategories(User user);
 
     /**
-     * List all subcategories, focusing on ids.
-     */
-    Observable<List<Subcategory>> listSubCategories(User user);
-
-    /**
      * Lists all topics for a given category
      * @param category category
      * @param filter filter to apply
