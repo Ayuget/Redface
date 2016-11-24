@@ -29,11 +29,11 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
-public class HTMLToSubcategoriesNameSlugTest extends BaseTestCase {
+public class HTMLToSubcategoriesTest extends BaseTestCase {
 
     @Test
     public void test_parseSubcategories() throws IOException {
-        HTMLToSubcategoriesNameSlug parser = new HTMLToSubcategoriesNameSlug();
+        HTMLToSubcategories parser = new HTMLToSubcategories();
         List<Subcategory> subcategories = parser.call(readAssetFile("hfr_topics_page.html"));
 
         assertThat(subcategories.size()).isEqualTo(10);

@@ -26,7 +26,10 @@ import java.util.regex.Pattern;
 
 import rx.functions.Func1;
 
-public class HTMLToSubcategoriesNameSlug implements Func1<String, List<Subcategory>> {
+/**
+ * Does not fill subcategory id.
+ */
+public class HTMLToSubcategories implements Func1<String, List<Subcategory>> {
 
     private static final Pattern cBackHeader = Pattern.compile(
                 "<tr\\s*class=\"cBackHeader\\s*fondForum1Subcat\">(.*?)</tr>",

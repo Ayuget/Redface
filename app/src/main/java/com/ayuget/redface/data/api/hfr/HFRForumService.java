@@ -29,8 +29,8 @@ import com.ayuget.redface.data.api.hfr.transforms.HTMLToPostList;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToPrivateMessageList;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToProfile;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToSmileyList;
-import com.ayuget.redface.data.api.hfr.transforms.HTMLToSubcategoriesNameSlug;
-import com.ayuget.redface.data.api.hfr.transforms.HTMLToSucategoriesIds;
+import com.ayuget.redface.data.api.hfr.transforms.HTMLToSubcategories;
+import com.ayuget.redface.data.api.hfr.transforms.HTMLToSubcategoryIds;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToTopic;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToTopicList;
 import com.ayuget.redface.data.api.model.Category;
@@ -102,9 +102,9 @@ public class HFRForumService implements MDService {
                     .flatMap(Observable::from)
                     .flatMap(category ->
                             Observable.zip(
-                                    listSubCategoriesBySlug(user, category),
-                                    listSubCategoriesById(user, category),
-                                    (slugs, ids) -> mergeSubcategories(category, slugs, ids)
+                                    listSubCategories(user, category),
+                                    listSubCategoriesIds(user, category),
+                                    (sub, ids) -> mergeSubcategories(category, sub, ids)
                             ))
                     .toList()
                     .map(categories -> {
@@ -143,18 +143,18 @@ public class HFRForumService implements MDService {
         return updatedCategory;
     }
 
-    private Observable<List<Subcategory>> listSubCategoriesBySlug(final User user, Category category) {
+    private Observable<List<Subcategory>> listSubCategories(final User user, Category category) {
         Timber.d("Retrieving subcategories slugs and name for user '%s'", user.getUsername());
 
         return pageFetcher.fetchSource(user, mdEndpoints.category(category, 1, TopicFilter.NONE))
-                .map(new HTMLToSubcategoriesNameSlug());
+                .map(new HTMLToSubcategories());
     }
 
-    private Observable<List<Integer>> listSubCategoriesById(final User user, Category category) {
+    private Observable<List<Integer>> listSubCategoriesIds(final User user, Category category) {
         Timber.d("Retrieving subcategories for user '%s'", user.getUsername());
 
         return pageFetcher.fetchSource(user, mdEndpoints.subcategoryById(category.id()))
-                .map(new HTMLToSucategoriesIds());
+                .map(new HTMLToSubcategoryIds());
     }
 
     private String getTopicListEndpoint(final Category category, final Subcategory subcategory, int page, final TopicFilter filter) {

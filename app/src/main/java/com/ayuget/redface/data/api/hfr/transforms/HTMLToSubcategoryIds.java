@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
 
 import rx.functions.Func1;
 
-public class HTMLToSucategoriesIds implements Func1<String, List<Integer>> {
+public class HTMLToSubcategoryIds implements Func1<String, List<Integer>> {
 
     private static Pattern subcategoryId = Pattern.compile("<option\\s*value=\"([0-9]+)\"\\s*>(.+?)</option>",
             Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
