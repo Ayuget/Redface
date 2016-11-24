@@ -144,16 +144,16 @@ public class HFRForumService implements MDService {
     }
 
     private Observable<List<Subcategory>> listSubCategories(final User user, Category category) {
-        Timber.d("Retrieving subcategories slugs and name for user '%s'", user.getUsername());
+        Timber.d("Retrieving subcategories slugs and name for user '%s', Category '%s'", user.getUsername(), category.name());
 
         return pageFetcher.fetchSource(user, mdEndpoints.category(category, 1, TopicFilter.NONE))
                 .map(new HTMLToSubcategories());
     }
 
     private Observable<List<Integer>> listSubCategoriesIds(final User user, Category category) {
-        Timber.d("Retrieving subcategories for user '%s'", user.getUsername());
+        Timber.d("Retrieving subcategories ids for user '%s', Category '%s'", user.getUsername(), category.name());
 
-        return pageFetcher.fetchSource(user, mdEndpoints.subcategoryById(category.id()))
+        return pageFetcher.fetchSource(user, mdEndpoints.subcategoriesIdsList(category.id()))
                 .map(new HTMLToSubcategoryIds());
     }
 

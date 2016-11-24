@@ -127,7 +127,7 @@ public class HFREndpoints implements MDEndpoints {
      * Category URL to retrieve subcategory ids
      */
     @Override
-    public String subcategoryById(int id) {
+    public String subcategoriesIdsList(int id) {
 
         return Phrase.from(SUBCATEGORY_BY_ID_URL)
                 .put("base_url", FORUM_BASE_URL)

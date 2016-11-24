@@ -33,9 +33,10 @@ public interface MDEndpoints {
     String category(Category category, int page, TopicFilter topicFilter);
 
     /**
-     * Category URL (page containing related topics by id)
+     * Page containing subcategories ids for a category.
+     * @param id category id.
      */
-    String subcategoryById(int id);
+    String subcategoriesIdsList(int id);
 
     /**
      * Subcategory URL (page containing related topics)
