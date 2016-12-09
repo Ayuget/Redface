@@ -40,4 +40,13 @@
         android:title="@string/pref_network_title"
         android:layout="@layout/preference_home"
         android:summary="@string/pref_network_summary" />
+
+    <Preference
+        android:key="black_list_preferences"
+        android:icon="?attr/blacklistIconDrawable"
+        android:persistent="false"
+        android:title="@string/pref_blacklist_title"
+        android:layout="@layout/preference_home"
+        android:summary="@string/pref_blacklist_summary" />
+
 </PreferenceScreen>

@@ -20,6 +20,7 @@ import com.ayuget.redface.RedfaceApp;
 import com.ayuget.redface.account.AccountModule;
 import com.ayuget.redface.account.UserManager;
 import com.ayuget.redface.image.ImageModule;
+import com.ayuget.redface.settings.Blacklist;
 import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.ui.activity.AccountActivity;
 import com.ayuget.redface.ui.activity.EditPostActivity;
@@ -39,7 +40,6 @@ import com.ayuget.redface.ui.fragment.PostsFragment;
 import com.ayuget.redface.ui.fragment.PrivateMessageListFragment;
 import com.ayuget.redface.ui.fragment.TopicFragment;
 import com.ayuget.redface.ui.fragment.TopicListFragment;
-import com.ayuget.redface.ui.misc.ImageMenuHandler;
 import com.ayuget.redface.ui.misc.ThemeManager;
 import com.ayuget.redface.ui.template.AvatarTemplate;
 import com.ayuget.redface.ui.template.PostActionsTemplate;
@@ -100,8 +100,8 @@ public class UIModule {
         return new QuickActionsTemplate(app.getApplicationContext(), userManager);
     }
 
-    @Provides @Singleton PostTemplate providePostTemplate(RedfaceApp app, UserManager userManager, AvatarTemplate avatarTemplate, PostExtraDetailsTemplate extraDetailsTemplate, PostActionsTemplate postActionsTemplate, QuickActionsTemplate quickActionsTemplate, RedfaceSettings appSettings) {
-        return new PostTemplate(app.getApplicationContext(), userManager, avatarTemplate, extraDetailsTemplate, postActionsTemplate, quickActionsTemplate, appSettings);
+    @Provides @Singleton PostTemplate providePostTemplate(RedfaceApp app, UserManager userManager, AvatarTemplate avatarTemplate, PostExtraDetailsTemplate extraDetailsTemplate, PostActionsTemplate postActionsTemplate, QuickActionsTemplate quickActionsTemplate, RedfaceSettings appSettings, Blacklist blacklist) {
+        return new PostTemplate(app.getApplicationContext(), userManager, avatarTemplate, extraDetailsTemplate, postActionsTemplate, quickActionsTemplate, appSettings, blacklist);
     }
 
     @Provides @Singleton PostsTemplate providePostsTemplate(RedfaceApp app, PostTemplate postTemplate, ThemeManager themeManager) {

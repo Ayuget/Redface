@@ -213,6 +213,19 @@
         <item>24 hours</item>
     </string-array>
 
+    <!-- Blacklist preferences screen -->
+    <string name="pref_blacklist_title">Blacklist</string>
+    <string name="pref_blacklist_summary">Manage blocked users</string>
+    <string name="pref_blacklist_activate">Activate blacklist</string>
+    <string name="pref_blacklist_activate_summary">Authorize blaclist members to be blocked</string>
+    <string name="pref_blacklist_empty">No blocked user</string>
+    <string name="pref_blacklist_users">Users</string>
+    <string name="pref_blacklist_alertdialog_message">Delete from blacklist?</string>
+    <string name="pref_blacklist_alertdialog_positive">@android:string/ok</string>
+    <string name="pref_blacklist_alertdialog_negative">@android:string/cancel</string>
+    <string name="pref_blacklist_show_blocked">Show blocked user</string>
+    <string name="pref_blaclist_show_blocked_summary">Show the name of the blocked user instead of the message</string>
+
     <!-- About page -->
     <string name="menu_about">About</string>
 
@@ -234,6 +247,7 @@
     <string name="action_multiquote">Quote those messages</string>
     <string name="quoted_messages">1 quoted message</string>
     <string name="quoted_messages_plural">{count} quoted messages</string>
+    <string name="user_blocked">User %1$s blocked !</string>
 
     <!-- Post page -->
     <string name="reload_page">Reload</string>
