@@ -12,6 +12,7 @@
 
     <!-- Image management -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MANAGE_DOCUMENTS"/>
 
     <!-- Notification service -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
@@ -79,6 +80,14 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+
+        <activity android:name="com.ayuget.redface.ui.activity.ImageSharingActivity" android:icon="@drawable/ic_rehost" android:theme="@style/Theme.AppCompat.Translucent">
+            <intent-filter android:label="@string/upload_on_hfr_rehost">
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="image/*" />
+            </intent-filter>
+        </activity>
 
         <meta-data android:name="com.crashlytics.ApiKey" android:value="b1f369fddd2fed6f71072ef7db728637b1c633bc"/>
     </application>

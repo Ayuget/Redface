@@ -16,13 +16,12 @@
 
 package com.ayuget.redface.network;
 
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
-
 import java.io.IOException;
 import java.net.URL;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import rx.Observable;
 import rx.Subscriber;
 import timber.log.Timber;
@@ -54,8 +53,9 @@ public class HTTPRedirection {
         return Observable.create(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> subscriber) {
-                OkHttpClient httpClient = new OkHttpClient();
-                httpClient.setFollowRedirects(false);
+                OkHttpClient httpClient = new OkHttpClient.Builder()
+                        .followRedirects(false)
+                        .build();
 
                 Request request = new Request.Builder()
                         .url(originalUrl)

@@ -23,7 +23,9 @@ import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.text.Editable;
 import android.util.DisplayMetrics;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.ayuget.redface.R;
@@ -33,11 +35,17 @@ public class UiUtils {
      * Copies text into user clipboard
      */
     public static void copyToClipboard(Context context, String text) {
+        copyToClipboard(context, text, true);
+    }
+
+    public static void copyToClipboard(Context context, String text, boolean showToast) {
         ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clip = ClipData.newPlainText(context.getString(R.string.link_sucessfully_copied), text);
         clipboard.setPrimaryClip(clip);
 
-        Toast.makeText(context, R.string.link_sucessfully_copied, Toast.LENGTH_SHORT).show();
+        if (showToast) {
+            Toast.makeText(context, R.string.link_sucessfully_copied, Toast.LENGTH_SHORT).show();
+        }
     }
 
     /**
@@ -134,5 +142,54 @@ public class UiUtils {
 
     public static int getInternalBrowserToolbarColor(Context context) {
         return resolveColorAttribute(context, R.attr.internalBrowserToolbarColor);
+    }
+
+    private static void insertTextFromSelection(EditText editText, String text, int selectionStart, int selectionEnd) {
+        Editable replyText = editText.getText();
+
+        if (selectionStart != -1 && selectionEnd != -1) {
+            // Some text has been selected by the user
+            replyText.replace(selectionStart, selectionEnd, text);
+        }
+        else if (selectionStart != -1) {
+            // EditText has focus, insert at caret
+            replyText.insert(selectionStart, text);
+        }
+        else {
+            // No focus
+            editText.append(text);
+        }
+    }
+
+    /**
+     * Inserts a text at current caret position
+     * @param text text to insert
+     */
+    public static void insertText(EditText editText, String text) {
+        int selectionStart = editText.getSelectionStart();
+        int selectionEnd = editText.getSelectionEnd();
+        insertTextFromSelection(editText, text, selectionStart, selectionEnd);
+    }
+
+    public static EditTextState insertTextAndSaveState(EditText editText, String text) {
+        int selectionStart = editText.getSelectionStart();
+        int selectionEnd = editText.getSelectionEnd();
+        Editable editTextContent = editText.getText();
+
+        EditTextState editTextState = EditTextState.builder()
+                .text(editTextContent.toString())
+                .selectionStart(selectionStart)
+                .selectionEnd(selectionEnd)
+                .build();
+
+        insertTextFromSelection(editText, text, selectionStart, selectionEnd);
+
+        return editTextState;
+    }
+
+    public static void insertTextFromState(EditText editText, String text, EditTextState editTextState) {
+        editText.setText(editTextState.text());
+        editText.setSelection(editTextState.selectionStart(), editTextState.selectionEnd());
+        insertText(editText, text);
     }
 }

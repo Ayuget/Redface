@@ -151,6 +151,14 @@
         <item name="android:background">@android:color/transparent</item>
     </style>
 
+    <style name="ReplyDialogImageSelectionButton">
+        <item name="android:layout_width">96dp</item>
+        <item name="android:layout_height">120dp</item>
+        <item name="android:background">?attr/replyToolbarBackground</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingTop">16dp</item>
+    </style>
+
     <style name="SmileysSelector">
         <item name="android:background">?attr/appBackgroundColor</item>
     </style>

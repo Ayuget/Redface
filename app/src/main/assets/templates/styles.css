@@ -90,6 +90,14 @@ body.redface-night {
     font-size: 16px;
 }
 
+.font-morehuge .post-content {
+    font-size: 20px;
+}
+
+.font-reallyhuge .post-content {
+    font-size: 24px;
+}
+
 .post-author {
     font-family: 'Roboto', sans-serif;
 }
@@ -238,6 +246,9 @@ img {
 }
 
 .smiley {
+    display: -webkit-flex;
+    align-items: center;
+    justify-content: center;
     box-sizing: border-box;
     text-align: center;
     vertical-align: middle;

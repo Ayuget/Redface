@@ -61,6 +61,10 @@ public class SettingsConstants {
 
     public static final String KEY_USE_MODERN_QUOTE_STYLE = "use_modern_quote_style";
 
+    public static final String KEY_REHOST_DEFAULT_VARIANT = "rehost_default_variant";
+
+    public static final String KEY_SHOW_NAVIGATION_BUTTONS = "show_navigation_buttons";
+
     public static final String KEY_ENABLE_BLACKLIST = "enable_blacklist";
 
     public static final String KEY_SHOW_BLOCKED_USER = "show_blocked_user";

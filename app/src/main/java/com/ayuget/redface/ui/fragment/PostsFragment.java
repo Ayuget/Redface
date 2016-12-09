@@ -16,10 +16,6 @@
 
 package com.ayuget.redface.ui.fragment;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.ValueAnimator;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -40,22 +36,17 @@ import com.ayuget.redface.data.api.MDService;
 import com.ayuget.redface.data.api.model.Post;
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.rx.EndlessObserver;
-import com.ayuget.redface.data.rx.SubscriptionHandler;
 import com.ayuget.redface.settings.Blacklist;
-import com.ayuget.redface.ui.activity.MultiPaneActivity;
-import com.ayuget.redface.ui.activity.ReplyActivity;
-import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.event.BlockUserEvent;
 import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
 import com.ayuget.redface.ui.event.PageSelectedEvent;
 import com.ayuget.redface.ui.event.ScrollToPostEvent;
 import com.ayuget.redface.ui.event.ShowAllSpoilersEvent;
+import com.ayuget.redface.ui.event.TopicPageCountUpdatedEvent;
 import com.ayuget.redface.ui.event.UnquoteAllPostsEvent;
 import com.ayuget.redface.ui.misc.ImageMenuHandler;
 import com.ayuget.redface.ui.misc.SnackbarHelper;
-import com.ayuget.redface.ui.misc.UiUtils;
 import com.ayuget.redface.ui.view.TopicPageView;
-import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.hannesdorfmann.fragmentargs.annotation.Arg;
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs;
 import com.squareup.leakcanary.RefWatcher;
@@ -101,9 +92,6 @@ public class PostsFragment extends BaseFragment {
     @InjectView(R.id.topic_list_swipe_refresh_layout)
     SwipeRefreshLayout swipeRefreshLayout;
 
-    @InjectView(R.id.reply_button)
-    FloatingActionButton replyButton;
-
     private ArrayList<Post> displayedPosts = new ArrayList<>();
 
     @Inject
@@ -125,14 +113,6 @@ public class PostsFragment extends BaseFragment {
      * Current scroll position in the webview.
      */
     private int currentScrollPosition;
-
-    private boolean animationInProgress = false;
-
-    ValueAnimator replyButtonAnimator;
-
-    private boolean restoredPosts = false;
-
-    private SubscriptionHandler<Long, String> quoteHandler = new SubscriptionHandler<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -160,7 +140,7 @@ public class PostsFragment extends BaseFragment {
         showLoadingIndicator();
 
         // Restore the list of posts when the fragment is recreated by the framework
-        restoredPosts = false;
+        boolean restoredPosts = false;
 
         if (savedInstanceState != null) {
             Timber.d("@%d -> Fragment(currentPage=%d) -> trying to restore state", System.identityHashCode(this), currentPage);
@@ -182,47 +162,19 @@ public class PostsFragment extends BaseFragment {
         }
 
         // Implement swipe to refresh
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                savePageScrollPosition();
-                Timber.d("Refreshing topic page '%d' for topic %s", currentPage, topic);
-                loadPage(currentPage);
-            }
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            savePageScrollPosition();
+            Timber.d("Refreshing topic page '%d' for topic %s", currentPage, topic);
+            loadPage(currentPage);
         });
         swipeRefreshLayout.setColorSchemeResources(R.color.theme_primary, R.color.theme_primary_dark);
 
         if (errorReloadButton != null) {
-            errorReloadButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Timber.d("Refreshing topic page '%d' for topic %s", currentPage, topic);
-                    showLoadingIndicator();
-                    loadPage(currentPage);
-                }
+            errorReloadButton.setOnClickListener(v -> {
+                Timber.d("Refreshing topic page '%d' for topic %s", currentPage, topic);
+                showLoadingIndicator();
+                loadPage(currentPage);
             });
-        }
-
-        replyButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((TopicFragment)getParentFragment()).replyToTopic();
-            }
-        });
-
-        topicPageView.setOnScrollListener(new TopicPageView.OnScrollListener() {
-            @Override
-            public void onScrolled(int dx, int dy) {
-                if (dy < 0) {
-                    hideReplyButton();
-                } else {
-                    showReplyButton();
-                }
-            }
-        });
-
-        if (userManager.getActiveUser().isGuest()) {
-            replyButton.setVisibility(View.INVISIBLE);
         }
 
         // Deal with long-press actions on images inside the WebView
@@ -236,16 +188,12 @@ public class PostsFragment extends BaseFragment {
         super.onResume();
 
         topicPageView.setOnQuoteListener((TopicFragment)getParentFragment());
-
-        topicPageView.setOnPageLoadedListener(new TopicPageView.OnPageLoadedListener() {
-            @Override
-            public void onPageLoaded() {
-                if (currentScrollPosition > 0) {
-                    restorePageScrollPosition();
-                }
-
-                updateQuotedPostsStatus();
+        topicPageView.setOnPageLoadedListener(() -> {
+            if (currentScrollPosition > 0) {
+                restorePageScrollPosition();
             }
+
+            updateQuotedPostsStatus();
         });
 
         boolean hasLoadedPosts = displayedPosts != null && displayedPosts.size() > 0;
@@ -293,10 +241,6 @@ public class PostsFragment extends BaseFragment {
             swipeRefreshLayout.setOnRefreshListener(null);
         }
 
-        if (replyButton != null) {
-            replyButton.setOnClickListener(null);
-        }
-
         if (errorReloadButton != null) {
             errorReloadButton.setOnClickListener(null);
         }
@@ -320,49 +264,6 @@ public class PostsFragment extends BaseFragment {
         return initialPage == currentPage;
     }
 
-    protected void hideReplyButton() {
-        moveReplyButton(UiUtils.dpToPx(getActivity(), 100));
-    }
-
-    protected void showReplyButton() {
-        moveReplyButton(0);
-    }
-
-    private void moveReplyButton(final float toTranslationY) {
-        if (replyButton.getTranslationY() == toTranslationY) {
-            return;
-        }
-        if (! animationInProgress) {
-            replyButtonAnimator = ValueAnimator.ofFloat(replyButton.getTranslationY(), toTranslationY).setDuration(200);
-
-            replyButtonAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    float translationY = (float) animation.getAnimatedValue();
-                    replyButton.setTranslationY(translationY);
-                }
-            });
-            replyButtonAnimator.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationStart(Animator animation) {
-                    animationInProgress = true;
-                }
-
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    animationInProgress = false;
-                }
-
-                @Override
-                public void onAnimationCancel(Animator animation) {
-                    animationInProgress = false;
-                }
-            });
-
-            replyButtonAnimator.start();
-        }
-    }
-
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -372,29 +273,12 @@ public class PostsFragment extends BaseFragment {
         outState.putInt(ARG_SAVED_SCROLL_POSITION, currentScrollPosition);
     }
 
-    private void startReplyActivity(String initialContent) {
-        MultiPaneActivity hostActivity = (MultiPaneActivity) getActivity();
-
-        if (hostActivity.canLaunchReplyActivity()) {
-            hostActivity.setCanLaunchReplyActivity(false);
-
-            Intent intent = new Intent(getActivity(), ReplyActivity.class);
-            intent.putExtra(ARG_TOPIC, topic);
-
-            if (initialContent != null) {
-                intent.putExtra(UIConstants.ARG_REPLY_CONTENT, initialContent);
-            }
-
-            getActivity().startActivityForResult(intent, UIConstants.REPLY_REQUEST_CODE);
-        }
-    }
-
     /**
      * Defer posts loading until current fragment is visible in the ViewPager. Avoids screwing with
      * forum's read/unread markers.
      */
     @Subscribe public void onPageSelectedEvent(PageSelectedEvent event) {
-        if (! isInitialPage() && event.getTopic() == topic && event.getPage() == currentPage && isVisible()) {
+        if (! isInitialPage() && event.getTopic().id() == topic.id() && event.getPage() == currentPage && isVisible()) {
             Timber.d("@%d -> Fragment(currentPage=%d) received event for page %d selected", System.identityHashCode(this), currentPage, event.getPage());
 
             if (displayedPosts != null && displayedPosts.size() == 0) {
@@ -437,7 +321,7 @@ public class PostsFragment extends BaseFragment {
      * scroll position like this.
      */
     @Subscribe public void onScrollToPost(ScrollToPostEvent event) {
-        if (event.getTopic() == topic && event.getPage() == currentPage) {
+        if (event.getTopic().id() == topic.id() && event.getPage() == currentPage) {
             topicPageView.setPagePosition(event.getPagePosition());
         }
     }
@@ -455,6 +339,13 @@ public class PostsFragment extends BaseFragment {
                         bus.post(new PageRefreshRequestEvent(topic));
                     }
                 }).show();
+    }
+
+    @Subscribe
+    public void onTopicPageCountUpdated(TopicPageCountUpdatedEvent event) {
+        if (event.getTopic().id() == topic.id()) {
+            topic = topic.withPagesCount(event.getNewPageCount());
+        }
     }
 
     private void showLoadingIndicator() {

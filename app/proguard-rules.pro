@@ -59,7 +59,7 @@
 }
 
 # OkHttp has some internal stuff not available on Android.
--dontwarn com.squareup.okhttp.internal.**
+-dontwarn okhttp3.internal.**
 
 # Okio has some stuff not available on Android.
 -dontwarn java.nio.file.*
@@ -71,9 +71,6 @@
 # Gson specific classes
 -dontwarn sun.misc.Unsafe
 
-# OkHttp has some internal stuff not available on Android.
--dontwarn com.squareup.okhttp.internal.**
-
 # Okio has some stuff not available on Android.
 -dontwarn java.nio.file.*
 -dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
@@ -81,6 +78,8 @@
 # Retrofit has some optional dependencies we don't use.
 -dontwarn rx.**
 -dontwarn retrofit.appengine.**
+-dontwarn retrofit.client.**
+-dontwarn com.squareup.picasso.**
 
 # LeakCanary
 -dontwarn com.squareup.haha.guava.**
@@ -120,3 +119,6 @@
 -dontwarn java.lang.ClassValue
 -dontwarn com.google.j2objc.annotations.Weak
 -dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
+
+# Retrolambda
+-dontwarn java.lang.invoke.*

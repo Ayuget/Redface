@@ -18,7 +18,6 @@ package com.ayuget.redface.ui.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -103,15 +102,12 @@ public class WritePrivateMessageActivity extends ReplyActivity {
     }
 
     /**
-     * Duplicated from ReplyActivity because Otto subscriptions don't play
+     * Overrides the implementation from ReplyActivity because Otto subscriptions don't play
      * well with inheritance
      */
     @Subscribe
     public void smileySelected(SmileySelectedEvent event) {
-        insertText(String.format(" %s ", event.getSmileyCode()));
-
-        replaceSmileySelector();
-        hideSmileysToolbar();
+        insertSmiley(event.getSmileyCode());
     }
 
     @Override

@@ -96,6 +96,8 @@
     <string name="pref_show_previous_page_last_post_summary">Display the last post of the previous page at the top of the page</string>
     <string name="pref_show_fully_read_topics_summary">This option only works if you are not in the Meta category</string>
     <string name="pref_use_modern_quote_style">Use modern quote style</string>
+    <string name="pref_show_navigation_buttons_title">Show navigation buttons</string>
+    <string name="pref_show_navigation_buttons_summary">Display "go to top" and "go to bottom" buttons when reading a topic</string>
 
     <string name="pref_enable_egoquote_title">Enable EgoQuote</string>
     <string name="pref_enable_egoquote_summary">Highlights posts in which you are quoted</string>
@@ -146,12 +148,16 @@
         <item>Normal</item>
         <item>Big</item>
         <item>Huge</item>
+        <item>More Huge</item>
+        <item>Really Huge</item>
     </string-array>
     <string-array name="pref_font_size_entries" translatable="false">
         <item>SMALL</item>
         <item>@string/pref_font_size_default</item>
         <item>BIG</item>
         <item>HUGE</item>
+        <item>MOREHUGE</item>
+        <item>REALLYHUGE</item>
     </string-array>
 
     <string name="pref_default_meta_ordering">Default ordering for \"My topics\" screen</string>
@@ -164,6 +170,24 @@
         <item>@string/pref_default_meta_ordering_default</item>
         <item>GROUP_BY_CATS</item>
     </string-array>
+
+    <string name="pref_rehost_settings">Reho.st (image service)</string>
+    <string name="pref_default_uploaded_image_variant">Default quality for uploaded images</string>
+    <string name="pref_default_uploaded_image_variant_summary">Choose which quality gets automatically inserted in the message right after the upload</string>
+    <string name="pref_default_uploaded_image_variant_default" translatable="false">PREVIEW</string>
+    <string-array name="pref_default_uploaded_image_variant_values">
+        <item>@string/image_uploaded_original</item>
+        <item>@string/image_uploaded_medium</item>
+        <item>@string/image_uploaded_preview</item>
+        <item>@string/image_uploaded_thumbnail</item>
+    </string-array>
+    <string-array name="pref_default_uploaded_image_variant_entries" translatable="false">
+        <item>ORIGINAL</item>
+        <item>MEDIUM</item>
+        <item>@string/pref_default_uploaded_image_variant_default</item>
+        <item>THUMBNAIL</item>
+    </string-array>
+
 
     <string name="pref_notification_settings">Notifications</string>
     <string name="pref_enable_pm_notifications_title">Enable private messages notifications</string>
@@ -275,6 +299,28 @@
     <string name="show_smileys_picker">Show smileys picker</string>
     <string name="no_smileys_found">No result</string>
 
+    <string name="image_upload_in_progress">Uploading image…</string>
+    <string name="image_upload_failed">Failed to upload image</string>
+    <string name="image_upload_success">Image successfully uploaded !</string>
+    <string name="image_upload_variants">Variants</string>
+    <string name="image_upload_select_variant">Select a variant</string>
+    <string name="image_uploaded_original">Original</string>
+    <string name="image_uploaded_medium">Medium (800px)</string>
+    <string name="image_uploaded_preview">Preview (600px)</string>
+    <string name="image_uploaded_thumbnail">Thumbnail</string>
+
+    <string name="image_enter_url">Enter image URL</string>
+    <string name="image_enter_url_ok">OK</string>
+    <string name="image_enter_url_cancel">Cancel</string>
+    <string name="image_enter_url_text" translatable="false">http://</string>
+
+    <string name="image_shared_success">Link to image has been copied to clipboard</string>
+    <string name="image_shared_failure">Failed to share image</string>
+    <string name="upload_on_hfr_rehost">Upload on hfrRehost</string>
+    <string name="image_sharing_confirmation">Upload this image to reho.st service ?</string>
+    <string name="image_sharing_confirmation_positive">Yes</string>
+    <string name="image_sharing_confirmation_negative">No</string>
+
     <string name="reply_successfully_posted">Reply successfully posted</string>
     <string name="reply_post_failure">Failed to post reply</string>
     <string name="message_successfully_edited">Reply successfully posted</string>
@@ -313,4 +359,9 @@
     <string name="image_saved_successfully">Image successfully saved !</string>
     <string name="action_snackbar_open_image">Open</string>
     <string name="gallery_image_loading_error">Error loading image</string>
+
+    <!-- Insert image menu -->
+    <string name="insert_image_from_url">URL</string>
+    <string name="insert_image_from_favorites">Favorites</string>
+    <string name="insert_image_from_gallery">Gallery</string>
 </resources>

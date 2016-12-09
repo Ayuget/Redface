@@ -30,6 +30,7 @@ import com.squareup.leakcanary.RefWatcher;
 import net.ypresto.timbertreeutils.CrashlyticsLogTree;
 
 import dagger.ObjectGraph;
+import rx_activity_result.RxActivityResult;
 import timber.log.Timber;
 
 public class RedfaceApp extends Application {
@@ -58,6 +59,8 @@ public class RedfaceApp extends Application {
         refWatcher = LeakCanary.install(this);
 
         JobUtils.runNotificationService(this);
+
+        RxActivityResult.register(this);
     }
 
     private void initActiveUser() {

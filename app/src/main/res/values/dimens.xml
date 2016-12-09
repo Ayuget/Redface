@@ -58,6 +58,13 @@
     <dimen name="swipe_refresh_progress_bar_start_margin">40dp</dimen>
     <dimen name="swipe_refresh_progress_bar_end_margin">72dp</dimen>
 
+    <dimen name="fab_padding">16dp</dimen>
+    <dimen name="fab_elevation">6dp</dimen>
+    <dimen name="fab_pressed_translation_z">12dp</dimen>
+
+    <dimen name="move_to_top_top_padding">102dp</dimen>
+    <dimen name="move_to_bottom_bottom_padding">86dp</dimen>
+
     <!-- Reply dialog -->
     <dimen name="reply_edit_text_padding">12dp</dimen>
     <dimen name="reply_dialog_avatar_padding">8dp</dimen>
@@ -68,4 +75,7 @@
     <dimen name="image_detail_item_height">72dp</dimen>
     <dimen name="image_detail_item_main_text_size">16sp</dimen>
     <dimen name="image_detail_item_secondary_text_size">13sp</dimen>
+
+    <!-- Insert image bottom sheet -->
+    <dimen name="image_bottom_sheet_margin">16dp</dimen>
 </resources>

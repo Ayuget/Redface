@@ -69,6 +69,8 @@
         <item name="appearanceIconDrawable">@drawable/ic_action_emo_cool</item>
         <item name="networkIconDrawable">@drawable/ic_action_cloud</item>
         <item name="blacklistIconDrawable">@drawable/ic_action_block</item>
+
+        <item name="quickNavigationButtonBackground">@color/quick_navigation_button_color_dark</item>
     </style>
 
     <!-- Light theme -->
@@ -120,9 +122,11 @@
         <item name="appearanceIconDrawable">@drawable/ic_action_emo_cool_light</item>
         <item name="networkIconDrawable">@drawable/ic_action_cloud_light</item>
         <item name="blacklistIconDrawable">@drawable/ic_action_block_light</item>
+
+        <item name="quickNavigationButtonBackground">@color/quick_navigation_button_color_light</item>
     </style>
 
-    <!-- Dark theme -->
+    <!-- Night theme -->
     <style name="Theme.Redface.Night" parent="Theme.Redface.Night.Base">
         <item name="colorPrimary">@color/night_theme_primary</item>
         <item name="colorPrimaryDark">@color/night_theme_primary_dark</item>
@@ -171,6 +175,8 @@
         <item name="appearanceIconDrawable">@drawable/ic_action_emo_cool</item>
         <item name="networkIconDrawable">@drawable/ic_action_cloud</item>
         <item name="blacklistIconDrawable">@drawable/ic_action_block</item>
+
+        <item name="quickNavigationButtonBackground">@color/quick_navigation_button_color_dark</item>
     </style>
 
     <style name="Theme.Redface.Transparent.Dark" parent="Theme.Redface.Dark">
@@ -189,5 +195,17 @@
         <item name="android:windowNoTitle">true</item>
         <item name="android:backgroundDimEnabled">false</item>
         <item name="searchViewStyle">@style/RedfaceActionBarWidgetTheme.Light</item>
+    </style>
+
+    <style name="Theme.AppCompat.Translucent">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowAnimationStyle">@null</item>
     </style>
 </resources>

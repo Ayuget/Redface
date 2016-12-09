@@ -70,6 +70,12 @@
                         android:src="@drawable/ic_action_insert_emoticon" />
 
                     <ImageButton
+                        android:id="@+id/insert_image_button"
+                        android:contentDescription="@string/insert_image_description"
+                        style="@style/ReplyOptionsIcon"
+                        android:src="@drawable/ic_action_insert_photo" />
+
+                    <ImageButton
                         android:id="@+id/insert_manual_smiley_button"
                         android:contentDescription="@string/insert_smiley_tag_button_description"
                         style="@style/ReplyOptionsIcon"
@@ -104,17 +110,13 @@
                         android:contentDescription="@string/insert_spoiler_button_description"
                         style="@style/ReplyOptionsIcon"
                         android:src="@drawable/ic_action_crop_square" />
-
-                    <ImageButton
-                        android:id="@+id/insert_image_button"
-                        android:contentDescription="@string/insert_image_description"
-                        style="@style/ReplyOptionsIcon"
-                        android:src="@drawable/ic_action_insert_photo" />
                 </LinearLayout>
 
             </HorizontalScrollView>
 
             </android.support.v7.widget.Toolbar>
+
+
 
         <EditText
             android:id="@+id/reply_text"
@@ -127,6 +129,8 @@
             android:inputType="textMultiLine|textCapSentences"
             android:background="@null"
             android:padding="@dimen/reply_edit_text_padding" />
+
+        <include layout="@layout/image_selection_view" />
     </RelativeLayout>
 
     <!-- Smiley selector -->

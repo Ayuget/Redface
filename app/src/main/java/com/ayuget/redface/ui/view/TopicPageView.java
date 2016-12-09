@@ -57,6 +57,7 @@ import com.ayuget.redface.ui.event.PostActionEvent;
 import com.ayuget.redface.ui.event.QuotePostEvent;
 import com.ayuget.redface.ui.event.WritePrivateMessageEvent;
 import com.ayuget.redface.ui.misc.DummyGestureListener;
+import com.ayuget.redface.ui.misc.NestedScrollingWebView;
 import com.ayuget.redface.ui.misc.PagePosition;
 import com.ayuget.redface.ui.misc.ThemeManager;
 import com.ayuget.redface.ui.misc.UiUtils;
@@ -74,7 +75,7 @@ import javax.inject.Inject;
 import rx.functions.Action1;
 import timber.log.Timber;
 
-public class TopicPageView extends WebView implements View.OnTouchListener {
+public class TopicPageView extends NestedScrollingWebView implements View.OnTouchListener {
     /**
      * The post currently displayed in the webview. These posts will be encoded to HTML with
      * specific {@link com.ayuget.redface.ui.template.HTMLTemplate} classes.

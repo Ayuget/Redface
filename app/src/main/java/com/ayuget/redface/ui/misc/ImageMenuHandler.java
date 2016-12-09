@@ -21,7 +21,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
@@ -34,15 +33,17 @@ import com.ayuget.redface.storage.StorageHelper;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.activity.BaseActivity;
 import com.ayuget.redface.ui.activity.ExifDetailsActivity;
-import com.squareup.okhttp.Callback;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
+import com.ayuget.redface.util.ImageUtils;
 import com.tbruyelle.rxpermissions.RxPermissions;
 
 import java.io.File;
 import java.io.IOException;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import rx.functions.Action1;
 import timber.log.Timber;
 
@@ -76,7 +77,7 @@ public class ImageMenuHandler {
                             final Bitmap.CompressFormat targetFormat = compressAsPng ? Bitmap.CompressFormat.PNG : Bitmap.CompressFormat.JPEG;
 
                             // When compressing image as PNG, we need to make sure the file extension is ".png"
-                            final String imageName = compressAsPng ?  replaceExtensionWithPng(imageOriginalName) : imageOriginalName;
+                            final String imageName = compressAsPng ? ImageUtils.replaceExtensionWithPng(imageOriginalName) : imageOriginalName;
 
                             // Images can be already stored locally so they are only downloaded from the network
                             // if necessary.
@@ -115,12 +116,12 @@ public class ImageMenuHandler {
         final Request request = new Request.Builder().url(imageUrl).build();
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
-            public void onFailure(Request request, IOException e) {
+            public void onFailure(Call call, IOException e) {
                 SnackbarHelper.makeError(activity, R.string.error_saving_image).show();
             }
 
             @Override
-            public void onResponse(Response response) throws IOException {
+            public void onResponse(Call call, Response response) throws IOException {
                 final byte[] imageBytes = response.body().bytes();
 
                 Timber.d("Image successfully decoded, requesting WRITE_EXTERNAL_STORAGE permission to save image");
@@ -195,17 +196,6 @@ public class ImageMenuHandler {
                     imageSavedCallback.onImageSaved(mediaFile, targetFormat);
                 }
             });
-        }
-    }
-
-    private String replaceExtensionWithPng(String imageName) {
-        int dotIndex = imageName.lastIndexOf('.');
-
-        if (dotIndex >= 0) {
-            return imageName.substring(0, imageName.lastIndexOf('.')) + PNG_FILE_EXTENSION;
-        }
-        else {
-            return imageName + PNG_FILE_EXTENSION;
         }
     }
 

@@ -52,6 +52,8 @@
         <attr name="insetForegroundCompat" format="reference|color" />
     </declare-styleable>
 
+    <attr name="quickNavigationButtonBackground" format="reference|color" />
+
     <!-- Settings icons -->
     <attr name="generalIconDrawable" format="reference" />
     <attr name="appearanceIconDrawable" format="reference" />

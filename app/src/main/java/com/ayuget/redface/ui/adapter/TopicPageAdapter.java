@@ -24,13 +24,18 @@ import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.ui.fragment.PostsFragmentBuilder;
 
 public class TopicPageAdapter extends FragmentStatePagerAdapter {
-    private final Topic topic;
+    private Topic topic;
     private final int initialPage;
 
     public TopicPageAdapter(FragmentManager fm, Topic topic, int initialPage) {
         super(fm);
         this.topic = topic;
         this.initialPage = initialPage;
+    }
+
+    public void notifyTopicUpdated(Topic topic) {
+        this.topic = topic;
+        notifyDataSetChanged();
     }
 
     @Override

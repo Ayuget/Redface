@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/image_selection_view"
+    android:layout_marginTop="?attr/actionBarSize"
+    android:layout_marginBottom="?attr/actionBarSize"
+    android:background="?attr/appBackgroundColor"
+    android:visibility="gone"
+    android:padding="16dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <ProgressBar
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:id="@+id/image_upload_progress_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:indeterminate="true"/>
+
+    <Button
+        style="@style/ReplyDialogImageSelectionButton"
+        android:id="@+id/add_image_from_url"
+        android:layout_below="@id/image_upload_progress_bar"
+        android:layout_marginRight="16dp"
+        android:drawableTop="@drawable/ic_link_white_24dp"
+        android:text="@string/insert_image_from_url"
+        />
+    <Button
+        style="@style/ReplyDialogImageSelectionButton"
+        android:layout_below="@id/image_upload_progress_bar"
+        android:layout_toRightOf="@+id/add_image_from_url"
+        android:id="@+id/add_image_from_gallery"
+        android:drawableTop="@drawable/ic_photo_white_24dp"
+        android:text="@string/insert_image_from_gallery"
+        />
+</RelativeLayout>

@@ -22,7 +22,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -54,8 +53,8 @@ import com.ayuget.redface.ui.fragment.TopicFragment;
 import com.ayuget.redface.ui.fragment.TopicFragmentBuilder;
 import com.ayuget.redface.ui.fragment.TopicListFragment;
 import com.ayuget.redface.ui.fragment.TopicListFragmentBuilder;
-import com.ayuget.redface.ui.misc.SnackbarHelper;
 import com.ayuget.redface.ui.misc.PagePosition;
+import com.ayuget.redface.ui.misc.SnackbarHelper;
 import com.ayuget.redface.ui.misc.UiUtils;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.squareup.otto.Subscribe;
@@ -414,7 +413,7 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
     @Subscribe
     public void onInternalLinkClicked(InternalLinkClickedEvent event) {
         TopicFragment topicFragment = (TopicFragment) getSupportFragmentManager().findFragmentByTag(TOPIC_FRAGMENT_TAG);
-        if (topicFragment != null && event.getTopic() == topicFragment.getTopic() && event.getPage() == topicFragment.getCurrentPage()) {
+        if (topicFragment != null && event.getTopic().id() == topicFragment.getTopic().id() && event.getPage() == topicFragment.getCurrentPage()) {
             topicFragment.setCurrentPagePosition(event.getPagePosition());
         }
     }

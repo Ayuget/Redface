@@ -20,5 +20,7 @@ public enum FontSize {
     SMALL,
     NORMAL,
     BIG,
-    HUGE
+    HUGE,
+    MOREHUGE,
+    REALLYHUGE
 }

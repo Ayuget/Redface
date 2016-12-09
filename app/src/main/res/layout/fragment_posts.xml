@@ -16,10 +16,10 @@
   -->
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:wheel="http://schemas.android.com/apk/res-auto"
-    xmlns:fab="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <!-- Loading indicator -->
     <RelativeLayout
         android:id="@+id/loading_indicator"
@@ -32,8 +32,8 @@
             android:layout_height="80dp"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            wheel:matProg_barColor="@color/theme_primary"
-            wheel:matProg_progressIndeterminate="true" />
+            app:matProg_barColor="@color/theme_primary"
+            app:matProg_progressIndeterminate="true" />
     </RelativeLayout>
 
     <!-- Error layout -->
@@ -78,14 +78,4 @@
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"/>
     </android.support.v4.widget.SwipeRefreshLayout>
-
-    <com.getbase.floatingactionbutton.FloatingActionButton
-        android:id="@+id/reply_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right"
-        fab:fab_icon="@drawable/ic_create_white_24dp"
-        fab:fab_colorNormal="@color/theme_primary"
-        fab:fab_colorPressed="@color/theme_primary_light"
-        android:layout_marginBottom="16dp"/>
 </FrameLayout>

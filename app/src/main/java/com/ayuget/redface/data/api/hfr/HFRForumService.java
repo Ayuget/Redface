@@ -18,14 +18,13 @@ package com.ayuget.redface.data.api.hfr;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 
-import com.ayuget.redface.data.api.MDAuthenticator;
 import com.ayuget.redface.data.api.MDEndpoints;
 import com.ayuget.redface.data.api.MDMessageSender;
 import com.ayuget.redface.data.api.MDService;
 import com.ayuget.redface.data.api.SmileyService;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToBBCode;
+import com.ayuget.redface.data.api.hfr.transforms.HTMLToCategoryList;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToPostList;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToPrivateMessageList;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToProfile;
@@ -42,7 +41,6 @@ import com.ayuget.redface.data.api.model.Subcategory;
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.api.model.TopicFilter;
 import com.ayuget.redface.data.api.model.User;
-import com.ayuget.redface.data.api.hfr.transforms.HTMLToCategoryList;
 import com.ayuget.redface.data.api.model.misc.SmileyResponse;
 import com.ayuget.redface.data.state.CategoriesStore;
 import com.ayuget.redface.network.HTTPClientProvider;
@@ -55,30 +53,24 @@ import com.ayuget.redface.util.UserUtils;
 import com.google.common.base.Optional;
 import com.squareup.otto.Bus;
 
-import java.util.Iterator;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import retrofit.RestAdapter;
-import retrofit.http.GET;
-import retrofit.http.Path;
 import rx.Observable;
 import rx.functions.Func1;
-import rx.functions.Func2;
 import timber.log.Timber;
 
 /**
  * Dedicated service to parse pages from HFR's forum
  */
+@SuppressWarnings({"WeakerAccess", "Guava"})
 public class HFRForumService implements MDService {
     @Inject PageFetcher pageFetcher;
 
     @Inject PostsTweaker postsTweaker;
 
     @Inject MDEndpoints mdEndpoints;
-
-    @Inject MDAuthenticator mdAuthenticator;
 
     @Inject HTTPClientProvider httpClientProvider;
 
@@ -105,13 +97,10 @@ public class HFRForumService implements MDService {
         if (cachedCategories == null) {
             return pageFetcher.fetchSource(user, mdEndpoints.homepage())
                     .map(new HTMLToCategoryList())
-                    .map(new Func1<List<Category>, List<Category>>() {
-                        @Override
-                        public List<Category> call(List<Category> categories) {
-                            Timber.d("Successfully retrieved '%d' categories from network for user '%s', caching them", categories.size(), user.getUsername());
-                            categoriesStore.storeCategories(user, categories);
-                            return categories;
-                        }
+                    .map(categories -> {
+                        Timber.d("Successfully retrieved '%d' categories from network for user '%s', caching them", categories.size(), user.getUsername());
+                        categoriesStore.storeCategories(user, categories);
+                        return categories;
                     });
         }
         else {
@@ -132,105 +121,77 @@ public class HFRForumService implements MDService {
     @Override
     public Observable<List<Topic>> listTopics(User user, final Category category, final Subcategory subcategory, int page, final TopicFilter filter) {
         return pageFetcher.fetchSource(user, getTopicListEndpoint(category, subcategory, page, filter))
-                .map(new HTMLToTopicList(categoriesStore))
+                .map(new HTMLToTopicList(categoriesStore, this, user))
                 .flatMap(new Func1<List<Topic>, Observable<Topic>>() {
                     @Override
                     public Observable<Topic> call(List<Topic> topics) {
                         return Observable.from(topics);
                     }
                 })
-                .filter(new Func1<Topic, Boolean>() {
-                    @Override
-                    public Boolean call(Topic topic) {
-                        return topic.hasUnreadPosts() || appSettings.showFullyReadTopics();
-                    }
-                })
-                .map(new Func1<Topic, Topic>() {
-                    @Override
-                    public Topic call(Topic topic) {
-                        return topic.withCategory(category);
-                    }
-                })
+                .filter(topic -> topic.hasUnreadPosts() || appSettings.showFullyReadTopics())
+                .map(topic -> topic.withCategory(category))
                 .toList();
     }
 
     @Override
     public Observable<List<Topic>> listMetaPageTopics(User user, TopicFilter filter, boolean sortByDate) {
-        Observable<Topic> metaPageTopics =
-                pageFetcher.fetchSource(user, mdEndpoints.metaPage(filter))
-                .map(new HTMLToTopicList(categoriesStore))
+        Observable<Topic> metaPageTopics = pageFetcher.fetchSource(user, mdEndpoints.metaPage(filter))
+                .map(new HTMLToTopicList(categoriesStore, this, user))
                 .flatMap(new Func1<List<Topic>, Observable<Topic>>() {
                     @Override
                     public Observable<Topic> call(List<Topic> topics) {
                         return Observable.from(topics);
                     }
                 })
-                .filter(new Func1<Topic, Boolean>() {
-                    @Override
-                    public Boolean call(Topic topic) {
-                        return topic.hasUnreadPosts() || appSettings.showFullyReadTopics();
-                    }
-                });
+                .filter(topic -> topic.hasUnreadPosts() || appSettings.showFullyReadTopics());
 
         if (sortByDate) {
-            return metaPageTopics.toSortedList(new Func2<Topic, Topic, Integer>() {
-                @Override
-                public Integer call(Topic topic, Topic topic2) {
-                    return topic2.lastPostDate().compareTo(topic.lastPostDate());
-                }
-            });
+            return metaPageTopics.toSortedList((topic, topic2) -> topic2.lastPostDate().compareTo(topic.lastPostDate()));
         }
         else {
             return metaPageTopics.toList();
         }
     }
 
+    public Observable<List<Category>> refreshCategories(User user) {
+        return Observable.defer(() -> {
+            categoriesStore.clearCategories(user);
+            return listCategories(user);
+        });
+    }
+
     @Override
     public Observable<List<Post>> listPosts(User user, final Topic topic, final int page) {
         return pageFetcher.fetchSource(user, mdEndpoints.topic(topic, page))
-                .map(new Func1<String, String>() {
-                    @Override
-                    public String call(String htmlSource) {
-                        // Hashcheck is needed by the server to post new content
-                        currentHashcheck = HashcheckExtractor.extract(htmlSource);
-                        return htmlSource;
-                    }
+                .map(htmlSource -> {
+                    // Hashcheck is needed by the server to post new content
+                    currentHashcheck = HashcheckExtractor.extract(htmlSource);
+                    return htmlSource;
                 })
                 .map(new HTMLToPostList()) // Convert HTML source to objects
-                .map(new Func1<List<Post>, List<Post>>() {
-                    @Override
-                    public List<Post> call(List<Post> posts) {
-                        // Last post of previous page is automatically put in first position of
-                        // next page. This can be annoying...
-                        if (!appSettings.showPreviousPageLastPost() && page > 1 && posts.size() > 1) {
-                            posts.remove(0);
-                            return posts;
-                        }
-                        else {
-                            return posts;
-                        }
-                    }
-                })
-                .map(new Func1<List<Post>, List<Post>>() {
-                    @Override
-                    public List<Post> call(final List<Post> posts) {
-                        if (posts.size() > 0) {
-                            int newTopicPagesCount = posts.get(0).getTopicPagesCount();
-
-                            // If the topic pages count is known and different from the one we have,
-                            // it usually means new pages have been added since. The event emitted
-                            // below can be catched by the UI to update itself.
-                            if (newTopicPagesCount != UIConstants.UNKNOWN_PAGES_COUNT && newTopicPagesCount != topic.pagesCount()) {
-                                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        bus.post(new TopicPageCountUpdatedEvent(topic, posts.get(0).getTopicPagesCount()));
-                                    }
-                                });
-                            }
-                        }
+                .map(posts -> {
+                    // Last post of previous page is automatically put in first position of
+                    // next page. This can be annoying...
+                    if (!appSettings.showPreviousPageLastPost() && page > 1 && posts.size() > 1) {
+                        posts.remove(0);
                         return posts;
                     }
+                    else {
+                        return posts;
+                    }
+                })
+                .map(posts -> {
+                    if (posts.size() > 0) {
+                        int newTopicPagesCount = posts.get(0).getTopicPagesCount();
+
+                        // If the topic pages count is known and different from the one we have,
+                        // it usually means new pages have been added since. The event emitted
+                        // below can be catched by the UI to update itself.
+                        if (newTopicPagesCount != UIConstants.UNKNOWN_PAGES_COUNT && newTopicPagesCount != topic.pagesCount()) {
+                            new Handler(Looper.getMainLooper()).post(() -> bus.post(new TopicPageCountUpdatedEvent(topic, posts.get(0).getTopicPagesCount())));
+                        }
+                    }
+                    return posts;
                 })
                 .map(postsTweaker);
     }
@@ -253,15 +214,10 @@ public class HFRForumService implements MDService {
             return Observable.empty();
         }
         else {
-            Optional<Integer> userId = UserUtils.getLoggedInUserId(user, httpClientProvider.getClientForUser(user));
+            Optional<Integer> userId = UserUtils.identifyUserFromCookies(httpClientProvider.getUserCookieStore(user));
 
             if (userId.isPresent()) {
-                return smileyService.getUserSmileys(userId.get()).map(new Func1<SmileyResponse, List<Smiley>>() {
-                    @Override
-                    public List<Smiley> call(SmileyResponse smileyResponse) {
-                        return smileyResponse.getSmileys();
-                    }
-                });
+                return smileyService.getUserSmileys(userId.get()).map(SmileyResponse::getSmileys);
             }
             else {
                 return Observable.empty();
@@ -277,17 +233,11 @@ public class HFRForumService implements MDService {
 
     @Override
     public Observable<List<Smiley>> getPopularSmileys() {
-        return smileyService.getPopularSmileys().map(new Func1<SmileyResponse, List<Smiley>>() {
-            @Override
-            public List<Smiley> call(SmileyResponse smileyResponse) {
-                return smileyResponse.getSmileys();
-            }
-        });
+        return smileyService.getPopularSmileys().map(SmileyResponse::getSmileys);
     }
 
     @Override
     public Observable<List<Smiley>> searchSmileys(User user, String searchExpression) {
-        // http://forum.hardware.fr/message-smi-mp-aj.php?config=hfr.inc&findsmilies=fed
         return pageFetcher.fetchSource(user, mdEndpoints.smileySearch(searchExpression))
                 .map(new HTMLToSmileyList());
     }
@@ -315,13 +265,10 @@ public class HFRForumService implements MDService {
     @Override
     public Observable<List<PrivateMessage>> listPrivateMessages(User user, int page) {
         return pageFetcher.fetchSource(user, mdEndpoints.privateMessages(page))
-                .map(new Func1<String, String>() {
-                    @Override
-                    public String call(String htmlSource) {
-                        // Hashcheck is needed by the server to post new content
-                        currentHashcheck = HashcheckExtractor.extract(htmlSource);
-                        return htmlSource;
-                    }
+                .map(htmlSource -> {
+                    // Hashcheck is needed by the server to post new content
+                    currentHashcheck = HashcheckExtractor.extract(htmlSource);
+                    return htmlSource;
                 })
                 .map(new HTMLToPrivateMessageList());
     }
@@ -335,12 +282,7 @@ public class HFRForumService implements MDService {
                         return Observable.from(privateMessages);
                     }
                 })
-                .filter(new Func1<PrivateMessage, Boolean>() {
-                    @Override
-                    public Boolean call(PrivateMessage privateMessage) {
-                        return privateMessage.hasUnreadMessages();
-                    }
-                })
+                .filter(PrivateMessage::hasUnreadMessages)
                 .toList();
     }
 
