@@ -18,9 +18,9 @@ package com.ayuget.redface.network;
 
 import android.content.Context;
 
+import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.data.api.model.User;
 import com.ayuget.redface.settings.ProxySettingsChangedEvent;
-import com.ayuget.redface.settings.RedfaceSettings;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 

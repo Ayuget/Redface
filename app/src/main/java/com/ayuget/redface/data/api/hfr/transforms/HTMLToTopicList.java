@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
 
+import rx.functions.Action0;
 import rx.functions.Func1;
 
 public class HTMLToTopicList extends TopicTransform implements Func1<String, List<Topic>> {

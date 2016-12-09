@@ -2,6 +2,10 @@ package com.ayuget.redface.image;
 
 import com.ayuget.redface.image.rehost.RehostHostingService;
 import com.ayuget.redface.image.rehost.RehostResultParser;
+<<<<<<< HEAD
+=======
+import com.ayuget.redface.network.HTTPClientProvider;
+>>>>>>> upstream/develop
 
 import javax.inject.Singleton;
 

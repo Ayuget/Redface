@@ -57,7 +57,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import rx.Completable;
 import rx.Observable;
+import rx.functions.Func0;
 import rx.functions.Func1;
 import timber.log.Timber;
 

@@ -7,8 +7,10 @@ import com.ayuget.redface.image.ImageQuality;
 import com.ayuget.redface.util.ImageUtils;
 import com.google.common.collect.ImmutableMap;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.MediaType;
@@ -19,7 +21,9 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import okio.ByteString;
 import rx.Observable;
+import rx.Single;
 import rx.exceptions.Exceptions;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 public class RehostHostingService implements ImageHostingService {

@@ -11,6 +11,24 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import okio.ByteString;
+import com.ayuget.redface.storage.StorageHelper;
+import com.google.common.io.ByteStreams;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.concurrent.Callable;
+
+import okio.Buffer;
+import okio.BufferedSink;
+import okio.BufferedSource;
+import okio.ByteString;
+import okio.Okio;
+import okio.Sink;
+import rx.Single;
 import rx.exceptions.Exceptions;
 
 public class ImageUtils {
