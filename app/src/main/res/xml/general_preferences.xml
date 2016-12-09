@@ -49,6 +49,12 @@
         android:summary="@string/pref_show_previous_page_last_post_summary"
         android:defaultValue="true" />
 
+    <CheckBoxPreference
+        android:key="refresh_topic_list"
+        android:title="@string/pref_refresh_topic_list_title"
+        android:summary="@string/pref_refresh_topic_list_summary"
+        android:defaultValue="false" />
+
     <ListPreference
         android:key="meta_page_ordering"
         android:title="@string/pref_default_meta_ordering"

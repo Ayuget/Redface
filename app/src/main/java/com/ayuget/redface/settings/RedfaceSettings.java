@@ -22,9 +22,9 @@ import android.content.SharedPreferences;
 import com.ayuget.redface.R;
 import com.ayuget.redface.data.api.model.TopicFilter;
 import com.ayuget.redface.image.ImageQuality;
+import com.ayuget.redface.ui.misc.MetaPageOrdering;
 import com.ayuget.redface.ui.theme.FontSize;
 import com.ayuget.redface.ui.theme.RedfaceTheme;
-import com.ayuget.redface.ui.misc.MetaPageOrdering;
 
 public class RedfaceSettings {
     private final Context context;
@@ -94,6 +94,10 @@ public class RedfaceSettings {
 
     public boolean showPreviousPageLastPost() {
         return sharedPreferences.getBoolean(SettingsConstants.KEY_SHOW_PREVIOUS_PAGE_LAST_POST, true);
+    }
+
+    public boolean refreshTopicList() {
+        return sharedPreferences.getBoolean(SettingsConstants.KEY_REFRESH_TOPIC_LIST, false);
     }
 
     public int getDefaultCategoryId() {

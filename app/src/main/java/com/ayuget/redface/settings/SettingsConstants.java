@@ -62,4 +62,6 @@ public class SettingsConstants {
     public static final String KEY_REHOST_DEFAULT_VARIANT = "rehost_default_variant";
 
     public static final String KEY_SHOW_NAVIGATION_BUTTONS = "show_navigation_buttons";
+
+    public static final String KEY_REFRESH_TOPIC_LIST = "refresh_topic_list";
 }
