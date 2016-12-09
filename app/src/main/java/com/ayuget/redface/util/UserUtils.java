@@ -21,8 +21,6 @@ import com.google.common.base.Optional;
 import java.net.CookieStore;
 import java.net.HttpCookie;
 
-import okhttp3.OkHttpClient;
-
 public class UserUtils {
     /**
      * Ugly method to fetch a user id from stored cookies
