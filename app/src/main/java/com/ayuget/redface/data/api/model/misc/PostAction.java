@@ -24,5 +24,6 @@ public enum PostAction {
     DELETE,
     FAVORITE,
     WRITE_PRIVATE_MESSAGE,
-    COPY_LINK_TO_POST
+    COPY_LINK_TO_POST,
+    BLOCK_USER
 }

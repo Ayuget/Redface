@@ -50,6 +50,22 @@ function showAllSpoilers() {
     }
 }
 
+function showBlockedQuote(obj) {
+    var quote = obj.closest(".quote");
+
+    if (quote.classList.contains('blocked')) {
+        quote.classList.remove('blocked')
+    }
+}
+
+function showBlockedPost(link) {
+    var post = link.closest(".post");
+
+    if (post.classList.contains('blocked')) {
+        post.classList.remove('blocked')
+    }
+}
+
 /**
 * Deal with the clicked URL by calling the Java callback defined
 * in the Javascript interface of the webview.
