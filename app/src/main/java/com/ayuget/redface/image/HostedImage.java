@@ -2,11 +2,8 @@ package com.ayuget.redface.image;
 
 import com.google.auto.value.AutoValue;
 
-import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.annotation.Nullable;
 
 @AutoValue
 public abstract class HostedImage {

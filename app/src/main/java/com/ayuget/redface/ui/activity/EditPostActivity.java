@@ -18,7 +18,6 @@ package com.ayuget.redface.ui.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.ayuget.redface.data.api.model.Response;
 import com.ayuget.redface.data.api.model.User;

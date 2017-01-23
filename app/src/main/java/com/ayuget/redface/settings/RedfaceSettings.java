@@ -131,4 +131,12 @@ public class RedfaceSettings {
     public boolean isUseModernQuoteStyleEnabled() {
         return sharedPreferences.getBoolean(SettingsConstants.KEY_USE_MODERN_QUOTE_STYLE, true);
     }
+
+    public boolean isBlacklistEnabled() {
+        return sharedPreferences.getBoolean(SettingsConstants.KEY_ENABLE_BLACKLIST, true);
+    }
+
+    public boolean showBlockedUser() {
+        return sharedPreferences.getBoolean(SettingsConstants.KEY_SHOW_BLOCKED_USER, true);
+    }
 }

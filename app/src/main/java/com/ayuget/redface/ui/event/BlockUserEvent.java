@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Ayuget
+ * Copyright 2016 nbonnec
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package com.ayuget.redface.data.api.model.misc;
+package com.ayuget.redface.ui.event;
 
-public enum PostAction {
-    EDIT,
-    MULTIQUOTE_ADD,
-    MULTIQUOTE_REMOVE,
-    REPORT,
-    DELETE,
-    FAVORITE,
-    WRITE_PRIVATE_MESSAGE,
-    COPY_LINK_TO_POST,
-    BLOCK_USER
+public class BlockUserEvent {
+    private final String author;
+
+    public BlockUserEvent(String author) {
+        this.author = author;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
 }

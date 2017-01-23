@@ -52,6 +52,11 @@ public class SnackbarHelper {
         snackbar.setAction(actionRes, actionClickListener);
         return snackbar;
     }
+    public static Snackbar makeWithAction(Fragment targetFragment, String textRes, @StringRes int actionRes, View.OnClickListener actionClickListener) {
+        Snackbar snackbar = make(targetFragment.getView(), textRes, false);
+        snackbar.setAction(actionRes, actionClickListener);
+        return snackbar;
+    }
 
     public static Snackbar make(Activity targetActivity, @StringRes int textRes) {
         return make(targetActivity.findViewById(android.R.id.content), textRes, false);
