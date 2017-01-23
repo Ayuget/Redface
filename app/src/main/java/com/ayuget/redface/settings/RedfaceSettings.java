@@ -96,6 +96,10 @@ public class RedfaceSettings {
         return sharedPreferences.getBoolean(SettingsConstants.KEY_SHOW_PREVIOUS_PAGE_LAST_POST, true);
     }
 
+    public boolean refreshTopicList() {
+        return sharedPreferences.getBoolean(SettingsConstants.KEY_REFRESH_TOPIC_LIST, false);
+    }
+
     public int getDefaultCategoryId() {
         return Integer.valueOf(sharedPreferences.getString(SettingsConstants.KEY_DEFAULT_CATEGORY, context.getResources().getString(R.string.pref_default_category_default)));
     }

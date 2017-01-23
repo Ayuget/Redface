@@ -65,6 +65,8 @@ public class SettingsConstants {
 
     public static final String KEY_SHOW_NAVIGATION_BUTTONS = "show_navigation_buttons";
 
+    public static final String KEY_REFRESH_TOPIC_LIST = "refresh_topic_list";
+
     public static final String KEY_ENABLE_BLACKLIST = "enable_blacklist";
 
     public static final String KEY_SHOW_BLOCKED_USER = "show_blocked_user";
