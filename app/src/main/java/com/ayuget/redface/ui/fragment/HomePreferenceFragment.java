@@ -19,7 +19,6 @@ package com.ayuget.redface.ui.fragment;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.util.Log;
 
 import com.ayuget.redface.RedfaceApp;
 import com.ayuget.redface.R;
@@ -57,10 +56,19 @@ public class HomePreferenceFragment extends PreferenceFragment implements Prefer
         }
 
         Preference appearancePreference = findPreference(SettingsConstants.KEY_APPEARANCE_PREFERENCES);
-        appearancePreference.setOnPreferenceClickListener(this);
+        if (appearancePreference != null) {
+            appearancePreference.setOnPreferenceClickListener(this);
+        }
 
         Preference networkPreference = findPreference(SettingsConstants.KEY_NETWORK_PREFERENCES);
-        networkPreference.setOnPreferenceClickListener(this);
+        if (networkPreference != null) {
+            networkPreference.setOnPreferenceClickListener(this);
+        }
+
+        Preference blacklistPreference = findPreference(SettingsConstants.KEY_BLACKLIST_PREFERENCES);
+        if (blacklistPreference != null) {
+            blacklistPreference.setOnPreferenceClickListener(this);
+        }
     }
 
     @Override

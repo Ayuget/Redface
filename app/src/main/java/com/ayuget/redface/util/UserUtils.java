@@ -16,14 +16,10 @@
 
 package com.ayuget.redface.util;
 
-import com.ayuget.redface.data.api.model.User;
 import com.google.common.base.Optional;
 
-import java.net.CookieManager;
 import java.net.CookieStore;
 import java.net.HttpCookie;
-
-import okhttp3.OkHttpClient;
 
 public class UserUtils {
     /**

@@ -46,6 +46,7 @@ import com.ayuget.redface.data.rx.RxUtils;
 import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.activity.BaseActivity;
+import com.ayuget.redface.ui.event.BlockUserEvent;
 import com.ayuget.redface.ui.event.EditPostEvent;
 import com.ayuget.redface.ui.event.GoToPostEvent;
 import com.ayuget.redface.ui.event.GoToTopicEvent;
@@ -459,6 +460,20 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
                         @Override
                         public void run() {
                             bus.post(new WritePrivateMessageEvent(post.getAuthor()));
+                        }
+                    });
+                }
+            }
+        }
+
+        @JavascriptInterface
+        public void blockUser(final int postId) {
+            for (final Post post : posts) {
+                if (post.getId() == postId) {
+                    TopicPageView.this.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            bus.post(new BlockUserEvent(post.getAuthor()));
                         }
                     });
                 }
