@@ -86,6 +86,8 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
 
     private SubscriptionHandler<Topic, String> quoteHandler = new SubscriptionHandler<>();
 
+    private SubscriptionHandler<User, Boolean> unflagSubscriptionHandler = new SubscriptionHandler<>();
+
     @Inject
     CategoriesStore categoriesStore;
 
@@ -385,6 +387,21 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
                 UiUtils.shareText(this, mdEndpoints.topic(event.getTopic()));
                 break;
             }
+            case UIConstants.TOPIC_ACTION_UNFLAG:
+                User activeUser = userManager.getActiveUser();
+                subscribe(unflagSubscriptionHandler.load(activeUser, mdService.unflagTopic(activeUser, event.getTopic()), new EndlessObserver<Boolean>() {
+                    @Override
+                    public void onNext(Boolean aBoolean) {
+                        SnackbarHelper.make(TopicsActivity.this, R.string.flag_successfully_removed).show();
+                    }
+
+                    @Override
+                    public void onError(Throwable throwable) {
+                        Timber.e(throwable, "Error while removing flag");
+                        SnackbarHelper.makeError(TopicsActivity.this, R.string.error_removing_flag).show();
+                    }
+                }));
+                break;
         }
     }
 
