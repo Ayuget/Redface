@@ -110,6 +110,18 @@
                         android:contentDescription="@string/insert_spoiler_button_description"
                         style="@style/ReplyOptionsIcon"
                         android:src="@drawable/ic_action_crop_square" />
+
+                    <ImageButton
+                        android:id="@+id/insert_underline_button"
+                        android:contentDescription="@string/insert_quote_button_description"
+                        style="@style/ReplyOptionsIcon"
+                        android:src="@drawable/ic_action_format_underline" />
+
+                    <ImageButton
+                        android:id="@+id/insert_strike_button"
+                        android:contentDescription="@string/insert_quote_button_description"
+                        style="@style/ReplyOptionsIcon"
+                        android:src="@drawable/ic_action_format_strike" />
                 </LinearLayout>
 
             </HorizontalScrollView>
