@@ -20,6 +20,7 @@ import android.content.Context;
 
 import com.ayuget.redface.account.UserManager;
 import com.ayuget.redface.data.api.model.Post;
+import com.ayuget.redface.settings.Blacklist;
 import com.ayuget.redface.settings.RedfaceSettings;
 import com.squareup.phrase.Phrase;
 import java.util.regex.Matcher;
@@ -29,7 +30,7 @@ import java.util.regex.Pattern;
 public class PostTemplate extends HTMLTemplate<Post> {
     private static final String POST_TEMPLATE = "post.html";
 
-    private static final Pattern IS_QUOTED_PATTERN = Pattern.compile("(?:<a)(?:[^>]*)(?:>)(.+?)(?: a écrit :)(?:</a>)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private static final Pattern IS_QUOTED_PATTERN = Pattern.compile("(?:<b class=\"(?:s1|s1Topic)\">)(?:<a)(?:[^>]*?)(?:>)(.+?)(?: a écrit :)(?:</a>)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
     private AvatarTemplate avatarTemplate;
 
@@ -43,7 +44,9 @@ public class PostTemplate extends HTMLTemplate<Post> {
 
     private RedfaceSettings appSettings;
 
-    public PostTemplate(Context context, UserManager userManager, AvatarTemplate avatarTemplate, PostExtraDetailsTemplate extraDetailsTemplate, PostActionsTemplate postActionsTemplate, QuickActionsTemplate quickActionsTemplate, RedfaceSettings appSettings) {
+    private Blacklist blacklist;
+
+    public PostTemplate(Context context, UserManager userManager, AvatarTemplate avatarTemplate, PostExtraDetailsTemplate extraDetailsTemplate, PostActionsTemplate postActionsTemplate, QuickActionsTemplate quickActionsTemplate, RedfaceSettings appSettings, Blacklist blacklist) {
         super(context, POST_TEMPLATE);
         this.userManager = userManager;
         this.avatarTemplate = avatarTemplate;
@@ -51,6 +54,7 @@ public class PostTemplate extends HTMLTemplate<Post> {
         this.postActionsTemplate = postActionsTemplate;
         this.quickActionsTemplate = quickActionsTemplate;
         this.appSettings = appSettings;
+        this.blacklist = blacklist;
     }
 
     private boolean isUserQuoted(String htmlContent) {
@@ -74,6 +78,16 @@ public class PostTemplate extends HTMLTemplate<Post> {
 
         if (appSettings.isEgoQuoteEnabled() && isUserQuoted(post.getHtmlContent())) {
             extraClasses = extraClasses + " egoQuote";
+        }
+
+        if (appSettings.isBlacklistEnabled() && blacklist.isAuthorBlocked(post.getAuthor())) {
+            String extClass;
+            if (appSettings.showBlockedUser()) {
+                extClass = " blocked";
+            } else {
+                extClass = " hidden";
+            }
+            extraClasses = extraClasses + extClass;
         }
 
         stream.append(

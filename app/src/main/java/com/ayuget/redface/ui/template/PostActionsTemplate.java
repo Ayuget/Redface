@@ -49,6 +49,7 @@ public class PostActionsTemplate extends HTMLTemplate<Post> {
         // POST_ACTIONS_MAPPING.put(PostAction.REPORT, Pair.create("reportPost", "exclamation-triangle"));
         POST_ACTIONS_MAPPING.put(PostAction.WRITE_PRIVATE_MESSAGE, Pair.create("writePrivateMessage", "envelope"));
         POST_ACTIONS_MAPPING.put(PostAction.COPY_LINK_TO_POST, Pair.create("copyLinkToPost", "link"));
+        POST_ACTIONS_MAPPING.put(PostAction.BLOCK_USER, Pair.create("blockUser", "ban"));
     }
 
     /**
@@ -76,5 +77,6 @@ public class PostActionsTemplate extends HTMLTemplate<Post> {
         renderAction(PostAction.FAVORITE, post.getId(), stream);
         renderAction(PostAction.WRITE_PRIVATE_MESSAGE, post.getId(), stream);
         renderAction(PostAction.COPY_LINK_TO_POST, post.getId(), stream);
+        renderAction(PostAction.BLOCK_USER, post.getId(), stream);
     }
 }

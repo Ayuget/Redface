@@ -16,11 +16,8 @@
 
 package com.ayuget.redface.ui.fragment;
 
-import android.animation.ValueAnimator;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -39,6 +36,8 @@ import com.ayuget.redface.data.api.MDService;
 import com.ayuget.redface.data.api.model.Post;
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.rx.EndlessObserver;
+import com.ayuget.redface.settings.Blacklist;
+import com.ayuget.redface.ui.event.BlockUserEvent;
 import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
 import com.ayuget.redface.ui.event.PageSelectedEvent;
 import com.ayuget.redface.ui.event.ScrollToPostEvent;
@@ -46,6 +45,7 @@ import com.ayuget.redface.ui.event.ShowAllSpoilersEvent;
 import com.ayuget.redface.ui.event.TopicPageCountUpdatedEvent;
 import com.ayuget.redface.ui.event.UnquoteAllPostsEvent;
 import com.ayuget.redface.ui.misc.ImageMenuHandler;
+import com.ayuget.redface.ui.misc.SnackbarHelper;
 import com.ayuget.redface.ui.view.TopicPageView;
 import com.hannesdorfmann.fragmentargs.annotation.Arg;
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs;
@@ -105,6 +105,9 @@ public class PostsFragment extends BaseFragment {
 
     @Inject
     MDEndpoints mdEndpoints;
+
+    @Inject
+    Blacklist blacklist;
 
     /**
      * Current scroll position in the webview.
@@ -321,6 +324,21 @@ public class PostsFragment extends BaseFragment {
         if (event.getTopic().id() == topic.id() && event.getPage() == currentPage) {
             topicPageView.setPagePosition(event.getPagePosition());
         }
+    }
+
+    /**
+     * Event thrown by {@link com.ayuget.redface.ui.view.TopicPageView} to notify
+     * that an user has been blocked.
+     */
+    @Subscribe public void onBlockUser(final BlockUserEvent event) {
+        blacklist.addBlockedAuthor(event.getAuthor());
+        SnackbarHelper.makeWithAction(PostsFragment.this, getString(R.string.user_blocked, event.getAuthor()),
+                R.string.action_refresh_topic, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        bus.post(new PageRefreshRequestEvent(topic));
+                    }
+                }).show();
     }
 
     @Subscribe

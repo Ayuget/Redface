@@ -22,7 +22,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -54,8 +53,8 @@ import com.ayuget.redface.ui.fragment.TopicFragment;
 import com.ayuget.redface.ui.fragment.TopicFragmentBuilder;
 import com.ayuget.redface.ui.fragment.TopicListFragment;
 import com.ayuget.redface.ui.fragment.TopicListFragmentBuilder;
-import com.ayuget.redface.ui.misc.SnackbarHelper;
 import com.ayuget.redface.ui.misc.PagePosition;
+import com.ayuget.redface.ui.misc.SnackbarHelper;
 import com.ayuget.redface.ui.misc.UiUtils;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.squareup.otto.Subscribe;
@@ -86,6 +85,8 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
     private SubscriptionHandler<Integer, Topic> topicDetailsSearchHandler = new SubscriptionHandler<>();
 
     private SubscriptionHandler<Topic, String> quoteHandler = new SubscriptionHandler<>();
+
+    private SubscriptionHandler<User, Boolean> unflagSubscriptionHandler = new SubscriptionHandler<>();
 
     @Inject
     CategoriesStore categoriesStore;
@@ -386,6 +387,21 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
                 UiUtils.shareText(this, mdEndpoints.topic(event.getTopic()));
                 break;
             }
+            case UIConstants.TOPIC_ACTION_UNFLAG:
+                User activeUser = userManager.getActiveUser();
+                subscribe(unflagSubscriptionHandler.load(activeUser, mdService.unflagTopic(activeUser, event.getTopic()), new EndlessObserver<Boolean>() {
+                    @Override
+                    public void onNext(Boolean aBoolean) {
+                        SnackbarHelper.make(TopicsActivity.this, R.string.flag_successfully_removed).show();
+                    }
+
+                    @Override
+                    public void onError(Throwable throwable) {
+                        Timber.e(throwable, "Error while removing flag");
+                        SnackbarHelper.makeError(TopicsActivity.this, R.string.error_removing_flag).show();
+                    }
+                }));
+                break;
         }
     }
 

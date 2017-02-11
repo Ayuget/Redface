@@ -216,6 +216,18 @@
     <string name="login_successful">Identification avec succès !</string>
     <string name="pref_use_modern_quote_style">Affichage "moderne" des citations</string>
     <string name="action_show_all_spoilers">Afficher tous les spoilers</string>
+    <string name="pref_blacklist_summary">Gestion des utilisateurs bloqués</string>
+    <string name="pref_blacklist_title">Liste noire</string>
+    <string name="user_blocked">Utilisateur %1$s bloqué !</string>
+    <string name="pref_blacklist_activate">Activer la liste noire</string>
+    <string name="pref_blacklist_activate_summary">Autorise le bloquage des noms contenus dans la liste noire</string>
+    <string name="pref_blacklist_users">Utilisateurs</string>
+    <string name="pref_blacklist_empty">Pas d\'utilisateurs bloqués</string>
+    <string name="pref_blacklist_alertdialog_message">Retirer de la liste noire ?</string>
+    <string name="pref_blacklist_alertdialog_positive">ok</string>
+    <string name="pref_blacklist_alertdialog_negative">annuler</string>
+    <string name="pref_blacklist_show_blocked">Afficher les utilisateurs bloqués</string>
+    <string name="pref_blaclist_show_blocked_summary">Affiche le nom des utilisateurs bloqués lorsqu\'ils postent un message</string>
     <string name="image_upload_failed">Erreur d\'upload de l\'image</string>
     <string name="image_upload_in_progress">Upload de l\'image en cours</string>
     <string name="image_upload_success">Image uploadée avec succès !</string>
@@ -249,4 +261,6 @@
     </string-array>
     <string name="pref_show_navigation_buttons_summary">Affiche des boutons de navigation rapide pour scroller directement en haut ou en bas d\'une page d\'un sujet</string>
     <string name="pref_show_navigation_buttons_title">Afficher les boutons de navigation</string>
+    <string name="pref_refresh_topic_list_title">Rafraîchir la liste des topics</string>
+    <string name="pref_refresh_topic_list_summary">Rafraîchir la liste des topics lors d\'un retour sur la liste</string>
 </resources>

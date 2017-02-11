@@ -29,7 +29,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.ayuget.redface.R;
-import com.ayuget.redface.image.ImageQuality;
 
 public class UiUtils {
     /**
