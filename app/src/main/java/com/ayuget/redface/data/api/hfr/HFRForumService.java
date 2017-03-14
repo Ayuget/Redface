@@ -161,7 +161,10 @@ public class HFRForumService implements MDService {
     }
 
     @Override
-    public Observable<List<Post>> listPosts(User user, final Topic topic, final int page) {
+    public Observable<List<Post>> listPosts(User user, final Topic topic, final int page,
+                                            final boolean imagesEnabled,
+                                            final boolean avatarsEnabled,
+                                            final boolean smileysEnabled) {
         return pageFetcher.fetchSource(user, mdEndpoints.topic(topic, page))
                 .map(htmlSource -> {
                     // Hashcheck is needed by the server to post new content
@@ -193,7 +196,7 @@ public class HFRForumService implements MDService {
                     }
                     return posts;
                 })
-                .map(postsTweaker);
+                .map(posts -> postsTweaker.tweak(posts, imagesEnabled, avatarsEnabled, smileysEnabled));
     }
 
     @Override

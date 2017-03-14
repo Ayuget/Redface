@@ -70,4 +70,10 @@ public class SettingsConstants {
     public static final String KEY_ENABLE_BLACKLIST = "enable_blacklist";
 
     public static final String KEY_SHOW_BLOCKED_USER = "show_blocked_user";
+
+    public static final String KEY_IMAGES_STRATEGY = "images_strategy";
+
+    public static final String KEY_AVATARS_STRATEGY = "avatars_strategy";
+
+    public static final String KEY_SMILEYS_STRATEGY = "smileys_strategy";
 }

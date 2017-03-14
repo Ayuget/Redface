@@ -22,6 +22,7 @@ import android.content.SharedPreferences;
 import com.ayuget.redface.R;
 import com.ayuget.redface.data.api.model.TopicFilter;
 import com.ayuget.redface.image.ImageQuality;
+import com.ayuget.redface.network.DownloadStrategy;
 import com.ayuget.redface.ui.misc.MetaPageOrdering;
 import com.ayuget.redface.ui.theme.FontSize;
 import com.ayuget.redface.ui.theme.RedfaceTheme;
@@ -67,6 +68,21 @@ public class RedfaceSettings {
     public FontSize getFontSize() {
         String fontSizeValue = sharedPreferences.getString(SettingsConstants.KEY_FONT_SIZE, context.getString(R.string.pref_font_size_default));
         return FontSize.valueOf(fontSizeValue);
+    }
+
+    public DownloadStrategy getImagesStrategy() {
+        String strategy = sharedPreferences.getString(SettingsConstants.KEY_IMAGES_STRATEGY, context.getString(R.string.pref_images_strategy_default));
+        return DownloadStrategy.valueOf(strategy);
+    }
+
+    public DownloadStrategy getAvatarsStrategy() {
+        String strategy = sharedPreferences.getString(SettingsConstants.KEY_AVATARS_STRATEGY, context.getString(R.string.pref_avatars_strategy_default));
+        return DownloadStrategy.valueOf(strategy);
+    }
+
+    public DownloadStrategy getSmileysStrategy() {
+        String strategy = sharedPreferences.getString(SettingsConstants.KEY_SMILEYS_STRATEGY, context.getString(R.string.pref_smileys_strategy_default));
+        return DownloadStrategy.valueOf(strategy);
     }
 
     public ImageQuality getDefaultRehostImageQuality() {
