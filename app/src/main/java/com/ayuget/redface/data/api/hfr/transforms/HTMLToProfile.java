@@ -1,6 +1,7 @@
 package com.ayuget.redface.data.api.hfr.transforms;
 
 import com.ayuget.redface.data.api.model.Profile;
+import com.ayuget.redface.data.api.model.User;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -15,13 +16,23 @@ public class HTMLToProfile implements Func1<String, Profile> {
             , Pattern.CASE_INSENSITIVE | Pattern.DOTALL
     );
 
+    private final User user;
+
+    public HTMLToProfile(User user) {
+        this.user = user;
+    }
+
     @Override
     public Profile call(String s) {
         Matcher m = PROFILE_PATTERN.matcher(s);
 
         if (m.find()) {
             String avatarUrl = m.group(1);
-            return new Profile(avatarUrl);
+
+            return Profile.builder()
+                    .username(user.getUsername())
+                    .avatarUrl(avatarUrl)
+                    .build();
         }
         return null;
     }

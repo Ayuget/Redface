@@ -3,64 +3,32 @@ package com.ayuget.redface.data.api.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class Profile implements Parcelable {
+import com.google.auto.value.AutoValue;
 
-    private final String avatarUrl;
+import javax.annotation.Nullable;
 
-    public Profile(String avatarUrl) {
-        this.avatarUrl = avatarUrl;
+@AutoValue
+public abstract class Profile implements Parcelable {
+    public abstract String username();
+    @Nullable public abstract String email();
+
+    // Stored as String because some birthdates are invalid (sometimes stored as
+    // "00/00/0000", it seems there is no validation from the forum).
+    @Nullable public abstract String birthDate();
+
+    @Nullable public abstract String avatarUrl();
+
+    public static Builder builder() {
+        return new AutoValue_Profile.Builder();
     }
 
-    public String getAvatarUrl() {
-        return avatarUrl;
+    @AutoValue.Builder
+    public abstract static class Builder {
+        public abstract Builder username(String username);
+        public abstract Builder email(@Nullable String email);
+        public abstract Builder birthDate(@Nullable String birthDate);
+        public abstract Builder avatarUrl(@Nullable String avatarUrl);
+        public abstract Profile build();
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Profile profile = (Profile) o;
-
-        return !(avatarUrl != null ? !avatarUrl.equals(profile.avatarUrl) : profile.avatarUrl != null);
-
-    }
-
-    @Override
-    public int hashCode() {
-        return avatarUrl != null ? avatarUrl.hashCode() : 0;
-    }
-
-    @Override
-    public String toString() {
-        return "Profile{" +
-                "avatarUrl='" + avatarUrl + '\'' +
-                '}';
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(avatarUrl);
-    }
-
-    private Profile(Parcel in) {
-        avatarUrl = in.readString();
-    }
-
-    public static final Creator<Profile> CREATOR = new Creator<Profile>() {
-        @Override
-        public Profile createFromParcel(Parcel in) {
-            return new Profile(in);
-        }
-
-        @Override
-        public Profile[] newArray(int size) {
-            return new Profile[size];
-        }
-    };
 }

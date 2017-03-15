@@ -41,6 +41,6 @@ public class ProfileProvider extends AbstractDataProvider<Integer, Profile> {
     @Override
     protected Observable<Profile> fromNetwork(User user, Integer key) {
         return pageFetcher.fetchSource(user, mdEndpoints.profile(key))
-                .map(new HTMLToProfile());
+                .map(new HTMLToProfile(user));
     }
 }

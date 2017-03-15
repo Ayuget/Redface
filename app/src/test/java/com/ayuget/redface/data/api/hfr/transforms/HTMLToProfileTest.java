@@ -18,6 +18,7 @@ package com.ayuget.redface.data.api.hfr.transforms;
 
 import com.ayuget.redface.BaseTestCase;
 import com.ayuget.redface.data.api.model.Profile;
+import com.ayuget.redface.data.api.model.User;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,10 +33,12 @@ public class HTMLToProfileTest extends BaseTestCase {
 
     @Test
     public void test_parseProfile() throws IOException {
-        HTMLToProfile htmlToProfile = new HTMLToProfile();
+        User user = new User("test", "password");
+        HTMLToProfile htmlToProfile = new HTMLToProfile(user);
 
         Profile profile = htmlToProfile.call(readAssetFile("hfr_profile_page.html"));
 
-        assertThat(profile.getAvatarUrl()).isEqualTo("http://forum-images.hardware.fr/images/mesdiscussions-963963.jpg");
+        assertThat(profile.avatarUrl()).isEqualTo("http://forum-images.hardware.fr/images/mesdiscussions-963963.jpg");
+        assertThat(profile.username()).isEqualTo("test");
     }
 }

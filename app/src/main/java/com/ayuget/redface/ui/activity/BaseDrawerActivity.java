@@ -212,7 +212,7 @@ public class BaseDrawerActivity extends BaseActivity {
             public void onNext(Profile profile) {
                 currentDrawerUser.setProfile(profile);
                 Picasso.with(BaseDrawerActivity.this)
-                        .load(profile.getAvatarUrl())
+                        .load(profile.avatarUrl())
                         .into(activeUserPicture);
             }
 
@@ -230,12 +230,9 @@ public class BaseDrawerActivity extends BaseActivity {
     }
 
     private void setupAccountBox() {
-        expandAccountBoxIndicator.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                accountBoxExpanded = !accountBoxExpanded;
-                setupAccountBoxToggle();
-            }
+        expandAccountBoxIndicator.setOnClickListener(v -> {
+            accountBoxExpanded = !accountBoxExpanded;
+            setupAccountBoxToggle();
         });
 
         setupAccountBoxToggle();
@@ -312,15 +309,12 @@ public class BaseDrawerActivity extends BaseActivity {
         }
 
         View addAccountView = layoutInflater.inflate(R.layout.navigation_drawer_add_account, accountListContainer, false);
-        addAccountView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Add account intent
-                Intent intent = new Intent(BaseDrawerActivity.this, AccountActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-            }
+        addAccountView.setOnClickListener(v -> {
+            // Add account intent
+            Intent intent = new Intent(BaseDrawerActivity.this, AccountActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
         });
 
         accountListContainer.addView(addAccountView);
@@ -330,12 +324,9 @@ public class BaseDrawerActivity extends BaseActivity {
         View accountView = layoutInflater.inflate(R.layout.navigation_drawer_account, accountListContainer, false);
         ((TextView) accountView.findViewById(R.id.account_username)).setText(user.getDisplayUsername(this));
 
-        accountView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                userManager.setActiveUser(user);
-                onActiveUserChanged();
-            }
+        accountView.setOnClickListener(v -> {
+            userManager.setActiveUser(user);
+            onActiveUserChanged();
         });
 
         accountListContainer.addView(accountView);
@@ -422,12 +413,7 @@ public class BaseDrawerActivity extends BaseActivity {
 
         styleNavDrawerItem(view, drawerItem, false);
 
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onNavDrawerItemClicked(drawerItem);
-            }
-        });
+        view.setOnClickListener(v -> onNavDrawerItemClicked(drawerItem));
 
         return view;
     }

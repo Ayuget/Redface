@@ -301,7 +301,7 @@ public class HFRForumService implements MDService {
         Timber.d("Retrieving profile for user id '%d'", user_id);
 
         return pageFetcher.fetchSource(user, mdEndpoints.profile(user_id))
-                .map(new HTMLToProfile());
+                .map(new HTMLToProfile(user));
     }
 
     @Override
