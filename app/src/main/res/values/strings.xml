@@ -128,6 +128,57 @@
         <item>@string/pref_default_category_default</item>
     </string-array>
 
+    <string name="download_strategy_never">Never</string>
+    <string name="download_strategy_fast_connection">On fast connection</string>
+    <string name="download_strategy_wifi">On WiFi</string>
+    <string name="download_strategy_always">Always</string>
+
+    <string name="pref_images_settings">Images</string>
+
+    <string name="pref_images_strategy">Display images</string>
+    <string name="pref_images_strategy_default" translatable="false">ALWAYS</string>
+    <string-array name="pref_images_strategy_values">
+        <item>NEVER</item>
+        <item>FASTCX</item>
+        <item>WIFI</item>
+        <item>@string/pref_images_strategy_default</item>
+    </string-array>
+    <string-array name="pref_images_strategy_entries" translatable="false">
+        <item>@string/download_strategy_never</item>
+        <item>@string/download_strategy_fast_connection</item>
+        <item>@string/download_strategy_wifi</item>
+        <item>@string/download_strategy_always</item>
+    </string-array>
+
+    <string name="pref_avatars_strategy">Display avatars</string>
+    <string name="pref_avatars_strategy_default" translatable="false">ALWAYS</string>
+    <string-array name="pref_avatars_strategy_values">
+        <item>NEVER</item>
+        <item>FASTCX</item>
+        <item>WIFI</item>
+        <item>@string/pref_avatars_strategy_default</item>
+    </string-array>
+    <string-array name="pref_avatars_strategy_entries" translatable="false">
+        <item>@string/download_strategy_never</item>
+        <item>@string/download_strategy_fast_connection</item>
+        <item>@string/download_strategy_wifi</item>
+        <item>@string/download_strategy_always</item>
+    </string-array>
+
+    <string name="pref_smileys_strategy">Display smileys</string>
+    <string name="pref_smileys_strategy_default" translatable="false">ALWAYS</string>
+    <string-array name="pref_smileys_strategy_values">
+        <item>NEVER</item>
+        <item>FASTCX</item>
+        <item>WIFI</item>
+        <item>@string/pref_smileys_strategy_default</item>
+    </string-array>
+    <string-array name="pref_smileys_strategy_entries" translatable="false">
+        <item>@string/download_strategy_never</item>
+        <item>@string/download_strategy_fast_connection</item>
+        <item>@string/download_strategy_wifi</item>
+        <item>@string/download_strategy_always</item>
+    </string-array>
 
     <string name="pref_theme_title">Theme</string>
     <string name="pref_theme_default" translatable="false">LIGHT</string>

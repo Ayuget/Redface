@@ -106,8 +106,8 @@ public class DataService {
         return metaPageSubscriptionHandler.load(user, mdService.listMetaPageTopics(user, topicFilter, sortByDate), observer);
     }
 
-    public Subscription loadPosts(final User user, final Topic topic, int page, Observer<List<Post>> observer) {
-        return postsSubscriptionHandler.load(topic, mdService.listPosts(user, topic, page), observer);
+    public Subscription loadPosts(final User user, final Topic topic, int page, boolean imagesEnabled, boolean avatarsEnabled, boolean smileysEnabled, Observer<List<Post>> observer) {
+        return postsSubscriptionHandler.load(topic, mdService.listPosts(user, topic, page, imagesEnabled, avatarsEnabled, smileysEnabled), observer);
     }
 
     public Subscription getRecentlyUsedSmileys(final User user, Observer<List<Smiley>> observer) {

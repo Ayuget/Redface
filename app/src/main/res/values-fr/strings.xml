@@ -263,4 +263,12 @@
     <string name="pref_show_navigation_buttons_title">Afficher les boutons de navigation</string>
     <string name="pref_refresh_topic_list_title">Rafraîchir la liste des topics</string>
     <string name="pref_refresh_topic_list_summary">Rafraîchir la liste des topics lors d\'un retour sur la liste</string>
+    <string name="pref_smileys_display">Affichage des smileys</string>
+    <string name="pref_images_display">Affichage des images</string>
+    <string name="pref_avatars_display">Affichage des avatars</string>
+    <string name="pref_images_settings">Images</string>
+    <string name="images_display_always">Toujours</string>
+    <string name="images_display_never">Jamais</string>
+    <string name="images_display_wifi">Uniquement en WiFi</string>
+    <string name="images_display_fast_connection">Uniquement avec une connection rapide</string>
 </resources>

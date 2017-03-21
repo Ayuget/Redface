@@ -85,6 +85,28 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        android:title="@string/pref_images_settings">
+        <ListPreference
+            android:key="images_strategy"
+            android:title="@string/pref_images_strategy"
+            android:defaultValue="@string/pref_images_strategy_default"
+            android:entries="@array/pref_images_strategy_entries"
+            android:entryValues="@array/pref_images_strategy_values" />
+        <ListPreference
+            android:key="avatars_strategy"
+            android:title="@string/pref_avatars_strategy"
+            android:defaultValue="@string/pref_avatars_strategy_default"
+            android:entries="@array/pref_avatars_strategy_entries"
+            android:entryValues="@array/pref_avatars_strategy_values" />
+        <ListPreference
+            android:key="smileys_strategy"
+            android:title="@string/pref_smileys_strategy"
+            android:defaultValue="@string/pref_smileys_strategy_default"
+            android:entries="@array/pref_smileys_strategy_entries"
+            android:entryValues="@array/pref_smileys_strategy_values" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:title="@string/pref_rehost_settings">
         <ListPreference
             android:key="rehost_default_variant"
