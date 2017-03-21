@@ -23,7 +23,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
+import android.view.ContextMenu;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -43,6 +43,7 @@ import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.activity.MultiPaneActivity;
 import com.ayuget.redface.ui.activity.WritePrivateMessageActivity;
 import com.ayuget.redface.ui.adapter.PrivateMessagesAdapter;
+import com.ayuget.redface.ui.event.PrivateMessageContextItemSelectedEvent;
 import com.ayuget.redface.ui.misc.DataPresenter;
 import com.ayuget.redface.ui.misc.DividerItemDecoration;
 import com.ayuget.redface.ui.misc.EndlessScrollListener;
@@ -59,7 +60,7 @@ import javax.inject.Inject;
 import butterknife.InjectView;
 import timber.log.Timber;
 
-public class PrivateMessageListFragment extends ToggleToolbarFragment implements PrivateMessagesAdapter.OnPMClickedListener, PrivateMessagesAdapter.OnPMLongClickListener {
+public class PrivateMessageListFragment extends ToggleToolbarFragment implements PrivateMessagesAdapter.OnPMClickedListener {
     private static final String ARG_PRIVATE_MESSAGES_LIST = "pms_list";
 
     private static final String ARG_LAST_LOADED_PAGE = "last_loaded_page";
@@ -130,7 +131,6 @@ public class PrivateMessageListFragment extends ToggleToolbarFragment implements
 
         pmAdapter = new PrivateMessagesAdapter(new ContextThemeWrapper(getActivity(), themeManager.getActiveThemeStyle()), themeManager, settings.isCompactModeEnabled());
         pmAdapter.setOnPMClickedListener(this);
-        pmAdapter.setOnPMLongClickListener(this);
     }
 
     @Nullable
@@ -269,10 +269,22 @@ public class PrivateMessageListFragment extends ToggleToolbarFragment implements
             onPrivateMessageClickedListener.onPrivateMessageClicked(privateMessage);
         }
     }
+    /**
+     * Initialize context menu for long clicks on topics
+     */
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        menu.add(0, UIConstants.TOPIC_ACTION_GO_TO_FIRST_PAGE, 0, getResources().getString(R.string.action_go_to_first_page));
+        menu.add(0, UIConstants.TOPIC_ACTION_GO_TO_SPECIFIC_PAGE, 1, getResources().getString(R.string.action_go_to_specific_page));
+        menu.add(0, UIConstants.TOPIC_ACTION_GO_TO_LAST_PAGE, 2, getResources().getString(R.string.action_go_to_last_page));
+        menu.add(0, UIConstants.TOPIC_ACTION_REPLY_TO_TOPIC, 3, getResources().getString(R.string.action_reply_to_topic));
+    }
 
     @Override
-    public void onPrivateMessageLongClick(int position) {
-
+    public boolean onContextItemSelected(MenuItem item) {
+        ContextMenuRecyclerView.RecyclerContextMenuInfo info = (ContextMenuRecyclerView.RecyclerContextMenuInfo) item.getMenuInfo();
+        bus.post(new PrivateMessageContextItemSelectedEvent(pmAdapter.getItem(info.getPosition()), item.getItemId()));
+        return true;
     }
 
     /**

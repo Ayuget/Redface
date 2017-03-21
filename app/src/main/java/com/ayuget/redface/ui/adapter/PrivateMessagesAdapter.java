@@ -20,9 +20,7 @@ import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
-import android.text.Spannable;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,7 +29,6 @@ import android.widget.TextView;
 
 import com.ayuget.redface.R;
 import com.ayuget.redface.data.api.model.PrivateMessage;
-import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.ui.misc.ThemeManager;
 import com.ayuget.redface.ui.misc.UiUtils;
 import com.squareup.phrase.Phrase;
@@ -39,7 +36,6 @@ import com.squareup.phrase.Phrase;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Logger;
 
 import timber.log.Timber;
 
@@ -62,8 +58,6 @@ public class PrivateMessagesAdapter extends RecyclerView.Adapter<PrivateMessages
 
     private OnPMClickedListener onPMClickedListener;
 
-    private OnPMLongClickListener onPMLongClickListener;
-
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final View parent;
         public ImageView pmIcon;
@@ -78,14 +72,11 @@ public class PrivateMessagesAdapter extends RecyclerView.Adapter<PrivateMessages
             pmIcon = (ImageView) itemView.findViewById(R.id.pm_icon);
             pmLastPostInfos = (TextView) itemView.findViewById(R.id.pm_last_post_infos);
             pmUnreadByRecipientIndicator = (ImageView) itemView.findViewById(R.id.pm_unread_by_recipient_indicator);
+            itemView.setLongClickable(true);
         }
 
         public void setOnPMClickedListener(View.OnClickListener listener) {
             parent.setOnClickListener(listener);
-        }
-
-        public void setOnLongClickListener(View.OnLongClickListener listener) {
-            parent.setOnLongClickListener(listener);
         }
     }
 
@@ -95,14 +86,6 @@ public class PrivateMessagesAdapter extends RecyclerView.Adapter<PrivateMessages
      */
     public interface OnPMClickedListener {
         void onPrivateMessageClicked(PrivateMessage privateMessage);
-    }
-
-    /**
-     * Interface definition for a callback to be invoked when a long-press on a private message
-     * has been made
-     */
-    public interface OnPMLongClickListener {
-        void onPrivateMessageLongClick(int position);
     }
 
     public PrivateMessagesAdapter(Context context, ThemeManager themeManager, boolean isCompactMode) {
@@ -174,19 +157,15 @@ public class PrivateMessagesAdapter extends RecyclerView.Adapter<PrivateMessages
                 onPMClickedListener.onPrivateMessageClicked(privateMessage);
             }
         });
-
-        viewHolder.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                onPMLongClickListener.onPrivateMessageLongClick(position);
-                return false;
-            }
-        });
     }
 
     @Override
     public int getItemCount() {
         return privateMessages.size();
+    }
+
+    public PrivateMessage getItem(int position) {
+        return this.privateMessages.get(position);
     }
 
     public void replaceWith(List<PrivateMessage> privateMessages) {
@@ -203,9 +182,5 @@ public class PrivateMessagesAdapter extends RecyclerView.Adapter<PrivateMessages
 
     public void setOnPMClickedListener(OnPMClickedListener onPMClickedListener) {
         this.onPMClickedListener = onPMClickedListener;
-    }
-
-    public void setOnPMLongClickListener(OnPMLongClickListener onPMLongClickListener) {
-        this.onPMLongClickListener = onPMLongClickListener;
     }
 }
