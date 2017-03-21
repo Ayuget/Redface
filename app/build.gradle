@@ -88,9 +88,7 @@ dependencies {
     compile 'com.astuetz:pagerslidingtabstrip:1.0.1'
     compile 'com.pnikosis:materialish-progress:1.4'
     compile 'com.rengwuxian.materialedittext:library:1.8.2'
-    compile('com.afollestad.material-dialogs:core:0.8.5.6@aar') {
-        transitive = true
-    }
+    compile 'com.afollestad.material-dialogs:core:0.8.5.6@aar'
     compile 'com.timehop.stickyheadersrecyclerview:library:0.4.0@aar'
 
     // Reactive programming
