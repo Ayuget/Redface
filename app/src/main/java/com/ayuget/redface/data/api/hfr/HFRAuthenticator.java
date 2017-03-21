@@ -16,8 +16,6 @@
 
 package com.ayuget.redface.data.api.hfr;
 
-import android.util.Log;
-
 import com.ayuget.redface.BuildConfig;
 import com.ayuget.redface.data.api.MDAuthenticator;
 import com.ayuget.redface.data.api.MDEndpoints;
@@ -25,7 +23,6 @@ import com.ayuget.redface.data.api.model.User;
 import com.ayuget.redface.network.HTTPClientProvider;
 
 import java.io.IOException;
-import java.net.CookieManager;
 import java.net.CookieStore;
 import java.net.HttpCookie;
 import java.util.regex.Matcher;

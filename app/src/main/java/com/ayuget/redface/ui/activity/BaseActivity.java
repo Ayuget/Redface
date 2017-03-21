@@ -24,14 +24,13 @@ import android.support.customtabs.CustomTabsIntent;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 
-import com.ayuget.redface.BuildConfig;
 import com.ayuget.redface.RedfaceApp;
 import com.ayuget.redface.R;
 import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.ui.customtabs.CustomTabActivityHelper;
 import com.ayuget.redface.ui.misc.ThemeManager;
 import com.ayuget.redface.ui.misc.UiUtils;
-import com.ayuget.redface.util.ViewServer;
+
 import io.fabric.sdk.android.Fabric;
 
 import com.crashlytics.android.Crashlytics;
@@ -82,11 +81,6 @@ public class BaseActivity extends AppCompatActivity {
         // Proper RxJava subscriptions management with CompositeSubscription
         subscriptions = new CompositeSubscription();
 
-        // Necessary to inspect view hierarchy
-        if (BuildConfig.DEBUG) {
-            ViewServer.get(this).addWindow(this);
-        }
-
         customTab = new CustomTabActivityHelper();
         customTab.setConnectionCallback(customTabConnect);
     }
@@ -119,10 +113,6 @@ public class BaseActivity extends AppCompatActivity {
         if (themeManager.isRefreshNeeded()) {
             themeManager.setRefreshNeeded(false);
             refreshTheme();
-        }
-
-        if (BuildConfig.DEBUG) {
-            ViewServer.get(this).setFocusedWindow(this);
         }
     }
 
@@ -172,13 +162,8 @@ public class BaseActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        customTab.setConnectionCallback(null);
-
         super.onDestroy();
-
-        if (BuildConfig.DEBUG) {
-            ViewServer.get(this).removeWindow(this);
-        }
+        customTab.setConnectionCallback(null);
     }
 
     protected void initializeTheme() {

@@ -19,7 +19,6 @@ package com.ayuget.redface.ui.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.ayuget.redface.R;
@@ -31,12 +30,15 @@ import com.ayuget.redface.data.state.CategoriesStore;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.event.EditPostEvent;
 import com.ayuget.redface.ui.event.PostActionEvent;
+import com.ayuget.redface.ui.event.PrivateMessageContextItemSelectedEvent;
 import com.ayuget.redface.ui.event.QuotePostEvent;
 import com.ayuget.redface.ui.fragment.DetailsDefaultFragment;
 import com.ayuget.redface.ui.fragment.PrivateMessageListFragment;
 import com.ayuget.redface.ui.fragment.TopicFragment;
 import com.ayuget.redface.ui.fragment.TopicFragmentBuilder;
 import com.ayuget.redface.ui.misc.PagePosition;
+import com.ayuget.redface.ui.misc.SnackbarHelper;
+import com.ayuget.redface.util.GoToPageDialog;
 import com.squareup.otto.Subscribe;
 
 import javax.inject.Inject;
@@ -51,6 +53,8 @@ public class PrivateMessagesActivity extends MultiPaneActivity implements Privat
     private static final String PM_LIST_FRAGMENT_TAG = "private_messages_list_fragment";
 
     private static final String PM_FRAGMENT_TAG = "private_message_fragment";
+
+    private static final String ARG_TOPIC = "topic";
 
     private SubscriptionHandler<Topic, String> quoteHandler = new SubscriptionHandler<>();
 
@@ -136,6 +140,45 @@ public class PrivateMessagesActivity extends MultiPaneActivity implements Privat
         }
 
         loadPrivateMessage(privateMessage, pageToLoad, pagePosition);
+    }
+
+    @Subscribe
+    public void onPrivateMessageContextItemSelected(PrivateMessageContextItemSelectedEvent event) {
+        Timber.d("Received private message contextItem event : %d for PM %s", event.getItemId(), event.getPrivateMessage().toString());
+
+        switch (event.getItemId()) {
+            case UIConstants.TOPIC_ACTION_GO_TO_FIRST_PAGE:
+                loadPrivateMessage(event.getPrivateMessage(), 1, new PagePosition(PagePosition.TOP));
+                break;
+            case UIConstants.TOPIC_ACTION_GO_TO_SPECIFIC_PAGE:
+                GoToPageDialog goToPageDialog = new GoToPageDialog(this, themeManager, event.getPrivateMessage().getPagesCount(),
+                        new GoToPageDialog.GoToPageDialogCallback() {
+                            @Override
+                            public void onSuccess(int pageNumber) {
+                                loadPrivateMessage(event.getPrivateMessage(), pageNumber, new PagePosition(PagePosition.TOP));
+                            }
+
+                            @Override
+                            public void onError() {
+                                SnackbarHelper.makeError(PrivateMessagesActivity.this, R.string.invalid_page_number).show();
+                            }
+                        });
+                goToPageDialog.show();
+                break;
+            case UIConstants.TOPIC_ACTION_GO_TO_LAST_PAGE:
+                loadPrivateMessage(event.getPrivateMessage(),
+                        event.getPrivateMessage().getPagesCount(),
+                        new PagePosition(PagePosition.TOP));
+                break;
+            case UIConstants.TOPIC_ACTION_REPLY_TO_TOPIC:
+                Topic pmAsTopic = event.getPrivateMessage().asTopic()
+                        .withCategory(categoriesStore.getPrivateMessagesCategory());
+                Intent intent = new Intent(this, ReplyActivity.class);
+                intent.putExtra(ARG_TOPIC, pmAsTopic);
+                startActivity(intent);
+                break;
+        }
+
     }
 
     /**

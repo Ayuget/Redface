@@ -2,7 +2,6 @@ package com.ayuget.redface.image;
 
 import com.ayuget.redface.image.rehost.RehostHostingService;
 import com.ayuget.redface.image.rehost.RehostResultParser;
-import com.ayuget.redface.network.HTTPClientProvider;
 
 import javax.inject.Singleton;
 

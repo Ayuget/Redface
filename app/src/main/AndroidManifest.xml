@@ -5,6 +5,9 @@
     <!-- Necessary to connect to forum.hardware.fr -->
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!-- For image download strategies -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+
     <!-- Integration with Android account manager -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
     <uses-permission android:name="android.permission.MANAGE_ACCOUNTS"/>

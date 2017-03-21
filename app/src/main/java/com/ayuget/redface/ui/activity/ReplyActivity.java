@@ -19,7 +19,6 @@ package com.ayuget.redface.ui.activity;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -31,7 +30,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -725,7 +723,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
         return false;
     }
 
-    @OnClick({R.id.insert_manual_smiley_button, R.id.make_text_bold_button, R.id.make_text_italic_button, R.id.insert_quote_button, R.id.insert_link_button, R.id.insert_spoiler_button})
+    @OnClick({R.id.insert_manual_smiley_button, R.id.make_text_bold_button, R.id.make_text_italic_button, R.id.insert_quote_button, R.id.insert_link_button, R.id.insert_spoiler_button, R.id.insert_underline_button, R.id.insert_strike_button})
     public void onExtraToolbarButtonClicked(ImageButton button) {
         switch (button.getId()) {
             case R.id.insert_manual_smiley_button:
@@ -748,6 +746,12 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
                 break;
             case R.id.make_text_italic_button:
                 insertSmileyOrTag(false, "i");
+                break;
+            case R.id.insert_underline_button:
+                insertSmileyOrTag(false, "u");
+                break;
+            case R.id.insert_strike_button:
+                insertSmileyOrTag(false, "strike");
                 break;
         }
     }

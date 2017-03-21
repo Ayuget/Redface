@@ -67,7 +67,7 @@ public interface MDService {
     /**
      * Returns a specific topic page
      */
-    Observable<List<Post>> listPosts(User user, Topic topic, int page);
+    Observable<List<Post>> listPosts(User user, Topic topic, int page, boolean imagesEnabled, boolean avatarsEnabled, boolean smileysEnabled);
 
     /**
      * Returns basic informations (subject and pages count) about a topic
