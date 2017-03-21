@@ -22,9 +22,10 @@ import android.content.SharedPreferences;
 import com.ayuget.redface.R;
 import com.ayuget.redface.data.api.model.TopicFilter;
 import com.ayuget.redface.image.ImageQuality;
+import com.ayuget.redface.network.DownloadStrategy;
+import com.ayuget.redface.ui.misc.MetaPageOrdering;
 import com.ayuget.redface.ui.theme.FontSize;
 import com.ayuget.redface.ui.theme.RedfaceTheme;
-import com.ayuget.redface.ui.misc.MetaPageOrdering;
 
 public class RedfaceSettings {
     private final Context context;
@@ -69,6 +70,21 @@ public class RedfaceSettings {
         return FontSize.valueOf(fontSizeValue);
     }
 
+    public DownloadStrategy getImagesStrategy() {
+        String strategy = sharedPreferences.getString(SettingsConstants.KEY_IMAGES_STRATEGY, context.getString(R.string.pref_images_strategy_default));
+        return DownloadStrategy.valueOf(strategy);
+    }
+
+    public DownloadStrategy getAvatarsStrategy() {
+        String strategy = sharedPreferences.getString(SettingsConstants.KEY_AVATARS_STRATEGY, context.getString(R.string.pref_avatars_strategy_default));
+        return DownloadStrategy.valueOf(strategy);
+    }
+
+    public DownloadStrategy getSmileysStrategy() {
+        String strategy = sharedPreferences.getString(SettingsConstants.KEY_SMILEYS_STRATEGY, context.getString(R.string.pref_smileys_strategy_default));
+        return DownloadStrategy.valueOf(strategy);
+    }
+
     public ImageQuality getDefaultRehostImageQuality() {
         String imageQualityValue = sharedPreferences.getString(SettingsConstants.KEY_REHOST_DEFAULT_VARIANT, context.getString(R.string.pref_default_uploaded_image_variant_default));
         return ImageQuality.valueOf(imageQualityValue);
@@ -94,6 +110,10 @@ public class RedfaceSettings {
 
     public boolean showPreviousPageLastPost() {
         return sharedPreferences.getBoolean(SettingsConstants.KEY_SHOW_PREVIOUS_PAGE_LAST_POST, true);
+    }
+
+    public boolean refreshTopicList() {
+        return sharedPreferences.getBoolean(SettingsConstants.KEY_REFRESH_TOPIC_LIST, false);
     }
 
     public int getDefaultCategoryId() {
@@ -126,5 +146,13 @@ public class RedfaceSettings {
 
     public boolean isUseModernQuoteStyleEnabled() {
         return sharedPreferences.getBoolean(SettingsConstants.KEY_USE_MODERN_QUOTE_STYLE, true);
+    }
+
+    public boolean isBlacklistEnabled() {
+        return sharedPreferences.getBoolean(SettingsConstants.KEY_ENABLE_BLACKLIST, true);
+    }
+
+    public boolean showBlockedUser() {
+        return sharedPreferences.getBoolean(SettingsConstants.KEY_SHOW_BLOCKED_USER, true);
     }
 }

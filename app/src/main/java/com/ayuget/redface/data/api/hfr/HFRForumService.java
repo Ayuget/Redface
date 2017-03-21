@@ -19,12 +19,12 @@ package com.ayuget.redface.data.api.hfr;
 import android.os.Handler;
 import android.os.Looper;
 
-import com.ayuget.redface.data.api.MDAuthenticator;
 import com.ayuget.redface.data.api.MDEndpoints;
 import com.ayuget.redface.data.api.MDMessageSender;
 import com.ayuget.redface.data.api.MDService;
 import com.ayuget.redface.data.api.SmileyService;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToBBCode;
+import com.ayuget.redface.data.api.hfr.transforms.HTMLToCategoryList;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToPostList;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToPrivateMessageList;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToProfile;
@@ -41,11 +41,11 @@ import com.ayuget.redface.data.api.model.Subcategory;
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.api.model.TopicFilter;
 import com.ayuget.redface.data.api.model.User;
-import com.ayuget.redface.data.api.hfr.transforms.HTMLToCategoryList;
 import com.ayuget.redface.data.api.model.misc.SmileyResponse;
 import com.ayuget.redface.data.state.CategoriesStore;
 import com.ayuget.redface.network.HTTPClientProvider;
 import com.ayuget.redface.network.PageFetcher;
+import com.ayuget.redface.settings.Blacklist;
 import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.event.TopicPageCountUpdatedEvent;
@@ -57,11 +57,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import rx.Completable;
 import rx.Observable;
-import rx.functions.Func0;
 import rx.functions.Func1;
-import rx.functions.Func2;
 import timber.log.Timber;
 
 /**
@@ -86,6 +83,8 @@ public class HFRForumService implements MDService {
     @Inject MDMessageSender mdMessageSender;
 
     @Inject RedfaceSettings appSettings;
+
+    @Inject Blacklist blacklist;
 
     private String currentHashcheck;
 
@@ -162,7 +161,10 @@ public class HFRForumService implements MDService {
     }
 
     @Override
-    public Observable<List<Post>> listPosts(User user, final Topic topic, final int page) {
+    public Observable<List<Post>> listPosts(User user, final Topic topic, final int page,
+                                            final boolean imagesEnabled,
+                                            final boolean avatarsEnabled,
+                                            final boolean smileysEnabled) {
         return pageFetcher.fetchSource(user, mdEndpoints.topic(topic, page))
                 .map(htmlSource -> {
                     // Hashcheck is needed by the server to post new content
@@ -194,7 +196,7 @@ public class HFRForumService implements MDService {
                     }
                     return posts;
                 })
-                .map(postsTweaker);
+                .map(posts -> postsTweaker.tweak(posts, imagesEnabled, avatarsEnabled, smileysEnabled));
     }
 
     @Override

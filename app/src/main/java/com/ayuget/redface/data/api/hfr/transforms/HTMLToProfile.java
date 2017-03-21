@@ -9,7 +9,7 @@ import rx.functions.Func1;
 
 public class HTMLToProfile implements Func1<String, Profile> {
     public static final Pattern PROFILE_PATTERN = Pattern.compile(
-            "<td\\s*class=\"profilCase4\"\\s*rowspan=\"7\"\\s*style=\"text-align:center\">\\s*" +
+            "<td\\s*class=\"profilCase4\"\\s*rowspan=\"6\"\\s*style=\"text-align:center\">\\s*" +
                     "(?:(?:<div\\s*class=\"avatar_center\"\\s*style=\"clear:both\"><img\\s*src=\"(.*?)\")|</td>).*?" +
                     "<td\\s*class=\"profilCase2\">Date de naissance.*?</td>\\s*<td\\s*class=\"profilCase3\">(.*?)</td>.*?"
             , Pattern.CASE_INSENSITIVE | Pattern.DOTALL

@@ -20,10 +20,10 @@ import android.accounts.AccountManager;
 import android.content.Context;
 import android.preference.PreferenceManager;
 
-import com.ayuget.redface.data.api.model.Response;
 import com.ayuget.redface.data.state.CategoriesStore;
 import com.ayuget.redface.data.state.ResponseStore;
 import com.ayuget.redface.network.HTTPClientProvider;
+import com.ayuget.redface.settings.Blacklist;
 import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.storage.DiskLruCacheFactory;
 import com.squareup.otto.Bus;
@@ -67,6 +67,10 @@ public class ContextModule {
 
     @Provides @Singleton ResponseStore provideResponseStore() {
         return new ResponseStore(applicationContext);
+    }
+
+    @Provides @Singleton Blacklist provideBlacklist() {
+        return new Blacklist(applicationContext);
     }
 
     @Provides @Singleton

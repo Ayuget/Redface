@@ -58,6 +58,7 @@
     <attr name="generalIconDrawable" format="reference" />
     <attr name="appearanceIconDrawable" format="reference" />
     <attr name="networkIconDrawable" format="reference" />
+    <attr name="blacklistIconDrawable" format="reference" />
 
     <!-- Font sizes -->
     <declare-styleable name="FontStyle">

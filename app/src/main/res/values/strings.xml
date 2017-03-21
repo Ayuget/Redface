@@ -94,6 +94,8 @@
     <string name="pref_double_tap_to_refresh_summary">Double tapping inside a topic will trigger a page refresh</string>
     <string name="pref_show_previous_page_last_post_title">Show previous page last post</string>
     <string name="pref_show_previous_page_last_post_summary">Display the last post of the previous page at the top of the page</string>
+    <string name="pref_refresh_topic_list_title">Refresh topic list</string>
+    <string name="pref_refresh_topic_list_summary">Refresh topic list when returning from a topic</string>
     <string name="pref_show_fully_read_topics_summary">This option only works if you are not in the Meta category</string>
     <string name="pref_use_modern_quote_style">Use modern quote style</string>
     <string name="pref_show_navigation_buttons_title">Show navigation buttons</string>
@@ -126,6 +128,57 @@
         <item>@string/pref_default_category_default</item>
     </string-array>
 
+    <string name="download_strategy_never">Never</string>
+    <string name="download_strategy_fast_connection">On fast connection</string>
+    <string name="download_strategy_wifi">On WiFi</string>
+    <string name="download_strategy_always">Always</string>
+
+    <string name="pref_images_settings">Images</string>
+
+    <string name="pref_images_strategy">Display images</string>
+    <string name="pref_images_strategy_default" translatable="false">ALWAYS</string>
+    <string-array name="pref_images_strategy_values">
+        <item>NEVER</item>
+        <item>FASTCX</item>
+        <item>WIFI</item>
+        <item>@string/pref_images_strategy_default</item>
+    </string-array>
+    <string-array name="pref_images_strategy_entries" translatable="false">
+        <item>@string/download_strategy_never</item>
+        <item>@string/download_strategy_fast_connection</item>
+        <item>@string/download_strategy_wifi</item>
+        <item>@string/download_strategy_always</item>
+    </string-array>
+
+    <string name="pref_avatars_strategy">Display avatars</string>
+    <string name="pref_avatars_strategy_default" translatable="false">ALWAYS</string>
+    <string-array name="pref_avatars_strategy_values">
+        <item>NEVER</item>
+        <item>FASTCX</item>
+        <item>WIFI</item>
+        <item>@string/pref_avatars_strategy_default</item>
+    </string-array>
+    <string-array name="pref_avatars_strategy_entries" translatable="false">
+        <item>@string/download_strategy_never</item>
+        <item>@string/download_strategy_fast_connection</item>
+        <item>@string/download_strategy_wifi</item>
+        <item>@string/download_strategy_always</item>
+    </string-array>
+
+    <string name="pref_smileys_strategy">Display smileys</string>
+    <string name="pref_smileys_strategy_default" translatable="false">ALWAYS</string>
+    <string-array name="pref_smileys_strategy_values">
+        <item>NEVER</item>
+        <item>FASTCX</item>
+        <item>WIFI</item>
+        <item>@string/pref_smileys_strategy_default</item>
+    </string-array>
+    <string-array name="pref_smileys_strategy_entries" translatable="false">
+        <item>@string/download_strategy_never</item>
+        <item>@string/download_strategy_fast_connection</item>
+        <item>@string/download_strategy_wifi</item>
+        <item>@string/download_strategy_always</item>
+    </string-array>
 
     <string name="pref_theme_title">Theme</string>
     <string name="pref_theme_default" translatable="false">LIGHT</string>
@@ -213,6 +266,19 @@
         <item>24 hours</item>
     </string-array>
 
+    <!-- Blacklist preferences screen -->
+    <string name="pref_blacklist_title">Blacklist</string>
+    <string name="pref_blacklist_summary">Manage blocked users</string>
+    <string name="pref_blacklist_activate">Activate blacklist</string>
+    <string name="pref_blacklist_activate_summary">Authorize blaclist members to be blocked</string>
+    <string name="pref_blacklist_empty">No blocked user</string>
+    <string name="pref_blacklist_users">Users</string>
+    <string name="pref_blacklist_alertdialog_message">Delete from blacklist?</string>
+    <string name="pref_blacklist_alertdialog_positive">@android:string/ok</string>
+    <string name="pref_blacklist_alertdialog_negative">@android:string/cancel</string>
+    <string name="pref_blacklist_show_blocked">Show blocked user</string>
+    <string name="pref_blaclist_show_blocked_summary">Show the name of the blocked user instead of the message</string>
+
     <!-- About page -->
     <string name="menu_about">About</string>
 
@@ -234,6 +300,7 @@
     <string name="action_multiquote">Quote those messages</string>
     <string name="quoted_messages">1 quoted message</string>
     <string name="quoted_messages_plural">{count} quoted messages</string>
+    <string name="user_blocked">User %1$s blocked !</string>
 
     <!-- Post page -->
     <string name="reload_page">Reload</string>
