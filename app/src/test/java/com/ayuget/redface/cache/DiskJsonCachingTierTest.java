@@ -29,24 +29,25 @@ public class DiskJsonCachingTierTest {
 
     @Test
     public void testDataIsCached() throws Exception {
-        JsonDiskCachingLayer<House> cachingTier = new JsonDiskCachingLayer.Builder<House>()
+        JsonDiskCachingLayer<String, House> cachingTier = new JsonDiskCachingLayer.Builder<String, House>()
                 .jsonAdapter(jsonAdapter)
                 .cacheDirectory(temporaryFolder.getRoot())
-                .cacheMaxSize(5 * 1024 * 1024)
+                .cacheMaxSizeBytes(5 * 1024 * 1024)
+                .keyResolver(String::toLowerCase)
                 .build();
 
         House lannister = new House("Lannister", "Hear me roar !");
 
-        cachingTier.save(lannister.cacheKey(), lannister).subscribe();
+        cachingTier.save(lannister.name(), lannister).subscribe();
 
-        TestSubscriber<Cached<House>> testSubscriber = new TestSubscriber<>();
-        cachingTier.get(lannister.cacheKey()).subscribe(testSubscriber);
+        TestSubscriber<CachedValue<House>> testSubscriber = new TestSubscriber<>();
+        cachingTier.get(lannister.name()).subscribe(testSubscriber);
 
         testSubscriber.assertNoErrors();
-        testSubscriber.assertReceivedOnNext(Collections.singletonList(Cached.from(lannister)));
+        testSubscriber.assertReceivedOnNext(Collections.singletonList(CachedValue.from(lannister)));
     }
 
-    private static class House implements Cacheable<String> {
+    private static class House {
         private final String name;
 
         private final String motto;
@@ -62,11 +63,6 @@ public class DiskJsonCachingTierTest {
 
         public String motto() {
             return motto;
-        }
-
-        @Override
-        public String cacheKey() {
-            return name().toLowerCase();
         }
 
         @Override

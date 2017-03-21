@@ -19,9 +19,9 @@ import static org.mockito.Mockito.when;
 
 
 @RunWith(MockitoJUnitRunner.class)
-public class RedfaceCacheTest {
+public class StoreBuilderTest {
     @Mock
-    DataProvider<String, User> userProvider;
+    Fetcher<String, User> userProvider;
 
     @Mock
     CachingLayer<String, User> firstCachingTier;
@@ -31,7 +31,7 @@ public class RedfaceCacheTest {
 
     @Test
     public void testWithEmptyResponse() throws Exception {
-        CachingDataProvider<String, User> cachingDataProvider = CachingDataProvider.provideWith(userProvider)
+        Store<String, User> cachingDataProvider = Store.provideWith(userProvider)
                 .build();
 
         String missingKey = "foo bar";
@@ -50,14 +50,14 @@ public class RedfaceCacheTest {
     public void testWithNoCachingTier() throws Exception {
         User jaime = new User("Jaime", "Lannister");
 
-        CachingDataProvider<String, User> cachingDataProvider = CachingDataProvider.provideWith(userProvider)
+        Store<String, User> cachingDataProvider = Store.provideWith(userProvider)
                 .build();
 
-        when(userProvider.get(jaime.cacheKey())).thenReturn(Observable.just(jaime));
+        when(userProvider.get(jaime.firstName())).thenReturn(Observable.just(jaime));
 
         TestSubscriber<User> testSubscriber = new TestSubscriber<>();
 
-        cachingDataProvider.get(jaime.cacheKey())
+        cachingDataProvider.get(jaime.firstName())
                 .subscribe(testSubscriber);
 
         testSubscriber.assertNoErrors();
@@ -68,49 +68,49 @@ public class RedfaceCacheTest {
     public void testWithCachingTiersAndNotInCache() throws Exception {
         User jaime = new User("Jaime", "Lannister");
 
-        CachingDataProvider<String, User> cachingDataProvider = CachingDataProvider.provideWith(userProvider)
+        Store<String, User> cachingDataProvider = Store.provideWith(userProvider)
                 .addCachingLayer(firstCachingTier)
                 .addCachingLayer(secondCachingTier)
                 .build();
 
-        when(secondCachingTier.get(jaime.cacheKey())).thenReturn(Observable.<Cached<User>>empty());
-        when(firstCachingTier.get(jaime.cacheKey())).thenReturn(Observable.<Cached<User>>empty());
-        when(firstCachingTier.save(jaime.cacheKey(), jaime)).thenReturn(Completable.complete());
-        when(secondCachingTier.save(jaime.cacheKey(), jaime)).thenReturn(Completable.complete());
-        when(userProvider.get(jaime.cacheKey())).thenReturn(Observable.just(jaime));
+        when(secondCachingTier.get(jaime.firstName())).thenReturn(Observable.<CachedValue<User>>empty());
+        when(firstCachingTier.get(jaime.firstName())).thenReturn(Observable.<CachedValue<User>>empty());
+        when(firstCachingTier.save(jaime.firstName(), jaime)).thenReturn(Completable.complete());
+        when(secondCachingTier.save(jaime.firstName(), jaime)).thenReturn(Completable.complete());
+        when(userProvider.get(jaime.firstName())).thenReturn(Observable.just(jaime));
 
         TestSubscriber<User> testSubscriber = new TestSubscriber<>();
 
-        cachingDataProvider.get(jaime.cacheKey())
+        cachingDataProvider.get(jaime.firstName())
                 .subscribe(testSubscriber);
 
         testSubscriber.assertNoErrors();
         testSubscriber.assertReceivedOnNext(Collections.singletonList(jaime));
 
-        verify(firstCachingTier).get(jaime.cacheKey());
-        verify(secondCachingTier).get(jaime.cacheKey());
-        verify(userProvider).get(jaime.cacheKey());
-        verify(firstCachingTier).save(jaime.cacheKey(), jaime);
-        verify(secondCachingTier).save(jaime.cacheKey(), jaime);
+        verify(firstCachingTier).get(jaime.firstName());
+        verify(secondCachingTier).get(jaime.firstName());
+        verify(userProvider).get(jaime.firstName());
+        verify(firstCachingTier).save(jaime.firstName(), jaime);
+        verify(secondCachingTier).save(jaime.firstName(), jaime);
     }
 
     @Test
     public void testWithCachingTiersAndInFirstCache() throws Exception {
         User jaime = new User("Jaime", "Lannister");
 
-        CachingDataProvider<String, User> cachingDataProvider = CachingDataProvider.provideWith(userProvider)
+        Store<String, User> cachingDataProvider = Store.provideWith(userProvider)
                 .addCachingLayer(firstCachingTier)
                 .addCachingLayer(secondCachingTier)
                 .expireValuesAfter(20, TimeUnit.DAYS)
                 .build();
 
-        when(secondCachingTier.get(jaime.cacheKey())).thenReturn(Observable.<Cached<User>>empty());
-        when(firstCachingTier.save(jaime.cacheKey(), jaime)).thenReturn(Completable.complete());
-        when(secondCachingTier.save(jaime.cacheKey(), jaime)).thenReturn(Completable.complete());
-        when(firstCachingTier.get(jaime.cacheKey())).thenReturn(Observable.just(Cached.from(jaime)));
+        when(secondCachingTier.get(jaime.firstName())).thenReturn(Observable.<CachedValue<User>>empty());
+        when(firstCachingTier.save(jaime.firstName(), jaime)).thenReturn(Completable.complete());
+        when(secondCachingTier.save(jaime.firstName(), jaime)).thenReturn(Completable.complete());
+        when(firstCachingTier.get(jaime.firstName())).thenReturn(Observable.just(CachedValue.from(jaime)));
 
         // DataProvider should not be hit, data is in cache !
-        when(userProvider.get(jaime.cacheKey())).thenReturn(Observable.create(new Observable.OnSubscribe<User>() {
+        when(userProvider.get(jaime.firstName())).thenReturn(Observable.create(new Observable.OnSubscribe<User>() {
             @Override
             public void call(Subscriber<? super User> subscriber) {
                 subscriber.onError(new IllegalStateException("boom"));
@@ -119,49 +119,49 @@ public class RedfaceCacheTest {
 
         TestSubscriber<User> testSubscriber = new TestSubscriber<>();
 
-        cachingDataProvider.get(jaime.cacheKey())
+        cachingDataProvider.get(jaime.firstName())
                 .subscribe(testSubscriber);
 
         testSubscriber.assertNoErrors();
         testSubscriber.assertReceivedOnNext(Collections.singletonList(jaime));
 
-        verify(firstCachingTier).get(jaime.cacheKey());
-        verify(secondCachingTier).get(jaime.cacheKey());
-        verify(secondCachingTier).save(jaime.cacheKey(), jaime);
+        verify(firstCachingTier).get(jaime.firstName());
+        verify(secondCachingTier).get(jaime.firstName());
+        verify(secondCachingTier).save(jaime.firstName(), jaime);
     }
 
     @Test
     public void testWithCachingTiersAndExpiredValueInCache() throws Exception {
         User jaime = new User("Jaime", "Lannister");
 
-        CachingDataProvider<String, User> cachingDataProvider = CachingDataProvider.provideWith(userProvider)
+        Store<String, User> cachingDataProvider = Store.provideWith(userProvider)
                 .addCachingLayer(firstCachingTier)
                 .addCachingLayer(secondCachingTier)
                 .expireValuesAfter(1, TimeUnit.HOURS)
                 .build();
 
-        when(secondCachingTier.get(jaime.cacheKey())).thenReturn(Observable.<Cached<User>>empty());
-        when(firstCachingTier.save(jaime.cacheKey(), jaime)).thenReturn(Completable.complete());
-        when(secondCachingTier.save(jaime.cacheKey(), jaime)).thenReturn(Completable.complete());
-        when(firstCachingTier.get(jaime.cacheKey())).thenReturn(Observable.just(Cached.from(jaime, 7200)));
-        when(userProvider.get(jaime.cacheKey())).thenReturn(Observable.just(jaime));
+        when(secondCachingTier.get(jaime.firstName())).thenReturn(Observable.<CachedValue<User>>empty());
+        when(firstCachingTier.save(jaime.firstName(), jaime)).thenReturn(Completable.complete());
+        when(secondCachingTier.save(jaime.firstName(), jaime)).thenReturn(Completable.complete());
+        when(firstCachingTier.get(jaime.firstName())).thenReturn(Observable.just(CachedValue.from(jaime, 7200)));
+        when(userProvider.get(jaime.firstName())).thenReturn(Observable.just(jaime));
 
         TestSubscriber<User> testSubscriber = new TestSubscriber<>();
 
-        cachingDataProvider.get(jaime.cacheKey())
+        cachingDataProvider.get(jaime.firstName())
                 .subscribe(testSubscriber);
 
         testSubscriber.assertNoErrors();
         testSubscriber.assertReceivedOnNext(Collections.singletonList(jaime));
 
-        verify(firstCachingTier).get(jaime.cacheKey());
-        verify(secondCachingTier).get(jaime.cacheKey());
-        verify(userProvider).get(jaime.cacheKey());
-        verify(firstCachingTier).save(jaime.cacheKey(), jaime);
-        verify(secondCachingTier).save(jaime.cacheKey(), jaime);
+        verify(firstCachingTier).get(jaime.firstName());
+        verify(secondCachingTier).get(jaime.firstName());
+        verify(userProvider).get(jaime.firstName());
+        verify(firstCachingTier).save(jaime.firstName(), jaime);
+        verify(secondCachingTier).save(jaime.firstName(), jaime);
     }
 
-    private static class User implements Cacheable<String> {
+    private static class User {
         private final String firstName;
         private final String lastName;
 
@@ -176,11 +176,6 @@ public class RedfaceCacheTest {
 
         public String lastName() {
             return lastName;
-        }
-
-        @Override
-        public String cacheKey() {
-            return firstName() + " " + lastName;
         }
     }
 }

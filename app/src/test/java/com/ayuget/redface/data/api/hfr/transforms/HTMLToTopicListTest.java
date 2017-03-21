@@ -36,7 +36,7 @@ import java.util.List;
 public class HTMLToTopicListTest extends BaseTestCase {
     @Test
     public void test_parseProgrammingCategory() throws IOException {
-        HTMLToTopicList htmlToTopicList = new HTMLToTopicList(null);
+        HTMLToTopicList htmlToTopicList = new HTMLToTopicList(null, null, null);
 
         List<Topic> topics = htmlToTopicList.call(readAssetFile("hfr_topics_page.html"));
 
