@@ -122,3 +122,6 @@
 
 # Retrolambda
 -dontwarn java.lang.invoke.*
+
+# Unused classes in MaterialProgressBar
+-dontwarn me.zhanghai.android.materialprogressbar.**

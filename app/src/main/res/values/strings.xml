@@ -137,13 +137,13 @@
 
     <string name="pref_images_strategy">Display images</string>
     <string name="pref_images_strategy_default" translatable="false">ALWAYS</string>
-    <string-array name="pref_images_strategy_values">
+    <string-array name="pref_images_strategy_values" translatable="false">
         <item>NEVER</item>
         <item>FASTCX</item>
         <item>WIFI</item>
         <item>@string/pref_images_strategy_default</item>
     </string-array>
-    <string-array name="pref_images_strategy_entries" translatable="false">
+    <string-array name="pref_images_strategy_entries">
         <item>@string/download_strategy_never</item>
         <item>@string/download_strategy_fast_connection</item>
         <item>@string/download_strategy_wifi</item>
@@ -152,13 +152,13 @@
 
     <string name="pref_avatars_strategy">Display avatars</string>
     <string name="pref_avatars_strategy_default" translatable="false">ALWAYS</string>
-    <string-array name="pref_avatars_strategy_values">
+    <string-array name="pref_avatars_strategy_values" translatable="false">
         <item>NEVER</item>
         <item>FASTCX</item>
         <item>WIFI</item>
         <item>@string/pref_avatars_strategy_default</item>
     </string-array>
-    <string-array name="pref_avatars_strategy_entries" translatable="false">
+    <string-array name="pref_avatars_strategy_entries">
         <item>@string/download_strategy_never</item>
         <item>@string/download_strategy_fast_connection</item>
         <item>@string/download_strategy_wifi</item>
@@ -167,13 +167,13 @@
 
     <string name="pref_smileys_strategy">Display smileys</string>
     <string name="pref_smileys_strategy_default" translatable="false">ALWAYS</string>
-    <string-array name="pref_smileys_strategy_values">
+    <string-array name="pref_smileys_strategy_values" translatable="false">
         <item>NEVER</item>
         <item>FASTCX</item>
         <item>WIFI</item>
         <item>@string/pref_smileys_strategy_default</item>
     </string-array>
-    <string-array name="pref_smileys_strategy_entries" translatable="false">
+    <string-array name="pref_smileys_strategy_entries">
         <item>@string/download_strategy_never</item>
         <item>@string/download_strategy_fast_connection</item>
         <item>@string/download_strategy_wifi</item>
