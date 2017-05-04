@@ -95,6 +95,6 @@ public class RehostHostingService implements ImageHostingService {
 
         Response response = uploadClient.newCall(request).execute();
         if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
-        return resultParser.parseResultPage(response.body().string());
+        return resultParser.parseResultPage(ResponseBody.create(MediaType.parse("text/html; charset=UTF-8"),response.body().bytes()).string());
     }
 }
