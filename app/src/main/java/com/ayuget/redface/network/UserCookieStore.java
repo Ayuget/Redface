@@ -122,7 +122,7 @@ public class UserCookieStore implements CookieStore {
 
                 // Save cookie into persistent store
                 SharedPreferences.Editor prefsWriter = cookiePrefs.edit();
-                prefsWriter.putString(uri.getHost(), TextUtils.join(",", cookies.get(uri.getHost()).keySet()));
+                prefsWriter.putString(uri.getHost(), TextUtils.join(",", Collections.list(cookies.get(uri.getHost()).keys())));
                 prefsWriter.putString(COOKIE_NAME_PREFIX + name, encodeCookie(new SerializableHttpCookie(cookie)));
                 prefsWriter.apply();
             }
