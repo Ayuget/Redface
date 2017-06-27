@@ -17,19 +17,21 @@
 package com.ayuget.redface.util;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.ayuget.redface.R;
 import com.ayuget.redface.ui.misc.ThemeManager;
-import com.rengwuxian.materialedittext.MaterialEditText;
 import com.squareup.phrase.Phrase;
 
 import timber.log.Timber;
+
+import static android.content.DialogInterface.BUTTON_POSITIVE;
 
 public class GoToPageDialog {
 
@@ -37,7 +39,7 @@ public class GoToPageDialog {
 
     private Context context;
 
-    private MaterialEditText goToPageEditText;
+    private EditText goToPageEditText;
 
     private int pageCounts;
 
@@ -59,27 +61,27 @@ public class GoToPageDialog {
      * Shows the "Go to page" dialog where the user can enter the page he wants to consult.
      */
     public void show() {
-        MaterialDialog dialog = new MaterialDialog.Builder(context)
-                .customView(R.layout.dialog_go_to_page, true)
-                .positiveText(R.string.dialog_go_to_page_positive_text)
-                .negativeText(android.R.string.cancel)
-                .theme(themeManager.getMaterialDialogTheme())
-                .onPositive((materialDialog, which) -> {
+        AlertDialog dialog = new AlertDialog.Builder(context, themeManager.getActiveThemeStyle())
+                .setView(R.layout.dialog_go_to_page)
+                .setPositiveButton(R.string.dialog_go_to_page_positive_text, (dialog1, which) -> {
                     try {
                         int pageNumber = Integer.valueOf(goToPageEditText.getText().toString());
                         goToPageDialogCallback.onSuccess(pageNumber);
-                    } catch (NumberFormatException e) {
+                    }
+                    catch (NumberFormatException e) {
                         Timber.e(e, "Invalid page number entered : %s", goToPageEditText.getText().toString());
                         goToPageDialogCallback.onError();
                     }
                 })
-                .build();
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
 
 
-        final View positiveAction = dialog.getActionButton(DialogAction.POSITIVE);
-        goToPageEditText = (MaterialEditText) dialog.getCustomView().findViewById(R.id.page_number);
 
-        TextView pagesCountView = (TextView) dialog.getCustomView().findViewById(R.id.pages_count);
+        final View positiveButton = dialog.getButton(BUTTON_POSITIVE);
+        goToPageEditText = (EditText) dialog.findViewById(R.id.page_number);
+
+        TextView pagesCountView = (TextView) dialog.findViewById(R.id.pages_count);
         pagesCountView.setText(Phrase.from(context, R.string.pages_count).put("page", pageCounts).format());
 
         goToPageEditText.addTextChangedListener(new TextWatcher() {
@@ -93,14 +95,14 @@ public class GoToPageDialog {
                 if (s.toString().trim().length() > 0) {
                     try {
                         int pageNumber = Integer.valueOf(s.toString());
-                        positiveAction.setEnabled(pageNumber >= 1 && pageNumber <= pageCounts);
+                        positiveButton.setEnabled(pageNumber >= 1 && pageNumber <= pageCounts);
                     }
                     catch (NumberFormatException e) {
-                        positiveAction.setEnabled(false);
+                        positiveButton.setEnabled(false);
                     }
                 }
                 else {
-                    positiveAction.setEnabled(false);
+                    positiveButton.setEnabled(false);
                 }
             }
 
@@ -111,14 +113,6 @@ public class GoToPageDialog {
         });
 
         dialog.show();
-        positiveAction.setEnabled(false);
-    }
-
-    public static class Builder {
-        public Builder(Context context) {
-
-        }
-
-
+        positiveButton.setEnabled(false);
     }
 }

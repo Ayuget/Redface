@@ -16,14 +16,14 @@
 
 package com.ayuget.redface.ui.activity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.ayuget.redface.R;
 import com.ayuget.redface.data.api.MDLink;
 import com.ayuget.redface.data.api.hfr.HFRUrlParser;
@@ -467,16 +467,10 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
                 break;
             case DELETE:
                 Timber.d("About to delete post");
-                new MaterialDialog.Builder(this)
-                        .content(R.string.post_delete_confirmation)
-                        .positiveText(R.string.post_delete_yes)
-                        .negativeText(R.string.post_delete_no)
-                        .onPositive(new MaterialDialog.SingleButtonCallback() {
-                            @Override
-                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                deletePost(event.getTopic(), event.getPostId());
-                            }
-                        })
+                new AlertDialog.Builder(this)
+                        .setTitle(R.string.post_delete_confirmation)
+                        .setPositiveButton(R.string.post_delete_yes, (dialog, which) -> deletePost(event.getTopic(), event.getPostId()))
+                        .setNegativeButton(R.string.post_delete_no, null)
                         .show();
                 break;
             default:

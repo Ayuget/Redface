@@ -67,8 +67,6 @@ import timber.log.Timber;
 
 @FragmentWithArgs
 public class TopicListFragment extends ToggleToolbarFragment implements TopicsAdapter.OnTopicClickedListener {
-    private static final String ARG_TOPIC_LIST = "topic_list";
-
     private static final String ARG_LAST_LOADED_PAGE = "last_loaded_page";
 
     /**
@@ -210,13 +208,6 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
 
         // Restore the list of topics when the fragment is recreated by the framework
         if (savedInstanceState != null) {
-            displayedTopics = savedInstanceState.getParcelableArrayList(ARG_TOPIC_LIST);
-            if (displayedTopics != null) {
-                Timber.i("Restored %d topics to fragment", displayedTopics.size());
-                topicsAdapter.replaceWith(displayedTopics);
-                showTopics();
-            }
-
             lastLoadedPage = savedInstanceState.getInt(ARG_LAST_LOADED_PAGE, 0);
         }
     }
@@ -303,7 +294,6 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList(ARG_TOPIC_LIST, displayedTopics);
         outState.putInt(ARG_LAST_LOADED_PAGE, lastLoadedPage);
     }
 

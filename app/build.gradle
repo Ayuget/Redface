@@ -1,12 +1,12 @@
 buildscript {
     repositories {
         jcenter()
-        mavenCentral()
         maven { url 'https://maven.fabric.io/public' }
+        maven { url 'https://maven.google.com' }
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.0-alpha1'
+        classpath 'com.android.tools.build:gradle:3.0.0-alpha4'
         classpath 'io.fabric.tools:gradle:1.+'
     }
 }
@@ -16,19 +16,20 @@ repositories {
     maven { url 'https://maven.fabric.io/public' }
     maven { url "https://jitpack.io" }
     maven { url "http://dl.bintray.com/tbruyelle/tbruyelle" }
+    maven { url 'https://maven.google.com' }
 }
 
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion '25.0.0'
+    compileSdkVersion 26
+    buildToolsVersion '26.0.0'
 
     defaultConfig {
         applicationId "com.ayuget.redface"
         minSdkVersion 16
-        targetSdkVersion 23
+        targetSdkVersion 26
         versionCode 300
         versionName "3.0.0"
     }
@@ -57,12 +58,12 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
     // Support libraries
-    compile "com.android.support:appcompat-v7:23.4.0"
-    compile "com.android.support:recyclerview-v7:23.4.0"
-    compile "com.android.support:palette-v7:23.4.0"
-    compile 'com.android.support:support-annotations:23.4.0'
-    compile 'com.android.support:design:23.4.0'
-    compile 'com.android.support:customtabs:23.4.0'
+    compile "com.android.support:appcompat-v7:26.0.0-beta2"
+    compile "com.android.support:recyclerview-v7:26.0.0-beta2"
+    compile "com.android.support:palette-v7:26.0.0-beta2"
+    compile 'com.android.support:support-annotations:26.0.0-beta2'
+    compile 'com.android.support:design:26.0.0-beta2'
+    compile 'com.android.support:customtabs:26.0.0-beta2'
 
     // Dependency injection
     compile 'com.squareup.dagger:dagger:1.2.2'
@@ -73,6 +74,8 @@ dependencies {
     compile 'net.ypresto.timbertreeutils:timbertreeutils:1.0.0'
     compile 'com.jakewharton:butterknife:6.0.0'
     annotationProcessor 'com.jakewharton:butterknife:6.0.0'
+    androidTestAnnotationProcessor 'com.jakewharton:butterknife:6.0.0'
+    testAnnotationProcessor 'com.jakewharton:butterknife:6.0.0'
     compile 'com.hannesdorfmann.fragmentargs:annotation:3.0.2'
     annotationProcessor 'com.hannesdorfmann.fragmentargs:processor:3.0.2'
     provided 'com.google.auto.value:auto-value:1.2'
@@ -84,8 +87,6 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.4.0'
     compile 'com.astuetz:pagerslidingtabstrip:1.0.1'
     compile 'com.pnikosis:materialish-progress:1.4'
-    compile 'com.rengwuxian.materialedittext:library:1.8.2'
-    compile 'com.afollestad.material-dialogs:core:0.8.5.6@aar'
     compile 'com.timehop.stickyheadersrecyclerview:library:0.4.0@aar'
 
     // Reactive programming

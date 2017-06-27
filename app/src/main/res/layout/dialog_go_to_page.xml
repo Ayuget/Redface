@@ -27,13 +27,17 @@
         android:layout_height="48dp"
         android:gravity="center_vertical|center"
         tools:text="405 pages" />
-    <com.rengwuxian.materialedittext.MaterialEditText
-        android:id="@+id/page_number"
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/input_layout_page_number"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/prompt_go_to_page"
-        android:inputType="number"
-        android:maxLines="1"
-        android:singleLine="true"
-        app:floatingLabel="highlight" />
+        android:layout_height="wrap_content">
+        <EditText
+            android:id="@+id/page_number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/prompt_go_to_page"
+            android:inputType="number"
+            android:maxLines="1"
+            android:singleLine="true" />
+    </android.support.design.widget.TextInputLayout>
 </LinearLayout>

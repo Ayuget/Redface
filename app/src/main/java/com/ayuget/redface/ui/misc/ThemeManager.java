@@ -16,7 +16,6 @@
 
 package com.ayuget.redface.ui.misc;
 
-import com.afollestad.materialdialogs.Theme;
 import com.ayuget.redface.R;
 import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.ui.theme.RedfaceTheme;
@@ -77,17 +76,6 @@ public class ThemeManager {
 
     public String getFontSizeCssClass() {
         return "font-" + settings.getFontSize().toString().toLowerCase();
-    }
-
-    public Theme getMaterialDialogTheme() {
-        RedfaceTheme activeTheme = settings.getTheme();
-
-        if (activeTheme == RedfaceTheme.LIGHT) {
-            return Theme.LIGHT;
-        }
-        else {
-            return Theme.DARK;
-        }
     }
 
     public int getListDividerDrawable() {

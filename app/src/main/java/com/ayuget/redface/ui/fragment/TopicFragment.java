@@ -16,6 +16,7 @@
 
 package com.ayuget.redface.ui.fragment;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -23,6 +24,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -33,11 +35,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.ayuget.redface.R;
 import com.ayuget.redface.account.UserManager;
 import com.ayuget.redface.data.api.MDEndpoints;
@@ -69,7 +70,6 @@ import com.ayuget.redface.ui.misc.UiUtils;
 import com.ayuget.redface.ui.view.TopicPageView;
 import com.hannesdorfmann.fragmentargs.annotation.Arg;
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs;
-import com.rengwuxian.materialedittext.MaterialEditText;
 import com.squareup.otto.Subscribe;
 import com.squareup.phrase.Phrase;
 
@@ -80,6 +80,8 @@ import javax.inject.Inject;
 
 import butterknife.InjectView;
 import timber.log.Timber;
+
+import static android.content.DialogInterface.BUTTON_POSITIVE;
 
 @FragmentWithArgs
 public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageChangeListener, TopicPageView.OnQuoteListener {
@@ -95,7 +97,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
     private TopicPageAdapter topicPageAdapter;
 
-    private MaterialEditText goToPageEditText;
+    private EditText goToPageEditText;
 
     private ArrayList<TopicPosition> topicPositionsStack;
 
@@ -527,14 +529,11 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     }
 
     public void showGoToPageDialog() {
-        MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
-                .customView(R.layout.dialog_go_to_page, true)
-                .positiveText(R.string.dialog_go_to_page_positive_text)
-                .negativeText(android.R.string.cancel)
-                .theme(themeManager.getMaterialDialogTheme())
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
+        AlertDialog dialog = new AlertDialog.Builder(getActivity(), themeManager.getActiveThemeStyle())
+                .setView(R.layout.dialog_go_to_page)
+                .setPositiveButton(R.string.dialog_go_to_page_positive_text, new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                    public void onClick(DialogInterface dialog, int which) {
                         try {
                             int pageNumber = Integer.valueOf(goToPageEditText.getText().toString());
                             pager.setCurrentItem(pageNumber - 1);
@@ -545,13 +544,14 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
                         }
                     }
                 })
-                .build();
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
 
 
-        final View positiveAction = dialog.getActionButton(DialogAction.POSITIVE);
-        goToPageEditText = (MaterialEditText) dialog.getCustomView().findViewById(R.id.page_number);
+        final View positiveAction = dialog.getButton(BUTTON_POSITIVE);
+        goToPageEditText = (EditText) dialog.findViewById(R.id.page_number);
 
-        TextView pagesCountView = (TextView) dialog.getCustomView().findViewById(R.id.pages_count);
+        TextView pagesCountView = (TextView) dialog.findViewById(R.id.pages_count);
         pagesCountView.setText(Phrase.from(getActivity(), R.string.pages_count_currently).put("current_page", currentPage).put("pages_count", topic.pagesCount()).format());
 
         goToPageEditText.addTextChangedListener(new TextWatcher() {

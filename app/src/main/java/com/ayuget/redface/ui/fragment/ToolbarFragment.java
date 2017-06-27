@@ -32,25 +32,14 @@ public class ToolbarFragment extends BaseFragment {
         toolbar = (Toolbar) view.findViewById(R.id.toolbar_actionbar);
 
         if (toolbar != null) {
-            // Set an OnMenuItemClickListener to handle menu item clicks
-            toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-                @Override
-                public boolean onMenuItemClick(MenuItem menuItem) {
-                    return onOptionsItemSelected(menuItem);
-                }
-            });
-
-            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    clearInternalStack();
-                    getActivity().onBackPressed();
-                }
+            toolbar.setOnMenuItemClickListener(this::onOptionsItemSelected);
+            toolbar.setNavigationOnClickListener(v -> {
+                clearInternalStack();
+                getActivity().onBackPressed();
             });
 
             // Inflate a menu to be displayed in the toolbar
             onCreateOptionsMenu(toolbar);
-
             onToolbarInitialized(toolbar);
         }
     }
@@ -72,7 +61,7 @@ public class ToolbarFragment extends BaseFragment {
 
     public void showUpButton() {
         // Resources comes from AppCompat library
-        toolbar.setNavigationIcon(R.drawable.md_nav_back);
+        toolbar.setNavigationIcon(R.drawable.ic_action_arrow_back);
     }
 
     public void clearInternalStack() {

@@ -20,6 +20,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.ayuget.redface.R;
@@ -33,7 +34,6 @@ import com.ayuget.redface.network.HTTPClientProvider;
 import com.ayuget.redface.network.UserCookieStore;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.misc.SnackbarHelper;
-import com.rengwuxian.materialedittext.MaterialEditText;
 
 import javax.inject.Inject;
 
@@ -43,10 +43,10 @@ import timber.log.Timber;
 
 public class AccountActivity extends BaseActivity {
     @InjectView(R.id.username)
-    MaterialEditText usernameTextView;
+    EditText usernameTextView;
 
     @InjectView(R.id.password)
-    MaterialEditText passwordTextView;
+    EditText passwordTextView;
 
     @InjectView(R.id.relogin_instructions)
     TextView reloginInstructions;
