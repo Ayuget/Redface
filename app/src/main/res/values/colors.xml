@@ -95,6 +95,7 @@
 
     <color name="green">#ff0ff415</color>
     <color name="blue">#ff0514f4</color>
+    <color name="white">#ffffffff</color>
 
     <color name="reply_actions_toolbar_color_light">#e9e9e9</color>
     <color name="reply_toolbar_icons_color_light">#757575</color>

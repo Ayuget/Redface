@@ -108,6 +108,8 @@
         <item name="android:background">?attr/colorPrimary</item>
         <item name="popupTheme">?attr/toolbarPopupTheme</item>
         <item name="theme">?attr/toolbarTheme</item>
+        <item name="contentInsetStart">0dp</item>
+        <item name="contentInsetLeft">0dp</item>
     </style>
 
     <style name="RedfaceSmileysToolbar" parent="Widget.AppCompat.Toolbar">
