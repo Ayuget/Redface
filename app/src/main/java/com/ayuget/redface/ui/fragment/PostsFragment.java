@@ -307,7 +307,7 @@ public class PostsFragment extends BaseFragment {
 
     @Subscribe public void onShowAllSpoilersEvent(ShowAllSpoilersEvent event) {
         if (event.getTopic().id() == topic.id() && isVisible() && event.getCurrentPage() == currentPage) {
-            debugLog("'show all spoilers event' received", System.identityHashCode(this), currentPage);
+            debugLog("'show all spoilers event' received");
             topicPageView.showAllSpoilers();
         }
     }
