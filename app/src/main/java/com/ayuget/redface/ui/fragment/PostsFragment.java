@@ -19,7 +19,6 @@ package com.ayuget.redface.ui.fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -57,6 +56,7 @@ import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -65,11 +65,8 @@ import timber.log.Timber;
 
 @FragmentWithArgs
 public class PostsFragment extends BaseFragment {
-    private static final String ARG_POST_LIST = "post_list";
-
-    private static final String ARG_TOPIC = "topic";
-
     private static final String ARG_SAVED_SCROLL_POSITION = "savedScrollPosition";
+    private static final String ARG_POSTS_IN_CACHE_HINT = "postsInCacheHint";
 
     @Arg
     Topic topic;
@@ -120,9 +117,14 @@ public class PostsFragment extends BaseFragment {
      */
     private int currentScrollPosition;
 
+    /**
+     * Hint indicating if posts might be in cache.
+     */
+    private boolean postsInCacheHint = false;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Timber.d("@%d -> Fragment(currentPage=%d) -> onCreate", System.identityHashCode(this), currentPage);
+        debugLog("onCreate");
 
         super.onCreate(savedInstanceState);
 
@@ -136,48 +138,37 @@ public class PostsFragment extends BaseFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable final Bundle savedInstanceState) {
-        Timber.d("@%d -> Fragment(currentPage=%d) -> onCreateView(page=%d)", System.identityHashCode(this), currentPage, currentPage);
+        debugLog("onCreateView");
 
         final View rootView = inflateRootView(R.layout.fragment_posts, inflater, container);
 
         topicPageView.setHostActivity(getActivity());
 
-        // Default view is the loading indicator
-        showLoadingIndicator();
-
-        // Restore the list of posts when the fragment is recreated by the framework
-        boolean restoredPosts = false;
-
         if (savedInstanceState != null) {
-            Timber.d("@%d -> Fragment(currentPage=%d) -> trying to restore state", System.identityHashCode(this), currentPage);
-            displayedPosts = savedInstanceState.getParcelableArrayList(ARG_POST_LIST);
-            if (displayedPosts != null) {
-                Timber.d("@%d -> Fragment(currentPage=%d) -> Restored %d posts to fragment", System.identityHashCode(this), displayedPosts.size(), currentPage);
-                restoredPosts = displayedPosts.size() > 0;
-            }
+            debugLog("trying to restore state");
+            postsInCacheHint = savedInstanceState.getBoolean(ARG_POSTS_IN_CACHE_HINT, false);
+            debugLog("are posts probably in cache ? : %s", postsInCacheHint ? "true" : "false");
         }
 
-        if (displayedPosts == null) {
-            displayedPosts = new ArrayList<>();
+        // Default view is the loading indicator
+        if (! postsInCacheHint) {
+            debugLog("posts probably not in cache, showing loading indicator");
+            showLoadingIndicator();
         }
-        else if (displayedPosts.size() > 0){
-            topicPageView.setTopic(topic);
-            topicPageView.setPage(currentPage);
-            topicPageView.setPosts(displayedPosts);
-            showPosts();
-        }
+
+        displayedPosts = new ArrayList<>();
 
         // Implement swipe to refresh
         swipeRefreshLayout.setOnRefreshListener(() -> {
             savePageScrollPosition();
-            Timber.d("Refreshing topic page '%d' for topic %s", currentPage, topic);
+            debugLog("Refreshing topic page '%d' for topic %s", currentPage, topic);
             loadPage(currentPage);
         });
         swipeRefreshLayout.setColorSchemeResources(R.color.theme_primary, R.color.theme_primary_dark);
 
         if (errorReloadButton != null) {
             errorReloadButton.setOnClickListener(v -> {
-                Timber.d("Refreshing topic page '%d' for topic %s", currentPage, topic);
+                debugLog("Refreshing topic page '%d' for topic %s", currentPage, topic);
                 showLoadingIndicator();
                 loadPage(currentPage);
             });
@@ -192,6 +183,7 @@ public class PostsFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
+        debugLog("onResume");
 
         topicPageView.setOnQuoteListener((TopicFragment)getParentFragment());
         topicPageView.setOnPageLoadedListener(() -> {
@@ -208,11 +200,20 @@ public class PostsFragment extends BaseFragment {
         // Page is loaded instantly only if it's the initial page requested on topic load. Other
         // pages will be loaded once selected in the ViewPager
         if (isInitialPage() && (hasNoVisiblePosts || displayedPosts == null)) {
-            showLoadingIndicator();
+            if (! postsInCacheHint) {
+                debugLog("initial page and posts probably not in cache => show loading indicator");
+                showLoadingIndicator();
+            }
             loadPage(currentPage);
         }
         else if (hasLoadedPosts){
             updateQuotedPostsStatus();
+        }
+
+        // If posts are probably in cache, it is safe to try to load them, because it definitely
+        // means the page has already been loaded once, hence we won't mess up topic flags.
+        if (postsInCacheHint) {
+            loadPage(currentPage);
         }
     }
 
@@ -255,14 +256,14 @@ public class PostsFragment extends BaseFragment {
     private void savePageScrollPosition() {
         if (topicPageView != null) {
             currentScrollPosition = topicPageView.getScrollY();
-            Timber.d("Saved scroll position = %d (currentPage=%d)", currentScrollPosition, currentPage);
+            Timber.d("saved scroll position = %d (currentPage=%d)", currentScrollPosition, currentPage);
         }
     }
 
     private void restorePageScrollPosition() {
         if (topicPageView != null) {
             topicPageView.setScrollY(currentScrollPosition);
-            Timber.d("Restored scroll position = %d (currentPage=%d)", currentScrollPosition, currentPage);
+            Timber.d("restored scroll position = %d (currentPage=%d)", currentScrollPosition, currentPage);
         }
     }
 
@@ -273,9 +274,10 @@ public class PostsFragment extends BaseFragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Timber.d("@%d -> Fragment(currentPage=%d) Saving '%d' posts / scrollPosition = '%d'", System.identityHashCode(this), currentPage, displayedPosts.size(), currentScrollPosition);
+        debugLog("saving '%d' posts / scrollPosition = '%d'", displayedPosts.size(), currentScrollPosition);
+        debugLog("saving posts in cache hint : %s", postsInCacheHint ? "true" : "false");
 
-        outState.putParcelableArrayList(ARG_POST_LIST, displayedPosts);
+        outState.putBoolean(ARG_POSTS_IN_CACHE_HINT, postsInCacheHint);
         outState.putInt(ARG_SAVED_SCROLL_POSITION, currentScrollPosition);
     }
 
@@ -285,7 +287,7 @@ public class PostsFragment extends BaseFragment {
      */
     @Subscribe public void onPageSelectedEvent(PageSelectedEvent event) {
         if (! isInitialPage() && event.getTopic().id() == topic.id() && event.getPage() == currentPage && isVisible()) {
-            Timber.d("@%d -> Fragment(currentPage=%d) received event for page %d selected", System.identityHashCode(this), currentPage, event.getPage());
+            debugLog("'page %d selected event' received", event.getPage());
 
             if (displayedPosts != null && displayedPosts.size() == 0) {
                 loadPage(currentPage);
@@ -295,7 +297,7 @@ public class PostsFragment extends BaseFragment {
 
     @Subscribe public void onPageRefreshRequestEvent(PageRefreshRequestEvent event) {
         if (event.getTopic().id() == topic.id() && isVisible()) {
-            Timber.d("@%d -> Fragment(currentPage=%d) -> Refresh requested event", System.identityHashCode(this), currentPage);
+            debugLog("'refresh requested event' received");
 
             savePageScrollPosition();
             showLoadingIndicator();
@@ -305,7 +307,7 @@ public class PostsFragment extends BaseFragment {
 
     @Subscribe public void onShowAllSpoilersEvent(ShowAllSpoilersEvent event) {
         if (event.getTopic().id() == topic.id() && isVisible() && event.getCurrentPage() == currentPage) {
-            Timber.d("@%d -> Fragment(currentPage=%d) -> Show all spoilers event", System.identityHashCode(this), currentPage);
+            debugLog("'show all spoilers event' received", System.identityHashCode(this), currentPage);
             topicPageView.showAllSpoilers();
         }
     }
@@ -339,12 +341,7 @@ public class PostsFragment extends BaseFragment {
     @Subscribe public void onBlockUser(final BlockUserEvent event) {
         blacklist.addBlockedAuthor(event.getAuthor());
         SnackbarHelper.makeWithAction(PostsFragment.this, getString(R.string.user_blocked, event.getAuthor()),
-                R.string.action_refresh_topic, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        bus.post(new PageRefreshRequestEvent(topic));
-                    }
-                }).show();
+                R.string.action_refresh_topic, v -> bus.post(new PageRefreshRequestEvent(topic))).show();
     }
 
     @Subscribe
@@ -355,21 +352,21 @@ public class PostsFragment extends BaseFragment {
     }
 
     private void showLoadingIndicator() {
-        Timber.d("@%d -> Showing loading layout", System.identityHashCode(this));
+        debugLog("Showing loading layout");
         if (errorView != null) { errorView.setVisibility(View.GONE); }
         if (loadingIndicator != null) { loadingIndicator.setVisibility(View.VISIBLE); }
         if (swipeRefreshLayout != null) { swipeRefreshLayout.setVisibility(View.GONE); }
     }
 
     private void showErrorView() {
-        Timber.d("@%d -> Showing error layout", System.identityHashCode(this));
+        debugLog("Showing error layout");
         if (errorView != null) { errorView.setVisibility(View.VISIBLE); }
         if (loadingIndicator != null) { loadingIndicator.setVisibility(View.GONE); }
         if (swipeRefreshLayout != null) { swipeRefreshLayout.setVisibility(View.GONE); }
     }
 
     private void showPosts() {
-        Timber.d("@%d -> Showing posts layout", System.identityHashCode(this));
+        debugLog("Showing posts layout");
         if (errorView != null) { errorView.setVisibility(View.GONE); }
         if (loadingIndicator != null) { loadingIndicator.setVisibility(View.GONE); }
         if (swipeRefreshLayout != null) { swipeRefreshLayout.setVisibility(View.VISIBLE); }
@@ -383,7 +380,7 @@ public class PostsFragment extends BaseFragment {
     }
 
     public void loadPage(final int page) {
-        Timber.d("@%d -> Loading page '%d'", System.identityHashCode(this), page);
+        debugLog("loading page %d", currentPage);
         subscribe(dataService.loadPosts(userManager.getActiveUser(), topic, page,
                 isDownloadStrategyMatching(settings.getImagesStrategy()),
                 isDownloadStrategyMatching(settings.getAvatarsStrategy()),
@@ -391,6 +388,7 @@ public class PostsFragment extends BaseFragment {
                 new EndlessObserver<List<Post>>() {
             @Override
             public void onNext(List<Post> posts) {
+                postsInCacheHint = true;
                 swipeRefreshLayout.setRefreshing(false);
 
                 displayedPosts.clear();
@@ -399,7 +397,7 @@ public class PostsFragment extends BaseFragment {
                 topicPageView.setTopic(topic);
                 topicPageView.setPage(currentPage);
 
-                Timber.d("@%d -> Done loading page, settings posts", System.identityHashCode(PostsFragment.this));
+                debugLog("Done loading page, showing posts");
                 topicPageView.setPosts(posts);
 
                 showPosts();
@@ -417,7 +415,7 @@ public class PostsFragment extends BaseFragment {
 
     private void updateQuotedPostsStatus() {
         List<Long> quotedPosts = ((TopicFragment)getParentFragment()).getPageQuotedPosts(currentPage);
-        Timber.d("Posts already quoted for page '%d' = %s", currentPage, quotedPosts);
+        debugLog("already quoted posts for page '%d' = %s", currentPage, quotedPosts);
         if (quotedPosts.size() > 0) {
             topicPageView.setQuotedPosts(quotedPosts);
         }
@@ -425,52 +423,48 @@ public class PostsFragment extends BaseFragment {
 
     private void setupImagesInteractions() {
         registerForContextMenu(topicPageView);
-        topicPageView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
-            @Override
-            public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-                WebView.HitTestResult result = ((WebView) v).getHitTestResult();
-                if (result.getType() == WebView.HitTestResult.IMAGE_TYPE || result.getType() == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE) {
-                    final String url = result.getExtra();
+        topicPageView.setOnCreateContextMenuListener((menu, v, menuInfo) -> {
+            WebView.HitTestResult result = ((WebView) v).getHitTestResult();
+            if (result.getType() == WebView.HitTestResult.IMAGE_TYPE || result.getType() == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE) {
+                final String url = result.getExtra();
 
-                    final ImageMenuHandler imageMenuHandler = new ImageMenuHandler(getActivity(), url);
-                    MenuItem.OnMenuItemClickListener itemClickListener = new MenuItem.OnMenuItemClickListener() {
-                        @Override
-                        public boolean onMenuItemClick(MenuItem item) {
-                            switch (item.getItemId()) {
-                                case R.id.action_save_original_image:
-                                    imageMenuHandler.saveImage(false);
-                                    break;
-                                case R.id.action_save_image_as_png:
-                                    imageMenuHandler.saveImage(true);
-                                    break;
-                                case R.id.action_open_image:
-                                    imageMenuHandler.openImage();
-                                    break;
-                                case R.id.action_share_image:
-                                    imageMenuHandler.shareImage();
-                                    break;
-                                case R.id.action_exif_data:
-                                    imageMenuHandler.openExifData();
-                                    break;
-                                default:
-                                    Timber.e("Unknow menu item clicked");
-                            }
+                final ImageMenuHandler imageMenuHandler = new ImageMenuHandler(getActivity(), url);
+                MenuItem.OnMenuItemClickListener itemClickListener = item -> {
+                    switch (item.getItemId()) {
+                        case R.id.action_save_original_image:
+                            imageMenuHandler.saveImage(false);
+                            break;
+                        case R.id.action_save_image_as_png:
+                            imageMenuHandler.saveImage(true);
+                            break;
+                        case R.id.action_open_image:
+                            imageMenuHandler.openImage();
+                            break;
+                        case R.id.action_share_image:
+                            imageMenuHandler.shareImage();
+                            break;
+                        case R.id.action_exif_data:
+                            imageMenuHandler.openExifData();
+                            break;
+                        default:
+                            Timber.e("Unknow menu item clicked");
+                    }
 
-                            return true;
-                        }
-                    };
+                    return true;
+                };
 
-                    if (! url.contains(mdEndpoints.baseurl())) {
-                        menu.setHeaderTitle(url);
-                        getActivity().getMenuInflater().inflate(R.menu.menu_save_image, menu);
-                        for (int i = 0; i < menu.size(); i++) {
-                            menu.getItem(i).setOnMenuItemClickListener(itemClickListener);
-                        }
+                if (! url.contains(mdEndpoints.baseurl())) {
+                    menu.setHeaderTitle(url);
+                    getActivity().getMenuInflater().inflate(R.menu.menu_save_image, menu);
+                    for (int i = 0; i < menu.size(); i++) {
+                        menu.getItem(i).setOnMenuItemClickListener(itemClickListener);
                     }
                 }
             }
         });
     }
 
-
+    private void debugLog(String message, Object... args) {
+        Timber.d(String.format(Locale.getDefault(), "[Page: %d, Id: %d] ", currentPage, System.identityHashCode(this)) + message, args);
+    }
 }

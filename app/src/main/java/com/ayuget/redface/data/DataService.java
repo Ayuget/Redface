@@ -16,8 +16,6 @@
 
 package com.ayuget.redface.data;
 
-import android.util.Log;
-
 import com.ayuget.redface.data.api.MDService;
 import com.ayuget.redface.data.api.model.Category;
 import com.ayuget.redface.data.api.model.Post;
@@ -46,9 +44,9 @@ public class DataService {
 
     private SubscriptionHandler<User, Profile> profileSubscriptionHandler = new SubscriptionHandler<>();
     private SubscriptionHandler<User, List<Category>> categoriesSubscriptionHandler = new SubscriptionHandler<>();
-    private SubscriptionHandler<CategoryPage, List<Topic>> topicsSubscriptionHandler = new SubscriptionHandler<>();
-    private SubscriptionHandler<MetaPageOptions, List<Topic>> metaPageSubscriptionHandler = new SubscriptionHandler<>();
-    private SubscriptionHandler<TopicPage, List<Post>> postsSubscriptionHandler = new SubscriptionHandler<>();
+    private SubscriptionHandler<CategoryPage, List<Topic>> topicsSubscriptionHandler = new SubscriptionHandler<>(5);
+    private SubscriptionHandler<MetaPageOptions, List<Topic>> metaPageSubscriptionHandler = new SubscriptionHandler<>(5);
+    private SubscriptionHandler<TopicPage, List<Post>> postsSubscriptionHandler = new SubscriptionHandler<>(3);
     private SubscriptionHandler<User, List<Smiley>> recentSmileysHandler = new SubscriptionHandler<>();
     private SubscriptionHandler<String, List<Smiley>> smileysSearchHandler = new SubscriptionHandler<>();
     private SubscriptionHandler<String, List<Smiley>> popularSmileysHandler = new SubscriptionHandler<>();

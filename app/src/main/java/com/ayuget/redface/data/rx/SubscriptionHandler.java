@@ -16,10 +16,12 @@
 
 package com.ayuget.redface.data.rx;
 
+import android.util.LruCache;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
-import rx.Observable;
 
+import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -27,8 +29,19 @@ import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
 public class SubscriptionHandler<K, T> {
-    private final Map<K, T> keysCache = new LinkedHashMap<>();
+    private final int maxCacheSize;
+    private final LruCache<K, T> keysCache;
     private final Map<K, PublishSubject<T>> requests = new LinkedHashMap<>();
+
+    public SubscriptionHandler() {
+        this.maxCacheSize = 5;
+        this.keysCache = new LruCache<>(maxCacheSize);
+    }
+
+    public SubscriptionHandler(int maxCacheSize) {
+        this.maxCacheSize = maxCacheSize;
+        this.keysCache = new LruCache<>(maxCacheSize);
+    }
 
     public Subscription loadAndCache(final K key, Observable<T> observable, Observer<T> observer) {
         T cachedValues = keysCache.get(key);
