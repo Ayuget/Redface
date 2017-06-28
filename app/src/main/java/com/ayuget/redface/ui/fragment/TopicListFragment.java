@@ -172,11 +172,7 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
         topicsRecyclerView.setAdapter(topicsAdapter);
 
         // Implement swipe to refresh
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            Timber.d("Refreshing topic list for category %s (refresh)", category);
-            dataService.clearTopicListCache();
-            loadTopics();
-        });
+        swipeRefreshLayout.setOnRefreshListener(this::refreshTopicList);
 
         swipeRefreshLayout.setColorSchemeResources(R.color.theme_primary, R.color.theme_primary_dark);
 
@@ -187,18 +183,20 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
                 .withLoadingView(R.id.loading_indicator)
                 .build();
 
-        dataPresenter.setOnRefreshRequestedListener(new DataPresenter.OnRefreshRequestedListener() {
-            @Override
-            public void onRefresh() {
-                dataPresenter.showLoadingView();
-                dataService.clearTopicListCache();
-                loadTopics();
-            }
+        dataPresenter.setOnRefreshRequestedListener(() -> {
+            dataPresenter.showLoadingView();
+            refreshTopicList();
         });
 
         UiUtils.setDrawableColor(emptyTopicsImage.getDrawable(), getResources().getColor(R.color.empty_view_image_color));
 
         return rootView;
+    }
+
+    private void refreshTopicList() {
+        Timber.d("Refreshing topic list for category %s (refresh)", category);
+        dataService.clearTopicListCache();
+        loadTopics();
     }
 
     @Override
