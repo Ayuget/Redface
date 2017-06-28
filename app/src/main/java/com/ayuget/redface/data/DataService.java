@@ -118,4 +118,12 @@ public class DataService {
     public Subscription getPopularSmileys(Observer<List<Smiley>> observer) {
         return popularSmileysHandler.loadAndCache(null, mdService.getPopularSmileys(), observer);
     }
+
+    public void clearPostsCache(final Topic topic, int page) {
+        postsSubscriptionHandler.clearKey(TopicPage.create(topic, page));
+    }
+
+    public void clearTopicListCache() {
+        topicsSubscriptionHandler.clearAll();
+    }
 }

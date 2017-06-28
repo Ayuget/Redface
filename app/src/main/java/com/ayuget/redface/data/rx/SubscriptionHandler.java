@@ -63,6 +63,14 @@ public class SubscriptionHandler<K, T> {
         }
     }
 
+    public void clearAll() {
+        keysCache.evictAll();
+    }
+
+    public void clearKey(K key) {
+        keysCache.remove(key);
+    }
+
     public Subscription load(final K key, Observable<T> observable, Observer<T> observer) {
         PublishSubject<T> request = PublishSubject.create();
         requests.put(key, request);

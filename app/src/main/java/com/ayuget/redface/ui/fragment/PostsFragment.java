@@ -160,9 +160,7 @@ public class PostsFragment extends BaseFragment {
 
         // Implement swipe to refresh
         swipeRefreshLayout.setOnRefreshListener(() -> {
-            savePageScrollPosition();
-            debugLog("Refreshing topic page '%d' for topic %s", currentPage, topic);
-            loadPage(currentPage);
+            refreshPosts(false);
         });
         swipeRefreshLayout.setColorSchemeResources(R.color.theme_primary, R.color.theme_primary_dark);
 
@@ -297,12 +295,21 @@ public class PostsFragment extends BaseFragment {
 
     @Subscribe public void onPageRefreshRequestEvent(PageRefreshRequestEvent event) {
         if (event.getTopic().id() == topic.id() && isVisible()) {
-            debugLog("'refresh requested event' received");
-
-            savePageScrollPosition();
-            showLoadingIndicator();
-            loadPage(currentPage);
+            refreshPosts(true);
         }
+    }
+
+    void refreshPosts(boolean showLoadingIndicator) {
+        debugLog("Refreshing topic page '%d' for topic %s", currentPage, topic);
+
+        dataService.clearPostsCache(topic, currentPage);
+
+        if (showLoadingIndicator) {
+            showLoadingIndicator();
+        }
+
+        savePageScrollPosition();
+        loadPage(currentPage);
     }
 
     @Subscribe public void onShowAllSpoilersEvent(ShowAllSpoilersEvent event) {
