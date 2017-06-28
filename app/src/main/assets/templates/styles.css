@@ -158,6 +158,8 @@ img {
     min-height: 40px;
     padding-bottom: 2px;
     margin-left: 2px;
+    width: 100%;
+    margin-bottom: 3px;
 }
 
 .old-quotes .quote, .old-quotes .quote.blocked, .old-quotes .spoiler, .old-quotes .code {
