@@ -556,6 +556,10 @@ img {
     border-bottom: 1px solid #111111;
 }
 
+span.u {
+    text-decoration: underline;
+}
+
 /**
 * Material design ripple effect
 */
