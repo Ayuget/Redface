@@ -18,8 +18,8 @@ package com.ayuget.redface.ui.fragment;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.PagerTabStrip;
@@ -453,6 +453,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
+        String topicUrl = mdEndpoints.topic(topic, currentPage);
         switch (id) {
             case R.id.action_refresh_topic:
                 bus.post(new PageRefreshRequestEvent(topic));
@@ -472,13 +473,16 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
                 return true;
 
             case R.id.action_copy_link:
-                UiUtils.copyToClipboard(getActivity(), mdEndpoints.topic(topic, currentPage));
+                UiUtils.copyToClipboard(getActivity(), topicUrl);
                 break;
             case R.id.action_share:
-                UiUtils.shareText(getActivity(), mdEndpoints.topic(topic));
+                UiUtils.shareText(getActivity(), topicUrl);
                 break;
             case UNFLAG_ACTION:
                 unflagTopic();
+                break;
+            case R.id.action_open_in_browser:
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(topicUrl)));
                 break;
         }
 

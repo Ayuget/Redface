@@ -60,4 +60,10 @@
         android:title="@string/action_share"
         android:orderInCategory="400"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_open_in_browser"
+        android:title="@string/action_open_in_browser"
+        android:orderInCategory="500"
+        app:showAsAction="never" />
 </menu>
