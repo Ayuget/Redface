@@ -36,9 +36,7 @@ import com.ayuget.redface.BuildConfig;
 import com.ayuget.redface.R;
 import com.ayuget.redface.RedfaceApp;
 import com.ayuget.redface.data.api.MDEndpoints;
-import com.ayuget.redface.data.api.MDLink;
 import com.ayuget.redface.data.api.UrlParser;
-import com.ayuget.redface.data.api.model.Category;
 import com.ayuget.redface.data.api.model.Post;
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.api.model.misc.PostAction;
@@ -72,7 +70,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import rx.functions.Action1;
 import timber.log.Timber;
 
 public class TopicPageView extends NestedScrollingWebView implements View.OnTouchListener {
@@ -129,8 +126,6 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
     @Inject ThemeManager themeManager;
 
     @Inject RedfaceSettings appSettings;
-
-    boolean actionModeIsActive = false;
 
     boolean wasReloaded = false;
 
@@ -230,22 +225,7 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
                 @Override
                 public void onPageFinished(WebView view, String url) {
                     if (posts.size() > 0) {
-                        Timber.d("Page Loaded Event fired (page=%d)", page);
-                        TopicPageView.this.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (!wasReloaded) {
-                                    // Triggerring the event will allow the fragment in which this
-                                    // webview is contained to initiate page position events
-                                    // This has to be triggered only once
-                                    bus.post(new PageLoadedEvent(topic, page, TopicPageView.this));
-                                }
-
-                                if (onPageLoadedListener != null) {
-                                    onPageLoadedListener.onPageLoaded();
-                                }
-                            }
-                        });
+                        dispatchPageLoadedEvent();
                     }
                 }
 
@@ -263,6 +243,22 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
 
             initialized = true;
         }
+    }
+
+    public void dispatchPageLoadedEvent() {
+        Timber.d("Page Loaded Event fired (page=%d)", page);
+        TopicPageView.this.post(() -> {
+            if (!wasReloaded) {
+                // Triggerring the event will allow the fragment in which this
+                // webview is contained to initiate page position events
+                // This has to be triggered only once
+                bus.post(new PageLoadedEvent(topic, page, TopicPageView.this));
+            }
+
+            if (onPageLoadedListener != null) {
+                onPageLoadedListener.onPageLoaded();
+            }
+        });
     }
 
     public void setOnScrollListener(OnScrollListener onScrollListener) {
@@ -307,8 +303,13 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
         super.onLayout(changed, l, t, r, b);
     }
 
-    public void setPosts(List<Post> posts) {
+    public void setPosts(List<Post> posts, boolean scrollToBottom) {
         this.posts = posts;
+
+        if (scrollToBottom) {
+            postsTemplate.shouldScrollToBottom();
+        }
+
         renderPosts();
     }
 
@@ -329,7 +330,9 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
 
     public void setPagePosition(PagePosition pagePosition) {
         Timber.d("setPagePosition called !!! (page=%d)", page);
+
         if (pagePosition != null) {
+            Timber.d("Page position = %s", pagePosition);
             if (pagePosition.isBottom()) {
                 scrollToBottom();
             }
@@ -344,6 +347,11 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
         JsExecutor.execute(this, "scrollToBottom()");
     }
 
+    public void scrollToTop() {
+        Timber.d("Scrolling to the top of the page");
+        JsExecutor.execute(this, "scrollToTop()");
+    }
+
     public void scrollToPost(long postId) {
         JsExecutor.execute(this, String.format("scrollToElement('post%d')", postId));
     }
@@ -351,6 +359,18 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
     public void showAllSpoilers() {
         Timber.d("Showing all spoilers for current page");
         JsExecutor.execute(this, "showAllSpoilers()");
+    }
+
+    public void scrollToPosition(PagePosition pagePosition) {
+        if (pagePosition.isBottom()) {
+            scrollToBottom();
+        }
+        else if (pagePosition.isTop()) {
+            scrollToTop();
+        }
+        else {
+            scrollToPost(pagePosition.getPostId());
+        }
     }
 
     /**
@@ -383,12 +403,7 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
         @JavascriptInterface
         public void quotePost(final int postId) {
             Timber.d("Quoting post '%d'", postId);
-            TopicPageView.this.post(new Runnable() {
-                @Override
-                public void run() {
-                    bus.post(new QuotePostEvent(topic, postId));
-                }
-            });
+            TopicPageView.this.post(() -> bus.post(new QuotePostEvent(topic, postId)));
         }
 
         @JavascriptInterface
@@ -398,23 +413,13 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
             if (quotedMessages.contains(postId)) {
                 quotedMessages.remove(postId);
                 if (onQuoteListener != null) {
-                    TopicPageView.this.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            onQuoteListener.onPostUnquoted(page, postId);
-                        }
-                    });
+                    TopicPageView.this.post(() -> onQuoteListener.onPostUnquoted(page, postId));
                 }
             }
             else {
                 quotedMessages.add(postId);
                 if (onQuoteListener != null) {
-                    TopicPageView.this.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            onQuoteListener.onPostQuoted(page, postId);
-                        }
-                    });
+                    TopicPageView.this.post(() -> onQuoteListener.onPostQuoted(page, postId));
                 }
             }
         }
@@ -422,46 +427,26 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
         @JavascriptInterface
         public void editPost(final int postId) {
             Timber.d("Editing post '%d'", postId);
-            TopicPageView.this.post(new Runnable() {
-                @Override
-                public void run() {
-                    bus.post(new EditPostEvent(topic, postId));
-                }
-            });
+            TopicPageView.this.post(() -> bus.post(new EditPostEvent(topic, postId)));
         }
 
         @JavascriptInterface
         public void markPostAsFavorite(final int postId) {
             Timber.d("Marking post '%d' as favorite", postId);
-            TopicPageView.this.post(new Runnable() {
-                @Override
-                public void run() {
-                    bus.post(new PostActionEvent(PostAction.FAVORITE, topic, postId));
-                }
-            });
+            TopicPageView.this.post(() -> bus.post(new PostActionEvent(PostAction.FAVORITE, topic, postId)));
         }
 
         @JavascriptInterface
         public void deletePost(final int postId) {
             Timber.d("Deleting post '%d'", postId);
-            TopicPageView.this.post(new Runnable() {
-                @Override
-                public void run() {
-                    bus.post(new PostActionEvent(PostAction.DELETE, topic, postId));
-                }
-            });
+            TopicPageView.this.post(() -> bus.post(new PostActionEvent(PostAction.DELETE, topic, postId)));
         }
 
         @JavascriptInterface
         public void writePrivateMessage(final int postId) {
             for (final Post post : posts) {
                 if (post.getId() == postId) {
-                    TopicPageView.this.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            bus.post(new WritePrivateMessageEvent(post.getAuthor()));
-                        }
-                    });
+                    TopicPageView.this.post(() -> bus.post(new WritePrivateMessageEvent(post.getAuthor())));
                 }
             }
         }
@@ -470,12 +455,7 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
         public void blockUser(final int postId) {
             for (final Post post : posts) {
                 if (post.getId() == postId) {
-                    TopicPageView.this.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            bus.post(new BlockUserEvent(post.getAuthor()));
-                        }
-                    });
+                    TopicPageView.this.post(() -> bus.post(new BlockUserEvent(post.getAuthor())));
                 }
             }
         }
@@ -483,12 +463,7 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
         @JavascriptInterface
         public void copyLinkToPost(final int postId) {
             Timber.d("Copying link to post '%d' in clipboard", postId);
-            TopicPageView.this.post(new Runnable() {
-                @Override
-                public void run() {
-                    UiUtils.copyToClipboard(getContext(), mdEndpoints.post(topic.category(), topic, page, postId));
-                }
-            });
+            TopicPageView.this.post(() -> UiUtils.copyToClipboard(getContext(), mdEndpoints.post(topic.category(), topic, page, postId)));
         }
 
         @JavascriptInterface
@@ -500,50 +475,35 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
         public void handleUrl(final int postId, final String url) {
             Timber.d("Clicked on internal url = '%s' (postId = %d)", url, postId);
 
-            TopicPageView.this.post(new Runnable() {
-                @Override
-                public void run() {
-                    bus.post(new InternalLinkClickedEvent(topic, page, new PagePosition(postId)));
-                }
-            });
+            TopicPageView.this.post(() -> bus.post(new InternalLinkClickedEvent(topic, page, new PagePosition(postId))));
 
-            urlParser.parseUrl(url).compose(RxUtils.<MDLink>applySchedulers())
-                    .subscribe(new Action1<MDLink>() {
-                        @Override
-                        public void call(MDLink mdLink) {
-                            mdLink.ifTopicLink(new MDLink.IfIsTopicLink() {
-                                @Override
-                                public void call(Category category, int topicId, int topicPage, PagePosition pagePosition) {
-                                    // Action can take a few seconds to process, depending on target and on network quality,
-                                    // we need to do something to indicate that we handled the event
-                                    if (topicId != topic.id()) {
-                                        Toast.makeText(getContext(), R.string.topic_loading_message, Toast.LENGTH_SHORT).show();
-                                    }
-
-                                    if (topic.id() == topicId) {
-                                        int destinationPage = topicPage;
-                                        PagePosition targetPagePosition = pagePosition;
-
-                                        // Hack needed because we are hiding the first post of a page, which is equal
-                                        // to the last post of previous page.
-                                        if (!appSettings.showPreviousPageLastPost() && destinationPage > 1 && posts.size() > 0 && topicPage == page && pagePosition.getPostId() < posts.get(0).getId()) {
-                                            targetPagePosition = new PagePosition(PagePosition.BOTTOM);
-                                            destinationPage -= 1;
-                                        }
-
-                                        bus.post(new GoToPostEvent(destinationPage, targetPagePosition, TopicPageView.this));
-                                    } else {
-                                        bus.post(new GoToTopicEvent(category, topicId, topicPage, pagePosition));
-                                    }
-                                }
-                            }).ifInvalid(new MDLink.IfIsInvalidLink() {
-                                @Override
-                                public void call() {
-                                    getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-                                }
-                            });
+            urlParser.parseUrl(url).compose(RxUtils.applySchedulers())
+                    .subscribe(mdLink -> mdLink.ifTopicLink((category, topicId, topicPage, pagePosition) -> {
+                        // Action can take a few seconds to process, depending on target and on network quality,
+                        // we need to do something to indicate that we handled the event
+                        if (topicId != topic.id()) {
+                            Toast.makeText(getContext(), R.string.topic_loading_message, Toast.LENGTH_SHORT).show();
                         }
-                    });
+
+                        if (topic.id() == topicId) {
+                            int destinationPage = topicPage;
+                            PagePosition targetPagePosition = pagePosition;
+
+                            // Hack needed because we are hiding the first post of a page, which is equal
+                            // to the last post of previous page.
+                            if (!appSettings.showPreviousPageLastPost() && destinationPage > 1 && posts.size() > 0 && topicPage == page && pagePosition.getPostId() < posts.get(0).getId()) {
+                                targetPagePosition = new PagePosition(PagePosition.BOTTOM);
+                                destinationPage -= 1;
+                            }
+
+                            bus.post(new GoToPostEvent(destinationPage, targetPagePosition, TopicPageView.this));
+                        }
+                        else {
+                            bus.post(new GoToTopicEvent(category, topicId, topicPage, pagePosition));
+                        }
+                    }).ifInvalid(() -> {
+                        getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                    }));
         }
     }
 }

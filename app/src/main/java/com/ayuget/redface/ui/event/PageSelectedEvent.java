@@ -23,9 +23,12 @@ public class PageSelectedEvent {
 
     private final int page;
 
-    public PageSelectedEvent(Topic topic, int page) {
+    private boolean goingBackInTopic;
+
+    public PageSelectedEvent(Topic topic, int page, boolean goingBackInTopic) {
         this.topic = topic;
         this.page = page;
+        this.goingBackInTopic = goingBackInTopic;
     }
 
     public Topic getTopic() {
@@ -34,5 +37,9 @@ public class PageSelectedEvent {
 
     public int getPage() {
         return page;
+    }
+
+    public boolean isGoingBackInTopic() {
+        return goingBackInTopic;
     }
 }

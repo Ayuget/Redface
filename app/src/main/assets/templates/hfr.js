@@ -1,8 +1,15 @@
 /**
+* Scrolls to the top of the page
+*/
+function scrollToTop() {
+    document.body.scrollTop = 0;
+}
+
+/**
 * Scrolls to the bottom of the page
 */
 function scrollToBottom() {
-    window.scrollTo(0,document.body.scrollHeight);
+    document.body.scrollTop = document.body.scrollHeight;
 }
 
 /**

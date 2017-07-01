@@ -16,7 +16,6 @@
 
 package com.ayuget.redface.ui.fragment;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -266,8 +265,11 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
     @Override
     public void onPageSelected(int position) {
-        currentPage = position + 1;
-        bus.post(new PageSelectedEvent(topic, currentPage));
+        int selectedPage = position + 1;
+        boolean isGoingBackInTopic = selectedPage < currentPage;
+        currentPage = selectedPage;
+
+        bus.post(new PageSelectedEvent(topic, currentPage, isGoingBackInTopic));
     }
 
     @Override
@@ -535,17 +537,14 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     public void showGoToPageDialog() {
         AlertDialog dialog = new AlertDialog.Builder(getActivity(), themeManager.getActiveThemeStyle())
                 .setView(R.layout.dialog_go_to_page)
-                .setPositiveButton(R.string.dialog_go_to_page_positive_text, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        try {
-                            int pageNumber = Integer.valueOf(goToPageEditText.getText().toString());
-                            pager.setCurrentItem(pageNumber - 1);
-                        }
-                        catch (NumberFormatException e) {
-                            Timber.e(e, "Invalid page number entered : %s", goToPageEditText.getText().toString());
-                            SnackbarHelper.make(TopicFragment.this, R.string.invalid_page_number).show();
-                        }
+                .setPositiveButton(R.string.dialog_go_to_page_positive_text, (dialog1, which) -> {
+                    try {
+                        int pageNumber = Integer.valueOf(goToPageEditText.getText().toString());
+                        pager.setCurrentItem(pageNumber - 1);
+                    }
+                    catch (NumberFormatException e) {
+                        Timber.e(e, "Invalid page number entered : %s", goToPageEditText.getText().toString());
+                        SnackbarHelper.make(TopicFragment.this, R.string.invalid_page_number).show();
                     }
                 })
                 .setNegativeButton(android.R.string.cancel, null)
@@ -553,9 +552,9 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
 
         final View positiveAction = dialog.getButton(BUTTON_POSITIVE);
-        goToPageEditText = (EditText) dialog.findViewById(R.id.page_number);
+        goToPageEditText = dialog.findViewById(R.id.page_number);
 
-        TextView pagesCountView = (TextView) dialog.findViewById(R.id.pages_count);
+        TextView pagesCountView = dialog.findViewById(R.id.pages_count);
         pagesCountView.setText(Phrase.from(getActivity(), R.string.pages_count_currently).put("current_page", currentPage).put("pages_count", topic.pagesCount()).format());
 
         goToPageEditText.addTextChangedListener(new TextWatcher() {

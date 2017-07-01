@@ -159,9 +159,7 @@ public class PostsFragment extends BaseFragment {
         displayedPosts = new ArrayList<>();
 
         // Implement swipe to refresh
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            refreshPosts(false);
-        });
+        swipeRefreshLayout.setOnRefreshListener(() -> refreshPosts(false));
         swipeRefreshLayout.setColorSchemeResources(R.color.theme_primary, R.color.theme_primary_dark);
 
         if (errorReloadButton != null) {
@@ -286,9 +284,10 @@ public class PostsFragment extends BaseFragment {
     @Subscribe public void onPageSelectedEvent(PageSelectedEvent event) {
         if (! isInitialPage() && event.getTopic().id() == topic.id() && event.getPage() == currentPage && isVisible()) {
             debugLog("'page %d selected event' received", event.getPage());
+            debugLog("isGoingBackInTopic = %s", event.isGoingBackInTopic() ? "true" : "false");
 
             if (displayedPosts != null && displayedPosts.size() == 0) {
-                loadPage(currentPage);
+                loadPage(currentPage, event.isGoingBackInTopic());
             }
         }
     }
@@ -387,6 +386,10 @@ public class PostsFragment extends BaseFragment {
     }
 
     public void loadPage(final int page) {
+        loadPage(page, false);
+    }
+
+    public void loadPage(final int page, boolean scrollToBottom) {
         debugLog("loading page %d", currentPage);
         subscribe(dataService.loadPosts(userManager.getActiveUser(), topic, page,
                 isDownloadStrategyMatching(settings.getImagesStrategy()),
@@ -405,7 +408,7 @@ public class PostsFragment extends BaseFragment {
                 topicPageView.setPage(currentPage);
 
                 debugLog("Done loading page, showing posts");
-                topicPageView.setPosts(posts);
+                topicPageView.setPosts(posts, scrollToBottom);
 
                 showPosts();
             }

@@ -31,6 +31,8 @@ public class PostsTemplate extends HTMLTemplate<List<Post>> {
 
     private ThemeManager themeManager;
 
+    private boolean shouldScrollToBottom;
+
     public PostsTemplate(Context context, PostTemplate postTemplate, ThemeManager themeManager) {
         super(context, POSTS_TEMPLATE);
         this.postTemplate = postTemplate;
@@ -55,8 +57,15 @@ public class PostsTemplate extends HTMLTemplate<List<Post>> {
                 templateContent
                         .put("posts", postsBuffer.toString())
                         .put("theme_class", themeManager.getActiveThemeCssClass() + " " + themeManager.getFontSizeCssClass() + " " + themeManager.getQuoteStyleExtraClass())
+                        .put("scroll_to_bottom", shouldScrollToBottom ? "true" : "false")
                         .format()
                         .toString()
         );
+
+        shouldScrollToBottom = false;
+    }
+
+    public void shouldScrollToBottom() {
+        this.shouldScrollToBottom = true;
     }
 }
