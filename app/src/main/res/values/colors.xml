@@ -20,6 +20,7 @@
     <color name="app_background_dark">#222222</color>
     <color name="app_background_night">#000000</color>
     <color name="app_background_semi_transparent">#BF000000</color>
+    <color name="scrim">#99323232</color>
 
     <!-- Text -->
     <color name="text_primary_light">#212121</color>

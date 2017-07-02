@@ -30,6 +30,7 @@
     <string name="action_copy_link">Copy a link to this topic</string>
     <string name="action_share">Share</string>
     <string name="action_refresh_topic">Refresh</string>
+    <string name="action_search">Rechercher</string>
     <string name="action_show_all_spoilers">Show all spoilers</string>
     <string name="action_unflag_topic">Remove flag</string>
     <string name="action_open_in_browser">Open topic in browser</string>
@@ -418,4 +419,8 @@
     <string name="insert_image_from_url">URL</string>
     <string name="insert_image_from_favorites">Favorites</string>
     <string name="insert_image_from_gallery">Gallery</string>
+
+    <!-- Search topic -->
+    <string name="search_topic_words">Words</string>
+    <string name="search_topic_user">User</string>
 </resources>

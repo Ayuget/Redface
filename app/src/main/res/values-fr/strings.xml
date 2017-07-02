@@ -272,4 +272,7 @@
     <string name="download_strategy_wifi">Uniquement en WiFi</string>
     <string name="download_strategy_fast_connection">Uniquement avec une connection rapide</string>
     <string name="action_open_in_browser">Ouvrir le sujet dans le navigateur</string>
+    <string name="action_search">Rechercher</string>
+    <string name="search_topic_words">Mots</string>
+    <string name="search_topic_user">Utilisateur</string>
 </resources>

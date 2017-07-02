@@ -51,6 +51,7 @@ import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.activity.MultiPaneActivity;
 import com.ayuget.redface.ui.activity.ReplyActivity;
+import com.ayuget.redface.ui.activity.SearchTopicActivity;
 import com.ayuget.redface.ui.activity.WritePrivateMessageActivity;
 import com.ayuget.redface.ui.adapter.TopicPageAdapter;
 import com.ayuget.redface.ui.event.GoToPostEvent;
@@ -449,6 +450,10 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
                 break;
             case R.id.action_open_in_browser:
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(topicUrl)));
+                break;
+            case R.id.action_search:
+                Intent intent = new Intent(getActivity(), SearchTopicActivity.class);
+                startActivity(intent);
                 break;
         }
 

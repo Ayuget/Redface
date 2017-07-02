@@ -19,6 +19,8 @@
     <dimen name="text_size_default">15sp</dimen>
     <dimen name="text_size_details">13sp</dimen>
 
+    <dimen name="padding_normal">16dp</dimen>
+
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="settings_activity_horizontal_margin">24dp</dimen>
@@ -78,4 +80,7 @@
 
     <!-- Insert image bottom sheet -->
     <dimen name="image_bottom_sheet_margin">16dp</dimen>
+
+    <!-- Z-axis elevations -->
+    <dimen name="z_app_bar">4dp</dimen>
 </resources>
