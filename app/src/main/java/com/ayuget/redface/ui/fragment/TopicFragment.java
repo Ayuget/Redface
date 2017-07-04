@@ -54,9 +54,10 @@ import com.ayuget.redface.ui.activity.ReplyActivity;
 import com.ayuget.redface.ui.activity.WritePrivateMessageActivity;
 import com.ayuget.redface.ui.adapter.TopicPageAdapter;
 import com.ayuget.redface.ui.event.GoToPostEvent;
+import com.ayuget.redface.ui.event.OverriddenPagePosition;
 import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
 import com.ayuget.redface.ui.event.PageSelectedEvent;
-import com.ayuget.redface.ui.event.ScrollToPostEvent;
+import com.ayuget.redface.ui.event.ScrollToPositionEvent;
 import com.ayuget.redface.ui.event.ShowAllSpoilersEvent;
 import com.ayuget.redface.ui.event.TopicPageCountUpdatedEvent;
 import com.ayuget.redface.ui.event.UnquoteAllPostsEvent;
@@ -168,9 +169,11 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     int currentPage;
 
     /**
-     * Current page position
+     * Overridden page position for next loaded page. Will be nulled
+     * immediately after target page is loaded. We need such a transient
+     * value because ViewPager methods are not synchronous
      */
-    PagePosition currentPagePosition;
+    OverriddenPagePosition overriddenPagePosition;
 
     private boolean isInActionMode = false;
 
@@ -179,6 +182,10 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
         super.onCreate(savedInstanceState);
 
         Timber.d("[Topic=%d], initialPage = %d, initialPagePosition = %s", topic.id(), initialPage, initialPagePosition);
+
+        // Start at initial page, currentPage value is updated via the onPageSelected
+        // listener on the ViewPager
+        currentPage = initialPage;
 
         if (topicPageAdapter == null) {
             topicPageAdapter = new TopicPageAdapter(getChildFragmentManager(), topic, initialPage, initialPagePosition);
@@ -270,11 +277,14 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
     @Override
     public void onPageSelected(int position) {
-        int selectedPage = position + 1;
-        boolean isGoingBackInTopic = selectedPage < currentPage;
-        currentPage = selectedPage;
+        currentPage = position + 1;
 
-        bus.post(new PageSelectedEvent(topic, currentPage, isGoingBackInTopic));
+        if (overriddenPagePosition != null) {
+            Timber.d("Page %d is now selected, overriding page position to : %s", currentPage, overriddenPagePosition);
+        }
+        bus.post(PageSelectedEvent.create(topic, currentPage, overriddenPagePosition));
+
+        overriddenPagePosition = null;
     }
 
     @Override
@@ -284,9 +294,6 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
         // scrolling behavior that can be annoying (and buggy) in some corner cases
         if (previousViewPagerState == ViewPager.SCROLL_STATE_DRAGGING && state == ViewPager.SCROLL_STATE_SETTLING) {
             userScrolledViewPager = true;
-
-            // Reset current page position because user triggered page change
-            currentPagePosition = null;
         }
         else if (previousViewPagerState == ViewPager.SCROLL_STATE_SETTLING && state == ViewPager.SCROLL_STATE_IDLE) {
             userScrolledViewPager = false;
@@ -365,18 +372,18 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
     @Subscribe
     public void onGoToPost(GoToPostEvent event) {
-        topicPositionsStack.add(new TopicPosition(currentPage, currentPagePosition));
-
-        currentPagePosition = event.getPagePosition();
+        Timber.d("Received GoToPostEvent : %s", event);
+        Timber.d("Current page is = %d", currentPage);
+        int currentScrollY = event.getTopicPageView().getScrollY();
+        topicPositionsStack.add(TopicPosition.create(currentPage, currentScrollY));
 
         if (currentPage == event.getPage()) {
-            event.getTopicPageView().setPagePosition(currentPagePosition);
+            event.getTopicPageView().setPagePosition(event.getTargetPost());
         }
         else {
-            currentPage = event.getPage();
-
+            overriddenPagePosition = OverriddenPagePosition.toPost(event.getTargetPost());
             if (pager != null) {
-                pager.setCurrentItem(currentPage - 1);
+                pager.setCurrentItem(event.getPage() - 1);
             }
         }
     }
@@ -392,26 +399,17 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
         else {
             TopicPosition topicPosition = topicPositionsStack.remove(topicPositionsStack.size() - 1);
 
-            currentPagePosition = topicPosition.getPagePosition();
-
-            if (currentPage == topicPosition.getPage()) {
-                bus.post(new ScrollToPostEvent(topic, currentPage, currentPagePosition));
+            if (currentPage == topicPosition.page()) {
+                OverriddenPagePosition targetPagePosition = OverriddenPagePosition.toScrollY(topicPosition.pageScrollYTarget());
+                bus.post(ScrollToPositionEvent.create(topic, currentPage, targetPagePosition));
             }
             else {
-                currentPage = topicPosition.getPage();
-                pager.setCurrentItem(currentPage - 1);
+                overriddenPagePosition = OverriddenPagePosition.toScrollY(topicPosition.pageScrollYTarget());
+                pager.setCurrentItem(topicPosition.page() - 1);
             }
 
             return true;
         }
-    }
-
-    /**
-     * Updates position of currently displayed topic page
-     * @param position new position
-     */
-    public void setCurrentPagePosition(PagePosition position) {
-        currentPagePosition = position;
     }
 
     /**
@@ -508,8 +506,8 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
             moveToTopButton.setAlpha(buttonsAlpha);
             moveToBottomButton.setAlpha(buttonsAlpha);
 
-            moveToTopButton.setOnClickListener((c) -> bus.post(new ScrollToPostEvent(topic, currentPage, PagePosition.top())));
-            moveToBottomButton.setOnClickListener((c) -> bus.post(new ScrollToPostEvent(topic, currentPage, PagePosition.bottom())));
+            moveToTopButton.setOnClickListener((c) -> bus.post(ScrollToPositionEvent.create(topic, currentPage, OverriddenPagePosition.toTop())));
+            moveToBottomButton.setOnClickListener((c) -> bus.post(ScrollToPositionEvent.create(topic, currentPage, OverriddenPagePosition.toBottom())));
         }
         else {
             moveToBottomButton.setVisibility(View.GONE);

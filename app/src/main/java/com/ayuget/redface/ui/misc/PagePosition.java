@@ -43,7 +43,6 @@ public class PagePosition implements Parcelable {
         return postId == TOP;
     }
 
-
     @Override
     public int describeContents() {
         return 0;

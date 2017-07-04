@@ -21,14 +21,12 @@ import com.ayuget.redface.ui.view.TopicPageView;
 
 public class GoToPostEvent {
     private final TopicPageView topicPageView;
-
     private final int page;
+    private final PagePosition targetPost;
 
-    private final PagePosition pagePosition;
-
-    public GoToPostEvent(int page, PagePosition pagePosition, TopicPageView topicPageView) {
+    public GoToPostEvent(int page, PagePosition targetPost, TopicPageView topicPageView) {
         this.topicPageView = topicPageView;
-        this.pagePosition = pagePosition;
+        this.targetPost = targetPost;
         this.page = page;
     }
 
@@ -36,8 +34,8 @@ public class GoToPostEvent {
         return page;
     }
 
-    public PagePosition getPagePosition() {
-        return pagePosition;
+    public PagePosition getTargetPost() {
+        return targetPost;
     }
 
     public TopicPageView getTopicPageView() {
@@ -48,7 +46,7 @@ public class GoToPostEvent {
     public String toString() {
         final StringBuffer sb = new StringBuffer("GoToPostEvent{");
         sb.append("page=").append(page);
-        sb.append(", pagePosition=").append(pagePosition);
+        sb.append(", targetPost=").append(targetPost);
         sb.append('}');
         return sb.toString();
     }

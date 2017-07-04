@@ -22,8 +22,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
-import android.view.ActionMode;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -62,7 +62,6 @@ import com.ayuget.redface.ui.template.PostsTemplate;
 import com.ayuget.redface.util.JsExecutor;
 import com.google.common.base.Joiner;
 import com.squareup.otto.Bus;
-import com.squareup.phrase.Phrase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -98,11 +97,6 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
      * List of quoted messages, used for multi-quote feature
      */
     private ArrayList<Long> quotedMessages;
-
-    /**
-     * Used to display a contextual action bar when multi-quote mode is enabled
-     */
-    private ActionMode quoteActionMode;
 
     @Inject PostsTemplate postsTemplate;
 
@@ -242,12 +236,6 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
         this.onPageLoadedListener = onPageLoadedListener;
     }
 
-    private void updateActionModeTitle() {
-        if (quoteActionMode != null) {
-            quoteActionMode.setTitle(Phrase.from(getContext(), R.string.quoted_messages_plural).put("count", quotedMessages.size()).format());
-        }
-    }
-
     public void setHostActivity(Activity hostActivity) {
         this.hostActivity = hostActivity;
     }
@@ -282,17 +270,13 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
         loadDataWithBaseURL(mdEndpoints.homepage(), pageBuffer.toString(), UIConstants.MIME_TYPE, UIConstants.POSTS_ENCODING, null);
     }
 
-    public void setPagePosition(PagePosition pagePosition) {
-        Timber.d("setPagePosition called !!! (page=%d)", topicPage.page());
-
-        if (pagePosition != null) {
-            Timber.d("Page position = %s", pagePosition);
-            if (pagePosition.isBottom()) {
-                scrollToBottom();
-            }
-            else {
-                scrollToPost(pagePosition.getPostId());
-            }
+    public void setPagePosition(@NonNull PagePosition pagePosition) {
+        Timber.d("Page position = %s", pagePosition);
+        if (pagePosition.isBottom()) {
+            scrollToBottom();
+        }
+        else {
+            scrollToPost(pagePosition.getPostId());
         }
     }
 
@@ -342,7 +326,7 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
      * Unquotes all previously quoted posts for the given page
      */
     public void clearQuotedPosts() {
-        Timber.d("Clearing quoted posts for page %d", topicPage.page());
+        Timber.d("Clearing quoted posts");
         quotedMessages.clear();
         JsExecutor.execute(this, "clearQuotedMessages()");
     }

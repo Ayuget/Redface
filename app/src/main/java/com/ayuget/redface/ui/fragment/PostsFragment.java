@@ -40,9 +40,10 @@ import com.ayuget.redface.network.DownloadStrategy;
 import com.ayuget.redface.settings.Blacklist;
 import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.ui.event.BlockUserEvent;
+import com.ayuget.redface.ui.event.OverriddenPagePosition;
 import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
 import com.ayuget.redface.ui.event.PageSelectedEvent;
-import com.ayuget.redface.ui.event.ScrollToPostEvent;
+import com.ayuget.redface.ui.event.ScrollToPositionEvent;
 import com.ayuget.redface.ui.event.ShowAllSpoilersEvent;
 import com.ayuget.redface.ui.event.TopicPageCountUpdatedEvent;
 import com.ayuget.redface.ui.event.UnquoteAllPostsEvent;
@@ -285,12 +286,19 @@ public class PostsFragment extends BaseFragment {
      * forum's read/unread markers.
      */
     @Subscribe public void onPageSelectedEvent(PageSelectedEvent event) {
-        if (!isInitialPage && event.getTopic().id() == topic.id() && event.getPage() == pageNumber && isVisible()) {
-            debugLog("'page %d selected event' received", event.getPage());
-            debugLog("isGoingBackInTopic = %s", event.isGoingBackInTopic() ? "true" : "false");
+        if (!isInitialPage && event.topic().id() == topic.id() && event.page() == pageNumber && isVisible()) {
+            debugLog("'page selected event' received");
 
             if (displayedPosts != null && displayedPosts.size() == 0) {
                 loadPage();
+            }
+
+            OverriddenPagePosition overriddenPagePosition = event.overriddenPagePosition();
+            if (overriddenPagePosition != null) {
+                if (overriddenPagePosition.shouldScrollToPost()) {
+                    pageInitialPosition = overriddenPagePosition.targetPost();
+                }
+                overridePagePosition(event.overriddenPagePosition());
             }
         }
     }
@@ -337,9 +345,29 @@ public class PostsFragment extends BaseFragment {
      * another choice is to use the event bus to subscribe to scrolling "events" and change the
      * scroll position like this.
      */
-    @Subscribe public void onScrollToPost(ScrollToPostEvent event) {
-        if (event.getTopic().id() == topic.id() && event.getPage() == pageNumber) {
-            topicPageView.setPagePosition(event.getPagePosition());
+    @Subscribe public void onScrollToPosition(ScrollToPositionEvent event) {
+        if (event.topic().id() == topic.id() && event.page() == pageNumber) {
+            OverriddenPagePosition overriddenPagePosition = event.overriddenPagePosition();
+
+            debugLog("Received scroll to position event");
+            overridePagePosition(overriddenPagePosition);
+        }
+    }
+
+    private void overridePagePosition(OverriddenPagePosition overriddenPagePosition) {
+        debugLog("Overriding page position to : %s", overriddenPagePosition);
+
+        if (overriddenPagePosition.shouldScrollToPost()) {
+            PagePosition targetPost = overriddenPagePosition.targetPost();
+            if (targetPost != null) {
+                topicPageView.setPagePosition(targetPost);
+            }
+        }
+        else {
+            Integer targetScrollY = overriddenPagePosition.targetScrollY();
+            if (targetScrollY != null) {
+                topicPageView.setScrollY(targetScrollY);
+            }
         }
     }
 

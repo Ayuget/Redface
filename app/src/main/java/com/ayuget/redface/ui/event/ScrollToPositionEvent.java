@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package com.ayuget.redface.ui.misc;
+package com.ayuget.redface.ui.event;
 
-import android.os.Parcelable;
-
+import com.ayuget.redface.data.api.model.Topic;
 import com.google.auto.value.AutoValue;
 
 @AutoValue
-public abstract class TopicPosition implements Parcelable {
+public abstract class ScrollToPositionEvent {
+    public abstract Topic topic();
     public abstract int page();
-    public abstract int pageScrollYTarget();
+    public abstract OverriddenPagePosition overriddenPagePosition();
 
-    public static TopicPosition create(int page, int pageScrollYTarget) {
-        return new AutoValue_TopicPosition(page, pageScrollYTarget);
+    public static ScrollToPositionEvent create(Topic topic, int page, OverriddenPagePosition overriddenPagePosition) {
+        return new AutoValue_ScrollToPositionEvent(topic, page, overriddenPagePosition);
     }
 }

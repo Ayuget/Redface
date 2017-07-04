@@ -16,30 +16,18 @@
 
 package com.ayuget.redface.ui.event;
 
+import android.support.annotation.Nullable;
+
 import com.ayuget.redface.data.api.model.Topic;
+import com.google.auto.value.AutoValue;
 
-public class PageSelectedEvent {
-    private final Topic topic;
+@AutoValue
+public abstract class PageSelectedEvent {
+    public abstract Topic topic();
+    public abstract int page();
+    @Nullable public abstract OverriddenPagePosition overriddenPagePosition();
 
-    private final int page;
-
-    private boolean goingBackInTopic;
-
-    public PageSelectedEvent(Topic topic, int page, boolean goingBackInTopic) {
-        this.topic = topic;
-        this.page = page;
-        this.goingBackInTopic = goingBackInTopic;
-    }
-
-    public Topic getTopic() {
-        return topic;
-    }
-
-    public int getPage() {
-        return page;
-    }
-
-    public boolean isGoingBackInTopic() {
-        return goingBackInTopic;
+    public static PageSelectedEvent create(Topic topic, int page, OverriddenPagePosition overriddenPagePosition) {
+        return new AutoValue_PageSelectedEvent(topic, page, overriddenPagePosition);
     }
 }

@@ -23,7 +23,6 @@ import android.support.v7.app.AlertDialog;
 import android.widget.Toast;
 
 import com.ayuget.redface.R;
-import com.ayuget.redface.data.api.MDLink;
 import com.ayuget.redface.data.api.hfr.HFRUrlParser;
 import com.ayuget.redface.data.api.model.Category;
 import com.ayuget.redface.data.api.model.Topic;
@@ -129,7 +128,7 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
      */
     private void parseIntentUrl(String intentUrl) {
         Timber.d("Parsing URL from intent : '%s'", intentUrl);
-        urlParser.parseUrl(intentUrl).compose(RxUtils.<MDLink>applySchedulers())
+        urlParser.parseUrl(intentUrl).compose(RxUtils.applySchedulers())
                 .subscribe(mdLink -> mdLink.ifTopicLink((category, topicId, topicPage, pagePosition) -> {
                     Timber.d("Parsed link for category='%s', topic='%d', page='%d'", category.name(), topicId, topicPage);
                     onGoToTopicEvent(new GoToTopicEvent(category, topicId, topicPage, pagePosition));
@@ -425,7 +424,7 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
     public void onInternalLinkClicked(InternalLinkClickedEvent event) {
         TopicFragment topicFragment = (TopicFragment) getSupportFragmentManager().findFragmentByTag(TOPIC_FRAGMENT_TAG);
         if (topicFragment != null && event.getTopic().id() == topicFragment.getTopic().id() && event.getPage() == topicFragment.getCurrentPage()) {
-            topicFragment.setCurrentPagePosition(event.getPagePosition());
+            //topicFragment.setCurrentPagePosition(event.getPagePosition());
         }
     }
 
