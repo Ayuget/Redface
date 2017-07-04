@@ -34,6 +34,7 @@ import com.ayuget.redface.data.api.MDEndpoints;
 import com.ayuget.redface.data.api.MDService;
 import com.ayuget.redface.data.api.model.Post;
 import com.ayuget.redface.data.api.model.Topic;
+import com.ayuget.redface.data.api.model.TopicPage;
 import com.ayuget.redface.data.rx.EndlessObserver;
 import com.ayuget.redface.network.DownloadStrategy;
 import com.ayuget.redface.settings.Blacklist;
@@ -46,6 +47,7 @@ import com.ayuget.redface.ui.event.ShowAllSpoilersEvent;
 import com.ayuget.redface.ui.event.TopicPageCountUpdatedEvent;
 import com.ayuget.redface.ui.event.UnquoteAllPostsEvent;
 import com.ayuget.redface.ui.misc.ImageMenuHandler;
+import com.ayuget.redface.ui.misc.PagePosition;
 import com.ayuget.redface.ui.misc.SnackbarHelper;
 import com.ayuget.redface.ui.view.TopicPageView;
 import com.ayuget.redface.util.Connectivity;
@@ -72,10 +74,13 @@ public class PostsFragment extends BaseFragment {
     Topic topic;
 
     @Arg
-    int currentPage;
+    boolean isInitialPage;
 
     @Arg
-    int initialPage;
+    int pageNumber;
+
+    @Arg
+    PagePosition pageInitialPosition;
 
     @InjectView(R.id.loading_indicator)
     View loadingIndicator;
@@ -124,9 +129,8 @@ public class PostsFragment extends BaseFragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        debugLog("onCreate");
-
         super.onCreate(savedInstanceState);
+        debugLog("onCreate");
 
         if (savedInstanceState == null) {
             currentScrollPosition = 0;
@@ -164,9 +168,9 @@ public class PostsFragment extends BaseFragment {
 
         if (errorReloadButton != null) {
             errorReloadButton.setOnClickListener(v -> {
-                debugLog("Refreshing topic page '%d' for topic %s", currentPage, topic);
+                debugLog("Refreshing topic page '%d' for topic %s", pageNumber, topic);
                 showLoadingIndicator();
-                loadPage(currentPage);
+                loadPage();
             });
         }
 
@@ -179,7 +183,7 @@ public class PostsFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        debugLog("onResume");
+        debugLog("onResume (isInitialPage = %s)", isInitialPage);
 
         topicPageView.setOnQuoteListener((TopicFragment)getParentFragment());
         topicPageView.setOnPageLoadedListener(() -> {
@@ -190,26 +194,30 @@ public class PostsFragment extends BaseFragment {
             updateQuotedPostsStatus();
         });
 
-        boolean hasLoadedPosts = displayedPosts != null && displayedPosts.size() > 0;
-        boolean hasNoVisiblePosts = displayedPosts != null && displayedPosts.size() == 0;
+        if (isInitialPage) {
+            boolean hasNoVisiblePosts = (displayedPosts != null && displayedPosts.size() == 0) || displayedPosts == null;
 
-        // Page is loaded instantly only if it's the initial page requested on topic load. Other
-        // pages will be loaded once selected in the ViewPager
-        if (isInitialPage() && (hasNoVisiblePosts || displayedPosts == null)) {
-            if (! postsInCacheHint) {
-                debugLog("initial page and posts probably not in cache => show loading indicator");
-                showLoadingIndicator();
+            // Page is loaded instantly only if it's the initial page requested on topic load. Other
+            // pages will be loaded once selected in the ViewPager
+            if (hasNoVisiblePosts) {
+                if (!postsInCacheHint) {
+                    debugLog("initial page and posts probably not in cache => show loading indicator");
+                    showLoadingIndicator();
+                }
+                loadPage();
+            } else {
+                updateQuotedPostsStatus();
             }
-            loadPage(currentPage);
         }
-        else if (hasLoadedPosts){
-            updateQuotedPostsStatus();
-        }
-
-        // If posts are probably in cache, it is safe to try to load them, because it definitely
-        // means the page has already been loaded once, hence we won't mess up topic flags.
-        if (postsInCacheHint) {
-            loadPage(currentPage);
+        else {
+            // If posts are probably in cache, it is safe to try to load them, because it definitely
+            // means the page has already been loaded once, hence we won't mess up topic flags.
+            if (postsInCacheHint) {
+                loadPage();
+            }
+            else {
+                debugLog("Posts are probably not in cache, and not initial page, waiting for user swipe");
+            }
         }
     }
 
@@ -227,7 +235,6 @@ public class PostsFragment extends BaseFragment {
         if (topicPageView != null) {
             unregisterForContextMenu(topicPageView);
 
-            topicPageView.setOnScrollListener(null);
             topicPageView.setOnPageLoadedListener(null);
 
             // Unregister parent fragment as quote listener to avoid memory leaks
@@ -252,19 +259,15 @@ public class PostsFragment extends BaseFragment {
     private void savePageScrollPosition() {
         if (topicPageView != null) {
             currentScrollPosition = topicPageView.getScrollY();
-            Timber.d("saved scroll position = %d (currentPage=%d)", currentScrollPosition, currentPage);
+            debugLog("saved scroll position = %d", currentScrollPosition);
         }
     }
 
     private void restorePageScrollPosition() {
         if (topicPageView != null) {
             topicPageView.setScrollY(currentScrollPosition);
-            Timber.d("restored scroll position = %d (currentPage=%d)", currentScrollPosition, currentPage);
+            debugLog("restored scroll position = %d", currentScrollPosition);
         }
-    }
-
-    private boolean isInitialPage() {
-        return initialPage == currentPage;
     }
 
     @Override
@@ -282,12 +285,12 @@ public class PostsFragment extends BaseFragment {
      * forum's read/unread markers.
      */
     @Subscribe public void onPageSelectedEvent(PageSelectedEvent event) {
-        if (! isInitialPage() && event.getTopic().id() == topic.id() && event.getPage() == currentPage && isVisible()) {
+        if (!isInitialPage && event.getTopic().id() == topic.id() && event.getPage() == pageNumber && isVisible()) {
             debugLog("'page %d selected event' received", event.getPage());
             debugLog("isGoingBackInTopic = %s", event.isGoingBackInTopic() ? "true" : "false");
 
             if (displayedPosts != null && displayedPosts.size() == 0) {
-                loadPage(currentPage, event.isGoingBackInTopic());
+                loadPage();
             }
         }
     }
@@ -299,20 +302,20 @@ public class PostsFragment extends BaseFragment {
     }
 
     void refreshPosts(boolean showLoadingIndicator) {
-        debugLog("Refreshing topic page '%d' for topic %s", currentPage, topic);
+        debugLog("Refreshing topic for topic %s", topic);
 
-        dataService.clearPostsCache(topic, currentPage);
+        dataService.clearPostsCache(topic, pageNumber);
 
         if (showLoadingIndicator) {
             showLoadingIndicator();
         }
 
         savePageScrollPosition();
-        loadPage(currentPage);
+        loadPage();
     }
 
     @Subscribe public void onShowAllSpoilersEvent(ShowAllSpoilersEvent event) {
-        if (event.getTopic().id() == topic.id() && isVisible() && event.getCurrentPage() == currentPage) {
+        if (event.getTopic().id() == topic.id() && isVisible() && event.getCurrentPage() == pageNumber) {
             debugLog("'show all spoilers event' received");
             topicPageView.showAllSpoilers();
         }
@@ -335,7 +338,7 @@ public class PostsFragment extends BaseFragment {
      * scroll position like this.
      */
     @Subscribe public void onScrollToPost(ScrollToPostEvent event) {
-        if (event.getTopic().id() == topic.id() && event.getPage() == currentPage) {
+        if (event.getTopic().id() == topic.id() && event.getPage() == pageNumber) {
             topicPageView.setPagePosition(event.getPagePosition());
         }
     }
@@ -385,13 +388,9 @@ public class PostsFragment extends BaseFragment {
                  (strategy == DownloadStrategy.WIFI && Connectivity.isConnectedWifi(getContext())));
     }
 
-    public void loadPage(final int page) {
-        loadPage(page, false);
-    }
-
-    public void loadPage(final int page, boolean scrollToBottom) {
-        debugLog("loading page %d", currentPage);
-        subscribe(dataService.loadPosts(userManager.getActiveUser(), topic, page,
+    public void loadPage() {
+        debugLog("loading page");
+        subscribe(dataService.loadPosts(userManager.getActiveUser(), topic, pageNumber,
                 isDownloadStrategyMatching(settings.getImagesStrategy()),
                 isDownloadStrategyMatching(settings.getAvatarsStrategy()),
                 isDownloadStrategyMatching(settings.getSmileysStrategy()),
@@ -404,11 +403,10 @@ public class PostsFragment extends BaseFragment {
                 displayedPosts.clear();
                 displayedPosts.addAll(posts);
 
-                topicPageView.setTopic(topic);
-                topicPageView.setPage(currentPage);
-
                 debugLog("Done loading page, showing posts");
-                topicPageView.setPosts(posts, scrollToBottom);
+
+                TopicPage topicPage = TopicPage.create(topic, pageNumber, posts, pageInitialPosition);
+                topicPageView.renderPage(topicPage);
 
                 showPosts();
             }
@@ -424,8 +422,8 @@ public class PostsFragment extends BaseFragment {
     }
 
     private void updateQuotedPostsStatus() {
-        List<Long> quotedPosts = ((TopicFragment)getParentFragment()).getPageQuotedPosts(currentPage);
-        debugLog("already quoted posts for page '%d' = %s", currentPage, quotedPosts);
+        List<Long> quotedPosts = ((TopicFragment)getParentFragment()).getPageQuotedPosts(pageNumber);
+        debugLog("already quoted posts for page = %s", quotedPosts);
         if (quotedPosts.size() > 0) {
             topicPageView.setQuotedPosts(quotedPosts);
         }
@@ -475,6 +473,6 @@ public class PostsFragment extends BaseFragment {
     }
 
     private void debugLog(String message, Object... args) {
-        Timber.d(String.format(Locale.getDefault(), "[Page: %d, Id: %d] ", currentPage, System.identityHashCode(this)) + message, args);
+        Timber.d(String.format(Locale.getDefault(), "[Page: %d, PageInitialPosition: %s, Id: %d] ", pageNumber, pageInitialPosition, System.identityHashCode(this)) + message, args);
     }
 }

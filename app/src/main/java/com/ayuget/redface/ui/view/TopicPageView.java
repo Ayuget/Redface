@@ -38,7 +38,7 @@ import com.ayuget.redface.RedfaceApp;
 import com.ayuget.redface.data.api.MDEndpoints;
 import com.ayuget.redface.data.api.UrlParser;
 import com.ayuget.redface.data.api.model.Post;
-import com.ayuget.redface.data.api.model.Topic;
+import com.ayuget.redface.data.api.model.TopicPage;
 import com.ayuget.redface.data.api.model.misc.PostAction;
 import com.ayuget.redface.data.rx.RxUtils;
 import com.ayuget.redface.settings.RedfaceSettings;
@@ -49,7 +49,6 @@ import com.ayuget.redface.ui.event.EditPostEvent;
 import com.ayuget.redface.ui.event.GoToPostEvent;
 import com.ayuget.redface.ui.event.GoToTopicEvent;
 import com.ayuget.redface.ui.event.InternalLinkClickedEvent;
-import com.ayuget.redface.ui.event.PageLoadedEvent;
 import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
 import com.ayuget.redface.ui.event.PostActionEvent;
 import com.ayuget.redface.ui.event.QuotePostEvent;
@@ -67,6 +66,7 @@ import com.squareup.phrase.Phrase;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -74,25 +74,14 @@ import timber.log.Timber;
 
 public class TopicPageView extends NestedScrollingWebView implements View.OnTouchListener {
     /**
-     * The post currently displayed in the webview. These posts will be encoded to HTML with
-     * specific {@link com.ayuget.redface.ui.template.HTMLTemplate} classes.
+     * Currently displayed topic page
      */
-    private List<Post> posts;
+    TopicPage topicPage;
 
     /**
      * Flag indicating if the webview has already been initialized
      */
     private boolean initialized;
-
-    /**
-     * Currently displayed topic
-     */
-    private Topic topic;
-
-    /**
-     * Topic's page currently displayed in the webview
-     */
-    private int page;
 
     /**
      * Activity in which the view is hosted
@@ -196,7 +185,7 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
                 public boolean onDoubleTap(MotionEvent e) {
                     if (appSettings.isDoubleTapToRefreshEnabled()) {
                         wasReloaded = true;
-                        bus.post(new PageRefreshRequestEvent(topic));
+                        bus.post(new PageRefreshRequestEvent(topicPage.topic()));
                     }
                     return true;
                 }
@@ -224,8 +213,8 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
             setWebViewClient(new WebViewClient() {
                 @Override
                 public void onPageFinished(WebView view, String url) {
-                    if (posts.size() > 0) {
-                        dispatchPageLoadedEvent();
+                    if (onPageLoadedListener != null) {
+                        onPageLoadedListener.onPageLoaded();
                     }
                 }
 
@@ -243,26 +232,6 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
 
             initialized = true;
         }
-    }
-
-    public void dispatchPageLoadedEvent() {
-        Timber.d("Page Loaded Event fired (page=%d)", page);
-        TopicPageView.this.post(() -> {
-            if (!wasReloaded) {
-                // Triggerring the event will allow the fragment in which this
-                // webview is contained to initiate page position events
-                // This has to be triggered only once
-                bus.post(new PageLoadedEvent(topic, page, TopicPageView.this));
-            }
-
-            if (onPageLoadedListener != null) {
-                onPageLoadedListener.onPageLoaded();
-            }
-        });
-    }
-
-    public void setOnScrollListener(OnScrollListener onScrollListener) {
-        this.onScrollListener = onScrollListener;
     }
 
     public void setOnQuoteListener(OnQuoteListener onQuoteListener) {
@@ -303,33 +272,18 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
         super.onLayout(changed, l, t, r, b);
     }
 
-    public void setPosts(List<Post> posts, boolean scrollToBottom) {
-        this.posts = posts;
+    public void renderPage(TopicPage topicPage) {
+        this.topicPage = topicPage;
 
-        if (scrollToBottom) {
-            postsTemplate.shouldScrollToBottom();
-        }
-
-        renderPosts();
-    }
-
-    public void setPage(int page) {
-        this.page = page;
-    }
-
-    public void setTopic(Topic topic) {
-        this.topic = topic;
-    }
-
-    private void renderPosts() {
+        // Create page HTML buffer from template
         StringBuilder pageBuffer = new StringBuilder();
-        postsTemplate.render(this.posts, pageBuffer);
+        postsTemplate.render(topicPage, pageBuffer);
 
         loadDataWithBaseURL(mdEndpoints.homepage(), pageBuffer.toString(), UIConstants.MIME_TYPE, UIConstants.POSTS_ENCODING, null);
     }
 
     public void setPagePosition(PagePosition pagePosition) {
-        Timber.d("setPagePosition called !!! (page=%d)", page);
+        Timber.d("setPagePosition called !!! (page=%d)", topicPage.page());
 
         if (pagePosition != null) {
             Timber.d("Page position = %s", pagePosition);
@@ -353,7 +307,7 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
     }
 
     public void scrollToPost(long postId) {
-        JsExecutor.execute(this, String.format("scrollToElement('post%d')", postId));
+        JsExecutor.execute(this, String.format(Locale.getDefault(), "scrollToElement('post%d')", postId));
     }
 
     public void showAllSpoilers() {
@@ -377,7 +331,7 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
      * Sets the posts that are currently quoted
      */
     public void setQuotedPosts(List<Long> posts) {
-        Timber.d("Settings quoted posts for page %d (quoted count = %d)", page, posts.size());
+        Timber.d("Settings quoted posts for page %d (quoted count = %d)", topicPage.page(), posts.size());
         quotedMessages.clear();
         quotedMessages.addAll(posts);
 
@@ -388,7 +342,7 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
      * Unquotes all previously quoted posts for the given page
      */
     public void clearQuotedPosts() {
-        Timber.d("Clearing quoted posts for page %d", page);
+        Timber.d("Clearing quoted posts for page %d", topicPage.page());
         quotedMessages.clear();
         JsExecutor.execute(this, "clearQuotedMessages()");
     }
@@ -403,7 +357,7 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
         @JavascriptInterface
         public void quotePost(final int postId) {
             Timber.d("Quoting post '%d'", postId);
-            TopicPageView.this.post(() -> bus.post(new QuotePostEvent(topic, postId)));
+            TopicPageView.this.post(() -> bus.post(new QuotePostEvent(topicPage.topic(), postId)));
         }
 
         @JavascriptInterface
@@ -413,13 +367,13 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
             if (quotedMessages.contains(postId)) {
                 quotedMessages.remove(postId);
                 if (onQuoteListener != null) {
-                    TopicPageView.this.post(() -> onQuoteListener.onPostUnquoted(page, postId));
+                    TopicPageView.this.post(() -> onQuoteListener.onPostUnquoted(topicPage.page(), postId));
                 }
             }
             else {
                 quotedMessages.add(postId);
                 if (onQuoteListener != null) {
-                    TopicPageView.this.post(() -> onQuoteListener.onPostQuoted(page, postId));
+                    TopicPageView.this.post(() -> onQuoteListener.onPostQuoted(topicPage.page(), postId));
                 }
             }
         }
@@ -427,24 +381,24 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
         @JavascriptInterface
         public void editPost(final int postId) {
             Timber.d("Editing post '%d'", postId);
-            TopicPageView.this.post(() -> bus.post(new EditPostEvent(topic, postId)));
+            TopicPageView.this.post(() -> bus.post(new EditPostEvent(topicPage.topic(), postId)));
         }
 
         @JavascriptInterface
         public void markPostAsFavorite(final int postId) {
             Timber.d("Marking post '%d' as favorite", postId);
-            TopicPageView.this.post(() -> bus.post(new PostActionEvent(PostAction.FAVORITE, topic, postId)));
+            TopicPageView.this.post(() -> bus.post(new PostActionEvent(PostAction.FAVORITE, topicPage.topic(), postId)));
         }
 
         @JavascriptInterface
         public void deletePost(final int postId) {
             Timber.d("Deleting post '%d'", postId);
-            TopicPageView.this.post(() -> bus.post(new PostActionEvent(PostAction.DELETE, topic, postId)));
+            TopicPageView.this.post(() -> bus.post(new PostActionEvent(PostAction.DELETE, topicPage.topic(), postId)));
         }
 
         @JavascriptInterface
         public void writePrivateMessage(final int postId) {
-            for (final Post post : posts) {
+            for (final Post post : topicPage.posts()) {
                 if (post.getId() == postId) {
                     TopicPageView.this.post(() -> bus.post(new WritePrivateMessageEvent(post.getAuthor())));
                 }
@@ -453,7 +407,7 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
 
         @JavascriptInterface
         public void blockUser(final int postId) {
-            for (final Post post : posts) {
+            for (final Post post : topicPage.posts()) {
                 if (post.getId() == postId) {
                     TopicPageView.this.post(() -> bus.post(new BlockUserEvent(post.getAuthor())));
                 }
@@ -463,7 +417,7 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
         @JavascriptInterface
         public void copyLinkToPost(final int postId) {
             Timber.d("Copying link to post '%d' in clipboard", postId);
-            TopicPageView.this.post(() -> UiUtils.copyToClipboard(getContext(), mdEndpoints.post(topic.category(), topic, page, postId)));
+            TopicPageView.this.post(() -> UiUtils.copyToClipboard(getContext(), mdEndpoints.post(topicPage.topic().category(), topicPage.topic(), topicPage.page(), postId)));
         }
 
         @JavascriptInterface
@@ -475,23 +429,23 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
         public void handleUrl(final int postId, final String url) {
             Timber.d("Clicked on internal url = '%s' (postId = %d)", url, postId);
 
-            TopicPageView.this.post(() -> bus.post(new InternalLinkClickedEvent(topic, page, new PagePosition(postId))));
+            TopicPageView.this.post(() -> bus.post(new InternalLinkClickedEvent(topicPage.topic(), topicPage.page(), new PagePosition(postId))));
 
             urlParser.parseUrl(url).compose(RxUtils.applySchedulers())
-                    .subscribe(mdLink -> mdLink.ifTopicLink((category, topicId, topicPage, pagePosition) -> {
+                    .subscribe(mdLink -> mdLink.ifTopicLink((category, topicId, targetPage, pagePosition) -> {
                         // Action can take a few seconds to process, depending on target and on network quality,
                         // we need to do something to indicate that we handled the event
-                        if (topicId != topic.id()) {
+                        if (topicId != topicPage.topic().id()) {
                             Toast.makeText(getContext(), R.string.topic_loading_message, Toast.LENGTH_SHORT).show();
                         }
 
-                        if (topic.id() == topicId) {
-                            int destinationPage = topicPage;
+                        if (topicPage.topic().id() == topicId) {
+                            int destinationPage = targetPage;
                             PagePosition targetPagePosition = pagePosition;
 
                             // Hack needed because we are hiding the first post of a page, which is equal
                             // to the last post of previous page.
-                            if (!appSettings.showPreviousPageLastPost() && destinationPage > 1 && posts.size() > 0 && topicPage == page && pagePosition.getPostId() < posts.get(0).getId()) {
+                            if (!appSettings.showPreviousPageLastPost() && destinationPage > 1 && topicPage.posts().size() > 0 && targetPage == topicPage.page() && pagePosition.getPostId() < topicPage.posts().get(0).getId()) {
                                 targetPagePosition = new PagePosition(PagePosition.BOTTOM);
                                 destinationPage -= 1;
                             }
@@ -499,7 +453,7 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
                             bus.post(new GoToPostEvent(destinationPage, targetPagePosition, TopicPageView.this));
                         }
                         else {
-                            bus.post(new GoToTopicEvent(category, topicId, topicPage, pagePosition));
+                            bus.post(new GoToTopicEvent(category, topicId, targetPage, pagePosition));
                         }
                     }).ifInvalid(() -> {
                         getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));

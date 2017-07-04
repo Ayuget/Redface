@@ -16,10 +16,8 @@
 
 package com.ayuget.redface.ui.activity;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.widget.Toast;
@@ -58,7 +56,6 @@ import com.squareup.otto.Subscribe;
 import javax.inject.Inject;
 
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -133,18 +130,10 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
     private void parseIntentUrl(String intentUrl) {
         Timber.d("Parsing URL from intent : '%s'", intentUrl);
         urlParser.parseUrl(intentUrl).compose(RxUtils.<MDLink>applySchedulers())
-                .subscribe(new Action1<MDLink>() {
-                    @Override
-                    public void call(MDLink mdLink) {
-                        mdLink.ifTopicLink(new MDLink.IfIsTopicLink() {
-                            @Override
-                            public void call(final Category category, final int topicId, final int topicPage, final PagePosition pagePosition) {
-                                Timber.d("Parsed link for category='%s', topic='%d', page='%d'", category.name(), topicId, topicPage);
-                                onGoToTopicEvent(new GoToTopicEvent(category, topicId, topicPage, pagePosition));
-                            }
-                        });
-                    }
-                });
+                .subscribe(mdLink -> mdLink.ifTopicLink((category, topicId, topicPage, pagePosition) -> {
+                    Timber.d("Parsed link for category='%s', topic='%d', page='%d'", category.name(), topicId, topicPage);
+                    onGoToTopicEvent(new GoToTopicEvent(category, topicId, topicPage, pagePosition));
+                }));
     }
 
     @Override
@@ -299,7 +288,7 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
      */
     protected void loadTopic(Topic topic, int page, PagePosition pagePosition) {
         Timber.d("Loading topic '%s' (page %d)", topic.title(), page);
-        TopicFragment topicFragment = new TopicFragmentBuilder(page, topic).currentPagePosition(pagePosition).build();
+        TopicFragment topicFragment = new TopicFragmentBuilder(page, pagePosition, topic).build();
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
@@ -316,7 +305,7 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
     }
 
     protected void loadAnonymousTopic(Topic topic, int page, PagePosition pagePosition) {
-        TopicFragment anonymousTopicFragment = new TopicFragmentBuilder(page, topic).currentPagePosition(pagePosition).build();
+        TopicFragment anonymousTopicFragment = new TopicFragmentBuilder(page, pagePosition, topic).build();
         int topicFragmentContainer = isTwoPaneMode() ? R.id.details_container : R.id.container;
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();

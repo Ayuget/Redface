@@ -16,7 +16,6 @@
 
 package com.ayuget.redface.ui.activity;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
@@ -219,12 +218,7 @@ public class PrivateMessagesActivity extends MultiPaneActivity implements Privat
                 Timber.d("About to delete post");
                 new AlertDialog.Builder(this)
                         .setTitle(R.string.post_delete_confirmation)
-                        .setPositiveButton(R.string.post_delete_yes, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                deletePost(event.getTopic(), event.getPostId());
-                            }
-                        })
+                        .setPositiveButton(R.string.post_delete_yes, (dialog, which) -> deletePost(event.getTopic(), event.getPostId()))
                         .setNegativeButton(R.string.post_delete_no, null)
                         .show();
                 break;
@@ -243,7 +237,7 @@ public class PrivateMessagesActivity extends MultiPaneActivity implements Privat
         // Mask private message as a regular topic (kinda ugly, btw...)
         Topic pmAsTopic = privateMessage.asTopic().withCategory(categoriesStore.getPrivateMessagesCategory());
 
-        TopicFragment topicFragment = new TopicFragmentBuilder(page, pmAsTopic).currentPagePosition(pagePosition).build();
+        TopicFragment topicFragment = new TopicFragmentBuilder(page, pagePosition, pmAsTopic).build();
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 

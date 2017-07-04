@@ -19,19 +19,19 @@ package com.ayuget.redface.ui.template;
 import android.content.Context;
 
 import com.ayuget.redface.data.api.model.Post;
+import com.ayuget.redface.data.api.model.TopicPage;
+import com.ayuget.redface.ui.misc.PagePosition;
 import com.ayuget.redface.ui.misc.ThemeManager;
 import com.squareup.phrase.Phrase;
 
-import java.util.List;
+import java.util.Locale;
 
-public class PostsTemplate extends HTMLTemplate<List<Post>> {
+public class PostsTemplate extends HTMLTemplate<TopicPage> {
     private static final String POSTS_TEMPLATE = "posts.html";
 
     private PostTemplate postTemplate;
 
     private ThemeManager themeManager;
-
-    private boolean shouldScrollToBottom;
 
     public PostsTemplate(Context context, PostTemplate postTemplate, ThemeManager themeManager) {
         super(context, POSTS_TEMPLATE);
@@ -47,9 +47,9 @@ public class PostsTemplate extends HTMLTemplate<List<Post>> {
     }
 
     @Override
-    protected void render(List<Post> content, Phrase templateContent, StringBuilder stream) {
+    protected void render(TopicPage topicPage, Phrase templateContent, StringBuilder stream) {
         StringBuilder postsBuffer = new StringBuilder();
-        for(Post post : content) {
+        for(Post post : topicPage.posts()) {
             postTemplate.render(post, postsBuffer);
         }
 
@@ -57,15 +57,21 @@ public class PostsTemplate extends HTMLTemplate<List<Post>> {
                 templateContent
                         .put("posts", postsBuffer.toString())
                         .put("theme_class", themeManager.getActiveThemeCssClass() + " " + themeManager.getFontSizeCssClass() + " " + themeManager.getQuoteStyleExtraClass())
-                        .put("scroll_to_bottom", shouldScrollToBottom ? "true" : "false")
+                        .put("target_anchor", getTargetAnchor(topicPage.pageInitialPosition()))
                         .format()
                         .toString()
         );
-
-        shouldScrollToBottom = false;
     }
 
-    public void shouldScrollToBottom() {
-        this.shouldScrollToBottom = true;
+    private String getTargetAnchor(PagePosition pagePosition) {
+        if(pagePosition.isTop()) {
+            return "top";
+        }
+        else if (pagePosition.isBottom()) {
+            return "bottom";
+        }
+        else {
+            return String.format(Locale.getDefault(), "post%d", pagePosition.getPostId());
+        }
     }
 }

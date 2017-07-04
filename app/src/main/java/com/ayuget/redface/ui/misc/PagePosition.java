@@ -19,6 +19,8 @@ package com.ayuget.redface.ui.misc;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.Locale;
+
 public class PagePosition implements Parcelable {
     public static final int BOTTOM = -2;
     public static final int TOP = -1;
@@ -68,7 +70,15 @@ public class PagePosition implements Parcelable {
 
     @Override
     public String toString() {
-        return "PagePosition{" + "postId=" + postId + '}';
+        if (isTop()) {
+            return "TOP";
+        }
+        else if (isBottom()) {
+            return "BOTTOM";
+        }
+        else {
+            return String.format(Locale.getDefault(), "POST-%d", postId);
+        }
     }
 
     public static PagePosition top() {

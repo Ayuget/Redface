@@ -54,7 +54,6 @@ import com.ayuget.redface.ui.activity.ReplyActivity;
 import com.ayuget.redface.ui.activity.WritePrivateMessageActivity;
 import com.ayuget.redface.ui.adapter.TopicPageAdapter;
 import com.ayuget.redface.ui.event.GoToPostEvent;
-import com.ayuget.redface.ui.event.PageLoadedEvent;
 import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
 import com.ayuget.redface.ui.event.PageSelectedEvent;
 import com.ayuget.redface.ui.event.ScrollToPostEvent;
@@ -157,16 +156,20 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     @Arg
     Topic topic;
 
+    @Arg
+    int initialPage;
+
+    @Arg
+    PagePosition initialPagePosition;
+
     /**
      * Page currently displayed in the viewPager
      */
-    @Arg
     int currentPage;
 
     /**
      * Current page position
      */
-    @Arg(required = false)
     PagePosition currentPagePosition;
 
     private boolean isInActionMode = false;
@@ -175,8 +178,10 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Timber.d("[Topic=%d], initialPage = %d, initialPagePosition = %s", topic.id(), initialPage, initialPagePosition);
+
         if (topicPageAdapter == null) {
-            topicPageAdapter = new TopicPageAdapter(getChildFragmentManager(), topic, currentPage);
+            topicPageAdapter = new TopicPageAdapter(getChildFragmentManager(), topic, initialPage, initialPagePosition);
         }
 
         if (savedInstanceState != null) {
@@ -202,7 +207,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
         pagerTitleStrip.setDrawFullUnderline(false);
         pagerTitleStrip.setTabIndicatorColor(getResources().getColor(R.color.theme_primary));
         pager.setAdapter(topicPageAdapter);
-        pager.setCurrentItem(currentPage - 1);
+        pager.setCurrentItem(initialPage - 1);
 
         if (userManager.getActiveUser().isGuest()) {
             replyButton.setVisibility(View.INVISIBLE);
@@ -331,21 +336,6 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     }
 
     /**
-     * Event fired by the webview contained in the viewpager child fragments once the page has
-     * been loaded. It allow us to set the page position only once the DOM is ready, otherwise
-     * initial posiion is broken.
-     */
-    @Subscribe
-    public void onTopicPageLoaded(PageLoadedEvent event) {
-        Timber.d("@%d -> Received topicPageLoaded event (topic='%s', page='%d'), current(topic='%s', page='%d', currentPagePosition='%s')", System.identityHashCode(this), event.getTopic().title(), event.getPage(), topic.title(), currentPage, currentPagePosition);
-        if (event.getTopic().id() == topic.id() && event.getPage() == currentPage) {
-            if (currentPagePosition != null && !userScrolledViewPager) {
-                event.getTopicPageView().setPagePosition(currentPagePosition);
-            }
-        }
-    }
-
-    /**
      * Event fired by the data layer when we detect that new pages have been added
      * to a topic. It allows us to update the UI properly. This is completely mandatory
      * for "hot" topics, when a lot of content is added in a short period of time.
@@ -414,13 +404,6 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
             return true;
         }
-    }
-
-    /**
-     * Returns current page position
-     */
-    public PagePosition getCurrentPagePosition() {
-        return currentPagePosition;
     }
 
     /**
