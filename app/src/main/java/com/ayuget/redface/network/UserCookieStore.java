@@ -19,17 +19,25 @@ package com.ayuget.redface.network;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.ayuget.redface.data.api.model.User;
 import com.google.common.base.Preconditions;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.CookieStore;
 import java.net.HttpCookie;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import timber.log.Timber;
@@ -164,7 +172,8 @@ public class UserCookieStore implements CookieStore {
             if(cookiePrefs.contains(COOKIE_NAME_PREFIX + name)) {
                 prefsWriter.remove(COOKIE_NAME_PREFIX + name);
             }
-            prefsWriter.putString(uri.getHost(), TextUtils.join(",", cookies.get(uri.getHost()).keySet()));
+
+            prefsWriter.putString(uri.getHost(), TextUtils.join(",", Collections.list(cookies.get(uri.getHost()).keys())));
             prefsWriter.commit();
 
             return true;
