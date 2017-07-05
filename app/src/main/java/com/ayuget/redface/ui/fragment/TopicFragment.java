@@ -100,10 +100,6 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
     private ArrayList<TopicPosition> topicPositionsStack;
 
-    private int previousViewPagerState = ViewPager.SCROLL_STATE_IDLE;
-
-    private boolean userScrolledViewPager = false;
-
     /**
      * Delegate to handle the "unflag" action subscription properly
      */
@@ -289,17 +285,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
     @Override
     public void onPageScrollStateChanged(int state) {
-        // Keep track of scroll state in order to detect if scrolling has been done
-        // manually by the user, or programatically. It allows us to disable some automatic
-        // scrolling behavior that can be annoying (and buggy) in some corner cases
-        if (previousViewPagerState == ViewPager.SCROLL_STATE_DRAGGING && state == ViewPager.SCROLL_STATE_SETTLING) {
-            userScrolledViewPager = true;
-        }
-        else if (previousViewPagerState == ViewPager.SCROLL_STATE_SETTLING && state == ViewPager.SCROLL_STATE_IDLE) {
-            userScrolledViewPager = false;
-        }
-
-        previousViewPagerState = state;
+        // Ignore event
     }
 
     @Override
