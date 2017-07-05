@@ -85,11 +85,8 @@ import static android.content.DialogInterface.BUTTON_POSITIVE;
 @FragmentWithArgs
 public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageChangeListener, TopicPageView.OnQuoteListener {
     private static final String ARG_TOPIC_POSITIONS_STACK = "topicPositionsStack";
-
     private static final String ARG_QUOTED_MESSAGES_CACHE = "quotedMessagesCache";
-
     private static final String ARG_IS_IN_ACTION_MODE = "isInActionMode";
-
     private static final String ARG_TOPIC = "topic";
 
     private static final int UNFLAG_ACTION = 42;
@@ -147,9 +144,6 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     @InjectView(R.id.move_to_bottom_button)
     FloatingActionButton moveToBottomButton;
 
-    /**
-     * Topic currently displayed
-     */
     @Arg
     Topic topic;
 
@@ -165,9 +159,9 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     int currentPage;
 
     /**
-     * Overridden page position for next loaded page. Will be nulled
-     * immediately after target page is loaded. We need such a transient
-     * value because ViewPager methods are not synchronous
+     * Overridden page position for next loaded page. Will be nulled immediately after target
+     * page is loaded. We need such a transient value because ViewPager setCurrentItem method
+     * is not synchronous.
      */
     OverriddenPagePosition overriddenPagePosition;
 
@@ -333,6 +327,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
      * to a topic. It allows us to update the UI properly. This is completely mandatory
      * for "hot" topics, when a lot of content is added in a short period of time.
      */
+    @SuppressWarnings("unused")
     @Subscribe
     public void onTopicPageCountUpdated(TopicPageCountUpdatedEvent event) {
         if (event.getTopic().id() == topic.id()) {
@@ -341,6 +336,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
         }
     }
 
+    @SuppressWarnings("unused")
     @Subscribe
     public void onWritePrivateMessage(WritePrivateMessageEvent event) {
         MultiPaneActivity hostActivity = (MultiPaneActivity) getActivity();
@@ -356,6 +352,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
     }
 
+    @SuppressWarnings("unused")
     @Subscribe
     public void onGoToPost(GoToPostEvent event) {
         Timber.d("Received GoToPostEvent : %s", event);
