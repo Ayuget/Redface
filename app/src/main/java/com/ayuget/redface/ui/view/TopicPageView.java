@@ -113,13 +113,6 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
     boolean wasReloaded = false;
 
     /**
-     * Callback to be invoked when webview is scrolled
-     */
-    public interface OnScrollListener {
-        void onScrolled(int dx, int dy);
-    }
-
-    /**
      * Callback to be invoked when a post is quoted (or un-quoted) in multi-quote mode
      */
     public interface OnQuoteListener {
@@ -134,10 +127,7 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
         void onPageLoaded();
     }
 
-    private OnScrollListener onScrollListener;
-
     private OnQuoteListener onQuoteListener;
-
     private OnPageLoadedListener onPageLoadedListener;
 
     @SuppressLint("SetJavaScriptEnabled")
@@ -160,6 +150,9 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
         RedfaceApp.get(context).inject(this);
     }
 
+    // It is safe here to use Javascript interface because we control entirely what's loaded in the
+    // webview (javascript is bundled inside the app and not loaded externally)
+    @SuppressLint({"SetJavaScriptEnabled", "AddJavascriptInterface"})
     private void initialize(Context context) {
         if (initialized) {
             throw new IllegalStateException("View is already initialized");
@@ -241,14 +234,6 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
     }
 
     @Override
-    protected void onScrollChanged(int l, int t, int oldl, int oldt) {
-        super.onScrollChanged(l, t, oldl, oldt);
-        if (this.onScrollListener != null) {
-            this.onScrollListener.onScrolled(oldl - l, oldt - t);
-        }
-    }
-
-    @Override
     public boolean onTouch(View v, MotionEvent event) {
         // Delegate touch event to the gesture detector
         return doubleTapGestureDetector.onTouchEvent(event);
@@ -275,6 +260,9 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
         if (pagePosition.isBottom()) {
             scrollToBottom();
         }
+        else if (pagePosition.isTop()) {
+            scrollToTop();
+        }
         else {
             scrollToPost(pagePosition.getPostId());
         }
@@ -299,18 +287,6 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
         JsExecutor.execute(this, "showAllSpoilers()");
     }
 
-    public void scrollToPosition(PagePosition pagePosition) {
-        if (pagePosition.isBottom()) {
-            scrollToBottom();
-        }
-        else if (pagePosition.isTop()) {
-            scrollToTop();
-        }
-        else {
-            scrollToPost(pagePosition.getPostId());
-        }
-    }
-
     /**
      * Sets the posts that are currently quoted
      */
@@ -331,6 +307,7 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
         JsExecutor.execute(this, "clearQuotedMessages()");
     }
 
+    @SuppressWarnings("unused") // Methods are not unused, they are called by Javascript code
     private class JsInterface {
         Context context;
 

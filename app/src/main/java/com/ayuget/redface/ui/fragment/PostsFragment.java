@@ -285,7 +285,9 @@ public class PostsFragment extends BaseFragment {
      * Defer posts loading until current fragment is visible in the ViewPager. Avoids screwing with
      * forum's read/unread markers.
      */
-    @Subscribe public void onPageSelectedEvent(PageSelectedEvent event) {
+    @SuppressWarnings("unused")
+    @Subscribe
+    public void onPageSelectedEvent(PageSelectedEvent event) {
         if (!isInitialPage && event.topic().id() == topic.id() && event.page() == pageNumber && isVisible()) {
             debugLog("'page selected event' received");
 
@@ -303,7 +305,9 @@ public class PostsFragment extends BaseFragment {
         }
     }
 
-    @Subscribe public void onPageRefreshRequestEvent(PageRefreshRequestEvent event) {
+    @SuppressWarnings("unused")
+    @Subscribe
+    public void onPageRefreshRequestEvent(PageRefreshRequestEvent event) {
         if (event.getTopic().id() == topic.id() && isVisible()) {
             refreshPosts(true);
         }
@@ -322,7 +326,9 @@ public class PostsFragment extends BaseFragment {
         loadPage();
     }
 
-    @Subscribe public void onShowAllSpoilersEvent(ShowAllSpoilersEvent event) {
+    @SuppressWarnings("unused")
+    @Subscribe
+    public void onShowAllSpoilersEvent(ShowAllSpoilersEvent event) {
         if (event.getTopic().id() == topic.id() && isVisible() && event.getCurrentPage() == pageNumber) {
             debugLog("'show all spoilers event' received");
             topicPageView.showAllSpoilers();
@@ -333,6 +339,7 @@ public class PostsFragment extends BaseFragment {
      * Event fired by the host {@link com.ayuget.redface.ui.fragment.TopicFragment} to notify
      * that multi-quote mode has been turned off and that posts UI should be updated accordingly.
      */
+    @SuppressWarnings("unused")
     @Subscribe
     public void onUnquoteAllPostsEvent(UnquoteAllPostsEvent event) {
         if (topicPageView != null) {
@@ -345,7 +352,9 @@ public class PostsFragment extends BaseFragment {
      * another choice is to use the event bus to subscribe to scrolling "events" and change the
      * scroll position like this.
      */
-    @Subscribe public void onScrollToPosition(ScrollToPositionEvent event) {
+    @SuppressWarnings("unused")
+    @Subscribe
+    public void onScrollToPosition(ScrollToPositionEvent event) {
         if (event.topic().id() == topic.id() && event.page() == pageNumber) {
             OverriddenPagePosition overriddenPagePosition = event.overriddenPagePosition();
 
@@ -375,12 +384,15 @@ public class PostsFragment extends BaseFragment {
      * Event thrown by {@link com.ayuget.redface.ui.view.TopicPageView} to notify
      * that an user has been blocked.
      */
-    @Subscribe public void onBlockUser(final BlockUserEvent event) {
+    @SuppressWarnings("unused")
+    @Subscribe
+    public void onBlockUser(final BlockUserEvent event) {
         blacklist.addBlockedAuthor(event.getAuthor());
         SnackbarHelper.makeWithAction(PostsFragment.this, getString(R.string.user_blocked, event.getAuthor()),
                 R.string.action_refresh_topic, v -> bus.post(new PageRefreshRequestEvent(topic))).show();
     }
 
+    @SuppressWarnings("unused")
     @Subscribe
     public void onTopicPageCountUpdated(TopicPageCountUpdatedEvent event) {
         if (event.getTopic().id() == topic.id()) {
