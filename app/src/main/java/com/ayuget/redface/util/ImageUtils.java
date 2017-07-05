@@ -39,7 +39,7 @@ public class ImageUtils {
         Bitmap imgBitmap = createBitmap(inputImage, sampleSize);
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        imgBitmap.compress(Bitmap.CompressFormat.PNG, 90, outputStream);
+        imgBitmap.compress(Bitmap.CompressFormat.JPEG, 90, outputStream);
 
         return ByteString.of(outputStream.toByteArray());
     }
@@ -48,7 +48,7 @@ public class ImageUtils {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inSampleSize = sampleSize;
         byte[] image = inputImage.toByteArray();
-        return BitmapFactory.decodeByteArray(image, 0, image.length);
+        return BitmapFactory.decodeByteArray(image, 0, image.length,options);
     }
 
     public static String replaceExtensionWithPng(String imageName) {
