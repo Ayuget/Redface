@@ -43,7 +43,6 @@ android {
         }
 
         beta {
-            applicationIdSuffix '.beta'
             versionNameSuffix '-beta'
             minifyEnabled true
             shrinkResources true

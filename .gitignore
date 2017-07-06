@@ -10,3 +10,4 @@ manifest-merger*.txt
 captures
 *.iml
 .idea/
+output.json
