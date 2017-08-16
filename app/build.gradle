@@ -6,7 +6,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.0-alpha4'
+        classpath 'com.android.tools.build:gradle:3.0.0-alpha8'
         classpath 'io.fabric.tools:gradle:1.+'
     }
 }
@@ -30,7 +30,7 @@ android {
         applicationId "com.ayuget.redface"
         minSdkVersion 16
         targetSdkVersion 26
-        versionCode 300
+        versionCode 301
         versionName "3.0.0"
     }
     compileOptions {
