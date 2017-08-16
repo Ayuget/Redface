@@ -109,14 +109,12 @@ function favoritePost(postId) {
 function toggleQuoteIcon(link) {
     var icon = link.getElementsByTagName("i")[1];
 
-    if (icon.classList.contains('fa-minus')) {
-        icon.classList.remove('fa-minus');
+    if (icon.textContent == 'add') {
+        icon.textContent = 'remove';
         link.classList.remove('action-selected');
-        icon.classList.add('fa-plus');
     }
     else {
-        icon.classList.remove('fa-plus');
-        icon.classList.add('fa-minus');
+        icon.textContent = 'add'
         link.classList.add('action-selected');
     }
 }
