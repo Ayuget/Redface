@@ -275,4 +275,7 @@
     <string name="action_search">Rechercher</string>
     <string name="search_topic_words">Mots</string>
     <string name="search_topic_user">Utilisateur</string>
+    <string name="action_topic_search_filter">Filtrer</string>
+    <string name="action_topic_search_from_first_page">Depuis la 1ère page</string>
+    <string name="action_topic_search_title">Filtres de recherche</string>
 </resources>

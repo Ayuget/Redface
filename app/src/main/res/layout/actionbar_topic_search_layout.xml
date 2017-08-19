@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <EditText
+        android:id="@+id/topic_word_search_text"
+        android:singleLine="true"
+        android:imeOptions="actionSearch"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:hint="@string/search_topic_words"
+        android:layout_height="match_parent" />
+    <EditText
+        android:id="@+id/topic_username_search_text"
+        android:singleLine="true"
+        android:imeOptions="actionSearch"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:hint="@string/search_topic_user"
+        android:layout_height="match_parent" />
+</LinearLayout>
