@@ -16,9 +16,14 @@
 
 package com.ayuget.redface.ui.fragment;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ValueAnimator;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.AttrRes;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.PagerTabStrip;
@@ -87,6 +92,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     private static final String ARG_TOPIC_POSITIONS_STACK = "topicPositionsStack";
     private static final String ARG_QUOTED_MESSAGES_CACHE = "quotedMessagesCache";
     private static final String ARG_IS_IN_ACTION_MODE = "isInActionMode";
+    private static final String ARG_IS_IN_SEARCH_MODE = "isInSearchMode";
     private static final String ARG_TOPIC = "topic";
 
     private static final int UNFLAG_ACTION = 42;
@@ -166,6 +172,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     OverriddenPagePosition overriddenPagePosition;
 
     private boolean isInActionMode = false;
+    private boolean isInSearchMode = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -185,6 +192,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
             topicPositionsStack = savedInstanceState.getParcelableArrayList(ARG_TOPIC_POSITIONS_STACK);
             quotedMessagesCache = savedInstanceState.getParcelable(ARG_QUOTED_MESSAGES_CACHE);
             isInActionMode = savedInstanceState.getBoolean(ARG_IS_IN_ACTION_MODE);
+            isInSearchMode = savedInstanceState.getBoolean(ARG_IS_IN_SEARCH_MODE);
         }
 
         if (topicPositionsStack == null) {
@@ -222,8 +230,11 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
         super.onResume();
 
         if (quotedMessagesCache.size() > 0 && isInActionMode) {
-            Timber.d("Restarting action mode");
             startMultiQuoteAction(false);
+        }
+
+        if (isInSearchMode) {
+            startSearchMode(getToolbar(), false);
         }
 
         pager.addOnPageChangeListener(this);
@@ -233,6 +244,9 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     public void onPause() {
         super.onPause();
 
+        if (isInSearchMode) {
+            stopSearchMode(getToolbar(), false);
+        }
         pager.removeOnPageChangeListener(this);
     }
 
@@ -250,6 +264,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
         super.onSaveInstanceState(outState);
 
         outState.putParcelableArrayList(ARG_TOPIC_POSITIONS_STACK, topicPositionsStack);
+        outState.putBoolean(ARG_IS_IN_SEARCH_MODE, isInSearchMode);
 
         if (isInActionMode) {
             outState.putParcelable(ARG_QUOTED_MESSAGES_CACHE, quotedMessagesCache);
@@ -294,30 +309,94 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
             toolbar.getMenu().add(Menu.NONE, UNFLAG_ACTION, lastAction + 100, getString(R.string.action_unflag_topic));
         }
 
+        setupIntraTopicSearch(toolbar);
+    }
 
+    private void setupIntraTopicSearch(Toolbar toolbar) {
         MenuItem topicSearchItem = toolbar.getMenu().findItem(R.id.action_search);
         MenuItem topicSearchFiltersItem = toolbar.getMenu().findItem(R.id.action_topic_search_filters);
 
         if (topicSearchItem != null && topicSearchFiltersItem != null) {
             topicSearchFiltersItem.setVisible(false);
 
-            Timber.i("Search items not null");
             topicSearchItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
                 @Override
                 public boolean onMenuItemActionExpand(MenuItem menuItem) {
-                    Timber.i("Showing search filters");
                     topicSearchFiltersItem.setVisible(true);
+                    isInSearchMode = true;
+                    startSearchMode(toolbar, true);
                     return true;
                 }
 
                 @Override
                 public boolean onMenuItemActionCollapse(MenuItem menuItem) {
-                    Timber.i("Hiding search filters");
                     topicSearchFiltersItem.setVisible(false);
+                    isInSearchMode = false;
+                    stopSearchMode(toolbar, true);
                     return true;
                 }
             });
         }
+    }
+
+    private void startSearchMode(Toolbar toolbar, boolean progressively) {
+        if (progressively) {
+            tintForSearchModeProgressively(toolbar, R.attr.colorPrimary, R.attr.statusBarBackgroundColor, R.attr.actionModeBackground, R.attr.actionModeBackground);
+        }
+        else {
+            tintToolbarImmediately(toolbar, R.attr.actionModeBackground, R.attr.actionModeBackground);
+        }
+    }
+
+    private void stopSearchMode(Toolbar toolbar, boolean progressively) {
+        if (progressively) {
+            tintForSearchModeProgressively(toolbar, R.attr.actionModeBackground, R.attr.actionModeBackground, R.attr.colorPrimary, R.attr.statusBarBackgroundColor);
+        }
+        else {
+            tintToolbarImmediately(toolbar, R.attr.colorPrimary, R.attr.statusBarBackgroundColor);
+        }
+    }
+
+    private void tintToolbarImmediately(Toolbar toolbar, @AttrRes int targetToolbarColor, @AttrRes int targetStatusBarColor) {
+        int toolbarColor = UiUtils.resolveColorAttribute(getContext(), targetToolbarColor);
+        int statusBarColor = UiUtils.resolveColorAttribute(getContext(), targetStatusBarColor);
+
+        toolbar.setBackgroundColor(toolbarColor);
+        pagerTitleStrip.setBackgroundColor(toolbarColor);
+        replyButton.setBackgroundColor(toolbarColor);
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getActivity().getWindow().setStatusBarColor(statusBarColor);
+        }
+    }
+
+    private void tintForSearchModeProgressively(Toolbar toolbar, @AttrRes int currentToolbarColor, @AttrRes int currentStatusBarColor, @AttrRes int targetToolbarColor, @AttrRes  int targetStatusBarColor) {
+        int startToolbarColor = UiUtils.resolveColorAttribute(getContext(), currentToolbarColor);
+        int endToolbarColor = UiUtils.resolveColorAttribute(getContext(), targetToolbarColor);
+        int startStatusBarColor = UiUtils.resolveColorAttribute(getContext(), currentStatusBarColor);
+        int endStatusBarColor = UiUtils.resolveColorAttribute(getContext(), targetStatusBarColor);
+
+        ValueAnimator toolbarColorAnimator = ValueAnimator.ofObject(new ArgbEvaluator(), startToolbarColor, endToolbarColor);
+        ValueAnimator statusBarColorAnimator = ValueAnimator.ofObject(new ArgbEvaluator(), startStatusBarColor, endStatusBarColor);
+
+        toolbarColorAnimator.addUpdateListener(v -> {
+            int animatedValue = (Integer) v.getAnimatedValue();
+            toolbar.setBackgroundColor(animatedValue);
+            pagerTitleStrip.setBackgroundColor(animatedValue);
+            replyButton.setBackgroundTintList(ColorStateList.valueOf(animatedValue));
+        });
+        statusBarColorAnimator.addUpdateListener(v -> {
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                getActivity().getWindow().setStatusBarColor((Integer) v.getAnimatedValue());
+            }
+        });
+
+        int animationDuration = getContext().getResources().getInteger(R.integer.searchModeDuration);
+        toolbarColorAnimator.setDuration(animationDuration);
+        toolbarColorAnimator.setStartDelay(0);
+        toolbarColorAnimator.start();
+        statusBarColorAnimator.setDuration(animationDuration);
+        statusBarColorAnimator.setStartDelay(0);
+        statusBarColorAnimator.start();
     }
 
     @Override

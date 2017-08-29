@@ -17,4 +17,5 @@
 
 <resources>
     <integer name="fragmentAnimDuration">300</integer>
+    <integer name="searchModeDuration">500</integer>
 </resources>
