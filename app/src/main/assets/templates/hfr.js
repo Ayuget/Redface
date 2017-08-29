@@ -152,18 +152,11 @@ function setPostsAsQuoted(posts) {
 }
 
 function clearQuotedMessages() {
-    var icons = document.getElementsByClassName("fa-minus");
     var i;
-
-    for (i = icons.length - 1; i >= 0; i--) {
-        var item = icons[i];
-        item.classList.remove('fa-minus');
-        item.classList.add('fa-plus');
-    }
 
     var links = document.getElementsByClassName("action-selected");
     for (i = links.length - 1; i >= 0; i--) {
-        links[i].classList.remove('action-selected');
+        toggleQuoteIcon(links[i]);
     }
 
     var quoted = document.getElementsByClassName("quoted");

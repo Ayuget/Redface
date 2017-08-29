@@ -135,7 +135,7 @@ body.redface-night {
     text-align: center;
     float: left;
     margin-right: 3px;
-    padding-top: 16px;
+    padding-top: 11px;
 }
 
 .redface-dark .post-content a, .redface-night .post-content a {
@@ -289,10 +289,14 @@ img {
 
 .extra-details {
     float: right;
+    display: flex;
+    align-items: center;
 }
 
 .extra-details i {
+    margin-left: 10px;
     margin-right: 4px;
+    font-size: 12px;
 }
 
 .extra-details .edited {

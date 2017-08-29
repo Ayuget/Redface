@@ -17,7 +17,6 @@
 package com.ayuget.redface.ui.template;
 
 import android.content.Context;
-import android.text.TextUtils;
 
 import com.ayuget.redface.R;
 import com.ayuget.redface.data.api.model.Post;
@@ -28,7 +27,7 @@ public class PostExtraDetailsTemplate extends HTMLTemplate<Post> {
     private static final String EXTRA_DETAILS_TEMPLATE = "extra_details.html";
 
     private static final String EDITED_HTML = "<span class=\"edited\">{edited_text}</span>";
-    private static final String QUOTE_COUNT_HTML = "<i class=\"fa fa-comments fa-3\"></i> {quote_count}";
+    private static final String QUOTE_COUNT_HTML = "<i class=\"material-icons\">chat_bubble_outline</i> {quote_count}";
 
     private Context context;
 
