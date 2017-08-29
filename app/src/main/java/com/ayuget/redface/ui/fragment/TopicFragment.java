@@ -346,6 +346,8 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
         else {
             tintToolbarImmediately(toolbar, R.attr.actionModeBackground, R.attr.actionModeBackground);
         }
+
+        replyButton.setImageResource(R.drawable.ic_search_white_24dp);
     }
 
     private void stopSearchMode(Toolbar toolbar, boolean progressively) {
@@ -355,6 +357,8 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
         else {
             tintToolbarImmediately(toolbar, R.attr.colorPrimary, R.attr.statusBarBackgroundColor);
         }
+
+        replyButton.setImageResource(R.drawable.ic_create_white_24dp);
     }
 
     private void tintToolbarImmediately(Toolbar toolbar, @AttrRes int targetToolbarColor, @AttrRes int targetStatusBarColor) {
