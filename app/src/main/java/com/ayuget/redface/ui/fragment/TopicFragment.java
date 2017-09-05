@@ -48,6 +48,7 @@ import com.ayuget.redface.account.UserManager;
 import com.ayuget.redface.data.api.MDEndpoints;
 import com.ayuget.redface.data.api.MDService;
 import com.ayuget.redface.data.api.model.Topic;
+import com.ayuget.redface.data.api.model.TopicSearchResult;
 import com.ayuget.redface.data.api.model.User;
 import com.ayuget.redface.data.quote.QuotedMessagesCache;
 import com.ayuget.redface.data.rx.EndlessObserver;
@@ -114,6 +115,11 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     private SubscriptionHandler<Long, String> quoteHandler = new SubscriptionHandler<>();
 
     /**
+     * Delegate to handle the "search" action mode subscription properly
+     */
+    private SubscriptionHandler<Topic, TopicSearchResult> topicSearchSubscriptionHandler = new SubscriptionHandler<>();
+
+    /**
      * Used to display a contextual action bar when multi-quote mode is enabled
      */
     private ActionMode quoteActionMode;
@@ -149,6 +155,9 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
     @InjectView(R.id.move_to_bottom_button)
     FloatingActionButton moveToBottomButton;
+
+    TextView topicWordSearch;
+    TextView topicAuthorSearch;
 
     @Arg
     Topic topic;
@@ -217,7 +226,14 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
         if (userManager.getActiveUser().isGuest()) {
             replyButton.setVisibility(View.INVISIBLE);
         } else {
-            replyButton.setOnClickListener((v) -> replyToTopic());
+            replyButton.setOnClickListener((v) -> {
+                if (isInSearchMode) {
+                    searchInTopic();
+                }
+                else {
+                    replyToTopic();
+                }
+            });
         }
 
         setupQuickNavigationButtons();
@@ -318,6 +334,9 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
         if (topicSearchItem != null && topicSearchFiltersItem != null) {
             topicSearchFiltersItem.setVisible(false);
+
+            topicWordSearch = topicSearchItem.getActionView().findViewById(R.id.topic_word_search_text);
+            topicAuthorSearch = topicSearchItem.getActionView().findViewById(R.id.topic_username_search_text);
 
             topicSearchItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
                 @Override
@@ -823,5 +842,26 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
      */
     public List<Long> getPageQuotedPosts(int page) {
         return quotedMessagesCache.getPageQuotedMessages(page);
+    }
+
+    private void searchInTopic() {
+        SnackbarHelper.make(TopicFragment.this, R.string.search_topic_in_progress).show();
+        String wordSearchText = topicWordSearch.getText().toString();
+        String authorSearchText = topicAuthorSearch.getText().toString();
+
+        Timber.d("Word = '%s', Author = '%s'", wordSearchText, authorSearchText);
+
+        subscribe(topicSearchSubscriptionHandler.load(topic, mdService.searchInTopic(userManager.getActiveUser(), topic, 0, wordSearchText, authorSearchText, true), new EndlessObserver<TopicSearchResult>() {
+            @Override
+            public void onNext(TopicSearchResult topicSearchResult) {
+                Timber.d(topicSearchResult.toString());
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                Timber.e(throwable, "Error while searching topic");
+                SnackbarHelper.makeError(TopicFragment.this, R.string.search_topic_error).show();
+            }
+        }));
     }
 }

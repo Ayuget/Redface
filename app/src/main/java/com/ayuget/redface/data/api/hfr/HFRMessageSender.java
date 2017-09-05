@@ -21,6 +21,7 @@ import com.ayuget.redface.data.api.MDMessageSender;
 import com.ayuget.redface.data.api.model.Response;
 import com.ayuget.redface.data.api.model.ResponseCode;
 import com.ayuget.redface.data.api.model.Topic;
+import com.ayuget.redface.data.api.model.TopicSearchResult;
 import com.ayuget.redface.data.api.model.User;
 import com.ayuget.redface.network.HTTPClientProvider;
 import com.ayuget.redface.ui.UIConstants;
@@ -49,7 +50,7 @@ public class HFRMessageSender implements MDMessageSender {
     private static final Pattern FAVORITE_SUCCESSFULLY_ADDED = Pattern.compile("(.*)(Favori positionné avec succès)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private static final Pattern MESSAGE_SUCCESSFULLY_DELETED = Pattern.compile("(.*)(Message effacé avec succès)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private static final Pattern FLAG_SUCCESSFULLY_REMOVED = Pattern.compile("(.*)(Drapeau effacé avec succès)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-
+    private static final Pattern EXTRACT_SEARCHED_POST_LOCATION_PATTERN = Pattern.compile("(?:page=)(\\d+)(?:.*?)(?:currentnum=)(\\d+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private final HTTPClientProvider httpClientProvider;
 
     private final MDEndpoints mdEndpoints;
@@ -357,6 +358,63 @@ public class HFRMessageSender implements MDMessageSender {
             }
         });
     }
+
+    @Override
+    public Observable<TopicSearchResult> searchInTopic(User user, Topic topic, int startFromPostId, String word, String author, boolean firstSearch, String hashcheck) {
+        return Observable.create(subscriber -> {
+            Timber.d("Searching topic '%d' for word '%s', starting at post '%d'", topic.id(), word, startFromPostId);
+
+            boolean isPrivateMessage = topic.category().id() == UIConstants.PRIVATE_MESSAGE_CAT_ID;
+
+            OkHttpClient httpClient = httpClientProvider.getClientForUser(user)
+                    .newBuilder()
+                    .followRedirects(false)
+                    .build();
+
+            RequestBody formBody = new FormBody.Builder()
+                    .add("hash_check", hashcheck)
+                    .add("post", String.valueOf(topic.id()))
+                    .add("cat", isPrivateMessage ? "prive" : String.valueOf(topic.category().id()))
+                    .add("p", "1")
+                    .add("word", word == null ? "" : word)
+                    .add("spseudo", author == null ? "" : author)
+                    .add("dep", "0")
+                    .add("firstnum", String.valueOf(startFromPostId))
+                    .build();
+
+            Request request = new Request.Builder()
+                    .url(mdEndpoints.searchTopic())
+                    .post(formBody)
+                    .build();
+
+            try {
+                okhttp3.Response response = httpClient.newCall(request).execute();
+
+                if (response.isRedirect()) {
+                    String locationHeader = response.header("Location");
+                    subscriber.onNext(parseFoundPostLocation(locationHeader));
+                }
+                else {
+                    subscriber.onNext(TopicSearchResult.createAsNoMoreResult());
+                }
+            }
+            catch (IOException e) {
+                Timber.e(e, "Exception while removing flag on topic");
+                subscriber.onError(e);
+            }
+        });
+    }
+
+    private TopicSearchResult parseFoundPostLocation(String locationHeader) {
+        Matcher matcher = EXTRACT_SEARCHED_POST_LOCATION_PATTERN.matcher(locationHeader);
+        if (matcher.find()) {
+            return TopicSearchResult.create(Integer.parseInt(matcher.group(1)), Integer.parseInt(matcher.group(2)));
+        }
+        else {
+            return TopicSearchResult.createAsNoMoreResult();
+        }
+    }
+
 
     private Response buildResponse(String response) {
         Timber.d(response);

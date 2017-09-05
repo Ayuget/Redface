@@ -73,6 +73,8 @@ public class HFREndpoints implements MDEndpoints {
 
     private static final String POST_URL = "{base_url}/forum2.php?config=hfr.inc&cat={category_id}&post={topic_id}&page={page}&p=1&sondage=0&owntopic=1&trash=0&trash_post=0&print=0&numreponse=0&quote_only=0&new=0&nojs=0#t{post_id}";
 
+    private static final String SEARCH_TOPIC_URL = "{base_url}/transsearch.php";
+
     /**
      * Homepage URL (with the list of categories)
      */
@@ -343,6 +345,14 @@ public class HFREndpoints implements MDEndpoints {
                 .put("base_url", FORUM_BASE_URL)
                 .put("category_id", category.id())
                 .put("topic_id", topic.id())
+                .format()
+                .toString();
+    }
+
+    @Override
+    public String searchTopic() {
+        return Phrase.from(SEARCH_TOPIC_URL)
+                .put("base_url", FORUM_BASE_URL)
                 .format()
                 .toString();
     }

@@ -278,4 +278,6 @@
     <string name="action_topic_search_filter">Filtrer</string>
     <string name="action_topic_search_from_first_page">Depuis la 1ère page</string>
     <string name="action_topic_search_title">Filtres de recherche</string>
+    <string name="search_topic_in_progress">Recherche en cours</string>
+    <string name="search_topic_error">Erreur lors de la recherche</string>
 </resources>

@@ -40,6 +40,7 @@ import com.ayuget.redface.data.api.model.Smiley;
 import com.ayuget.redface.data.api.model.Subcategory;
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.api.model.TopicFilter;
+import com.ayuget.redface.data.api.model.TopicSearchResult;
 import com.ayuget.redface.data.api.model.User;
 import com.ayuget.redface.data.api.model.misc.SmileyResponse;
 import com.ayuget.redface.data.state.CategoriesStore;
@@ -310,5 +311,10 @@ public class HFRForumService implements MDService {
     @Override
     public Observable<Boolean> unflagTopic(User user, Topic topic) {
         return mdMessageSender.unflagTopic(user, topic);
+    }
+
+    @Override
+    public Observable<TopicSearchResult> searchInTopic(User user, Topic topic, int startFromPostId, String word, String author, boolean firstSearch) {
+        return mdMessageSender.searchInTopic(user, topic, startFromPostId, word, author, firstSearch, currentHashcheck);
     }
 }

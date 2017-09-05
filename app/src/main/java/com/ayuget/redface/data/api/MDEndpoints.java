@@ -87,4 +87,6 @@ public interface MDEndpoints {
      * URL used to unflag / unfavorite a topic
      */
     String removeFlag(Category category, Topic topic);
+
+    String searchTopic();
 }

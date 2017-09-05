@@ -427,4 +427,6 @@
     <!-- Search topic -->
     <string name="search_topic_words">Words</string>
     <string name="search_topic_user">User</string>
+    <string name="search_topic_in_progress">Search in progress</string>
+    <string name="search_topic_error">Search failed</string>
 </resources>
