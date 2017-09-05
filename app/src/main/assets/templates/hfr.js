@@ -111,11 +111,11 @@ function toggleQuoteIcon(link) {
 
     if (icon.textContent == 'add') {
         icon.textContent = 'remove';
-        link.classList.remove('action-selected');
+        link.classList.add('action-selected');
     }
     else {
         icon.textContent = 'add'
-        link.classList.add('action-selected');
+        link.classList.remove('action-selected');
     }
 }
 
@@ -152,7 +152,9 @@ function setPostsAsQuoted(posts) {
 }
 
 function clearQuotedMessages() {
+    var icons = document.getElementsByClassName('action-selected');
     var i;
+
 
     var links = document.getElementsByClassName("action-selected");
     for (i = links.length - 1; i >= 0; i--) {
