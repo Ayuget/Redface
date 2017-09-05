@@ -341,7 +341,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
     private void startSearchMode(Toolbar toolbar, boolean progressively) {
         if (progressively) {
-            tintForSearchModeProgressively(toolbar, R.attr.colorPrimary, R.attr.statusBarBackgroundColor, R.attr.actionModeBackground, R.attr.actionModeBackground);
+            tintToolbarProgressively(toolbar, R.attr.colorPrimary, R.attr.statusBarBackgroundColor, R.attr.actionModeBackground, R.attr.actionModeBackground);
         }
         else {
             tintToolbarImmediately(toolbar, R.attr.actionModeBackground, R.attr.actionModeBackground);
@@ -352,7 +352,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
     private void stopSearchMode(Toolbar toolbar, boolean progressively) {
         if (progressively) {
-            tintForSearchModeProgressively(toolbar, R.attr.actionModeBackground, R.attr.actionModeBackground, R.attr.colorPrimary, R.attr.statusBarBackgroundColor);
+            tintToolbarProgressively(toolbar, R.attr.actionModeBackground, R.attr.actionModeBackground, R.attr.colorPrimary, R.attr.statusBarBackgroundColor);
         }
         else {
             tintToolbarImmediately(toolbar, R.attr.colorPrimary, R.attr.statusBarBackgroundColor);
@@ -367,13 +367,14 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
         toolbar.setBackgroundColor(toolbarColor);
         pagerTitleStrip.setBackgroundColor(toolbarColor);
-        replyButton.setBackgroundColor(toolbarColor);
+        replyButton.setBackgroundTintList(ColorStateList.valueOf(toolbarColor));
+
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getActivity().getWindow().setStatusBarColor(statusBarColor);
         }
     }
 
-    private void tintForSearchModeProgressively(Toolbar toolbar, @AttrRes int currentToolbarColor, @AttrRes int currentStatusBarColor, @AttrRes int targetToolbarColor, @AttrRes  int targetStatusBarColor) {
+    private void tintToolbarProgressively(Toolbar toolbar, @AttrRes int currentToolbarColor, @AttrRes int currentStatusBarColor, @AttrRes int targetToolbarColor, @AttrRes  int targetStatusBarColor) {
         int startToolbarColor = UiUtils.resolveColorAttribute(getContext(), currentToolbarColor);
         int endToolbarColor = UiUtils.resolveColorAttribute(getContext(), targetToolbarColor);
         int startStatusBarColor = UiUtils.resolveColorAttribute(getContext(), currentStatusBarColor);
@@ -422,10 +423,10 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
         if (! hostActivity.isTwoPaneMode()) {
             if (active) {
-                pagerTitleStrip.setBackgroundColor(UiUtils.getActionModeBackgroundColor(getActivity()));
+                tintToolbarProgressively(getToolbar(), R.attr.colorPrimary, R.attr.statusBarBackgroundColor, R.attr.actionModeBackground, R.attr.actionModeBackground);
             }
             else {
-                pagerTitleStrip.setBackgroundColor(UiUtils.getRegularPagerTitleStripBackgroundColor(getActivity()));
+                tintToolbarImmediately(getToolbar(), R.attr.colorPrimary, R.attr.statusBarBackgroundColor);
             }
         }
     }
