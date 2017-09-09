@@ -504,7 +504,11 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
      * @return true if event was consumed, false otherwise
      */
     public boolean onBackPressed() {
-        if (topicPositionsStack.size() == 0) {
+        if (isInSearchMode) {
+            getToolbar().collapseActionView();
+            return true;
+        }
+        else if (topicPositionsStack.size() == 0) {
             return false;
         }
         else {
