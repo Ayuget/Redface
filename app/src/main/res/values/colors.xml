@@ -54,6 +54,7 @@
     <color name="navdrawer_background">#ffffffff</color>
     <color name="navdrawer_active_user">#FFFFFF</color>
     <color name="navdrawer_active_user_bg">#73000000</color>
+    <color name="navbar_dark_bg">#000000</color>
 
     <color name="subcategories_spinner_active_item">#ffffffff</color>
     <color name="subcategories_spinner_foreground_color">#000000</color>
