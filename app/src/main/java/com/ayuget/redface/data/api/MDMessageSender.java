@@ -72,5 +72,5 @@ public interface MDMessageSender {
     /**
      * Searches a particular word and/or author in a topic, starting at a given post id.
      */
-    Observable<TopicSearchResult> searchInTopic(User user, Topic topic, int startFromPostId, String word, String author, boolean firstSearch, String hashcheck);
+    Observable<TopicSearchResult> searchInTopic(User user, Topic topic, long startFromPostId, String word, String author, boolean firstSearch, String hashcheck);
 }

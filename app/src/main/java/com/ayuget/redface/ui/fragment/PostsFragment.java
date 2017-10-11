@@ -35,11 +35,13 @@ import com.ayuget.redface.data.api.MDService;
 import com.ayuget.redface.data.api.model.Post;
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.api.model.TopicPage;
+import com.ayuget.redface.data.api.model.misc.SearchTerms;
 import com.ayuget.redface.data.rx.EndlessObserver;
 import com.ayuget.redface.network.DownloadStrategy;
 import com.ayuget.redface.settings.Blacklist;
 import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.ui.event.BlockUserEvent;
+import com.ayuget.redface.ui.event.DisableSearchModeEvent;
 import com.ayuget.redface.ui.event.OverriddenPagePosition;
 import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
 import com.ayuget.redface.ui.event.PageSelectedEvent;
@@ -302,6 +304,13 @@ public class PostsFragment extends BaseFragment {
                 }
                 overridePagePosition(event.overriddenPagePosition());
             }
+
+            if (event.activeSearchTerm() == null) {
+                disableSearchMode();
+            }
+            else {
+                enableSearchMode(event.activeSearchTerm());
+            }
         }
     }
 
@@ -360,6 +369,13 @@ public class PostsFragment extends BaseFragment {
 
             debugLog("Received scroll to position event");
             overridePagePosition(overriddenPagePosition);
+
+            if (event.activeSearchTerm() == null) {
+                disableSearchMode();
+            }
+            else {
+                enableSearchMode(event.activeSearchTerm());
+            }
         }
     }
 
@@ -378,6 +394,19 @@ public class PostsFragment extends BaseFragment {
                 topicPageView.setScrollY(targetScrollY);
             }
         }
+    }
+
+    @Subscribe
+    public void onDisableSearchModeEvent(DisableSearchModeEvent ignored) {
+        disableSearchMode();
+    }
+
+    private void disableSearchMode() {
+        Timber.d("Disabling search mode");
+    }
+
+    private void enableSearchMode(SearchTerms activeSearchTerm) {
+        Timber.d("Enabling search mode : %s", activeSearchTerm);
     }
 
     /**
@@ -448,6 +477,7 @@ public class PostsFragment extends BaseFragment {
                 TopicPage topicPage = TopicPage.create(topic, pageNumber, posts, pageInitialPosition);
                 topicPageView.renderPage(topicPage);
 
+                notifyPageLoaded();
                 showPosts();
             }
 
@@ -459,6 +489,24 @@ public class PostsFragment extends BaseFragment {
                 showErrorView();
             }
         }));
+    }
+
+    private void notifyPageLoaded() {
+        if (displayedPosts.size() == 0) {
+            Timber.w("Empty list of posts...");
+            return;
+        }
+
+        long searchStartPostId = pageInitialPosition.getPostId();
+        if (pageInitialPosition.isTop()) {
+            searchStartPostId = displayedPosts.get(0).getId();
+        }
+        else if (pageInitialPosition.isBottom()) {
+            searchStartPostId = displayedPosts.get(displayedPosts.size() - 1).getId();
+        }
+
+        TopicFragment topicFragment = (TopicFragment) getParentFragment();
+        topicFragment.notifyPageLoaded(pageNumber, searchStartPostId);
     }
 
     private void updateQuotedPostsStatus() {
@@ -514,5 +562,9 @@ public class PostsFragment extends BaseFragment {
 
     private void debugLog(String message, Object... args) {
         Timber.d(String.format(Locale.getDefault(), "[Page: %d, PageInitialPosition: %s, Id: %d] ", pageNumber, pageInitialPosition, System.identityHashCode(this)) + message, args);
+    }
+
+    public TopicPageView getTopicPageView() {
+        return topicPageView;
     }
 }

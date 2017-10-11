@@ -50,6 +50,7 @@ import com.ayuget.redface.data.api.MDService;
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.api.model.TopicSearchResult;
 import com.ayuget.redface.data.api.model.User;
+import com.ayuget.redface.data.api.model.misc.SearchTerms;
 import com.ayuget.redface.data.quote.QuotedMessagesCache;
 import com.ayuget.redface.data.rx.EndlessObserver;
 import com.ayuget.redface.data.rx.SubscriptionHandler;
@@ -59,6 +60,7 @@ import com.ayuget.redface.ui.activity.MultiPaneActivity;
 import com.ayuget.redface.ui.activity.ReplyActivity;
 import com.ayuget.redface.ui.activity.WritePrivateMessageActivity;
 import com.ayuget.redface.ui.adapter.TopicPageAdapter;
+import com.ayuget.redface.ui.event.DisableSearchModeEvent;
 import com.ayuget.redface.ui.event.GoToPostEvent;
 import com.ayuget.redface.ui.event.OverriddenPagePosition;
 import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
@@ -95,6 +97,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     private static final String ARG_IS_IN_ACTION_MODE = "isInActionMode";
     private static final String ARG_IS_IN_SEARCH_MODE = "isInSearchMode";
     private static final String ARG_TOPIC = "topic";
+    private static final String ARG_CURRENT_SEARCH_RESULT = "currentSearchResult";
 
     private static final int UNFLAG_ACTION = 42;
 
@@ -171,7 +174,18 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     /**
      * Page currently displayed in the viewPager
      */
-    int currentPage;
+    private int currentPage;
+
+    /**
+     * Id of the first post of the currently selected page or id of initial post
+     */
+    private long searchStartPostId;
+
+    /**
+     * Current search result when in "search mode". Needs to be persisted to keep
+     * search context
+     */
+    private TopicSearchResult currentTopicSearchResult;
 
     /**
      * Overridden page position for next loaded page. Will be nulled immediately after target
@@ -202,6 +216,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
             quotedMessagesCache = savedInstanceState.getParcelable(ARG_QUOTED_MESSAGES_CACHE);
             isInActionMode = savedInstanceState.getBoolean(ARG_IS_IN_ACTION_MODE);
             isInSearchMode = savedInstanceState.getBoolean(ARG_IS_IN_SEARCH_MODE);
+            currentTopicSearchResult = savedInstanceState.getParcelable(ARG_CURRENT_SEARCH_RESULT);
         }
 
         if (topicPositionsStack == null) {
@@ -289,6 +304,10 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
         else {
             quotedMessagesCache.clear();
         }
+
+        if (isInSearchMode) {
+            outState.putParcelable(ARG_CURRENT_SEARCH_RESULT, currentTopicSearchResult);
+        }
     }
 
     @Override
@@ -303,7 +322,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
         if (overriddenPagePosition != null) {
             Timber.d("Page %d is now selected, overriding page position to : %s", currentPage, overriddenPagePosition);
         }
-        bus.post(PageSelectedEvent.create(topic, currentPage, overriddenPagePosition));
+        bus.post(PageSelectedEvent.create(topic, currentPage, overriddenPagePosition, getActiveSearchTerms()));
 
         overriddenPagePosition = null;
     }
@@ -351,6 +370,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
                 public boolean onMenuItemActionCollapse(MenuItem menuItem) {
                     topicSearchFiltersItem.setVisible(false);
                     isInSearchMode = false;
+                    currentTopicSearchResult = null;
                     stopSearchMode(toolbar, true);
                     return true;
                 }
@@ -366,6 +386,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
             tintToolbarImmediately(toolbar, R.attr.actionModeBackground, R.attr.actionModeBackground);
         }
 
+        topicWordSearch.requestFocus();
         replyButton.setImageResource(R.drawable.ic_search_white_24dp);
     }
 
@@ -378,6 +399,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
         }
 
         replyButton.setImageResource(R.drawable.ic_create_white_24dp);
+        bus.post(new DisableSearchModeEvent());
     }
 
     private void tintToolbarImmediately(Toolbar toolbar, @AttrRes int targetToolbarColor, @AttrRes int targetStatusBarColor) {
@@ -853,12 +875,23 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
         String wordSearchText = topicWordSearch.getText().toString();
         String authorSearchText = topicAuthorSearch.getText().toString();
 
-        Timber.d("Word = '%s', Author = '%s'", wordSearchText, authorSearchText);
+        Timber.d("Searching for Word = '%s', Author = '%s', starting from post '%d'", wordSearchText, authorSearchText, searchStartPostId);
 
-        subscribe(topicSearchSubscriptionHandler.load(topic, mdService.searchInTopic(userManager.getActiveUser(), topic, 0, wordSearchText, authorSearchText, true), new EndlessObserver<TopicSearchResult>() {
+        boolean isFirstSearch = currentTopicSearchResult == null;
+        long searchStartFromPostId = isFirstSearch ? searchStartPostId : currentTopicSearchResult.postId();
+
+        subscribe(topicSearchSubscriptionHandler.load(topic, mdService.searchInTopic(userManager.getActiveUser(), topic, searchStartFromPostId, wordSearchText, authorSearchText, isFirstSearch), new EndlessObserver<TopicSearchResult>() {
             @Override
             public void onNext(TopicSearchResult topicSearchResult) {
                 Timber.d(topicSearchResult.toString());
+                currentTopicSearchResult = topicSearchResult;
+
+                if (topicSearchResult.noMoreResult()) {
+                    SnackbarHelper.make(TopicFragment.this, R.string.search_topic_ended).show();
+                }
+                else {
+                    goToSearchResult(topicSearchResult);
+                }
             }
 
             @Override
@@ -867,5 +900,36 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
                 SnackbarHelper.makeError(TopicFragment.this, R.string.search_topic_error).show();
             }
         }));
+    }
+
+    private void goToSearchResult(TopicSearchResult topicSearchResult) {
+        Timber.d("Scrolling to search result %s", topicSearchResult);
+        PagePosition targetPagePosition = PagePosition.at(topicSearchResult.postId());
+
+        if (currentPage == topicSearchResult.page()) {
+            bus.post(ScrollToPositionEvent.create(topic, topicSearchResult.page(), OverriddenPagePosition.toPost(targetPagePosition), getActiveSearchTerms()));
+        }
+        else {
+            overriddenPagePosition = OverriddenPagePosition.toPost(targetPagePosition);
+            if (pager != null) {
+                pager.setCurrentItem(topicSearchResult.page() - 1);
+            }
+        }
+    }
+
+    private SearchTerms getActiveSearchTerms() {
+        if (isInSearchMode) {
+            String wordSearchText = topicWordSearch.getText().toString();
+            String authorSearchText = topicAuthorSearch.getText().toString();
+            return SearchTerms.create(wordSearchText, authorSearchText);
+        }
+        else {
+            return null;
+        }
+    }
+
+    public void notifyPageLoaded(int page, long searchStartPostId) {
+        Timber.d("Page '%d' is loaded, search should start at post id '%d'", page, searchStartPostId);
+        this.searchStartPostId = searchStartPostId;
     }
 }

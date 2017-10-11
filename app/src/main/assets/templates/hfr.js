@@ -167,6 +167,30 @@ function clearQuotedMessages() {
     }
 }
 
+function highlightWordInPost(postId, word) {
+    var postDiv = document.getElementById("post" + postId);
+    if (postDiv != null) {
+        var postContent = postDiv.getElementsByClassName("post-content")[0];
+        var paragraphs = postDiv.getElementsByTagName("p");
+        for (var i = 0; i < paragraphs.length; i++) {
+            var paragraph = paragraphs[i];
+            removeExistingHighlights(paragraph);
+            highlightWordInParagraph(paragraph, word);
+        }
+    }
+}
+
+function removeExistingHighlights(paragraph) {
+    paragraph.innerHTML = paragraph.innerHTML.replace(/(?:<span class="highlight">)(.*?)(?:<\/span>)/g, "$1")
+}
+
+function highlightWordInParagraph(paragraph, word) {
+    var text = paragraph.innerHTML;
+    var regex = new RegExp('('+ word + ')', 'igu');
+    text = text.replace(regex, '<span class="highlight">$1</span>');
+    paragraph.innerHTML = text;
+}
+
 /**
  *
  * Kindly provided by : http://codepen.io/fronterweb/pen/jcwgx

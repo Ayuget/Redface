@@ -1,9 +1,11 @@
 package com.ayuget.redface.data.api.model;
 
+import android.os.Parcelable;
+
 import com.google.auto.value.AutoValue;
 
 @AutoValue
-public abstract class TopicSearchResult {
+public abstract class TopicSearchResult implements Parcelable {
     public abstract int page();
     public abstract int postId();
     public abstract boolean noMoreResult();

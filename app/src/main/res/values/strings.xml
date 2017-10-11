@@ -429,4 +429,5 @@
     <string name="search_topic_user">User</string>
     <string name="search_topic_in_progress">Search in progress</string>
     <string name="search_topic_error">Search failed</string>
+    <string name="search_topic_ended">No more results</string>
 </resources>

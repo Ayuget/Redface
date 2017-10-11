@@ -17,15 +17,22 @@
 package com.ayuget.redface.ui.event;
 
 import com.ayuget.redface.data.api.model.Topic;
+import com.ayuget.redface.data.api.model.misc.SearchTerms;
 import com.google.auto.value.AutoValue;
+
 
 @AutoValue
 public abstract class ScrollToPositionEvent {
     public abstract Topic topic();
     public abstract int page();
     public abstract OverriddenPagePosition overriddenPagePosition();
+    public abstract SearchTerms activeSearchTerm();
 
     public static ScrollToPositionEvent create(Topic topic, int page, OverriddenPagePosition overriddenPagePosition) {
-        return new AutoValue_ScrollToPositionEvent(topic, page, overriddenPagePosition);
+        return new AutoValue_ScrollToPositionEvent(topic, page, overriddenPagePosition, null);
+    }
+
+    public static ScrollToPositionEvent create(Topic topic, int page, OverriddenPagePosition overriddenPagePosition, SearchTerms activeSearchTerm) {
+        return new AutoValue_ScrollToPositionEvent(topic, page, overriddenPagePosition, activeSearchTerm);
     }
 }

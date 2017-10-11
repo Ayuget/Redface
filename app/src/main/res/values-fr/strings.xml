@@ -280,4 +280,5 @@
     <string name="action_topic_search_title">Filtres de recherche</string>
     <string name="search_topic_in_progress">Recherche en cours</string>
     <string name="search_topic_error">Erreur lors de la recherche</string>
+    <string name="search_topic_ended">Aucun résultat supplémentaire</string>
 </resources>

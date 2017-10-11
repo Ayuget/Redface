@@ -6,7 +6,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.0-beta2'
+        classpath 'com.android.tools.build:gradle:3.0.0-beta7'
         classpath 'io.fabric.tools:gradle:1.+'
     }
 }
@@ -24,7 +24,7 @@ apply plugin: 'io.fabric'
 
 android {
     compileSdkVersion 26
-    buildToolsVersion '26.0.0'
+    buildToolsVersion '26.0.2'
 
     defaultConfig {
         applicationId "com.ayuget.redface"

@@ -314,7 +314,7 @@ public class HFRForumService implements MDService {
     }
 
     @Override
-    public Observable<TopicSearchResult> searchInTopic(User user, Topic topic, int startFromPostId, String word, String author, boolean firstSearch) {
+    public Observable<TopicSearchResult> searchInTopic(User user, Topic topic, long startFromPostId, String word, String author, boolean firstSearch) {
         return mdMessageSender.searchInTopic(user, topic, startFromPostId, word, author, firstSearch, currentHashcheck);
     }
 }

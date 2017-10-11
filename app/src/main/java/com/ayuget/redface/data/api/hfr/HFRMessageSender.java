@@ -360,7 +360,7 @@ public class HFRMessageSender implements MDMessageSender {
     }
 
     @Override
-    public Observable<TopicSearchResult> searchInTopic(User user, Topic topic, int startFromPostId, String word, String author, boolean firstSearch, String hashcheck) {
+    public Observable<TopicSearchResult> searchInTopic(User user, Topic topic, long startFromPostId, String word, String author, boolean firstSearch, String hashcheck) {
         return Observable.create(subscriber -> {
             Timber.d("Searching topic '%d' for word '%s', starting at post '%d'", topic.id(), word, startFromPostId);
 
@@ -379,7 +379,7 @@ public class HFRMessageSender implements MDMessageSender {
                     .add("word", word == null ? "" : word)
                     .add("spseudo", author == null ? "" : author)
                     .add("dep", "0")
-                    .add("firstnum", String.valueOf(startFromPostId))
+                    .add(firstSearch ? "firstnum": "currentnum", String.valueOf(startFromPostId))
                     .build();
 
             Request request = new Request.Builder()

@@ -152,6 +152,13 @@ img {
     margin-right: auto;
 }
 
+/**
+* Search
+*/
+.post-content p span.highlight {
+    background-color: yellow;
+}
+
 /*
 * Citations
 */

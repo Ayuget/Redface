@@ -43,7 +43,7 @@ public class TopicPageAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int i) {
-        // i + 1 because we want pages number to st @  art at 1 and not 0
+        // i + 1 because we want pages number to start at 1 and not 0
         int currentPageNumber = i + 1;
         boolean isInitialPage = currentPageNumber == initialPage;
         PagePosition pageInitialPosition = getPageInitialPosition(currentPageNumber);
