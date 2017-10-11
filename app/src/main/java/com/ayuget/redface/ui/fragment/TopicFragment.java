@@ -18,6 +18,7 @@ package com.ayuget.redface.ui.fragment;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.net.Uri;
@@ -39,6 +40,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -380,29 +382,41 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
     private void startSearchMode(Toolbar toolbar, boolean progressively) {
         if (progressively) {
-            tintToolbarProgressively(toolbar, R.attr.colorPrimary, R.attr.statusBarBackgroundColor, R.attr.actionModeBackground, R.attr.actionModeBackground);
+            tintToolbarProgressively(toolbar, R.attr.colorPrimary, R.attr.statusBarBackgroundColor, R.attr.replyButtonBackground, R.attr.actionModeBackground, R.attr.actionModeBackground, R.attr.actionModeBackground);
         }
         else {
-            tintToolbarImmediately(toolbar, R.attr.actionModeBackground, R.attr.actionModeBackground);
+            tintToolbarImmediately(toolbar, R.attr.actionModeBackground, R.attr.actionModeBackground, R.attr.actionModeBackground);
         }
 
         topicWordSearch.requestFocus();
-        replyButton.setImageResource(R.drawable.ic_search_white_24dp);
+        showVirtualKeyboardIfNeeded();
+        updateReplyButtonForSearch();
+    }
+
+    private void updateReplyButtonForSearch() {
+        int iconRes = currentTopicSearchResult == null ? R.drawable.ic_search_white_24dp : R.drawable.ic_arrow_forward_white_24dp;
+        replyButton.setImageResource(iconRes);
+    }
+
+    private void showVirtualKeyboardIfNeeded() {
+        ((InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
     }
 
     private void stopSearchMode(Toolbar toolbar, boolean progressively) {
         if (progressively) {
-            tintToolbarProgressively(toolbar, R.attr.actionModeBackground, R.attr.actionModeBackground, R.attr.colorPrimary, R.attr.statusBarBackgroundColor);
+            tintToolbarProgressively(toolbar, R.attr.actionModeBackground, R.attr.actionModeBackground, R.attr.actionModeBackground, R.attr.colorPrimary, R.attr.statusBarBackgroundColor, R.attr.replyButtonBackground);
         }
         else {
-            tintToolbarImmediately(toolbar, R.attr.colorPrimary, R.attr.statusBarBackgroundColor);
+            tintToolbarImmediately(toolbar, R.attr.colorPrimary, R.attr.statusBarBackgroundColor, R.attr.replyButtonBackground);
         }
 
         replyButton.setImageResource(R.drawable.ic_create_white_24dp);
+        replyButton.setBackgroundTintList(ColorStateList.valueOf(getActivity().getResources().getColor(R.color.theme_primary)));
+
         bus.post(new DisableSearchModeEvent());
     }
 
-    private void tintToolbarImmediately(Toolbar toolbar, @AttrRes int targetToolbarColor, @AttrRes int targetStatusBarColor) {
+    private void tintToolbarImmediately(Toolbar toolbar, @AttrRes int targetToolbarColor, @AttrRes int targetStatusBarColor, @AttrRes int replyButtonColor) {
         int toolbarColor = UiUtils.resolveColorAttribute(getContext(), targetToolbarColor);
         int statusBarColor = UiUtils.resolveColorAttribute(getContext(), targetStatusBarColor);
 
@@ -415,34 +429,47 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
         }
     }
 
-    private void tintToolbarProgressively(Toolbar toolbar, @AttrRes int currentToolbarColor, @AttrRes int currentStatusBarColor, @AttrRes int targetToolbarColor, @AttrRes  int targetStatusBarColor) {
+    private void tintToolbarProgressively(Toolbar toolbar, @AttrRes int currentToolbarColor, @AttrRes int currentStatusBarColor, @AttrRes int currentReplyButtonColor, @AttrRes int targetToolbarColor, @AttrRes int targetStatusBarColor, @AttrRes int targetReplyButtonColor) {
         int startToolbarColor = UiUtils.resolveColorAttribute(getContext(), currentToolbarColor);
         int endToolbarColor = UiUtils.resolveColorAttribute(getContext(), targetToolbarColor);
         int startStatusBarColor = UiUtils.resolveColorAttribute(getContext(), currentStatusBarColor);
         int endStatusBarColor = UiUtils.resolveColorAttribute(getContext(), targetStatusBarColor);
+        int startReplyButtonColor = UiUtils.resolveColorAttribute(getContext(), currentReplyButtonColor);
+        int endReplyButtonColor = UiUtils.resolveColorAttribute(getContext(), targetReplyButtonColor);
 
         ValueAnimator toolbarColorAnimator = ValueAnimator.ofObject(new ArgbEvaluator(), startToolbarColor, endToolbarColor);
         ValueAnimator statusBarColorAnimator = ValueAnimator.ofObject(new ArgbEvaluator(), startStatusBarColor, endStatusBarColor);
+        ValueAnimator replyButtonColorAnimator = ValueAnimator.ofObject(new ArgbEvaluator(), startReplyButtonColor, endReplyButtonColor);
 
         toolbarColorAnimator.addUpdateListener(v -> {
             int animatedValue = (Integer) v.getAnimatedValue();
             toolbar.setBackgroundColor(animatedValue);
             pagerTitleStrip.setBackgroundColor(animatedValue);
-            replyButton.setBackgroundTintList(ColorStateList.valueOf(animatedValue));
         });
+
         statusBarColorAnimator.addUpdateListener(v -> {
             if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 getActivity().getWindow().setStatusBarColor((Integer) v.getAnimatedValue());
             }
         });
 
+        replyButtonColorAnimator.addUpdateListener(v -> {
+            int animatedValue = (Integer) v.getAnimatedValue();
+            replyButton.setBackgroundTintList(ColorStateList.valueOf(animatedValue));
+        });
+
         int animationDuration = getContext().getResources().getInteger(R.integer.searchModeDuration);
         toolbarColorAnimator.setDuration(animationDuration);
         toolbarColorAnimator.setStartDelay(0);
         toolbarColorAnimator.start();
+
         statusBarColorAnimator.setDuration(animationDuration);
         statusBarColorAnimator.setStartDelay(0);
         statusBarColorAnimator.start();
+
+        replyButtonColorAnimator.setDuration(animationDuration);
+        replyButtonColorAnimator.setStartDelay(0);
+        replyButtonColorAnimator.start();
     }
 
     @Override
@@ -464,10 +491,10 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
         if (! hostActivity.isTwoPaneMode()) {
             if (active) {
-                tintToolbarProgressively(getToolbar(), R.attr.colorPrimary, R.attr.statusBarBackgroundColor, R.attr.actionModeBackground, R.attr.actionModeBackground);
+                tintToolbarProgressively(getToolbar(), R.attr.colorPrimary, R.attr.statusBarBackgroundColor, R.attr.replyButtonBackground, R.attr.actionModeBackground, R.attr.actionModeBackground, R.attr.actionModeBackground);
             }
             else {
-                tintToolbarImmediately(getToolbar(), R.attr.colorPrimary, R.attr.statusBarBackgroundColor);
+                tintToolbarImmediately(getToolbar(), R.attr.colorPrimary, R.attr.statusBarBackgroundColor, R.attr.replyButtonBackground);
             }
         }
     }
@@ -885,6 +912,10 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
             public void onNext(TopicSearchResult topicSearchResult) {
                 Timber.d(topicSearchResult.toString());
                 currentTopicSearchResult = topicSearchResult;
+
+                // Sets the reply button as a "forward" arrow (used to move
+                // to the next search result)
+                updateReplyButtonForSearch();
 
                 if (topicSearchResult.noMoreResult()) {
                     SnackbarHelper.make(TopicFragment.this, R.string.search_topic_ended).show();
