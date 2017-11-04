@@ -55,7 +55,7 @@ public class PostActionsTemplate extends HTMLTemplate<Post> {
     /**
      * Action HTML code
      */
-    private static final String POST_ACTION_HTML = "<li><a material onclick=\"Android.%s(%d)\"><i class=\"material-icons\">%s</i></a></li>";
+    private static final String POST_ACTION_HTML = "<div><a material onclick=\"Android.%s(%d)\"><i class=\"material-icons\">%s</i></a></div>";
 
     public PostActionsTemplate(Context context, UserManager userManager) {
         super(context, POST_ACTIONS_TEMPLATE);

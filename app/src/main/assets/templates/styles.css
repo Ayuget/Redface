@@ -37,15 +37,11 @@ body.redface-night {
 .redface-dark .post-toolbar {
     background: #404246;
     color: #c2c2c4;
-    border-top: 1px solid #222222;
-    border-bottom: 1px solid #111111;
 }
 
 .redface-night .post-toolbar {
     background: #242428;
     color: #c2c2c4;
-    border-top: 1px solid #222222;
-    border-bottom: 1px solid #111111;
 }
 
 .profile-picture-container {
@@ -319,23 +315,30 @@ img {
 * Overflow icons
 */
 .post-overflow-icons {
+    width: 100%;
     overflow: none;
-    list-style-type: none;
     background: #424242;
     color: #ffffff;
     height: 48px;
     margin: 0;
     padding-left: 10px;
-
     display: none;
 }
 
-.post-overflow-icons li {
+.redface-dark .post-overflow-icons {
+    background: #404246;
+}
+
+.redface-night .post-overflow-icons {
+    background: #242428;
+}
+
+.post-overflow-icons div {
     float: left;
     height: 48px;
 }
 
-.post-overflow-icons li a {
+.post-overflow-icons div a {
     width: 52px;
     height: 48px;
     display: table-cell;
@@ -411,8 +414,6 @@ img {
 
 .redface-light div.post.quoted .post-toolbar {
     background: #B39DDB;
-    border-top: 1px solid #9575CD;
-    border-bottom: 1px solid #9575CD;
     color: #424242;
 }
 
@@ -440,8 +441,6 @@ img {
 */
 .redface-dark .post.egoQuote .post-toolbar, .redface-night .post.egoQuote .post-toolbar {
     background: #3346bb;
-    border-top: 1px solid #303F9F;
-    border-bottom: 1px solid #303F9F;
     color: #FFEBEE;
 }
 
@@ -475,8 +474,6 @@ img {
 
 .redface-light .post.egoQuote .post-toolbar {
     background: #42A5F5;
-    border-top: 1px solid #42A5F5;
-    border-bottom: 1px solid #42A5F5;
     color: #E3F2FD;
 }
 
@@ -570,15 +567,11 @@ img {
 .redface-dark .post.blocked .post-toolbar {
     background: #D3D3D3;
     color: #000000;
-    border-top: 1px solid #222222;
-    border-bottom: 1px solid #111111;
 }
 
 .redface-night .post.blocked .post-toolbar {
     background: #D3D3D3;
     color: #000000;
-    border-top: 1px solid #222222;
-    border-bottom: 1px solid #111111;
 }
 
 span.u {

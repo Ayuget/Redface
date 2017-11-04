@@ -83,12 +83,12 @@ function handleUrl(event, postId, url) {
 function toggleOverflowMenu(id){
 	var overflowList = document.getElementById(id);
 	if (overflowList != null) {
-		if (overflowList.style.display == "block") {
+		if (overflowList.style.display == "flex") {
 			overflowList.style.display = 'none';
 		}
 		else if (overflowList.style.display == "none" || !overflowList.style.display) {
 		    closeAllOverflowMenus();
-			overflowList.style.display = 'block';
+			overflowList.style.display = 'flex';
 		}
 	}
 }
