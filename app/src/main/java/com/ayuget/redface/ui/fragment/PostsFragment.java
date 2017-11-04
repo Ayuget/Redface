@@ -27,7 +27,6 @@ import android.webkit.WebView;
 import android.widget.Button;
 
 import com.ayuget.redface.R;
-import com.ayuget.redface.RedfaceApp;
 import com.ayuget.redface.account.UserManager;
 import com.ayuget.redface.data.DataService;
 import com.ayuget.redface.data.api.MDEndpoints;
@@ -56,7 +55,6 @@ import com.ayuget.redface.ui.view.TopicPageView;
 import com.ayuget.redface.util.Connectivity;
 import com.hannesdorfmann.fragmentargs.annotation.Arg;
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs;
-import com.squareup.leakcanary.RefWatcher;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
@@ -245,9 +243,6 @@ public class PostsFragment extends BaseFragment {
 
             topicPageView.removeAllViews();
             topicPageView.destroy();
-
-            RefWatcher refWatcher = RedfaceApp.getRefWatcher(getActivity());
-            refWatcher.watch(topicPageView);
         }
 
         if (swipeRefreshLayout != null) {
