@@ -18,7 +18,6 @@ package com.ayuget.redface.ui.fragment;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.net.Uri;
@@ -40,7 +39,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -365,6 +363,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
                     topicSearchFiltersItem.setVisible(true);
                     isInSearchMode = true;
                     startSearchMode(toolbar, true);
+                    UiUtils.showVirtualKeyboard(getActivity());
                     return true;
                 }
 
@@ -374,6 +373,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
                     isInSearchMode = false;
                     currentTopicSearchResult = null;
                     stopSearchMode(toolbar, true);
+                    UiUtils.hideVirtualKeyboard(getActivity());
                     return true;
                 }
             });
@@ -389,7 +389,6 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
         }
 
         topicWordSearch.requestFocus();
-        showVirtualKeyboardIfNeeded();
         updateReplyButtonForSearch();
     }
 
@@ -398,11 +397,10 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
         replyButton.setImageResource(iconRes);
     }
 
-    private void showVirtualKeyboardIfNeeded() {
-        ((InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
-    }
-
     private void stopSearchMode(Toolbar toolbar, boolean progressively) {
+        topicWordSearch.clearFocus();
+        topicAuthorSearch.clearFocus();
+
         if (progressively) {
             tintToolbarProgressively(toolbar, R.attr.actionModeBackground, R.attr.actionModeBackground, R.attr.actionModeBackground, R.attr.colorPrimary, R.attr.statusBarBackgroundColor, R.attr.replyButtonBackground);
         }
@@ -899,6 +897,13 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
     private void searchInTopic() {
         SnackbarHelper.make(TopicFragment.this, R.string.search_topic_in_progress).show();
+
+        // Hiding virtual keyboard and cancelling focus of search fields, to leave
+        // more room for search results
+        topicWordSearch.clearFocus();
+        topicAuthorSearch.clearFocus();
+        UiUtils.hideVirtualKeyboard(getActivity());
+
         String wordSearchText = topicWordSearch.getText().toString();
         String authorSearchText = topicAuthorSearch.getText().toString();
 
