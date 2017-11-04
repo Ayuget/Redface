@@ -6,7 +6,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.0-beta7'
+        classpath 'com.android.tools.build:gradle:3.0.0'
         classpath 'io.fabric.tools:gradle:1.+'
     }
 }
@@ -126,10 +126,10 @@ dependencies {
         transitive = true
     }
 
-    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4-beta2'
+    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5.4'
     debugCompile 'com.squareup.haha:haha:2.0.3'
-    betaCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
-    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
+    betaCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
+    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
 
     testCompile 'junit:junit:4.12'
     testCompile 'org.assertj:assertj-core:1.7.0'
