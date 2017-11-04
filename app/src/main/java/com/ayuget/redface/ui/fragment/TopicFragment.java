@@ -39,6 +39,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -376,6 +377,22 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
                     UiUtils.hideVirtualKeyboard(getActivity());
                     return true;
                 }
+            });
+
+            topicWordSearch.setOnEditorActionListener((textView, actionId, keyEvent) -> {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    searchInTopic();
+                    return true;
+                }
+                return false;
+            });
+
+            topicAuthorSearch.setOnEditorActionListener((textView, actionId, keyEvent) -> {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    searchInTopic();
+                    return true;
+                }
+                return false;
             });
         }
     }
