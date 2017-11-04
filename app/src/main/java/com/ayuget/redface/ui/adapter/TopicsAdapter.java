@@ -22,8 +22,6 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
-import android.util.Log;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,7 +31,6 @@ import android.widget.TextView;
 import com.ayuget.redface.R;
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.api.model.TopicStatus;
-import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.misc.ThemeManager;
 import com.ayuget.redface.ui.misc.UiUtils;
 
@@ -127,10 +124,8 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ViewHolder
 
         viewHolder.topicSubject.setText(topic.title());
 
-        if (! isCompactMode) {
-            viewHolder.topicLastPostInfos.setText(topic.lastPostAuthor() + " - " + formatLastPostDate(topic));
-            viewHolder.topicPagesCount.setText(String.valueOf(topic.pagesCount()) + " p");
-        }
+        viewHolder.topicLastPostInfos.setText(topic.lastPostAuthor() + " - " + formatLastPostDate(topic));
+        viewHolder.topicPagesCount.setText(String.valueOf(topic.pagesCount()) + " p");
 
         GradientDrawable topicIconCircle = (GradientDrawable) viewHolder.topicIcon.getBackground();
         topicIconCircle.setColor(getTopicIconBackgroundColor(topic));
