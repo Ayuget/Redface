@@ -33,7 +33,7 @@
     <color name="theme_primary_dark">#C62828</color>
     <color name="theme_primary_light">#EF5350</color>
     <color name="cab_background_color">#212121</color>
-    <color name="dark_action_mode_background_color">#6e0707</color>
+    <color name="dark_action_mode_background_color">#263238</color>
 
     <!-- App night theme colors -->
     <color name="night_theme_primary">#2a2a2f</color>
