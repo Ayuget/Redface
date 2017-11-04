@@ -118,6 +118,10 @@ body.redface-night {
     line-height: normal;
 }
 
+.redface-dark .stacked, .redface-night .stacked {
+    color: #000000;
+}
+
 .post-actions {
     position: absolute;
     right: 0;
