@@ -20,13 +20,15 @@ import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.api.model.misc.SearchTerms;
 import com.google.auto.value.AutoValue;
 
+import javax.annotation.Nullable;
+
 
 @AutoValue
 public abstract class ScrollToPositionEvent {
     public abstract Topic topic();
     public abstract int page();
     public abstract OverriddenPagePosition overriddenPagePosition();
-    public abstract SearchTerms activeSearchTerm();
+    @Nullable public abstract SearchTerms activeSearchTerm();
 
     public static ScrollToPositionEvent create(Topic topic, int page, OverriddenPagePosition overriddenPagePosition) {
         return new AutoValue_ScrollToPositionEvent(topic, page, overriddenPagePosition, null);
