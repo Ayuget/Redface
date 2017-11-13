@@ -30,7 +30,7 @@ android {
         applicationId "com.ayuget.redface"
         minSdkVersion 16
         targetSdkVersion 26
-        versionCode 303
+        versionCode 304
         versionName "3.0.0"
     }
     compileOptions {
