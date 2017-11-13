@@ -361,7 +361,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
             topicSearchItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
                 @Override
                 public boolean onMenuItemActionExpand(MenuItem menuItem) {
-                    topicSearchFiltersItem.setVisible(true);
+                    topicSearchFiltersItem.setVisible(false); // todo handle filters (and set to true...)
                     isInSearchMode = true;
                     startSearchMode(toolbar, true);
                     UiUtils.showVirtualKeyboard(getActivity());
