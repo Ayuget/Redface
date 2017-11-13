@@ -16,13 +16,19 @@
 
 package com.ayuget.redface.ui.fragment;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ValueAnimator;
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import android.support.annotation.AttrRes;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -33,17 +39,19 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.ayuget.redface.R;
 import com.ayuget.redface.account.UserManager;
 import com.ayuget.redface.data.api.MDEndpoints;
 import com.ayuget.redface.data.api.MDService;
 import com.ayuget.redface.data.api.model.Topic;
+import com.ayuget.redface.data.api.model.TopicSearchResult;
 import com.ayuget.redface.data.api.model.User;
+import com.ayuget.redface.data.api.model.misc.SearchTerms;
 import com.ayuget.redface.data.quote.QuotedMessagesCache;
 import com.ayuget.redface.data.rx.EndlessObserver;
 import com.ayuget.redface.data.rx.SubscriptionHandler;
@@ -53,11 +61,12 @@ import com.ayuget.redface.ui.activity.MultiPaneActivity;
 import com.ayuget.redface.ui.activity.ReplyActivity;
 import com.ayuget.redface.ui.activity.WritePrivateMessageActivity;
 import com.ayuget.redface.ui.adapter.TopicPageAdapter;
+import com.ayuget.redface.ui.event.DisableSearchModeEvent;
 import com.ayuget.redface.ui.event.GoToPostEvent;
-import com.ayuget.redface.ui.event.PageLoadedEvent;
+import com.ayuget.redface.ui.event.OverriddenPagePosition;
 import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
 import com.ayuget.redface.ui.event.PageSelectedEvent;
-import com.ayuget.redface.ui.event.ScrollToPostEvent;
+import com.ayuget.redface.ui.event.ScrollToPositionEvent;
 import com.ayuget.redface.ui.event.ShowAllSpoilersEvent;
 import com.ayuget.redface.ui.event.TopicPageCountUpdatedEvent;
 import com.ayuget.redface.ui.event.UnquoteAllPostsEvent;
@@ -69,7 +78,6 @@ import com.ayuget.redface.ui.misc.UiUtils;
 import com.ayuget.redface.ui.view.TopicPageView;
 import com.hannesdorfmann.fragmentargs.annotation.Arg;
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs;
-import com.rengwuxian.materialedittext.MaterialEditText;
 import com.squareup.otto.Subscribe;
 import com.squareup.phrase.Phrase;
 
@@ -81,27 +89,24 @@ import javax.inject.Inject;
 import butterknife.InjectView;
 import timber.log.Timber;
 
+import static android.content.DialogInterface.BUTTON_POSITIVE;
+
 @FragmentWithArgs
 public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageChangeListener, TopicPageView.OnQuoteListener {
     private static final String ARG_TOPIC_POSITIONS_STACK = "topicPositionsStack";
-
     private static final String ARG_QUOTED_MESSAGES_CACHE = "quotedMessagesCache";
-
     private static final String ARG_IS_IN_ACTION_MODE = "isInActionMode";
-
+    private static final String ARG_IS_IN_SEARCH_MODE = "isInSearchMode";
     private static final String ARG_TOPIC = "topic";
+    private static final String ARG_CURRENT_SEARCH_RESULT = "currentSearchResult";
 
     private static final int UNFLAG_ACTION = 42;
 
     private TopicPageAdapter topicPageAdapter;
 
-    private MaterialEditText goToPageEditText;
+    private EditText goToPageEditText;
 
     private ArrayList<TopicPosition> topicPositionsStack;
-
-    private int previousViewPagerState = ViewPager.SCROLL_STATE_IDLE;
-
-    private boolean userScrolledViewPager = false;
 
     /**
      * Delegate to handle the "unflag" action subscription properly
@@ -112,6 +117,11 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
      * Delegate to handle the "fetch quote bbcode" action subscription properly
      */
     private SubscriptionHandler<Long, String> quoteHandler = new SubscriptionHandler<>();
+
+    /**
+     * Delegate to handle the "search" action mode subscription properly
+     */
+    private SubscriptionHandler<Topic, TopicSearchResult> topicSearchSubscriptionHandler = new SubscriptionHandler<>();
 
     /**
      * Used to display a contextual action bar when multi-quote mode is enabled
@@ -150,38 +160,64 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     @InjectView(R.id.move_to_bottom_button)
     FloatingActionButton moveToBottomButton;
 
-    /**
-     * Topic currently displayed
-     */
+    TextView topicWordSearch;
+    TextView topicAuthorSearch;
+
     @Arg
     Topic topic;
+
+    @Arg
+    int initialPage;
+
+    @Arg
+    PagePosition initialPagePosition;
 
     /**
      * Page currently displayed in the viewPager
      */
-    @Arg
-    int currentPage;
+    private int currentPage;
 
     /**
-     * Current page position
+     * Id of the first post of the currently selected page or id of initial post
      */
-    @Arg(required = false)
-    PagePosition currentPagePosition;
+    private long searchStartPostId;
+
+    /**
+     * Current search result when in "search mode". Needs to be persisted to keep
+     * search context
+     */
+    private TopicSearchResult currentTopicSearchResult;
+
+    /**
+     * Overridden page position for next loaded page. Will be nulled immediately after target
+     * page is loaded. We need such a transient value because ViewPager setCurrentItem method
+     * is not synchronous.
+     */
+    OverriddenPagePosition overriddenPagePosition;
 
     private boolean isInActionMode = false;
+    private boolean isInSearchMode = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Timber.d("[Topic=%d], initialPage = %d, initialPagePosition = %s", topic.id(), initialPage, initialPagePosition);
+
+        // Start at initial page, currentPage value is updated via the onPageSelected
+        // listener on the ViewPager
+        currentPage = initialPage;
+
         if (topicPageAdapter == null) {
-            topicPageAdapter = new TopicPageAdapter(getChildFragmentManager(), topic, currentPage);
+            topicPageAdapter = new TopicPageAdapter(getChildFragmentManager(), topic, initialPage, initialPagePosition);
         }
 
         if (savedInstanceState != null) {
             topicPositionsStack = savedInstanceState.getParcelableArrayList(ARG_TOPIC_POSITIONS_STACK);
             quotedMessagesCache = savedInstanceState.getParcelable(ARG_QUOTED_MESSAGES_CACHE);
             isInActionMode = savedInstanceState.getBoolean(ARG_IS_IN_ACTION_MODE);
+            isInSearchMode = savedInstanceState.getBoolean(ARG_IS_IN_SEARCH_MODE);
+            currentTopicSearchResult = savedInstanceState.getParcelable(ARG_CURRENT_SEARCH_RESULT);
         }
 
         if (topicPositionsStack == null) {
@@ -201,12 +237,19 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
         pagerTitleStrip.setDrawFullUnderline(false);
         pagerTitleStrip.setTabIndicatorColor(getResources().getColor(R.color.theme_primary));
         pager.setAdapter(topicPageAdapter);
-        pager.setCurrentItem(currentPage - 1);
+        pager.setCurrentItem(initialPage - 1);
 
         if (userManager.getActiveUser().isGuest()) {
             replyButton.setVisibility(View.INVISIBLE);
         } else {
-            replyButton.setOnClickListener((v) -> replyToTopic());
+            replyButton.setOnClickListener((v) -> {
+                if (isInSearchMode) {
+                    searchInTopic();
+                }
+                else {
+                    replyToTopic();
+                }
+            });
         }
 
         setupQuickNavigationButtons();
@@ -219,8 +262,11 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
         super.onResume();
 
         if (quotedMessagesCache.size() > 0 && isInActionMode) {
-            Timber.d("Restarting action mode");
             startMultiQuoteAction(false);
+        }
+
+        if (isInSearchMode) {
+            startSearchMode(getToolbar(), false);
         }
 
         pager.addOnPageChangeListener(this);
@@ -230,6 +276,9 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     public void onPause() {
         super.onPause();
 
+        if (isInSearchMode) {
+            stopSearchMode(getToolbar(), false);
+        }
         pager.removeOnPageChangeListener(this);
     }
 
@@ -247,6 +296,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
         super.onSaveInstanceState(outState);
 
         outState.putParcelableArrayList(ARG_TOPIC_POSITIONS_STACK, topicPositionsStack);
+        outState.putBoolean(ARG_IS_IN_SEARCH_MODE, isInSearchMode);
 
         if (isInActionMode) {
             outState.putParcelable(ARG_QUOTED_MESSAGES_CACHE, quotedMessagesCache);
@@ -254,6 +304,10 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
         }
         else {
             quotedMessagesCache.clear();
+        }
+
+        if (isInSearchMode) {
+            outState.putParcelable(ARG_CURRENT_SEARCH_RESULT, currentTopicSearchResult);
         }
     }
 
@@ -265,25 +319,18 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     @Override
     public void onPageSelected(int position) {
         currentPage = position + 1;
-        bus.post(new PageSelectedEvent(topic, currentPage));
+
+        if (overriddenPagePosition != null) {
+            Timber.d("Page %d is now selected, overriding page position to : %s", currentPage, overriddenPagePosition);
+        }
+        bus.post(PageSelectedEvent.create(topic, currentPage, overriddenPagePosition, getActiveSearchTerms()));
+
+        overriddenPagePosition = null;
     }
 
     @Override
     public void onPageScrollStateChanged(int state) {
-        // Keep track of scroll state in order to detect if scrolling has been done
-        // manually by the user, or programatically. It allows us to disable some automatic
-        // scrolling behavior that can be annoying (and buggy) in some corner cases
-        if (previousViewPagerState == ViewPager.SCROLL_STATE_DRAGGING && state == ViewPager.SCROLL_STATE_SETTLING) {
-            userScrolledViewPager = true;
-
-            // Reset current page position because user triggered page change
-            currentPagePosition = null;
-        }
-        else if (previousViewPagerState == ViewPager.SCROLL_STATE_SETTLING && state == ViewPager.SCROLL_STATE_IDLE) {
-            userScrolledViewPager = false;
-        }
-
-        previousViewPagerState = state;
+        // Ignore event
     }
 
     @Override
@@ -297,6 +344,147 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
             toolbar.getMenu().add(Menu.NONE, UNFLAG_ACTION, lastAction + 100, getString(R.string.action_unflag_topic));
         }
+
+        setupIntraTopicSearch(toolbar);
+    }
+
+    private void setupIntraTopicSearch(Toolbar toolbar) {
+        MenuItem topicSearchItem = toolbar.getMenu().findItem(R.id.action_search);
+        MenuItem topicSearchFiltersItem = toolbar.getMenu().findItem(R.id.action_topic_search_filters);
+
+        if (topicSearchItem != null && topicSearchFiltersItem != null) {
+            topicSearchFiltersItem.setVisible(false);
+
+            topicWordSearch = topicSearchItem.getActionView().findViewById(R.id.topic_word_search_text);
+            topicAuthorSearch = topicSearchItem.getActionView().findViewById(R.id.topic_username_search_text);
+
+            topicSearchItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+                @Override
+                public boolean onMenuItemActionExpand(MenuItem menuItem) {
+                    topicSearchFiltersItem.setVisible(false); // todo handle filters (and set to true...)
+                    isInSearchMode = true;
+                    startSearchMode(toolbar, true);
+                    UiUtils.showVirtualKeyboard(getActivity());
+                    return true;
+                }
+
+                @Override
+                public boolean onMenuItemActionCollapse(MenuItem menuItem) {
+                    topicSearchFiltersItem.setVisible(false);
+                    isInSearchMode = false;
+                    currentTopicSearchResult = null;
+                    stopSearchMode(toolbar, true);
+                    UiUtils.hideVirtualKeyboard(getActivity());
+                    return true;
+                }
+            });
+
+            topicWordSearch.setOnEditorActionListener((textView, actionId, keyEvent) -> {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    searchInTopic();
+                    return true;
+                }
+                return false;
+            });
+
+            topicAuthorSearch.setOnEditorActionListener((textView, actionId, keyEvent) -> {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    searchInTopic();
+                    return true;
+                }
+                return false;
+            });
+        }
+    }
+
+    private void startSearchMode(Toolbar toolbar, boolean progressively) {
+        if (progressively) {
+            tintToolbarProgressively(toolbar, R.attr.colorPrimary, R.attr.statusBarBackgroundColor, R.attr.replyButtonBackground, R.attr.actionModeBackground, R.attr.actionModeBackground, R.attr.replyButtonBackground);
+        }
+        else {
+            tintToolbarImmediately(toolbar, R.attr.actionModeBackground, R.attr.actionModeBackground, R.attr.replyButtonBackground);
+        }
+
+        topicWordSearch.requestFocus();
+        updateReplyButtonForSearch();
+    }
+
+    private void updateReplyButtonForSearch() {
+        int iconRes = currentTopicSearchResult == null ? R.drawable.ic_search_white_24dp : R.drawable.ic_arrow_forward_white_24dp;
+        replyButton.setImageResource(iconRes);
+    }
+
+    private void stopSearchMode(Toolbar toolbar, boolean progressively) {
+        topicWordSearch.clearFocus();
+        topicAuthorSearch.clearFocus();
+
+        if (progressively) {
+            tintToolbarProgressively(toolbar, R.attr.actionModeBackground, R.attr.actionModeBackground, R.attr.replyButtonBackground, R.attr.colorPrimary, R.attr.statusBarBackgroundColor, R.attr.replyButtonBackground);
+        }
+        else {
+            tintToolbarImmediately(toolbar, R.attr.colorPrimary, R.attr.statusBarBackgroundColor, R.attr.replyButtonBackground);
+        }
+
+        replyButton.setImageResource(R.drawable.ic_create_white_24dp);
+        replyButton.setBackgroundTintList(ColorStateList.valueOf(getActivity().getResources().getColor(R.color.theme_primary)));
+
+        bus.post(new DisableSearchModeEvent());
+    }
+
+    private void tintToolbarImmediately(Toolbar toolbar, @AttrRes int targetToolbarColor, @AttrRes int targetStatusBarColor, @AttrRes int replyButtonColor) {
+        int toolbarColor = UiUtils.resolveColorAttribute(getContext(), targetToolbarColor);
+        int statusBarColor = UiUtils.resolveColorAttribute(getContext(), targetStatusBarColor);
+
+        toolbar.setBackgroundColor(toolbarColor);
+        pagerTitleStrip.setBackgroundColor(toolbarColor);
+        replyButton.setBackgroundTintList(ColorStateList.valueOf(replyButtonColor));
+
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getActivity().getWindow().setStatusBarColor(statusBarColor);
+        }
+    }
+
+    private void tintToolbarProgressively(Toolbar toolbar, @AttrRes int currentToolbarColor, @AttrRes int currentStatusBarColor, @AttrRes int currentReplyButtonColor, @AttrRes int targetToolbarColor, @AttrRes int targetStatusBarColor, @AttrRes int targetReplyButtonColor) {
+        int startToolbarColor = UiUtils.resolveColorAttribute(getContext(), currentToolbarColor);
+        int endToolbarColor = UiUtils.resolveColorAttribute(getContext(), targetToolbarColor);
+        int startStatusBarColor = UiUtils.resolveColorAttribute(getContext(), currentStatusBarColor);
+        int endStatusBarColor = UiUtils.resolveColorAttribute(getContext(), targetStatusBarColor);
+        int startReplyButtonColor = UiUtils.resolveColorAttribute(getContext(), currentReplyButtonColor);
+        int endReplyButtonColor = UiUtils.resolveColorAttribute(getContext(), targetReplyButtonColor);
+
+        ValueAnimator toolbarColorAnimator = ValueAnimator.ofObject(new ArgbEvaluator(), startToolbarColor, endToolbarColor);
+        ValueAnimator statusBarColorAnimator = ValueAnimator.ofObject(new ArgbEvaluator(), startStatusBarColor, endStatusBarColor);
+        ValueAnimator replyButtonColorAnimator = ValueAnimator.ofObject(new ArgbEvaluator(), startReplyButtonColor, endReplyButtonColor);
+
+        toolbarColorAnimator.addUpdateListener(v -> {
+            int animatedValue = (Integer) v.getAnimatedValue();
+            toolbar.setBackgroundColor(animatedValue);
+            pagerTitleStrip.setBackgroundColor(animatedValue);
+        });
+
+        statusBarColorAnimator.addUpdateListener(v -> {
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                getActivity().getWindow().setStatusBarColor((Integer) v.getAnimatedValue());
+            }
+        });
+
+        replyButtonColorAnimator.addUpdateListener(v -> {
+            int animatedValue = (Integer) v.getAnimatedValue();
+            replyButton.setBackgroundTintList(ColorStateList.valueOf(animatedValue));
+        });
+
+        int animationDuration = getContext().getResources().getInteger(R.integer.searchModeDuration);
+        toolbarColorAnimator.setDuration(animationDuration);
+        toolbarColorAnimator.setStartDelay(0);
+        toolbarColorAnimator.start();
+
+        statusBarColorAnimator.setDuration(animationDuration);
+        statusBarColorAnimator.setStartDelay(0);
+        statusBarColorAnimator.start();
+
+        replyButtonColorAnimator.setDuration(animationDuration);
+        replyButtonColorAnimator.setStartDelay(0);
+        replyButtonColorAnimator.start();
     }
 
     @Override
@@ -318,25 +506,10 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
         if (! hostActivity.isTwoPaneMode()) {
             if (active) {
-                pagerTitleStrip.setBackgroundColor(UiUtils.getActionModeBackgroundColor(getActivity()));
+                tintToolbarProgressively(getToolbar(), R.attr.colorPrimary, R.attr.statusBarBackgroundColor, R.attr.replyButtonBackground, R.attr.actionModeBackground, R.attr.actionModeBackground, R.attr.replyButtonBackground);
             }
             else {
-                pagerTitleStrip.setBackgroundColor(UiUtils.getRegularPagerTitleStripBackgroundColor(getActivity()));
-            }
-        }
-    }
-
-    /**
-     * Event fired by the webview contained in the viewpager child fragments once the page has
-     * been loaded. It allow us to set the page position only once the DOM is ready, otherwise
-     * initial posiion is broken.
-     */
-    @Subscribe
-    public void onTopicPageLoaded(PageLoadedEvent event) {
-        Timber.d("@%d -> Received topicPageLoaded event (topic='%s', page='%d'), current(topic='%s', page='%d', currentPagePosition='%s')", System.identityHashCode(this), event.getTopic().title(), event.getPage(), topic.title(), currentPage, currentPagePosition);
-        if (event.getTopic().id() == topic.id() && event.getPage() == currentPage) {
-            if (currentPagePosition != null && !userScrolledViewPager) {
-                event.getTopicPageView().setPagePosition(currentPagePosition);
+                tintToolbarImmediately(getToolbar(), R.attr.colorPrimary, R.attr.statusBarBackgroundColor, R.attr.replyButtonBackground);
             }
         }
     }
@@ -346,6 +519,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
      * to a topic. It allows us to update the UI properly. This is completely mandatory
      * for "hot" topics, when a lot of content is added in a short period of time.
      */
+    @SuppressWarnings("unused")
     @Subscribe
     public void onTopicPageCountUpdated(TopicPageCountUpdatedEvent event) {
         if (event.getTopic().id() == topic.id()) {
@@ -354,6 +528,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
         }
     }
 
+    @SuppressWarnings("unused")
     @Subscribe
     public void onWritePrivateMessage(WritePrivateMessageEvent event) {
         MultiPaneActivity hostActivity = (MultiPaneActivity) getActivity();
@@ -369,20 +544,21 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
     }
 
+    @SuppressWarnings("unused")
     @Subscribe
     public void onGoToPost(GoToPostEvent event) {
-        topicPositionsStack.add(new TopicPosition(currentPage, currentPagePosition));
-
-        currentPagePosition = event.getPagePosition();
+        Timber.d("Received GoToPostEvent : %s", event);
+        Timber.d("Current page is = %d", currentPage);
+        int currentScrollY = event.getTopicPageView().getScrollY();
+        topicPositionsStack.add(TopicPosition.create(currentPage, currentScrollY));
 
         if (currentPage == event.getPage()) {
-            event.getTopicPageView().setPagePosition(currentPagePosition);
+            event.getTopicPageView().setPagePosition(event.getTargetPost());
         }
         else {
-            currentPage = event.getPage();
-
+            overriddenPagePosition = OverriddenPagePosition.toPost(event.getTargetPost());
             if (pager != null) {
-                pager.setCurrentItem(currentPage - 1);
+                pager.setCurrentItem(event.getPage() - 1);
             }
         }
     }
@@ -392,39 +568,27 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
      * @return true if event was consumed, false otherwise
      */
     public boolean onBackPressed() {
-        if (topicPositionsStack.size() == 0) {
+        if (isInSearchMode) {
+            getToolbar().collapseActionView();
+            return true;
+        }
+        else if (topicPositionsStack.size() == 0) {
             return false;
         }
         else {
             TopicPosition topicPosition = topicPositionsStack.remove(topicPositionsStack.size() - 1);
 
-            currentPagePosition = topicPosition.getPagePosition();
-
-            if (currentPage == topicPosition.getPage()) {
-                bus.post(new ScrollToPostEvent(topic, currentPage, currentPagePosition));
+            if (currentPage == topicPosition.page()) {
+                OverriddenPagePosition targetPagePosition = OverriddenPagePosition.toScrollY(topicPosition.pageScrollYTarget());
+                bus.post(ScrollToPositionEvent.create(topic, currentPage, targetPagePosition));
             }
             else {
-                currentPage = topicPosition.getPage();
-                pager.setCurrentItem(currentPage - 1);
+                overriddenPagePosition = OverriddenPagePosition.toScrollY(topicPosition.pageScrollYTarget());
+                pager.setCurrentItem(topicPosition.page() - 1);
             }
 
             return true;
         }
-    }
-
-    /**
-     * Returns current page position
-     */
-    public PagePosition getCurrentPagePosition() {
-        return currentPagePosition;
-    }
-
-    /**
-     * Updates position of currently displayed topic page
-     * @param position new position
-     */
-    public void setCurrentPagePosition(PagePosition position) {
-        currentPagePosition = position;
     }
 
     /**
@@ -451,6 +615,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
+        String topicUrl = mdEndpoints.topic(topic, currentPage);
         switch (id) {
             case R.id.action_refresh_topic:
                 bus.post(new PageRefreshRequestEvent(topic));
@@ -470,13 +635,16 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
                 return true;
 
             case R.id.action_copy_link:
-                UiUtils.copyToClipboard(getActivity(), mdEndpoints.topic(topic, currentPage));
+                UiUtils.copyToClipboard(getActivity(), topicUrl);
                 break;
             case R.id.action_share:
-                UiUtils.shareText(getActivity(), mdEndpoints.topic(topic));
+                UiUtils.shareText(getActivity(), topicUrl);
                 break;
             case UNFLAG_ACTION:
                 unflagTopic();
+                break;
+            case R.id.action_open_in_browser:
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(topicUrl)));
                 break;
         }
 
@@ -517,8 +685,8 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
             moveToTopButton.setAlpha(buttonsAlpha);
             moveToBottomButton.setAlpha(buttonsAlpha);
 
-            moveToTopButton.setOnClickListener((c) -> bus.post(new ScrollToPostEvent(topic, currentPage, PagePosition.top())));
-            moveToBottomButton.setOnClickListener((c) -> bus.post(new ScrollToPostEvent(topic, currentPage, PagePosition.bottom())));
+            moveToTopButton.setOnClickListener((c) -> bus.post(ScrollToPositionEvent.create(topic, currentPage, OverriddenPagePosition.toTop())));
+            moveToBottomButton.setOnClickListener((c) -> bus.post(ScrollToPositionEvent.create(topic, currentPage, OverriddenPagePosition.toBottom())));
         }
         else {
             moveToBottomButton.setVisibility(View.GONE);
@@ -527,31 +695,26 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     }
 
     public void showGoToPageDialog() {
-        MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
-                .customView(R.layout.dialog_go_to_page, true)
-                .positiveText(R.string.dialog_go_to_page_positive_text)
-                .negativeText(android.R.string.cancel)
-                .theme(themeManager.getMaterialDialogTheme())
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        try {
-                            int pageNumber = Integer.valueOf(goToPageEditText.getText().toString());
-                            pager.setCurrentItem(pageNumber - 1);
-                        }
-                        catch (NumberFormatException e) {
-                            Timber.e(e, "Invalid page number entered : %s", goToPageEditText.getText().toString());
-                            SnackbarHelper.make(TopicFragment.this, R.string.invalid_page_number).show();
-                        }
+        AlertDialog dialog = new AlertDialog.Builder(getActivity())
+                .setView(R.layout.dialog_go_to_page)
+                .setPositiveButton(R.string.dialog_go_to_page_positive_text, (dialog1, which) -> {
+                    try {
+                        int pageNumber = Integer.valueOf(goToPageEditText.getText().toString());
+                        pager.setCurrentItem(pageNumber - 1);
+                    }
+                    catch (NumberFormatException e) {
+                        Timber.e(e, "Invalid page number entered : %s", goToPageEditText.getText().toString());
+                        SnackbarHelper.make(TopicFragment.this, R.string.invalid_page_number).show();
                     }
                 })
-                .build();
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
 
 
-        final View positiveAction = dialog.getActionButton(DialogAction.POSITIVE);
-        goToPageEditText = (MaterialEditText) dialog.getCustomView().findViewById(R.id.page_number);
+        final View positiveAction = dialog.getButton(BUTTON_POSITIVE);
+        goToPageEditText = dialog.findViewById(R.id.page_number);
 
-        TextView pagesCountView = (TextView) dialog.getCustomView().findViewById(R.id.pages_count);
+        TextView pagesCountView = dialog.findViewById(R.id.pages_count);
         pagesCountView.setText(Phrase.from(getActivity(), R.string.pages_count_currently).put("current_page", currentPage).put("pages_count", topic.pagesCount()).format());
 
         goToPageEditText.addTextChangedListener(new TextWatcher() {
@@ -747,5 +910,79 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
      */
     public List<Long> getPageQuotedPosts(int page) {
         return quotedMessagesCache.getPageQuotedMessages(page);
+    }
+
+    private void searchInTopic() {
+        SnackbarHelper.make(TopicFragment.this, R.string.search_topic_in_progress).show();
+
+        // Hiding virtual keyboard and cancelling focus of search fields, to leave
+        // more room for search results
+        topicWordSearch.clearFocus();
+        topicAuthorSearch.clearFocus();
+        UiUtils.hideVirtualKeyboard(getActivity());
+
+        String wordSearchText = topicWordSearch.getText().toString();
+        String authorSearchText = topicAuthorSearch.getText().toString();
+
+        Timber.d("Searching for Word = '%s', Author = '%s', starting from post '%d'", wordSearchText, authorSearchText, searchStartPostId);
+
+        boolean isFirstSearch = currentTopicSearchResult == null;
+        long searchStartFromPostId = isFirstSearch ? searchStartPostId : currentTopicSearchResult.postId();
+
+        subscribe(topicSearchSubscriptionHandler.load(topic, mdService.searchInTopic(userManager.getActiveUser(), topic, searchStartFromPostId, wordSearchText, authorSearchText, isFirstSearch), new EndlessObserver<TopicSearchResult>() {
+            @Override
+            public void onNext(TopicSearchResult topicSearchResult) {
+                Timber.d(topicSearchResult.toString());
+                currentTopicSearchResult = topicSearchResult;
+
+                // Sets the reply button as a "forward" arrow (used to move
+                // to the next search result)
+                updateReplyButtonForSearch();
+
+                if (topicSearchResult.noMoreResult()) {
+                    SnackbarHelper.make(TopicFragment.this, R.string.search_topic_ended).show();
+                }
+                else {
+                    goToSearchResult(topicSearchResult);
+                }
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                Timber.e(throwable, "Error while searching topic");
+                SnackbarHelper.makeError(TopicFragment.this, R.string.search_topic_error).show();
+            }
+        }));
+    }
+
+    private void goToSearchResult(TopicSearchResult topicSearchResult) {
+        Timber.d("Scrolling to search result %s", topicSearchResult);
+        PagePosition targetPagePosition = PagePosition.at(topicSearchResult.postId());
+
+        if (currentPage == topicSearchResult.page()) {
+            bus.post(ScrollToPositionEvent.create(topic, topicSearchResult.page(), OverriddenPagePosition.toPost(targetPagePosition), getActiveSearchTerms()));
+        }
+        else {
+            overriddenPagePosition = OverriddenPagePosition.toPost(targetPagePosition);
+            if (pager != null) {
+                pager.setCurrentItem(topicSearchResult.page() - 1);
+            }
+        }
+    }
+
+    private SearchTerms getActiveSearchTerms() {
+        if (isInSearchMode) {
+            String wordSearchText = topicWordSearch.getText().toString();
+            String authorSearchText = topicAuthorSearch.getText().toString();
+            return SearchTerms.create(wordSearchText, authorSearchText);
+        }
+        else {
+            return null;
+        }
+    }
+
+    public void notifyPageLoaded(int page, long searchStartPostId) {
+        Timber.d("Page '%d' is loaded, search should start at post id '%d'", page, searchStartPostId);
+        this.searchStartPostId = searchStartPostId;
     }
 }

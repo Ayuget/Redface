@@ -35,6 +35,7 @@
             android:layout_width="match_parent"
             android:minHeight="?attr/actionBarSize"
             app:layout_scrollFlags="scroll|enterAlways"
+            app:contentInsetStartWithNavigation="0dp"
             style="@style/RedfaceToolbar"
             />
     </android.support.design.widget.AppBarLayout>

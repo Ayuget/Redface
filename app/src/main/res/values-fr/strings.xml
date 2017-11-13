@@ -271,4 +271,16 @@
     <string name="download_strategy_never">Jamais</string>
     <string name="download_strategy_wifi">Uniquement en WiFi</string>
     <string name="download_strategy_fast_connection">Uniquement avec une connection rapide</string>
+    <string name="action_open_in_browser">Ouvrir le sujet dans le navigateur</string>
+    <string name="action_search">Rechercher</string>
+    <string name="search_topic_words">Mots</string>
+    <string name="search_topic_user">Utilisateur</string>
+    <string name="action_topic_search_filter">Filtrer</string>
+    <string name="action_topic_search_from_first_page">Depuis la 1ère page</string>
+    <string name="action_topic_search_title">Filtres de recherche</string>
+    <string name="search_topic_in_progress">Recherche en cours</string>
+    <string name="search_topic_error">Erreur lors de la recherche</string>
+    <string name="search_topic_ended">Aucun résultat supplémentaire</string>
+    <string name="pref_topic_list_compact_mode_more_info_title">Plus d\'infos en mode compact</string>
+    <string name="pref_topic_list_compact_mode_more_info_summary">Affiche plus d\'informations sur le sujet</string>
 </resources>

@@ -16,23 +16,24 @@
 
 package com.ayuget.redface.ui.event;
 
+import android.support.annotation.Nullable;
+
 import com.ayuget.redface.data.api.model.Topic;
+import com.ayuget.redface.data.api.model.misc.SearchTerms;
+import com.google.auto.value.AutoValue;
 
-public class PageSelectedEvent {
-    private final Topic topic;
+@AutoValue
+public abstract class PageSelectedEvent {
+    public abstract Topic topic();
+    public abstract int page();
+    @Nullable public abstract OverriddenPagePosition overriddenPagePosition();
+    @Nullable public abstract SearchTerms activeSearchTerm();
 
-    private final int page;
-
-    public PageSelectedEvent(Topic topic, int page) {
-        this.topic = topic;
-        this.page = page;
+    public static PageSelectedEvent create(Topic topic, int page, OverriddenPagePosition overriddenPagePosition) {
+        return new AutoValue_PageSelectedEvent(topic, page, overriddenPagePosition, null);
     }
 
-    public Topic getTopic() {
-        return topic;
-    }
-
-    public int getPage() {
-        return page;
+    public static PageSelectedEvent create(Topic topic, int page, OverriddenPagePosition overriddenPagePosition, SearchTerms activeSearchTerm) {
+        return new AutoValue_PageSelectedEvent(topic, page, overriddenPagePosition, activeSearchTerm);
     }
 }

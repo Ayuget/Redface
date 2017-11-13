@@ -53,6 +53,7 @@
     </declare-styleable>
 
     <attr name="quickNavigationButtonBackground" format="reference|color" />
+    <attr name="replyButtonBackground" format="reference|color" />
 
     <!-- Settings icons -->
     <attr name="generalIconDrawable" format="reference" />

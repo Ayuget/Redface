@@ -67,8 +67,6 @@ import timber.log.Timber;
 
 @FragmentWithArgs
 public class TopicListFragment extends ToggleToolbarFragment implements TopicsAdapter.OnTopicClickedListener {
-    private static final String ARG_TOPIC_LIST = "topic_list";
-
     private static final String ARG_LAST_LOADED_PAGE = "last_loaded_page";
 
     /**
@@ -154,7 +152,7 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
         subcategoriesAdapter = new SubcategoriesAdapter(getActivity(), topicFilter);
         subcategoriesAdapter.replaceWith(category);
 
-        topicsAdapter = new TopicsAdapter(new ContextThemeWrapper(getActivity(), themeManager.getActiveThemeStyle()), themeManager, settings.isCompactModeEnabled());
+        topicsAdapter = new TopicsAdapter(new ContextThemeWrapper(getActivity(), themeManager.getActiveThemeStyle()), themeManager, settings.isCompactModeEnabled(), settings.isEnhancedCompactModeEnabled());
         topicsAdapter.setOnTopicClickedListener(this);
     }
 
@@ -174,13 +172,7 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
         topicsRecyclerView.setAdapter(topicsAdapter);
 
         // Implement swipe to refresh
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                Timber.d("Refreshing topic list for category %s (refresh)", category);
-                loadTopics();
-            }
-        });
+        swipeRefreshLayout.setOnRefreshListener(this::refreshTopicList);
 
         swipeRefreshLayout.setColorSchemeResources(R.color.theme_primary, R.color.theme_primary_dark);
 
@@ -191,17 +183,20 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
                 .withLoadingView(R.id.loading_indicator)
                 .build();
 
-        dataPresenter.setOnRefreshRequestedListener(new DataPresenter.OnRefreshRequestedListener() {
-            @Override
-            public void onRefresh() {
-                dataPresenter.showLoadingView();
-                loadTopics();
-            }
+        dataPresenter.setOnRefreshRequestedListener(() -> {
+            dataPresenter.showLoadingView();
+            refreshTopicList();
         });
 
         UiUtils.setDrawableColor(emptyTopicsImage.getDrawable(), getResources().getColor(R.color.empty_view_image_color));
 
         return rootView;
+    }
+
+    private void refreshTopicList() {
+        Timber.d("Refreshing topic list for category %s (refresh)", category);
+        dataService.clearTopicListCache();
+        loadTopics();
     }
 
     @Override
@@ -210,13 +205,6 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
 
         // Restore the list of topics when the fragment is recreated by the framework
         if (savedInstanceState != null) {
-            displayedTopics = savedInstanceState.getParcelableArrayList(ARG_TOPIC_LIST);
-            if (displayedTopics != null) {
-                Timber.i("Restored %d topics to fragment", displayedTopics.size());
-                topicsAdapter.replaceWith(displayedTopics);
-                showTopics();
-            }
-
             lastLoadedPage = savedInstanceState.getInt(ARG_LAST_LOADED_PAGE, 0);
         }
     }
@@ -303,7 +291,6 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList(ARG_TOPIC_LIST, displayedTopics);
         outState.putInt(ARG_LAST_LOADED_PAGE, lastLoadedPage);
     }
 

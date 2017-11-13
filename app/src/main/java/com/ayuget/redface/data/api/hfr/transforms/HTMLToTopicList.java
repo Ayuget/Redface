@@ -22,6 +22,7 @@ import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.api.model.TopicStatus;
 import com.ayuget.redface.data.api.model.User;
 import com.ayuget.redface.data.state.CategoriesStore;
+import com.ayuget.redface.ui.misc.PagePosition;
 import com.ayuget.redface.util.DateUtils;
 import com.ayuget.redface.util.HTMLUtils;
 
@@ -107,6 +108,11 @@ public class HTMLToTopicList extends TopicTransform implements Func1<String, Lis
                 int lastReadPage = m.group(12) != null ? Integer.parseInt(m.group(12)) : -1;
                 long lastReadPostId = m.group(10) != null ? Long.parseLong(m.group(10)) : -1;
                 boolean unreadPosts = hasUnreadPosts(m.group(3));
+
+                if (! unreadPosts) {
+                    lastReadPage = pagesCount;
+                    lastReadPostId = PagePosition.BOTTOM;
+                }
 
                 Topic topic = Topic.builder()
                         .id(topicId)

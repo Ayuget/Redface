@@ -47,6 +47,8 @@ public class SettingsConstants {
 
     public static final String KEY_ENABLE_COMPACT_MODE = "topic_list_compact_mode";
 
+    public static final String KEY_ENABLE_ENHANCED_COMPACT_MODE = "topic_list_enhanced_compact_mode";
+
     public static final String KEY_ENABLE_PRIVATE_MESSAGES_NOTIFICATIONS = "enable_pm_notifications";
 
     public static final String KEY_PRIVATE_MESSAGES_POLLING_FREQUENCY = "pm_notification_polling_frequency";

@@ -1,8 +1,15 @@
 /**
+* Scrolls to the top of the page
+*/
+function scrollToTop() {
+    document.body.scrollTop = 0;
+}
+
+/**
 * Scrolls to the bottom of the page
 */
 function scrollToBottom() {
-    window.scrollTo(0,document.body.scrollHeight);
+    document.body.scrollTop = document.body.scrollHeight + 300;
 }
 
 /**
@@ -10,17 +17,7 @@ function scrollToBottom() {
 * @param id element id
 */
 function scrollToElement(id) {
-    var elem = document.getElementById(id);
-    var x = 0;
-    var y = 0;
-
-    while (elem != null) {
-        x += elem.offsetLeft;
-        y += elem.offsetTop;
-        elem = elem.offsetParent;
-    }
-
-    window.scrollTo(x, y);
+    location.hash = "#" + id;
 }
 
 /**
@@ -86,12 +83,12 @@ function handleUrl(event, postId, url) {
 function toggleOverflowMenu(id){
 	var overflowList = document.getElementById(id);
 	if (overflowList != null) {
-		if (overflowList.style.display == "block") {
+		if (overflowList.style.display == "flex") {
 			overflowList.style.display = 'none';
 		}
 		else if (overflowList.style.display == "none" || !overflowList.style.display) {
 		    closeAllOverflowMenus();
-			overflowList.style.display = 'block';
+			overflowList.style.display = 'flex';
 		}
 	}
 }
@@ -112,15 +109,13 @@ function favoritePost(postId) {
 function toggleQuoteIcon(link) {
     var icon = link.getElementsByTagName("i")[1];
 
-    if (icon.classList.contains('fa-minus')) {
-        icon.classList.remove('fa-minus');
-        link.classList.remove('action-selected');
-        icon.classList.add('fa-plus');
+    if (icon.textContent == 'add') {
+        icon.textContent = 'remove';
+        link.classList.add('action-selected');
     }
     else {
-        icon.classList.remove('fa-plus');
-        icon.classList.add('fa-minus');
-        link.classList.add('action-selected');
+        icon.textContent = 'add'
+        link.classList.remove('action-selected');
     }
 }
 
@@ -157,24 +152,43 @@ function setPostsAsQuoted(posts) {
 }
 
 function clearQuotedMessages() {
-    var icons = document.getElementsByClassName("fa-minus");
+    var icons = document.getElementsByClassName('action-selected');
     var i;
 
-    for (i = icons.length - 1; i >= 0; i--) {
-        var item = icons[i];
-        item.classList.remove('fa-minus');
-        item.classList.add('fa-plus');
-    }
 
     var links = document.getElementsByClassName("action-selected");
     for (i = links.length - 1; i >= 0; i--) {
-        links[i].classList.remove('action-selected');
+        toggleQuoteIcon(links[i]);
     }
 
     var quoted = document.getElementsByClassName("quoted");
     for (i = quoted.length - 1; i >= 0; i--) {
         quoted[i].classList.remove('quoted');
     }
+}
+
+function highlightWordInPost(postId, word) {
+    var postDiv = document.getElementById("post" + postId);
+    if (postDiv != null) {
+        var postContent = postDiv.getElementsByClassName("post-content")[0];
+        var paragraphs = postDiv.getElementsByTagName("p");
+        for (var i = 0; i < paragraphs.length; i++) {
+            var paragraph = paragraphs[i];
+            removeExistingHighlights(paragraph);
+            highlightWordInParagraph(paragraph, word);
+        }
+    }
+}
+
+function removeExistingHighlights(paragraph) {
+    paragraph.innerHTML = paragraph.innerHTML.replace(/(?:<span class="highlight">)(.*?)(?:<\/span>)/g, "$1")
+}
+
+function highlightWordInParagraph(paragraph, word) {
+    var text = paragraph.innerHTML;
+    var regex = new RegExp('('+ word + ')', 'igu');
+    text = text.replace(regex, '<span class="highlight">$1</span>');
+    paragraph.innerHTML = text;
 }
 
 /**

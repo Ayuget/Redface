@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="fill_horizontal">
+    <!-- RelativeLayout seems useless here, but this trick is used to make the action layout
+    use the full toolbar width (otherwise it doesn't work as expected, even with a LinearLayout
+    with 'match_parent' layout_width attribute) -->
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:ignore="UselessParent">
+        <EditText
+            android:id="@+id/topic_word_search_text"
+            android:singleLine="true"
+            android:imeOptions="actionSearch"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:hint="@string/search_topic_words"
+            android:layout_height="match_parent" />
+        <EditText
+            android:id="@+id/topic_username_search_text"
+            android:singleLine="true"
+            android:imeOptions="actionSearch"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:hint="@string/search_topic_user"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+</RelativeLayout>

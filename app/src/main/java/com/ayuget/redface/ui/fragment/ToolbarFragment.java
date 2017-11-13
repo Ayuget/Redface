@@ -16,10 +16,11 @@
 
 package com.ayuget.redface.ui.fragment;
 
+import android.annotation.SuppressLint;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
-import android.view.MenuItem;
 import android.view.View;
 
 import com.ayuget.redface.R;
@@ -29,28 +30,17 @@ public class ToolbarFragment extends BaseFragment {
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        toolbar = (Toolbar) view.findViewById(R.id.toolbar_actionbar);
+        toolbar = view.findViewById(R.id.toolbar_actionbar);
 
         if (toolbar != null) {
-            // Set an OnMenuItemClickListener to handle menu item clicks
-            toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-                @Override
-                public boolean onMenuItemClick(MenuItem menuItem) {
-                    return onOptionsItemSelected(menuItem);
-                }
-            });
-
-            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    clearInternalStack();
-                    getActivity().onBackPressed();
-                }
+            toolbar.setOnMenuItemClickListener(this::onOptionsItemSelected);
+            toolbar.setNavigationOnClickListener(v -> {
+                clearInternalStack();
+                getActivity().onBackPressed();
             });
 
             // Inflate a menu to be displayed in the toolbar
             onCreateOptionsMenu(toolbar);
-
             onToolbarInitialized(toolbar);
         }
     }
@@ -70,9 +60,13 @@ public class ToolbarFragment extends BaseFragment {
     public void onToolbarInitialized(Toolbar toolbar) {
     }
 
+    @SuppressLint("RestrictedApi")
     public void showUpButton() {
         // Resources comes from AppCompat library
-        toolbar.setNavigationIcon(R.drawable.md_nav_back);
+        toolbar.setNavigationIcon(R.drawable.ic_action_arrow_back);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            toolbar.getNavigationIcon().setTint(getResources().getColor(R.color.white));
+        }
     }
 
     public void clearInternalStack() {

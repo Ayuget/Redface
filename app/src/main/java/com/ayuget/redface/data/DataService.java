@@ -16,8 +16,6 @@
 
 package com.ayuget.redface.data;
 
-import android.util.Log;
-
 import com.ayuget.redface.data.api.MDService;
 import com.ayuget.redface.data.api.model.Category;
 import com.ayuget.redface.data.api.model.Post;
@@ -28,9 +26,11 @@ import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.api.model.TopicFilter;
 import com.ayuget.redface.data.api.model.User;
 import com.ayuget.redface.data.rx.SubscriptionHandler;
+import com.google.auto.value.AutoValue;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -44,47 +44,44 @@ public class DataService {
 
     private SubscriptionHandler<User, Profile> profileSubscriptionHandler = new SubscriptionHandler<>();
     private SubscriptionHandler<User, List<Category>> categoriesSubscriptionHandler = new SubscriptionHandler<>();
-    private SubscriptionHandler<CategoryPageKey, List<Topic>> topicsSubscriptionHandler = new SubscriptionHandler<>();
-    private SubscriptionHandler<User, List<Topic>> metaPageSubscriptionHandler = new SubscriptionHandler<>();
-    private SubscriptionHandler<Topic, List<Post>> postsSubscriptionHandler = new SubscriptionHandler<>();
+    private SubscriptionHandler<CategoryPage, List<Topic>> topicsSubscriptionHandler = new SubscriptionHandler<>(5);
+    private SubscriptionHandler<MetaPageOptions, List<Topic>> metaPageSubscriptionHandler = new SubscriptionHandler<>(5);
+    private SubscriptionHandler<TopicPage, List<Post>> postsSubscriptionHandler = new SubscriptionHandler<>(3);
     private SubscriptionHandler<User, List<Smiley>> recentSmileysHandler = new SubscriptionHandler<>();
     private SubscriptionHandler<String, List<Smiley>> smileysSearchHandler = new SubscriptionHandler<>();
     private SubscriptionHandler<String, List<Smiley>> popularSmileysHandler = new SubscriptionHandler<>();
 
-    public static class CategoryPageKey {
-        private final User user;
-        private final Category category;
-        private final Subcategory subcategory;
-        private final int page;
+    @AutoValue
+    public static abstract class TopicPage {
+        public abstract Topic topic();
+        public abstract int page();
 
-        public CategoryPageKey(User user, Category category, Subcategory subcategory, int page) {
-            this.user = user;
-            this.category = category;
-            this.subcategory = subcategory;
-            this.page = page;
+        public static TopicPage create(Topic topic, int page) {
+            return new AutoValue_DataService_TopicPage(topic, page);
         }
+    }
 
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+    @AutoValue
+    public static abstract class MetaPageOptions {
+        public abstract User user();
+        @Nullable public abstract TopicFilter topicFilter();
+        public abstract boolean sortByDate();
 
-            CategoryPageKey that = (CategoryPageKey) o;
-
-            if (page != that.page) return false;
-            if (!user.equals(that.user)) return false;
-            if (!category.equals(that.category)) return false;
-            return !(subcategory != null ? !subcategory.equals(that.subcategory) : that.subcategory != null);
-
+        public static MetaPageOptions create(User user, @Nullable TopicFilter topicFilter, boolean sortByDate) {
+            return new AutoValue_DataService_MetaPageOptions(user, topicFilter, sortByDate);
         }
+    }
 
-        @Override
-        public int hashCode() {
-            int result = user.hashCode();
-            result = 31 * result + category.hashCode();
-            result = 31 * result + (subcategory != null ? subcategory.hashCode() : 0);
-            result = 31 * result + page;
-            return result;
+    @AutoValue
+    public static abstract class CategoryPage {
+        public abstract User user();
+        public abstract Category category();
+        @Nullable public abstract Subcategory subcategory();
+        @Nullable public abstract TopicFilter topicFilter();
+        public abstract int page();
+
+        public static CategoryPage create(User user, Category category, @Nullable Subcategory subcategory, @Nullable TopicFilter topicFilter, int page) {
+            return new AutoValue_DataService_CategoryPage(user, category, subcategory, topicFilter, page);
         }
     }
 
@@ -99,15 +96,15 @@ public class DataService {
     }
 
     public Subscription loadTopics(final User user, final Category category, final Subcategory subcategory, int page, final TopicFilter topicFilter, Observer<List<Topic>> observer) {
-        return topicsSubscriptionHandler.load(new CategoryPageKey(user, category, subcategory, page), mdService.listTopics(user, category, subcategory, page, topicFilter), observer);
+        return topicsSubscriptionHandler.loadAndCache(CategoryPage.create(user, category, subcategory, topicFilter, page), mdService.listTopics(user, category, subcategory, page, topicFilter), observer);
     }
 
     public Subscription loadMetaPageTopics(final User user, final TopicFilter topicFilter, boolean sortByDate, Observer<List<Topic>> observer) {
-        return metaPageSubscriptionHandler.load(user, mdService.listMetaPageTopics(user, topicFilter, sortByDate), observer);
+        return metaPageSubscriptionHandler.load(MetaPageOptions.create(user, topicFilter, sortByDate), mdService.listMetaPageTopics(user, topicFilter, sortByDate), observer);
     }
 
     public Subscription loadPosts(final User user, final Topic topic, int page, boolean imagesEnabled, boolean avatarsEnabled, boolean smileysEnabled, Observer<List<Post>> observer) {
-        return postsSubscriptionHandler.load(topic, mdService.listPosts(user, topic, page, imagesEnabled, avatarsEnabled, smileysEnabled), observer);
+        return postsSubscriptionHandler.loadAndCache(TopicPage.create(topic, page), mdService.listPosts(user, topic, page, imagesEnabled, avatarsEnabled, smileysEnabled), observer);
     }
 
     public Subscription getRecentlyUsedSmileys(final User user, Observer<List<Smiley>> observer) {
@@ -120,5 +117,13 @@ public class DataService {
 
     public Subscription getPopularSmileys(Observer<List<Smiley>> observer) {
         return popularSmileysHandler.loadAndCache(null, mdService.getPopularSmileys(), observer);
+    }
+
+    public void clearPostsCache(final Topic topic, int page) {
+        postsSubscriptionHandler.clearKey(TopicPage.create(topic, page));
+    }
+
+    public void clearTopicListCache() {
+        topicsSubscriptionHandler.clearAll();
     }
 }

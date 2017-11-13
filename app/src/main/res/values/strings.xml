@@ -30,8 +30,10 @@
     <string name="action_copy_link">Copy a link to this topic</string>
     <string name="action_share">Share</string>
     <string name="action_refresh_topic">Refresh</string>
+    <string name="action_search">Rechercher</string>
     <string name="action_show_all_spoilers">Show all spoilers</string>
     <string name="action_unflag_topic">Remove flag</string>
+    <string name="action_open_in_browser">Open topic in browser</string>
     <string name="link_sucessfully_copied">Link copied to clipboard</string>
     <string name="flag_successfully_removed">Flag successfully removed</string>
     <string name="error_removing_flag">Error while removing flag</string>
@@ -41,6 +43,10 @@
     <string name="action_topics_filter_favorites">Favorites</string>
     <string name="action_topics_filter_participated">Favorites &amp; Starred</string>
     <string name="action_topics_filter_read">Read</string>
+
+    <string name="action_topic_search_title">Topic search filters</string>
+    <string name="action_topic_search_filter">Filter</string>
+    <string name="action_topic_search_from_first_page">From first page</string>
 
     <string name="action_meta_sort">Sorting options</string>
     <string name="action_meta_sort_by_date">Sort topics by date</string>
@@ -90,6 +96,8 @@
     <string name="pref_enable_internal_browser_summary">Open all external links in the internal browser</string>
     <string name="pref_topic_list_compact_mode_title">Compact mode</string>
     <string name="pref_topic_list_compact_mode_summary">Display topic list in a compact way</string>
+    <string name="pref_topic_list_compact_mode_more_info_title">Show additional details</string>
+    <string name="pref_topic_list_compact_mode_more_info_summary">More details in compact mode</string>
     <string name="pref_double_tap_to_refresh_title">Enable double tap to refresh</string>
     <string name="pref_double_tap_to_refresh_summary">Double tapping inside a topic will trigger a page refresh</string>
     <string name="pref_show_previous_page_last_post_title">Show previous page last post</string>
@@ -417,4 +425,11 @@
     <string name="insert_image_from_url">URL</string>
     <string name="insert_image_from_favorites">Favorites</string>
     <string name="insert_image_from_gallery">Gallery</string>
+
+    <!-- Search topic -->
+    <string name="search_topic_words">Words</string>
+    <string name="search_topic_user">User</string>
+    <string name="search_topic_in_progress">Search in progress</string>
+    <string name="search_topic_error">Search failed</string>
+    <string name="search_topic_ended">No more results</string>
 </resources>

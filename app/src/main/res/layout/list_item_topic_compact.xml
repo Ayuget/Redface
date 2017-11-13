@@ -35,17 +35,42 @@
         android:layout_marginBottom="@dimen/topic_icon_container_vertical_padding_compact"
         android:padding="4dp"
         />
-    <TextView
-        android:id="@+id/topic_subject"
+
+    <RelativeLayout
         android:layout_weight="1"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:gravity="center_vertical|left"
-        android:maxLines="1"
-        android:ellipsize="end"
-        android:scrollHorizontally="true"
-        android:textAppearance="@style/TextAppearance"
-        tools:text="Subject"/>
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/topic_subject"
+            android:layout_weight="1"
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/topic_subject_height_compact"
+            android:layout_marginTop="@dimen/topic_item_vertical_padding_compact"
+            android:gravity="center_vertical|left"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:scrollHorizontally="true"
+            android:textAppearance="@style/TextAppearance"
+            tools:text="Subject"/>
+        <TextView
+            android:id="@+id/topic_pages_count"
+            android:layout_below="@id/topic_subject"
+            android:layout_alignParentLeft="true"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="top|left"
+            android:textAppearance="@style/TextAppearance.Details"
+            tools:text="Pages" />
+        <TextView
+            android:id="@+id/topic_last_post_infos"
+            android:layout_below="@id/topic_subject"
+            android:layout_alignParentRight="true"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="top|right"
+            android:textAppearance="@style/TextAppearance.Details"
+            tools:text="Author - Date" />
+    </RelativeLayout>
 
     <TextView
         android:id="@+id/topic_unread_count"
@@ -56,5 +81,7 @@
         android:layout_height="@dimen/topic_unread_count_size"
         android:layout_marginRight="@dimen/topic_unread_count_margin"
         android:layout_marginLeft="@dimen/topic_unread_count_margin"
+        android:layout_marginTop="@dimen/topic_icon_container_vertical_padding_compact"
+        android:layout_marginBottom="@dimen/topic_icon_container_vertical_padding_compact"
         />
 </LinearLayout>

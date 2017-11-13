@@ -18,6 +18,7 @@ package com.ayuget.redface.data.api;
 
 import com.ayuget.redface.data.api.model.Response;
 import com.ayuget.redface.data.api.model.Topic;
+import com.ayuget.redface.data.api.model.TopicSearchResult;
 import com.ayuget.redface.data.api.model.User;
 
 import rx.Observable;
@@ -67,4 +68,9 @@ public interface MDMessageSender {
      * Removes a flag (or a favorite) on a given {@link Topic}
      */
     Observable<Boolean> unflagTopic(User user, Topic topic);
+
+    /**
+     * Searches a particular word and/or author in a topic, starting at a given post id.
+     */
+    Observable<TopicSearchResult> searchInTopic(User user, Topic topic, long startFromPostId, String word, String author, boolean firstSearch, String hashcheck);
 }

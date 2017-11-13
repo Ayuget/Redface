@@ -19,8 +19,8 @@ package com.ayuget.redface.ui.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.ayuget.redface.R;
 import com.ayuget.redface.data.api.model.PrivateMessage;
 import com.ayuget.redface.data.api.model.Topic;
@@ -216,16 +216,10 @@ public class PrivateMessagesActivity extends MultiPaneActivity implements Privat
         switch (event.getPostAction()) {
             case DELETE:
                 Timber.d("About to delete post");
-                new MaterialDialog.Builder(this)
-                        .content(R.string.post_delete_confirmation)
-                        .positiveText(R.string.post_delete_yes)
-                        .negativeText(R.string.post_delete_no)
-                        .callback(new MaterialDialog.ButtonCallback() {
-                            @Override
-                            public void onPositive(MaterialDialog dialog) {
-                                deletePost(event.getTopic(), event.getPostId());
-                            }
-                        })
+                new AlertDialog.Builder(this)
+                        .setTitle(R.string.post_delete_confirmation)
+                        .setPositiveButton(R.string.post_delete_yes, (dialog, which) -> deletePost(event.getTopic(), event.getPostId()))
+                        .setNegativeButton(R.string.post_delete_no, null)
                         .show();
                 break;
             default:
@@ -243,7 +237,7 @@ public class PrivateMessagesActivity extends MultiPaneActivity implements Privat
         // Mask private message as a regular topic (kinda ugly, btw...)
         Topic pmAsTopic = privateMessage.asTopic().withCategory(categoriesStore.getPrivateMessagesCategory());
 
-        TopicFragment topicFragment = new TopicFragmentBuilder(page, pmAsTopic).currentPagePosition(pagePosition).build();
+        TopicFragment topicFragment = new TopicFragmentBuilder(page, pagePosition, pmAsTopic).build();
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 

@@ -106,6 +106,8 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
     private static final long IMAGE_SELECTION_VIEW_ANIMATION_TRANSITION_TIME = 300;
     private static final String UPLOADED_IMAGE_BB_CODE = "[url=%s][img]%s[/img][/url]";
     private static final String IMAGE_FROM_URL_BB_CODE = "[img]%s[/img]";
+    private static final int REPLACE_SMILEY_SELECTOR_THRESHOLD = 6; // in pixels
+    private static final float SELECTOR_DRAGGED_THRESHOLD = 10.0f;
 
     /**
      * The active pointer is the one currently use to move the smiley view
@@ -127,7 +129,11 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
 
     private float lastTouchY;
 
+    private float lastDy;
+
     private boolean isUpwardMovement;
+
+    private boolean smileyPanelDragged;
 
     private int toolbarHeight;
 
@@ -470,23 +476,25 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
 
             switch (action) {
                 case MotionEvent.ACTION_DOWN: {
-                    final int pointerIndex = MotionEventCompat.getActionIndex(event);
-                    lastTouchY = MotionEventCompat.getY(event, pointerIndex);
-                    activePointerId = MotionEventCompat.getPointerId(event, 0);
+                    final int pointerIndex = event.getActionIndex();
+                    lastTouchY = event.getY(pointerIndex);
+                    activePointerId = event.getPointerId(0);
+                    smileyPanelDragged = false; // Movement starts
                     break;
                 }
                 case MotionEvent.ACTION_MOVE: {
                     if (smileyList.getScrollY() == 0) {
-                        final int pointerIndex = MotionEventCompat.findPointerIndex(event, activePointerId);
+                        final int pointerIndex = event.findPointerIndex(activePointerId);
 
                         if (pointerIndex != -1) {
-                            final float y = MotionEventCompat.getY(event, pointerIndex);
+                            final float y = event.getY(pointerIndex);
 
                             // Distance
                             float dy = y - lastTouchY;
+                            lastDy = dy;
                             isUpwardMovement = dy < 0;
-                            float targetY = smileysSelector.getY() + dy;
 
+                            float targetY = smileysSelector.getY() + dy;
                             if (targetY < toolbarHeight) {
                                 float difference = toolbarHeight - targetY;
                                 dy += difference;
@@ -495,12 +503,16 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
                                 dy -= difference;
                             }
 
+                            if (!smileyPanelDragged) {
+                                smileyPanelDragged = Math.abs(dy) > SELECTOR_DRAGGED_THRESHOLD;
+                            }
+
                             smileysSelector.setY(smileysSelector.getY() + dy);
 
                             // Show or hide the smileys toolbar based on current position
                             if (isUpwardMovement && smileysSelector.getY() < replyWindowMaxHeight) {
                                 showSmileysToolbar();
-                            } else {
+                            } else if (dy > REPLACE_SMILEY_SELECTOR_THRESHOLD){
                                 hideSmileysToolbar();
                             }
                         }
@@ -521,8 +533,18 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
                         // Moving too far, let's avoid this
                         yTranslation = -(smileysSelector.getY() - toolbarHeight);
                     } else {
-                        // Replace the smiley selector at its original position
-                        yTranslation = smileySelectorTopOffset - smileysSelector.getY();
+                        if(isUpwardMovement || (!isUpwardMovement && lastDy > REPLACE_SMILEY_SELECTOR_THRESHOLD)) {
+                            // If the upward movement is below the animation threshold, or if the
+                            // movement is downwards & sufficient, replace the smiley selector at
+                            // its original position (bottom)
+                            yTranslation = smileySelectorTopOffset - smileysSelector.getY();
+                            hideSmileysToolbar();
+                        }
+                        else {
+                            // Moved downwards, but not enough, replace smiley selector at the top
+                            yTranslation = -(smileysSelector.getY() - toolbarHeight);
+                            showSmileysToolbar();
+                        }
                     }
 
                     if (yTranslation != 0) {
@@ -536,14 +558,9 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
                 }
             }
 
-            boolean touchConsumed;
-            if (smileysSelector.getY() != smileySelectorTopOffset) {
-                touchConsumed = (smileysSelector.getY() != toolbarHeight);
-            } else {
-                touchConsumed = false;
-            }
-
-            return touchConsumed;
+            // Consuming touch only if panel has been dragged during current motion. Clicks can
+            // sometimes be mistaken as small movements, hence the "threshold".
+            return smileyPanelDragged;
         });
     }
 
@@ -660,6 +677,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
     }
 
     protected void insertSmiley(String smileyCode) {
+        Timber.d("Smiley '%s' has been selected", smileyCode);
         UiUtils.insertText(replyEditText, String.format(" %s ", smileyCode));
 
         replaceSmileySelector();

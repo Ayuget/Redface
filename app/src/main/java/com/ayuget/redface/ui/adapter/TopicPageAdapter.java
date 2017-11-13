@@ -22,15 +22,18 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.ui.fragment.PostsFragmentBuilder;
+import com.ayuget.redface.ui.misc.PagePosition;
 
 public class TopicPageAdapter extends FragmentStatePagerAdapter {
     private Topic topic;
     private final int initialPage;
+    private final PagePosition initialPagePosition;
 
-    public TopicPageAdapter(FragmentManager fm, Topic topic, int initialPage) {
+    public TopicPageAdapter(FragmentManager fm, Topic topic, int initialPage, PagePosition initialPagePosition) {
         super(fm);
         this.topic = topic;
         this.initialPage = initialPage;
+        this.initialPagePosition = initialPagePosition;
     }
 
     public void notifyTopicUpdated(Topic topic) {
@@ -41,7 +44,22 @@ public class TopicPageAdapter extends FragmentStatePagerAdapter {
     @Override
     public Fragment getItem(int i) {
         // i + 1 because we want pages number to start at 1 and not 0
-        return new PostsFragmentBuilder(i + 1, initialPage, topic).build();
+        int currentPageNumber = i + 1;
+        boolean isInitialPage = currentPageNumber == initialPage;
+        PagePosition pageInitialPosition = getPageInitialPosition(currentPageNumber);
+        return new PostsFragmentBuilder(isInitialPage, pageInitialPosition, currentPageNumber, topic).build();
+    }
+
+    private PagePosition getPageInitialPosition(int currentPageNumber) {
+        if (currentPageNumber == initialPage) {
+            return initialPagePosition;
+        }
+        else if (currentPageNumber < initialPage) {
+            return PagePosition.bottom();
+        }
+        else {
+            return PagePosition.top();
+        }
     }
 
     @Override

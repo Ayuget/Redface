@@ -2,7 +2,7 @@
 body {
     font-family: Roboto, sans-serif;
     margin: 0;
-    padding: 0;
+    padding: 0 0 48px 0;
 }
 
 .smileysView {
@@ -29,7 +29,7 @@ body.redface-night {
 .post-toolbar {
     font-family: 'Roboto Light', sans-serif-light;
     background: #cfcece;
-    color: #424242;
+    color: #616161;
     height: 48px;
     box-sizing: border-box;
 }
@@ -37,15 +37,11 @@ body.redface-night {
 .redface-dark .post-toolbar {
     background: #404246;
     color: #c2c2c4;
-    border-top: 1px solid #222222;
-    border-bottom: 1px solid #111111;
 }
 
 .redface-night .post-toolbar {
     background: #242428;
     color: #c2c2c4;
-    border-top: 1px solid #222222;
-    border-bottom: 1px solid #111111;
 }
 
 .profile-picture-container {
@@ -110,6 +106,18 @@ body.redface-night {
     margin: 0 0 10px 0;
 }
 
+
+.stacked {
+    color: #FFFFFF;
+    font-size: 14px;
+    top: 3px;
+    line-height: normal;
+}
+
+.redface-dark .stacked, .redface-night .stacked {
+    color: #000000;
+}
+
 .post-actions {
     position: absolute;
     right: 0;
@@ -127,7 +135,7 @@ body.redface-night {
     text-align: center;
     float: left;
     margin-right: 3px;
-    padding-top: 16px;
+    padding-top: 11px;
 }
 
 .redface-dark .post-content a, .redface-night .post-content a {
@@ -144,6 +152,13 @@ img {
     margin-right: auto;
 }
 
+/**
+* Search
+*/
+.post-content p span.highlight {
+    background-color: yellow;
+}
+
 /*
 * Citations
 */
@@ -158,6 +173,8 @@ img {
     min-height: 40px;
     padding-bottom: 2px;
     margin-left: 2px;
+    width: 100%;
+    margin-bottom: 3px;
 }
 
 .old-quotes .quote, .old-quotes .quote.blocked, .old-quotes .spoiler, .old-quotes .code {
@@ -279,10 +296,14 @@ img {
 
 .extra-details {
     float: right;
+    display: flex;
+    align-items: center;
 }
 
 .extra-details i {
+    margin-left: 10px;
     margin-right: 4px;
+    font-size: 12px;
 }
 
 .extra-details .edited {
@@ -294,23 +315,30 @@ img {
 * Overflow icons
 */
 .post-overflow-icons {
+    width: 100%;
     overflow: none;
-    list-style-type: none;
     background: #424242;
     color: #ffffff;
     height: 48px;
     margin: 0;
     padding-left: 10px;
-
     display: none;
 }
 
-.post-overflow-icons li {
+.redface-dark .post-overflow-icons {
+    background: #404246;
+}
+
+.redface-night .post-overflow-icons {
+    background: #242428;
+}
+
+.post-overflow-icons div {
     float: left;
     height: 48px;
 }
 
-.post-overflow-icons li a {
+.post-overflow-icons div a {
     width: 52px;
     height: 48px;
     display: table-cell;
@@ -318,7 +346,7 @@ img {
     text-align: center;
     float: left;
     margin-right: 3px;
-    padding-top: 15px;
+    padding-top: 11px;
 }
 
 /**
@@ -386,8 +414,6 @@ img {
 
 .redface-light div.post.quoted .post-toolbar {
     background: #B39DDB;
-    border-top: 1px solid #9575CD;
-    border-bottom: 1px solid #9575CD;
     color: #424242;
 }
 
@@ -415,8 +441,6 @@ img {
 */
 .redface-dark .post.egoQuote .post-toolbar, .redface-night .post.egoQuote .post-toolbar {
     background: #3346bb;
-    border-top: 1px solid #303F9F;
-    border-bottom: 1px solid #303F9F;
     color: #FFEBEE;
 }
 
@@ -450,8 +474,6 @@ img {
 
 .redface-light .post.egoQuote .post-toolbar {
     background: #42A5F5;
-    border-top: 1px solid #42A5F5;
-    border-bottom: 1px solid #42A5F5;
     color: #E3F2FD;
 }
 
@@ -545,15 +567,15 @@ img {
 .redface-dark .post.blocked .post-toolbar {
     background: #D3D3D3;
     color: #000000;
-    border-top: 1px solid #222222;
-    border-bottom: 1px solid #111111;
 }
 
 .redface-night .post.blocked .post-toolbar {
     background: #D3D3D3;
     color: #000000;
-    border-top: 1px solid #222222;
-    border-bottom: 1px solid #111111;
+}
+
+span.u {
+    text-decoration: underline;
 }
 
 /**

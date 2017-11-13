@@ -41,21 +41,21 @@ public class PostActionsTemplate extends HTMLTemplate<Post> {
     private static final Map<PostAction, Pair<String, String>> POST_ACTIONS_MAPPING;
     static {
         POST_ACTIONS_MAPPING = new HashMap<>(6);
-        POST_ACTIONS_MAPPING.put(PostAction.EDIT, Pair.create("editPost", "edit"));
-        POST_ACTIONS_MAPPING.put(PostAction.DELETE, Pair.create("deletePost", "trash"));
+        POST_ACTIONS_MAPPING.put(PostAction.EDIT, Pair.create("editPost", "mode_edit"));
+        POST_ACTIONS_MAPPING.put(PostAction.DELETE, Pair.create("deletePost", "delete_forever"));
         POST_ACTIONS_MAPPING.put(PostAction.FAVORITE, Pair.create("markPostAsFavorite", "star"));
 
         // SOON :O
         // POST_ACTIONS_MAPPING.put(PostAction.REPORT, Pair.create("reportPost", "exclamation-triangle"));
-        POST_ACTIONS_MAPPING.put(PostAction.WRITE_PRIVATE_MESSAGE, Pair.create("writePrivateMessage", "envelope"));
+        POST_ACTIONS_MAPPING.put(PostAction.WRITE_PRIVATE_MESSAGE, Pair.create("writePrivateMessage", "email"));
         POST_ACTIONS_MAPPING.put(PostAction.COPY_LINK_TO_POST, Pair.create("copyLinkToPost", "link"));
-        POST_ACTIONS_MAPPING.put(PostAction.BLOCK_USER, Pair.create("blockUser", "ban"));
+        POST_ACTIONS_MAPPING.put(PostAction.BLOCK_USER, Pair.create("blockUser", "block"));
     }
 
     /**
      * Action HTML code
      */
-    private static final String POST_ACTION_HTML = "<li><a material onclick=\"Android.%s(%d)\"><i class=\"fa fa-%s\"></i></a></li>";
+    private static final String POST_ACTION_HTML = "<div><a material onclick=\"Android.%s(%d)\"><i class=\"material-icons\">%s</i></a></div>";
 
     public PostActionsTemplate(Context context, UserManager userManager) {
         super(context, POST_ACTIONS_TEMPLATE);

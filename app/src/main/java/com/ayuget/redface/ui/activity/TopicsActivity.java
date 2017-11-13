@@ -18,14 +18,11 @@ package com.ayuget.redface.ui.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.ayuget.redface.R;
-import com.ayuget.redface.data.api.MDLink;
 import com.ayuget.redface.data.api.hfr.HFRUrlParser;
 import com.ayuget.redface.data.api.model.Category;
 import com.ayuget.redface.data.api.model.Topic;
@@ -58,7 +55,6 @@ import com.squareup.otto.Subscribe;
 import javax.inject.Inject;
 
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
@@ -132,19 +128,11 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
      */
     private void parseIntentUrl(String intentUrl) {
         Timber.d("Parsing URL from intent : '%s'", intentUrl);
-        urlParser.parseUrl(intentUrl).compose(RxUtils.<MDLink>applySchedulers())
-                .subscribe(new Action1<MDLink>() {
-                    @Override
-                    public void call(MDLink mdLink) {
-                        mdLink.ifTopicLink(new MDLink.IfIsTopicLink() {
-                            @Override
-                            public void call(final Category category, final int topicId, final int topicPage, final PagePosition pagePosition) {
-                                Timber.d("Parsed link for category='%s', topic='%d', page='%d'", category.name(), topicId, topicPage);
-                                onGoToTopicEvent(new GoToTopicEvent(category, topicId, topicPage, pagePosition));
-                            }
-                        });
-                    }
-                });
+        urlParser.parseUrl(intentUrl).compose(RxUtils.applySchedulers())
+                .subscribe(mdLink -> mdLink.ifTopicLink((category, topicId, topicPage, pagePosition) -> {
+                    Timber.d("Parsed link for category='%s', topic='%d', page='%d'", category.name(), topicId, topicPage);
+                    onGoToTopicEvent(new GoToTopicEvent(category, topicId, topicPage, pagePosition));
+                }));
     }
 
     @Override
@@ -299,7 +287,7 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
      */
     protected void loadTopic(Topic topic, int page, PagePosition pagePosition) {
         Timber.d("Loading topic '%s' (page %d)", topic.title(), page);
-        TopicFragment topicFragment = new TopicFragmentBuilder(page, topic).currentPagePosition(pagePosition).build();
+        TopicFragment topicFragment = new TopicFragmentBuilder(page, pagePosition, topic).build();
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
@@ -316,7 +304,7 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
     }
 
     protected void loadAnonymousTopic(Topic topic, int page, PagePosition pagePosition) {
-        TopicFragment anonymousTopicFragment = new TopicFragmentBuilder(page, topic).currentPagePosition(pagePosition).build();
+        TopicFragment anonymousTopicFragment = new TopicFragmentBuilder(page, pagePosition, topic).build();
         int topicFragmentContainer = isTwoPaneMode() ? R.id.details_container : R.id.container;
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -436,7 +424,7 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
     public void onInternalLinkClicked(InternalLinkClickedEvent event) {
         TopicFragment topicFragment = (TopicFragment) getSupportFragmentManager().findFragmentByTag(TOPIC_FRAGMENT_TAG);
         if (topicFragment != null && event.getTopic().id() == topicFragment.getTopic().id() && event.getPage() == topicFragment.getCurrentPage()) {
-            topicFragment.setCurrentPagePosition(event.getPagePosition());
+            //topicFragment.setCurrentPagePosition(event.getPagePosition());
         }
     }
 
@@ -467,16 +455,10 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
                 break;
             case DELETE:
                 Timber.d("About to delete post");
-                new MaterialDialog.Builder(this)
-                        .content(R.string.post_delete_confirmation)
-                        .positiveText(R.string.post_delete_yes)
-                        .negativeText(R.string.post_delete_no)
-                        .onPositive(new MaterialDialog.SingleButtonCallback() {
-                            @Override
-                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                deletePost(event.getTopic(), event.getPostId());
-                            }
-                        })
+                new AlertDialog.Builder(this)
+                        .setTitle(R.string.post_delete_confirmation)
+                        .setPositiveButton(R.string.post_delete_yes, (dialog, which) -> deletePost(event.getTopic(), event.getPostId()))
+                        .setNegativeButton(R.string.post_delete_no, null)
                         .show();
                 break;
             default:

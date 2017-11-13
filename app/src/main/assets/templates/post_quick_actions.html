@@ -1,11 +1,11 @@
-<a class="post-action action-lg" material onClick="Android.quotePost({post_id})"><i class="fa fa-lg fa-commenting-o"></i></a>
+<a class="post-action action-lg" material onClick="Android.quotePost({post_id})"><i class="material-icons">comment</i></a>
 
 <a class="post-action action-lg multi-quote" material onClick="toggleQuoteStatus(this, {post_id})">
-    <span class="fa-stack fa-lg">
-        <i class="fa fa-comment-o fa-stack-1x"></i>
-        <i class="fa fa-plus fa-sm fa-stack-1x"></i>
+    <span class="md-stack">
+        <i class="material-icons">mode_comment</i>
+        <i class="material-icons md-stack-1x stacked">add</i>
     </span>
 </a>
 
 <!-- Overflow button which triggers the dropdown -->
-<a class="post-action" onclick="toggleOverflowMenu('overflow{post_id}')" material><i class="fa fa-ellipsis-v"></i></a>
+<a class="post-action" onclick="toggleOverflowMenu('overflow{post_id}')" material><i class="material-icons">more_vert</i></a>

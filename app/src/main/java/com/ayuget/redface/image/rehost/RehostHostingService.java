@@ -17,6 +17,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 import okio.ByteString;
 import rx.Observable;
 import rx.exceptions.Exceptions;
@@ -95,6 +96,6 @@ public class RehostHostingService implements ImageHostingService {
 
         Response response = uploadClient.newCall(request).execute();
         if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
-        return resultParser.parseResultPage(response.body().string());
+        return resultParser.parseResultPage(ResponseBody.create(MediaType.parse("text/html; charset=UTF-8"),response.body().bytes()).string());
     }
 }

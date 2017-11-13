@@ -23,4 +23,5 @@
     android:elevation="4dp"
     android:minHeight="?attr/actionBarSize"
     app:layout_scrollFlags="scroll|enterAlways"
+    app:contentInsetStartWithNavigation="0dp"
     style="@style/RedfaceToolbar" />

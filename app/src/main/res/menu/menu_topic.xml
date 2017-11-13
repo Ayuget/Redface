@@ -20,6 +20,31 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/action_search"
+        android:title="@string/action_search"
+        android:orderInCategory="20"
+        android:icon="@drawable/ic_search_white_24dp"
+        app:showAsAction="always|collapseActionView"
+        app:actionLayout="@layout/actionbar_topic_search_layout" />
+
+    <item
+        android:title="@string/action_topic_search_title"
+        android:id="@+id/action_topic_search_filters"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_filter_list_white_24dp">
+        <menu>
+            <item
+                android:title="@string/action_topic_search_filter"
+                android:id="@+id/action_topic_search_filter"
+                android:checkable="true"/>
+            <item
+                android:title="@string/action_topic_search_from_first_page"
+                android:id="@+id/action_topic_search_from_first_page"
+                android:checkable="true" />
+        </menu>
+    </item>
+
+    <item
         android:id="@+id/action_refresh_topic"
         android:title="@string/action_refresh_topic"
         android:orderInCategory="50"
@@ -59,5 +84,11 @@
         android:id="@+id/action_share"
         android:title="@string/action_share"
         android:orderInCategory="400"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_open_in_browser"
+        android:title="@string/action_open_in_browser"
+        android:orderInCategory="500"
         app:showAsAction="never" />
 </menu>

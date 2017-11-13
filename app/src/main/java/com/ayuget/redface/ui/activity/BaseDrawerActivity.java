@@ -489,6 +489,8 @@ public class BaseDrawerActivity extends BaseActivity {
         else if (drawerItem.isCategory()) {
             CategoryDrawerItem categoryDrawerItem = (CategoryDrawerItem) drawerItem;
 
+            dataService.clearTopicListCache();
+
             if (this instanceof TopicsActivity) {
                 onCategoryClicked(categoryDrawerItem.getCategory());
             }

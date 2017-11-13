@@ -19,7 +19,6 @@ package com.ayuget.redface.ui.fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,35 +27,39 @@ import android.webkit.WebView;
 import android.widget.Button;
 
 import com.ayuget.redface.R;
-import com.ayuget.redface.RedfaceApp;
 import com.ayuget.redface.account.UserManager;
 import com.ayuget.redface.data.DataService;
 import com.ayuget.redface.data.api.MDEndpoints;
 import com.ayuget.redface.data.api.MDService;
 import com.ayuget.redface.data.api.model.Post;
 import com.ayuget.redface.data.api.model.Topic;
+import com.ayuget.redface.data.api.model.TopicPage;
+import com.ayuget.redface.data.api.model.misc.SearchTerms;
 import com.ayuget.redface.data.rx.EndlessObserver;
 import com.ayuget.redface.network.DownloadStrategy;
 import com.ayuget.redface.settings.Blacklist;
 import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.ui.event.BlockUserEvent;
+import com.ayuget.redface.ui.event.DisableSearchModeEvent;
+import com.ayuget.redface.ui.event.OverriddenPagePosition;
 import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
 import com.ayuget.redface.ui.event.PageSelectedEvent;
-import com.ayuget.redface.ui.event.ScrollToPostEvent;
+import com.ayuget.redface.ui.event.ScrollToPositionEvent;
 import com.ayuget.redface.ui.event.ShowAllSpoilersEvent;
 import com.ayuget.redface.ui.event.TopicPageCountUpdatedEvent;
 import com.ayuget.redface.ui.event.UnquoteAllPostsEvent;
 import com.ayuget.redface.ui.misc.ImageMenuHandler;
+import com.ayuget.redface.ui.misc.PagePosition;
 import com.ayuget.redface.ui.misc.SnackbarHelper;
 import com.ayuget.redface.ui.view.TopicPageView;
 import com.ayuget.redface.util.Connectivity;
 import com.hannesdorfmann.fragmentargs.annotation.Arg;
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs;
-import com.squareup.leakcanary.RefWatcher;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -65,20 +68,20 @@ import timber.log.Timber;
 
 @FragmentWithArgs
 public class PostsFragment extends BaseFragment {
-    private static final String ARG_POST_LIST = "post_list";
-
-    private static final String ARG_TOPIC = "topic";
-
     private static final String ARG_SAVED_SCROLL_POSITION = "savedScrollPosition";
+    private static final String ARG_POSTS_IN_CACHE_HINT = "postsInCacheHint";
 
     @Arg
     Topic topic;
 
     @Arg
-    int currentPage;
+    boolean isInitialPage;
 
     @Arg
-    int initialPage;
+    int pageNumber;
+
+    @Arg
+    PagePosition pageInitialPosition;
 
     @InjectView(R.id.loading_indicator)
     View loadingIndicator;
@@ -120,11 +123,15 @@ public class PostsFragment extends BaseFragment {
      */
     private int currentScrollPosition;
 
+    /**
+     * Hint indicating if posts might be in cache.
+     */
+    private boolean postsInCacheHint = false;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Timber.d("@%d -> Fragment(currentPage=%d) -> onCreate", System.identityHashCode(this), currentPage);
-
         super.onCreate(savedInstanceState);
+        debugLog("onCreate");
 
         if (savedInstanceState == null) {
             currentScrollPosition = 0;
@@ -136,50 +143,35 @@ public class PostsFragment extends BaseFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable final Bundle savedInstanceState) {
-        Timber.d("@%d -> Fragment(currentPage=%d) -> onCreateView(page=%d)", System.identityHashCode(this), currentPage, currentPage);
+        debugLog("onCreateView");
 
         final View rootView = inflateRootView(R.layout.fragment_posts, inflater, container);
 
         topicPageView.setHostActivity(getActivity());
 
-        // Default view is the loading indicator
-        showLoadingIndicator();
-
-        // Restore the list of posts when the fragment is recreated by the framework
-        boolean restoredPosts = false;
-
         if (savedInstanceState != null) {
-            Timber.d("@%d -> Fragment(currentPage=%d) -> trying to restore state", System.identityHashCode(this), currentPage);
-            displayedPosts = savedInstanceState.getParcelableArrayList(ARG_POST_LIST);
-            if (displayedPosts != null) {
-                Timber.d("@%d -> Fragment(currentPage=%d) -> Restored %d posts to fragment", System.identityHashCode(this), displayedPosts.size(), currentPage);
-                restoredPosts = displayedPosts.size() > 0;
-            }
+            debugLog("trying to restore state");
+            postsInCacheHint = savedInstanceState.getBoolean(ARG_POSTS_IN_CACHE_HINT, false);
+            debugLog("are posts probably in cache ? : %s", postsInCacheHint ? "true" : "false");
         }
 
-        if (displayedPosts == null) {
-            displayedPosts = new ArrayList<>();
+        // Default view is the loading indicator
+        if (! postsInCacheHint) {
+            debugLog("posts probably not in cache, showing loading indicator");
+            showLoadingIndicator();
         }
-        else if (displayedPosts.size() > 0){
-            topicPageView.setTopic(topic);
-            topicPageView.setPage(currentPage);
-            topicPageView.setPosts(displayedPosts);
-            showPosts();
-        }
+
+        displayedPosts = new ArrayList<>();
 
         // Implement swipe to refresh
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            savePageScrollPosition();
-            Timber.d("Refreshing topic page '%d' for topic %s", currentPage, topic);
-            loadPage(currentPage);
-        });
+        swipeRefreshLayout.setOnRefreshListener(() -> refreshPosts(false));
         swipeRefreshLayout.setColorSchemeResources(R.color.theme_primary, R.color.theme_primary_dark);
 
         if (errorReloadButton != null) {
             errorReloadButton.setOnClickListener(v -> {
-                Timber.d("Refreshing topic page '%d' for topic %s", currentPage, topic);
+                debugLog("Refreshing topic page '%d' for topic %s", pageNumber, topic);
                 showLoadingIndicator();
-                loadPage(currentPage);
+                loadPage();
             });
         }
 
@@ -192,6 +184,7 @@ public class PostsFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
+        debugLog("onResume (isInitialPage = %s)", isInitialPage);
 
         topicPageView.setOnQuoteListener((TopicFragment)getParentFragment());
         topicPageView.setOnPageLoadedListener(() -> {
@@ -202,17 +195,30 @@ public class PostsFragment extends BaseFragment {
             updateQuotedPostsStatus();
         });
 
-        boolean hasLoadedPosts = displayedPosts != null && displayedPosts.size() > 0;
-        boolean hasNoVisiblePosts = displayedPosts != null && displayedPosts.size() == 0;
+        if (isInitialPage) {
+            boolean hasNoVisiblePosts = (displayedPosts != null && displayedPosts.size() == 0) || displayedPosts == null;
 
-        // Page is loaded instantly only if it's the initial page requested on topic load. Other
-        // pages will be loaded once selected in the ViewPager
-        if (isInitialPage() && (hasNoVisiblePosts || displayedPosts == null)) {
-            showLoadingIndicator();
-            loadPage(currentPage);
+            // Page is loaded instantly only if it's the initial page requested on topic load. Other
+            // pages will be loaded once selected in the ViewPager
+            if (hasNoVisiblePosts) {
+                if (!postsInCacheHint) {
+                    debugLog("initial page and posts probably not in cache => show loading indicator");
+                    showLoadingIndicator();
+                }
+                loadPage();
+            } else {
+                updateQuotedPostsStatus();
+            }
         }
-        else if (hasLoadedPosts){
-            updateQuotedPostsStatus();
+        else {
+            // If posts are probably in cache, it is safe to try to load them, because it definitely
+            // means the page has already been loaded once, hence we won't mess up topic flags.
+            if (postsInCacheHint) {
+                loadPage();
+            }
+            else {
+                debugLog("Posts are probably not in cache, and not initial page, waiting for user swipe");
+            }
         }
     }
 
@@ -230,7 +236,6 @@ public class PostsFragment extends BaseFragment {
         if (topicPageView != null) {
             unregisterForContextMenu(topicPageView);
 
-            topicPageView.setOnScrollListener(null);
             topicPageView.setOnPageLoadedListener(null);
 
             // Unregister parent fragment as quote listener to avoid memory leaks
@@ -238,9 +243,6 @@ public class PostsFragment extends BaseFragment {
 
             topicPageView.removeAllViews();
             topicPageView.destroy();
-
-            RefWatcher refWatcher = RedfaceApp.getRefWatcher(getActivity());
-            refWatcher.watch(topicPageView);
         }
 
         if (swipeRefreshLayout != null) {
@@ -255,27 +257,24 @@ public class PostsFragment extends BaseFragment {
     private void savePageScrollPosition() {
         if (topicPageView != null) {
             currentScrollPosition = topicPageView.getScrollY();
-            Timber.d("Saved scroll position = %d (currentPage=%d)", currentScrollPosition, currentPage);
+            debugLog("saved scroll position = %d", currentScrollPosition);
         }
     }
 
     private void restorePageScrollPosition() {
         if (topicPageView != null) {
             topicPageView.setScrollY(currentScrollPosition);
-            Timber.d("Restored scroll position = %d (currentPage=%d)", currentScrollPosition, currentPage);
+            debugLog("restored scroll position = %d", currentScrollPosition);
         }
-    }
-
-    private boolean isInitialPage() {
-        return initialPage == currentPage;
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Timber.d("@%d -> Fragment(currentPage=%d) Saving '%d' posts / scrollPosition = '%d'", System.identityHashCode(this), currentPage, displayedPosts.size(), currentScrollPosition);
+        debugLog("saving '%d' posts / scrollPosition = '%d'", displayedPosts.size(), currentScrollPosition);
+        debugLog("saving posts in cache hint : %s", postsInCacheHint ? "true" : "false");
 
-        outState.putParcelableArrayList(ARG_POST_LIST, displayedPosts);
+        outState.putBoolean(ARG_POSTS_IN_CACHE_HINT, postsInCacheHint);
         outState.putInt(ARG_SAVED_SCROLL_POSITION, currentScrollPosition);
     }
 
@@ -283,29 +282,59 @@ public class PostsFragment extends BaseFragment {
      * Defer posts loading until current fragment is visible in the ViewPager. Avoids screwing with
      * forum's read/unread markers.
      */
-    @Subscribe public void onPageSelectedEvent(PageSelectedEvent event) {
-        if (! isInitialPage() && event.getTopic().id() == topic.id() && event.getPage() == currentPage && isVisible()) {
-            Timber.d("@%d -> Fragment(currentPage=%d) received event for page %d selected", System.identityHashCode(this), currentPage, event.getPage());
+    @SuppressWarnings("unused")
+    @Subscribe
+    public void onPageSelectedEvent(PageSelectedEvent event) {
+        if (!isInitialPage && event.topic().id() == topic.id() && event.page() == pageNumber && isVisible()) {
+            debugLog("'page selected event' received");
 
             if (displayedPosts != null && displayedPosts.size() == 0) {
-                loadPage(currentPage);
+                loadPage();
+            }
+
+            OverriddenPagePosition overriddenPagePosition = event.overriddenPagePosition();
+            if (overriddenPagePosition != null) {
+                if (overriddenPagePosition.shouldScrollToPost()) {
+                    pageInitialPosition = overriddenPagePosition.targetPost();
+                }
+                overridePagePosition(event.overriddenPagePosition());
+            }
+
+            if (event.activeSearchTerm() == null) {
+                disableSearchMode();
+            }
+            else {
+                enableSearchMode(event.activeSearchTerm());
             }
         }
     }
 
-    @Subscribe public void onPageRefreshRequestEvent(PageRefreshRequestEvent event) {
+    @SuppressWarnings("unused")
+    @Subscribe
+    public void onPageRefreshRequestEvent(PageRefreshRequestEvent event) {
         if (event.getTopic().id() == topic.id() && isVisible()) {
-            Timber.d("@%d -> Fragment(currentPage=%d) -> Refresh requested event", System.identityHashCode(this), currentPage);
-
-            savePageScrollPosition();
-            showLoadingIndicator();
-            loadPage(currentPage);
+            refreshPosts(true);
         }
     }
 
-    @Subscribe public void onShowAllSpoilersEvent(ShowAllSpoilersEvent event) {
-        if (event.getTopic().id() == topic.id() && isVisible() && event.getCurrentPage() == currentPage) {
-            Timber.d("@%d -> Fragment(currentPage=%d) -> Show all spoilers event", System.identityHashCode(this), currentPage);
+    void refreshPosts(boolean showLoadingIndicator) {
+        debugLog("Refreshing topic for topic %s", topic);
+
+        dataService.clearPostsCache(topic, pageNumber);
+
+        if (showLoadingIndicator) {
+            showLoadingIndicator();
+        }
+
+        savePageScrollPosition();
+        loadPage();
+    }
+
+    @SuppressWarnings("unused")
+    @Subscribe
+    public void onShowAllSpoilersEvent(ShowAllSpoilersEvent event) {
+        if (event.getTopic().id() == topic.id() && isVisible() && event.getCurrentPage() == pageNumber) {
+            debugLog("'show all spoilers event' received");
             topicPageView.showAllSpoilers();
         }
     }
@@ -314,6 +343,7 @@ public class PostsFragment extends BaseFragment {
      * Event fired by the host {@link com.ayuget.redface.ui.fragment.TopicFragment} to notify
      * that multi-quote mode has been turned off and that posts UI should be updated accordingly.
      */
+    @SuppressWarnings("unused")
     @Subscribe
     public void onUnquoteAllPostsEvent(UnquoteAllPostsEvent event) {
         if (topicPageView != null) {
@@ -326,27 +356,67 @@ public class PostsFragment extends BaseFragment {
      * another choice is to use the event bus to subscribe to scrolling "events" and change the
      * scroll position like this.
      */
-    @Subscribe public void onScrollToPost(ScrollToPostEvent event) {
-        if (event.getTopic().id() == topic.id() && event.getPage() == currentPage) {
-            topicPageView.setPagePosition(event.getPagePosition());
+    @SuppressWarnings("unused")
+    @Subscribe
+    public void onScrollToPosition(ScrollToPositionEvent event) {
+        if (event.topic().id() == topic.id() && event.page() == pageNumber) {
+            OverriddenPagePosition overriddenPagePosition = event.overriddenPagePosition();
+
+            debugLog("Received scroll to position event");
+            overridePagePosition(overriddenPagePosition);
+
+            if (event.activeSearchTerm() == null) {
+                disableSearchMode();
+            }
+            else {
+                enableSearchMode(event.activeSearchTerm());
+            }
         }
+    }
+
+    private void overridePagePosition(OverriddenPagePosition overriddenPagePosition) {
+        debugLog("Overriding page position to : %s", overriddenPagePosition);
+
+        if (overriddenPagePosition.shouldScrollToPost()) {
+            PagePosition targetPost = overriddenPagePosition.targetPost();
+            if (targetPost != null) {
+                topicPageView.setPagePosition(targetPost);
+            }
+        }
+        else {
+            Integer targetScrollY = overriddenPagePosition.targetScrollY();
+            if (targetScrollY != null) {
+                topicPageView.setScrollY(targetScrollY);
+            }
+        }
+    }
+
+    @Subscribe
+    public void onDisableSearchModeEvent(DisableSearchModeEvent ignored) {
+        disableSearchMode();
+    }
+
+    private void disableSearchMode() {
+        Timber.d("Disabling search mode");
+    }
+
+    private void enableSearchMode(SearchTerms activeSearchTerm) {
+        Timber.d("Enabling search mode : %s", activeSearchTerm);
     }
 
     /**
      * Event thrown by {@link com.ayuget.redface.ui.view.TopicPageView} to notify
      * that an user has been blocked.
      */
-    @Subscribe public void onBlockUser(final BlockUserEvent event) {
+    @SuppressWarnings("unused")
+    @Subscribe
+    public void onBlockUser(final BlockUserEvent event) {
         blacklist.addBlockedAuthor(event.getAuthor());
         SnackbarHelper.makeWithAction(PostsFragment.this, getString(R.string.user_blocked, event.getAuthor()),
-                R.string.action_refresh_topic, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        bus.post(new PageRefreshRequestEvent(topic));
-                    }
-                }).show();
+                R.string.action_refresh_topic, v -> bus.post(new PageRefreshRequestEvent(topic))).show();
     }
 
+    @SuppressWarnings("unused")
     @Subscribe
     public void onTopicPageCountUpdated(TopicPageCountUpdatedEvent event) {
         if (event.getTopic().id() == topic.id()) {
@@ -355,21 +425,21 @@ public class PostsFragment extends BaseFragment {
     }
 
     private void showLoadingIndicator() {
-        Timber.d("@%d -> Showing loading layout", System.identityHashCode(this));
+        debugLog("Showing loading layout");
         if (errorView != null) { errorView.setVisibility(View.GONE); }
         if (loadingIndicator != null) { loadingIndicator.setVisibility(View.VISIBLE); }
         if (swipeRefreshLayout != null) { swipeRefreshLayout.setVisibility(View.GONE); }
     }
 
     private void showErrorView() {
-        Timber.d("@%d -> Showing error layout", System.identityHashCode(this));
+        debugLog("Showing error layout");
         if (errorView != null) { errorView.setVisibility(View.VISIBLE); }
         if (loadingIndicator != null) { loadingIndicator.setVisibility(View.GONE); }
         if (swipeRefreshLayout != null) { swipeRefreshLayout.setVisibility(View.GONE); }
     }
 
     private void showPosts() {
-        Timber.d("@%d -> Showing posts layout", System.identityHashCode(this));
+        debugLog("Showing posts layout");
         if (errorView != null) { errorView.setVisibility(View.GONE); }
         if (loadingIndicator != null) { loadingIndicator.setVisibility(View.GONE); }
         if (swipeRefreshLayout != null) { swipeRefreshLayout.setVisibility(View.VISIBLE); }
@@ -382,26 +452,27 @@ public class PostsFragment extends BaseFragment {
                  (strategy == DownloadStrategy.WIFI && Connectivity.isConnectedWifi(getContext())));
     }
 
-    public void loadPage(final int page) {
-        Timber.d("@%d -> Loading page '%d'", System.identityHashCode(this), page);
-        subscribe(dataService.loadPosts(userManager.getActiveUser(), topic, page,
+    public void loadPage() {
+        debugLog("loading page");
+        subscribe(dataService.loadPosts(userManager.getActiveUser(), topic, pageNumber,
                 isDownloadStrategyMatching(settings.getImagesStrategy()),
                 isDownloadStrategyMatching(settings.getAvatarsStrategy()),
                 isDownloadStrategyMatching(settings.getSmileysStrategy()),
                 new EndlessObserver<List<Post>>() {
             @Override
             public void onNext(List<Post> posts) {
+                postsInCacheHint = true;
                 swipeRefreshLayout.setRefreshing(false);
 
                 displayedPosts.clear();
                 displayedPosts.addAll(posts);
 
-                topicPageView.setTopic(topic);
-                topicPageView.setPage(currentPage);
+                debugLog("Done loading page, showing posts");
 
-                Timber.d("@%d -> Done loading page, settings posts", System.identityHashCode(PostsFragment.this));
-                topicPageView.setPosts(posts);
+                TopicPage topicPage = TopicPage.create(topic, pageNumber, posts, pageInitialPosition);
+                topicPageView.renderPage(topicPage);
 
+                notifyPageLoaded();
                 showPosts();
             }
 
@@ -415,9 +486,27 @@ public class PostsFragment extends BaseFragment {
         }));
     }
 
+    private void notifyPageLoaded() {
+        if (displayedPosts.size() == 0) {
+            Timber.w("Empty list of posts...");
+            return;
+        }
+
+        long searchStartPostId = pageInitialPosition.getPostId();
+        if (pageInitialPosition.isTop()) {
+            searchStartPostId = displayedPosts.get(0).getId();
+        }
+        else if (pageInitialPosition.isBottom()) {
+            searchStartPostId = displayedPosts.get(displayedPosts.size() - 1).getId();
+        }
+
+        TopicFragment topicFragment = (TopicFragment) getParentFragment();
+        topicFragment.notifyPageLoaded(pageNumber, searchStartPostId);
+    }
+
     private void updateQuotedPostsStatus() {
-        List<Long> quotedPosts = ((TopicFragment)getParentFragment()).getPageQuotedPosts(currentPage);
-        Timber.d("Posts already quoted for page '%d' = %s", currentPage, quotedPosts);
+        List<Long> quotedPosts = ((TopicFragment)getParentFragment()).getPageQuotedPosts(pageNumber);
+        debugLog("already quoted posts for page = %s", quotedPosts);
         if (quotedPosts.size() > 0) {
             topicPageView.setQuotedPosts(quotedPosts);
         }
@@ -425,52 +514,52 @@ public class PostsFragment extends BaseFragment {
 
     private void setupImagesInteractions() {
         registerForContextMenu(topicPageView);
-        topicPageView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
-            @Override
-            public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-                WebView.HitTestResult result = ((WebView) v).getHitTestResult();
-                if (result.getType() == WebView.HitTestResult.IMAGE_TYPE || result.getType() == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE) {
-                    final String url = result.getExtra();
+        topicPageView.setOnCreateContextMenuListener((menu, v, menuInfo) -> {
+            WebView.HitTestResult result = ((WebView) v).getHitTestResult();
+            if (result.getType() == WebView.HitTestResult.IMAGE_TYPE || result.getType() == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE) {
+                final String url = result.getExtra();
 
-                    final ImageMenuHandler imageMenuHandler = new ImageMenuHandler(getActivity(), url);
-                    MenuItem.OnMenuItemClickListener itemClickListener = new MenuItem.OnMenuItemClickListener() {
-                        @Override
-                        public boolean onMenuItemClick(MenuItem item) {
-                            switch (item.getItemId()) {
-                                case R.id.action_save_original_image:
-                                    imageMenuHandler.saveImage(false);
-                                    break;
-                                case R.id.action_save_image_as_png:
-                                    imageMenuHandler.saveImage(true);
-                                    break;
-                                case R.id.action_open_image:
-                                    imageMenuHandler.openImage();
-                                    break;
-                                case R.id.action_share_image:
-                                    imageMenuHandler.shareImage();
-                                    break;
-                                case R.id.action_exif_data:
-                                    imageMenuHandler.openExifData();
-                                    break;
-                                default:
-                                    Timber.e("Unknow menu item clicked");
-                            }
+                final ImageMenuHandler imageMenuHandler = new ImageMenuHandler(getActivity(), url);
+                MenuItem.OnMenuItemClickListener itemClickListener = item -> {
+                    switch (item.getItemId()) {
+                        case R.id.action_save_original_image:
+                            imageMenuHandler.saveImage(false);
+                            break;
+                        case R.id.action_save_image_as_png:
+                            imageMenuHandler.saveImage(true);
+                            break;
+                        case R.id.action_open_image:
+                            imageMenuHandler.openImage();
+                            break;
+                        case R.id.action_share_image:
+                            imageMenuHandler.shareImage();
+                            break;
+                        case R.id.action_exif_data:
+                            imageMenuHandler.openExifData();
+                            break;
+                        default:
+                            Timber.e("Unknow menu item clicked");
+                    }
 
-                            return true;
-                        }
-                    };
+                    return true;
+                };
 
-                    if (! url.contains(mdEndpoints.baseurl())) {
-                        menu.setHeaderTitle(url);
-                        getActivity().getMenuInflater().inflate(R.menu.menu_save_image, menu);
-                        for (int i = 0; i < menu.size(); i++) {
-                            menu.getItem(i).setOnMenuItemClickListener(itemClickListener);
-                        }
+                if (! url.contains(mdEndpoints.baseurl())) {
+                    menu.setHeaderTitle(url);
+                    getActivity().getMenuInflater().inflate(R.menu.menu_save_image, menu);
+                    for (int i = 0; i < menu.size(); i++) {
+                        menu.getItem(i).setOnMenuItemClickListener(itemClickListener);
                     }
                 }
             }
         });
     }
 
+    private void debugLog(String message, Object... args) {
+        Timber.d(String.format(Locale.getDefault(), "[Page: %d, PageInitialPosition: %s, Id: %d] ", pageNumber, pageInitialPosition, System.identityHashCode(this)) + message, args);
+    }
 
+    public TopicPageView getTopicPageView() {
+        return topicPageView;
+    }
 }
