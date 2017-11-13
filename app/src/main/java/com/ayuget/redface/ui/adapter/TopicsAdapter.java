@@ -111,7 +111,7 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ViewHolder
         Context context = viewGroup.getContext();
 
         int itemLayout;
-        if (isEnhancedCompactMode) {
+        if (isCompactMode && isEnhancedCompactMode) {
             itemLayout = R.layout.list_item_topic_compact;
         }
         else if (isCompactMode) {
