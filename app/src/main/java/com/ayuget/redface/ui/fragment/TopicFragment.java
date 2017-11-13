@@ -695,7 +695,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     }
 
     public void showGoToPageDialog() {
-        AlertDialog dialog = new AlertDialog.Builder(getActivity(), themeManager.getActiveThemeStyle())
+        AlertDialog dialog = new AlertDialog.Builder(getActivity())
                 .setView(R.layout.dialog_go_to_page)
                 .setPositiveButton(R.string.dialog_go_to_page_positive_text, (dialog1, which) -> {
                     try {
