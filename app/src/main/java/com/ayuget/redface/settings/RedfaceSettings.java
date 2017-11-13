@@ -128,6 +128,10 @@ public class RedfaceSettings {
         return sharedPreferences.getBoolean(SettingsConstants.KEY_ENABLE_COMPACT_MODE, false);
     }
 
+    public boolean isEnhancedCompactModeEnabled() {
+        return sharedPreferences.getBoolean(SettingsConstants.KEY_ENABLE_ENHANCED_COMPACT_MODE, false);
+    }
+
     public boolean areNavigationButtonsEnabled() {
         return sharedPreferences.getBoolean(SettingsConstants.KEY_SHOW_NAVIGATION_BUTTONS, false);
     }
