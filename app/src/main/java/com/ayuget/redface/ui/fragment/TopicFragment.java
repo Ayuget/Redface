@@ -399,10 +399,10 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
     private void startSearchMode(Toolbar toolbar, boolean progressively) {
         if (progressively) {
-            tintToolbarProgressively(toolbar, R.attr.colorPrimary, R.attr.statusBarBackgroundColor, R.attr.replyButtonBackground, R.attr.actionModeBackground, R.attr.actionModeBackground, R.attr.actionModeBackground);
+            tintToolbarProgressively(toolbar, R.attr.colorPrimary, R.attr.statusBarBackgroundColor, R.attr.replyButtonBackground, R.attr.actionModeBackground, R.attr.actionModeBackground, R.attr.replyButtonBackground);
         }
         else {
-            tintToolbarImmediately(toolbar, R.attr.actionModeBackground, R.attr.actionModeBackground, R.attr.actionModeBackground);
+            tintToolbarImmediately(toolbar, R.attr.actionModeBackground, R.attr.actionModeBackground, R.attr.replyButtonBackground);
         }
 
         topicWordSearch.requestFocus();
@@ -419,7 +419,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
         topicAuthorSearch.clearFocus();
 
         if (progressively) {
-            tintToolbarProgressively(toolbar, R.attr.actionModeBackground, R.attr.actionModeBackground, R.attr.actionModeBackground, R.attr.colorPrimary, R.attr.statusBarBackgroundColor, R.attr.replyButtonBackground);
+            tintToolbarProgressively(toolbar, R.attr.actionModeBackground, R.attr.actionModeBackground, R.attr.replyButtonBackground, R.attr.colorPrimary, R.attr.statusBarBackgroundColor, R.attr.replyButtonBackground);
         }
         else {
             tintToolbarImmediately(toolbar, R.attr.colorPrimary, R.attr.statusBarBackgroundColor, R.attr.replyButtonBackground);
@@ -437,7 +437,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
         toolbar.setBackgroundColor(toolbarColor);
         pagerTitleStrip.setBackgroundColor(toolbarColor);
-        replyButton.setBackgroundTintList(ColorStateList.valueOf(toolbarColor));
+        replyButton.setBackgroundTintList(ColorStateList.valueOf(replyButtonColor));
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getActivity().getWindow().setStatusBarColor(statusBarColor);
@@ -506,7 +506,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
         if (! hostActivity.isTwoPaneMode()) {
             if (active) {
-                tintToolbarProgressively(getToolbar(), R.attr.colorPrimary, R.attr.statusBarBackgroundColor, R.attr.replyButtonBackground, R.attr.actionModeBackground, R.attr.actionModeBackground, R.attr.actionModeBackground);
+                tintToolbarProgressively(getToolbar(), R.attr.colorPrimary, R.attr.statusBarBackgroundColor, R.attr.replyButtonBackground, R.attr.actionModeBackground, R.attr.actionModeBackground, R.attr.replyButtonBackground);
             }
             else {
                 tintToolbarImmediately(getToolbar(), R.attr.colorPrimary, R.attr.statusBarBackgroundColor, R.attr.replyButtonBackground);
