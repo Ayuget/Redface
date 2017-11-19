@@ -32,10 +32,13 @@ import com.ayuget.redface.data.rx.EndlessObserver;
 import com.ayuget.redface.data.rx.RxUtils;
 import com.ayuget.redface.data.rx.SubscriptionHandler;
 import com.ayuget.redface.data.state.CategoriesStore;
+import com.ayuget.redface.settings.Blacklist;
 import com.ayuget.redface.ui.UIConstants;
+import com.ayuget.redface.ui.event.BlockUserEvent;
 import com.ayuget.redface.ui.event.EditPostEvent;
 import com.ayuget.redface.ui.event.GoToTopicEvent;
 import com.ayuget.redface.ui.event.InternalLinkClickedEvent;
+import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
 import com.ayuget.redface.ui.event.PostActionEvent;
 import com.ayuget.redface.ui.event.QuotePostEvent;
 import com.ayuget.redface.ui.event.TopicContextItemSelectedEvent;
@@ -82,6 +85,9 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
 
     @Inject
     HFRUrlParser urlParser;
+
+    @Inject
+    Blacklist blacklist;
 
     boolean restoredInstanceState = false;
 
@@ -466,6 +472,27 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
                 break;
         }
     }
+
+
+    /**
+     * Event thrown by {@link com.ayuget.redface.ui.view.TopicPageView} to notify
+     * that an user has been blocked.
+     */
+    @SuppressWarnings("unused")
+    @Subscribe
+    public void onBlockUser(final BlockUserEvent event) {
+        int string_id;
+        if (blacklist.isAuthorBlocked(event.getAuthor())) {
+            blacklist.unblockAuthor(event.getAuthor());
+            string_id = R.string.user_unblocked;
+        } else {
+            blacklist.addBlockedAuthor(event.getAuthor());
+            string_id = R.string.user_blocked;
+        }
+        SnackbarHelper.makeWithAction(TopicsActivity.this, getString(string_id, event.getAuthor()),
+                R.string.action_refresh_topic, v -> bus.post(new PageRefreshRequestEvent(event.getTopic()))).show();
+    }
+
 
     /**
      * Marks a given post as favorite
