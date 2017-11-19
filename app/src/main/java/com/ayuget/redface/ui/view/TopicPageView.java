@@ -370,7 +370,7 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
         public void blockUser(final int postId) {
             for (final Post post : topicPage.posts()) {
                 if (post.getId() == postId) {
-                    TopicPageView.this.post(() -> bus.post(new BlockUserEvent(post.getAuthor())));
+                    TopicPageView.this.post(() -> bus.post(new BlockUserEvent(post.getAuthor(), topicPage.topic())));
                 }
             }
         }

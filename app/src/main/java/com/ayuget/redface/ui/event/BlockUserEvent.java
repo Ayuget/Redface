@@ -16,14 +16,22 @@
 
 package com.ayuget.redface.ui.event;
 
+import com.ayuget.redface.data.api.model.Topic;
+
 public class BlockUserEvent {
     private final String author;
+    private final Topic topic;
 
-    public BlockUserEvent(String author) {
+    public BlockUserEvent(String author, Topic topic) {
         this.author = author;
+        this.topic = topic;
     }
 
     public String getAuthor() {
         return author;
+    }
+
+    public Topic getTopic() {
+        return topic;
     }
 }
