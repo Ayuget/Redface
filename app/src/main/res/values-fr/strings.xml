@@ -281,5 +281,6 @@
     <string name="search_topic_in_progress">Recherche en cours</string>
     <string name="search_topic_error">Erreur lors de la recherche</string>
     <string name="search_topic_ended">Aucun résultat supplémentaire</string>
-    <string name="user_unblocked">Utilisateur %1$s débloqué !</string>
+    <string name="pref_topic_list_compact_mode_more_info_title">Plus d\'infos en mode compact</string>
+    <string name="pref_topic_list_compact_mode_more_info_summary">Affiche plus d\'informations sur le sujet</string>
 </resources>

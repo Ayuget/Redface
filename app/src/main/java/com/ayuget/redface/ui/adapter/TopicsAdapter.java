@@ -57,6 +57,8 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ViewHolder
 
     private final boolean isCompactMode;
 
+    private final boolean isEnhancedCompactMode;
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final View parent;
         public ImageView topicIcon;
@@ -89,13 +91,15 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ViewHolder
         void onTopicClicked(Topic topic);
     }
 
-    public TopicsAdapter(Context context, ThemeManager themeManager, boolean isCompactMode) {
+    public TopicsAdapter(Context context, ThemeManager themeManager, boolean isCompactMode, boolean isEnhancedCompactMode) {
         this.context = context;
         this.primaryTextColor = UiUtils.getPrimaryTextColor(context);
         this.secondaryTextColor = UiUtils.getSecondaryTextColor(context);
         this.readTextColor = UiUtils.getReadTextColor(context);
         this.themeManager = themeManager;
         this.isCompactMode = isCompactMode;
+        this.isEnhancedCompactMode = isEnhancedCompactMode;
+        Timber.d("Is enhanced compact mode ? = %b", isEnhancedCompactMode);
     }
 
     public void setOnTopicClickedListener(OnTopicClickedListener onTopicClickedListener) {
@@ -105,7 +109,19 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ViewHolder
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         Context context = viewGroup.getContext();
-        View parent = LayoutInflater.from(context).inflate(isCompactMode ? R.layout.list_item_topic_compact : R.layout.list_item_topic, viewGroup, false);
+
+        int itemLayout;
+        if (isEnhancedCompactMode) {
+            itemLayout = R.layout.list_item_topic_compact;
+        }
+        else if (isCompactMode) {
+            itemLayout = R.layout.list_item_topic_compact_light;
+        }
+        else {
+            itemLayout = R.layout.list_item_topic;
+        }
+
+        View parent = LayoutInflater.from(context).inflate(itemLayout, viewGroup, false);
         return new ViewHolder(parent);
     }
 
@@ -118,14 +134,20 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ViewHolder
         }
     }
 
+    private boolean showAdditionalDetails() {
+        return !isCompactMode || (isCompactMode && isEnhancedCompactMode);
+    }
+
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int i) {
         final Topic topic = topics.get(i);
 
         viewHolder.topicSubject.setText(topic.title());
 
-        viewHolder.topicLastPostInfos.setText(topic.lastPostAuthor() + " - " + formatLastPostDate(topic));
-        viewHolder.topicPagesCount.setText(String.valueOf(topic.pagesCount()) + " p");
+        if (showAdditionalDetails()) {
+            viewHolder.topicLastPostInfos.setText(topic.lastPostAuthor() + " - " + formatLastPostDate(topic));
+            viewHolder.topicPagesCount.setText(String.valueOf(topic.pagesCount()) + " p");
+        }
 
         GradientDrawable topicIconCircle = (GradientDrawable) viewHolder.topicIcon.getBackground();
         topicIconCircle.setColor(getTopicIconBackgroundColor(topic));
@@ -148,7 +170,7 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ViewHolder
             viewHolder.unreadPagesCount.setText(getPrintableUnreadPagesCount(topic.unreadPagesCount()));
             viewHolder.topicSubject.setTextColor(primaryTextColor);
 
-            if (! isCompactMode) {
+            if (showAdditionalDetails()) {
                 viewHolder.topicLastPostInfos.setTextColor(secondaryTextColor);
                 viewHolder.topicPagesCount.setTextColor(secondaryTextColor);
             }
@@ -157,7 +179,7 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ViewHolder
             viewHolder.unreadPagesCount.setVisibility(View.INVISIBLE);
             viewHolder.topicSubject.setTextColor(readTextColor);
 
-            if (! isCompactMode) {
+            if (showAdditionalDetails()) {
                 viewHolder.topicLastPostInfos.setTextColor(readTextColor);
                 viewHolder.topicPagesCount.setTextColor(readTextColor);
             }

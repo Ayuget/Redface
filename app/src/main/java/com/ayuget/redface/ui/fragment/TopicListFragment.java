@@ -152,7 +152,7 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
         subcategoriesAdapter = new SubcategoriesAdapter(getActivity(), topicFilter);
         subcategoriesAdapter.replaceWith(category);
 
-        topicsAdapter = new TopicsAdapter(new ContextThemeWrapper(getActivity(), themeManager.getActiveThemeStyle()), themeManager, settings.isCompactModeEnabled());
+        topicsAdapter = new TopicsAdapter(new ContextThemeWrapper(getActivity(), themeManager.getActiveThemeStyle()), themeManager, settings.isCompactModeEnabled(), settings.isEnhancedCompactModeEnabled());
         topicsAdapter.setOnTopicClickedListener(this);
     }
 

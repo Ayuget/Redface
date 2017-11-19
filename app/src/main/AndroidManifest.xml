@@ -92,7 +92,6 @@
                 <data android:mimeType="image/*" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.activity.SearchTopicActivity" />
 
         <meta-data android:name="com.crashlytics.ApiKey" android:value="b1f369fddd2fed6f71072ef7db728637b1c633bc"/>
     </application>

@@ -35,7 +35,6 @@ import com.ayuget.redface.ui.activity.TopicsActivity;
 import com.ayuget.redface.ui.adapter.MetaPageTopicsAdapter;
 import com.ayuget.redface.ui.misc.MetaPageOrdering;
 import com.ayuget.redface.ui.misc.SnackbarHelper;
-import com.hannesdorfmann.fragmentargs.annotation.FragmentArgsInherited;
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs;
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration;
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersTouchListener;
@@ -63,7 +62,7 @@ public class MetaPageFragment extends TopicListFragment implements StickyRecycle
 
     @Override
     protected void initializeAdapters() {
-        topicsAdapter = new MetaPageTopicsAdapter(new ContextThemeWrapper(getActivity(), themeManager.getActiveThemeStyle()), themeManager, settings.isCompactModeEnabled());
+        topicsAdapter = new MetaPageTopicsAdapter(new ContextThemeWrapper(getActivity(), themeManager.getActiveThemeStyle()), themeManager, settings.isCompactModeEnabled(), settings.isEnhancedCompactModeEnabled());
         topicsAdapter.setOnTopicClickedListener(this);
     }
 

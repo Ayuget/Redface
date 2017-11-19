@@ -30,16 +30,14 @@ import com.ayuget.redface.ui.hfr.HFRIcons;
 import com.ayuget.redface.ui.misc.ThemeManager;
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersAdapter;
 
-import java.util.List;
-
 public class MetaPageTopicsAdapter extends TopicsAdapter implements StickyRecyclerHeadersAdapter<MetaPageTopicsAdapter.HeaderViewHolder> {
     /**
      * Boolean that controls if category icons should be used instead of regular icons
      */
     private boolean categoryIconsAsTopicIcons;
 
-    public MetaPageTopicsAdapter(Context context, ThemeManager themeManager, boolean isCompactMode) {
-        super(context, themeManager, isCompactMode);
+    public MetaPageTopicsAdapter(Context context, ThemeManager themeManager, boolean isCompactMode, boolean isEnhancedCompactMode) {
+        super(context, themeManager, isCompactMode, isEnhancedCompactMode);
         categoryIconsAsTopicIcons = false;
     }
 
