@@ -20,6 +20,7 @@ import android.content.Context;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.webkit.JavascriptInterface;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 import com.ayuget.redface.BuildConfig;
@@ -69,6 +70,10 @@ public class SmileySelectorView extends WebView {
             getSettings().setJavaScriptEnabled(true);
             getSettings().setBuiltInZoomControls(false);
             getSettings().setAllowFileAccessFromFileURLs(true);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
+            }
 
             if(BuildConfig.DEBUG) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
