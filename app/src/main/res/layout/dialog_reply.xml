@@ -161,19 +161,7 @@
             android:contentDescription="@string/default_smileys_button_description"
             style="@style/ReplyOptionsIcon"
             android:src="@drawable/ic_action_insert_emoticon" />
-
-        <ImageButton
-            android:id="@+id/recent_smileys"
-            android:contentDescription="@string/recent_smileys_button_description"
-            style="@style/ReplyOptionsIcon"
-            android:src="@drawable/ic_action_access_time" />
-
-        <ImageButton
-            android:id="@+id/popular_smileys"
-            android:contentDescription="@string/popular_smileys_button_description"
-            style="@style/ReplyOptionsIcon"
-            android:src="@drawable/ic_action_whatshot" />
-
+        
         <android.support.v7.widget.SearchView
             android:id="@+id/smileys_search"
             android:layout_width="fill_parent"

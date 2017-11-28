@@ -425,38 +425,6 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
         smileyList.setSmileys(Smileys.defaultSmileys());
     }
 
-    /**
-     * Loads recently used smileys in the smiley selector
-     */
-    @OnClick(R.id.recent_smileys)
-    protected void loadRecentSmileys() {
-        smileyList.reset();
-        smileysLoadingIndicator.setVisibility(View.VISIBLE);
-        subscribe(dataService.getRecentlyUsedSmileys(userManager.getActiveUser(), new EndlessObserver<List<Smiley>>() {
-            @Override
-            public void onNext(List<Smiley> smileys) {
-                smileysLoadingIndicator.setVisibility(View.GONE);
-                smileyList.setSmileys(smileys);
-            }
-        }));
-    }
-
-    /**
-     * Loads popular smileys in the smiley selector
-     */
-    @OnClick(R.id.popular_smileys)
-    protected void loadPopularSmileys() {
-        smileyList.reset();
-        smileysLoadingIndicator.setVisibility(View.VISIBLE);
-        subscribe(dataService.getPopularSmileys(new EndlessObserver<List<Smiley>>() {
-            @Override
-            public void onNext(List<Smiley> smileys) {
-                smileysLoadingIndicator.setVisibility(View.GONE);
-                smileyList.setSmileys(smileys);
-            }
-        }));
-    }
-
     protected void showSendingMessageSpinner() {
         sendingMessageSpinner.setVisibility(View.VISIBLE);
         actionsToolbar.getMenu().getItem(0).setVisible(false);
