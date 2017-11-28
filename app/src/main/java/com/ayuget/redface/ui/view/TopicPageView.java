@@ -28,6 +28,7 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.JavascriptInterface;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
@@ -186,6 +187,10 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
 
             getSettings().setJavaScriptEnabled(true);
             getSettings().setAllowFileAccessFromFileURLs(true);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
+            }
 
             // Making the WebView debuggable is insanely useful to debug what's happening in it.
             // Any WebView rendered in the app can then be inspected via "chrome://inspect" URL
