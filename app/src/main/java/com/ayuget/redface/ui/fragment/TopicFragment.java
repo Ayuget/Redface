@@ -572,7 +572,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
             getToolbar().collapseActionView();
             return true;
         }
-        else if (topicPositionsStack.size() == 0) {
+        else if (topicPositionsStack == null || topicPositionsStack.size() == 0) {
             return false;
         }
         else {
