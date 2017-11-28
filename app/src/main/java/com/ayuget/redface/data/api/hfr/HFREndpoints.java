@@ -31,7 +31,7 @@ import java.net.URLEncoder;
 import timber.log.Timber;
 
 public class HFREndpoints implements MDEndpoints {
-    private static final String FORUM_BASE_URL = "http://forum.hardware.fr";
+    private static final String FORUM_BASE_URL = "https://forum.hardware.fr";
 
     private static final String CATEGORY_URL = "{base_url}/hfr/{category_slug}/liste_sujet-{page}.htm";
 
@@ -47,7 +47,7 @@ public class HFREndpoints implements MDEndpoints {
 
     private static final String USER_PROFILE_URL = "{base_url}/hfr/profil-{user_id}.htm";
 
-    private static final String USER_AVATAR_URL = "http://forum-images.hardware.fr/images/mesdiscussions-{user_id}.png";
+    private static final String USER_AVATAR_URL = "https://forum-images.hardware.fr/images/mesdiscussions-{user_id}.png";
 
     private static final String SMILEY_API_HOST = "http://stickersapi.feeligo.com";
 
