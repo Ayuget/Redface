@@ -67,14 +67,14 @@ public class HFRUrlParser implements UrlParser {
         this.mdEndpoints = mdEndpoints;
         this.categoriesStore = categoriesStore;
 
-        String baseRewrittenRegex = "(?:" + Pattern.quote(mdEndpoints.baseurl() + "/hfr/") + ")";
-
         String httpEndpoint = mdEndpoints.baseurl().replace("https://", "http://");
 
         String baseUrlPattern = "(?:" + Pattern.quote(mdEndpoints.baseurl()) + "|" + Pattern.quote(httpEndpoint) + ")";
 
         baseRewrittenUrlRegex =  baseUrlPattern + "/hfr/.*";
         baseStandardUrlRegex = baseUrlPattern + "/forum.*";
+
+        String baseRewrittenRegex = "(?:" + Pattern.quote(mdEndpoints.baseurl() + "/hfr/") + "|" + Pattern.quote(httpEndpoint + "/hfr/") + ")";
         rewrittenTopicPattern = Pattern.compile(baseRewrittenRegex + REWRITTEN_TOPIC_REGEX);
     }
 
