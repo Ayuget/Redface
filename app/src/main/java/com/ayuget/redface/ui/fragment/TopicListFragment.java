@@ -338,6 +338,12 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
         return super.onOptionsItemSelected(item);
     }
 
+    protected void hideSwipeToRefreshIndicator() {
+        if (swipeRefreshLayout.isRefreshing()) {
+            swipeRefreshLayout.setRefreshing(false);
+        }
+    }
+
     /**
      * Loads topics for a given category, replacing current topics. Only loads a single topic page,
      * user has to swipe at the bottom of the list to load the next pages
@@ -356,7 +362,6 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
 
                 topicsAdapter.replaceWith(loadedTopics);
 
-                swipeRefreshLayout.setRefreshing(false);
                 lastLoadedPage = 1;
                 layoutManager.scrollToPosition(0);
 
@@ -367,14 +372,14 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
             public void onError(Throwable throwable) {
                 Timber.e(throwable, "Error loading first page for category '%s', subcategory '%s'", category.name(), subcategory);
 
-                swipeRefreshLayout.setRefreshing(false);
-
                 if (displayedTopics.size() == 0) {
                     dataPresenter.showErrorView();
                 }
                 else {
                     SnackbarHelper.make(TopicListFragment.this, R.string.error_loading_topics).show();
                 }
+
+                hideSwipeToRefreshIndicator();
             }
         }));
     }
@@ -399,7 +404,6 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
                 displayedTopics.addAll(loadedTopics);
                 topicsAdapter.extendWith(loadedTopics);
 
-                swipeRefreshLayout.setRefreshing(false);
                 lastLoadedPage = page;
                 showTopics();
             }
@@ -408,13 +412,13 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
             public void onError(Throwable throwable) {
                 Timber.e(throwable, "Error loading page '%d' for category '%s', subcategory '%s'", page, category.name(), subcategory);
 
-                swipeRefreshLayout.setRefreshing(false);
-
                 // Do not display error view because topics are displayed (we are "just" loading additional content)
                 SnackbarHelper.make(
                         TopicListFragment.this,
                         Phrase.from(getActivity(), R.string.error_loading_topics_page).put("page", page).format()
                 ).show();
+
+                hideSwipeToRefreshIndicator();
             }
         }));
     }
@@ -440,6 +444,8 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
         else {
             dataPresenter.showEmptyView();
         }
+
+        hideSwipeToRefreshIndicator();
     }
 
     @Override

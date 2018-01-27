@@ -190,7 +190,6 @@ public class MetaPageFragment extends TopicListFragment implements StickyRecycle
                 topicsAdapter.replaceWith(loadedTopics);
                 headerDecoration.invalidateHeaders();
 
-                swipeRefreshLayout.setRefreshing(false);
                 lastLoadedPage = 1;
                 showTopics();
             }
@@ -199,13 +198,13 @@ public class MetaPageFragment extends TopicListFragment implements StickyRecycle
             public void onError(Throwable throwable) {
                 Timber.e(throwable, "Error loading meta category");
 
-                swipeRefreshLayout.setRefreshing(false);
-
                 if (displayedTopics.size() == 0) {
                     dataPresenter.showErrorView();
                 } else {
                     SnackbarHelper.makeError(MetaPageFragment.this, R.string.error_loading_topics).show();
                 }
+
+                hideSwipeToRefreshIndicator();
             }
         }));
     }
