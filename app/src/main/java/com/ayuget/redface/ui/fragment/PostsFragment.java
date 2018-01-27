@@ -95,7 +95,7 @@ public class PostsFragment extends BaseFragment {
     @InjectView(R.id.postsView)
     TopicPageView topicPageView;
 
-    @InjectView(R.id.topic_list_swipe_refresh_layout)
+    @InjectView(R.id.posts_swipe_refresh_layout)
     SwipeRefreshLayout swipeRefreshLayout;
 
     private ArrayList<Post> displayedPosts = new ArrayList<>();
