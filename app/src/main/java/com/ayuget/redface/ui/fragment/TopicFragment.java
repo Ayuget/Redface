@@ -93,6 +93,7 @@ import static android.content.DialogInterface.BUTTON_POSITIVE;
 
 @FragmentWithArgs
 public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageChangeListener, TopicPageView.OnQuoteListener {
+    private static final String ARG_TOPIC_CURRENT_PAGE = "topicCurrentPage";
     private static final String ARG_TOPIC_POSITIONS_STACK = "topicPositionsStack";
     private static final String ARG_QUOTED_MESSAGES_CACHE = "quotedMessagesCache";
     private static final String ARG_IS_IN_ACTION_MODE = "isInActionMode";
@@ -204,10 +205,6 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
         Timber.d("[Topic=%d], initialPage = %d, initialPagePosition = %s", topic.id(), initialPage, initialPagePosition);
 
-        // Start at initial page, currentPage value is updated via the onPageSelected
-        // listener on the ViewPager
-        currentPage = initialPage;
-
         if (topicPageAdapter == null) {
             topicPageAdapter = new TopicPageAdapter(getChildFragmentManager(), topic, initialPage, initialPagePosition);
         }
@@ -218,7 +215,12 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
             isInActionMode = savedInstanceState.getBoolean(ARG_IS_IN_ACTION_MODE);
             isInSearchMode = savedInstanceState.getBoolean(ARG_IS_IN_SEARCH_MODE);
             currentTopicSearchResult = savedInstanceState.getParcelable(ARG_CURRENT_SEARCH_RESULT);
+            initialPage = savedInstanceState.getInt(ARG_TOPIC_CURRENT_PAGE, initialPage);
         }
+
+        // Start at initial page, currentPage value is updated via the onPageSelected
+        // listener on the ViewPager
+        currentPage = initialPage;
 
         if (topicPositionsStack == null) {
             topicPositionsStack = new ArrayList<>();
@@ -297,6 +299,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
         outState.putParcelableArrayList(ARG_TOPIC_POSITIONS_STACK, topicPositionsStack);
         outState.putBoolean(ARG_IS_IN_SEARCH_MODE, isInSearchMode);
+        outState.putInt(ARG_TOPIC_CURRENT_PAGE, currentPage);
 
         if (isInActionMode) {
             outState.putParcelable(ARG_QUOTED_MESSAGES_CACHE, quotedMessagesCache);
