@@ -11,8 +11,9 @@ public abstract class TopicPage {
     public abstract int page();
     public abstract List<Post> posts();
     public abstract PagePosition pageInitialPosition();
+    public abstract boolean positionAfterPageLoad();
 
-    public static TopicPage create(Topic topic, int page, List<Post> posts, PagePosition pageInitialPosition) {
-        return new AutoValue_TopicPage(topic, page, posts, pageInitialPosition);
+    public static TopicPage create(Topic topic, int page, List<Post> posts, PagePosition pageInitialPosition, boolean positionAfterPageLoad) {
+        return new AutoValue_TopicPage(topic, page, posts, pageInitialPosition, positionAfterPageLoad);
     }
 }

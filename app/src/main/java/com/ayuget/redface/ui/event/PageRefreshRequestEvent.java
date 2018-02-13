@@ -20,12 +20,26 @@ import com.ayuget.redface.data.api.model.Topic;
 
 public class PageRefreshRequestEvent {
     private final Topic topic;
+    private final int page;
 
     public PageRefreshRequestEvent(Topic topic) {
+        this(topic, -1);
+    }
+
+    public PageRefreshRequestEvent(Topic topic, int page) {
         this.topic = topic;
+        this.page = page;
     }
 
     public Topic getTopic() {
         return topic;
+    }
+
+    public int getPage() {
+        return page;
+    }
+
+    public boolean isPageDefined() {
+        return page != -1;
     }
 }

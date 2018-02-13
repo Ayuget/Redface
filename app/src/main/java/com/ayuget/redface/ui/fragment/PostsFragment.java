@@ -134,10 +134,10 @@ public class PostsFragment extends BaseFragment {
         debugLog("onCreate");
 
         if (savedInstanceState == null) {
-            currentScrollPosition = 0;
+            currentScrollPosition = -1;
         }
         else {
-            currentScrollPosition = savedInstanceState.getInt(ARG_SAVED_SCROLL_POSITION, 0);
+            currentScrollPosition = savedInstanceState.getInt(ARG_SAVED_SCROLL_POSITION, -1);
         }
     }
 
@@ -195,7 +195,8 @@ public class PostsFragment extends BaseFragment {
             updateQuotedPostsStatus();
         });
 
-        if (isInitialPage) {
+        boolean isCurrentPage = ((TopicFragment)getParentFragment()).getCurrentPage() == pageNumber;
+        if (isInitialPage || isCurrentPage) {
             boolean hasNoVisiblePosts = (displayedPosts != null && displayedPosts.size() == 0) || displayedPosts == null;
 
             // Page is loaded instantly only if it's the initial page requested on topic load. Other
@@ -263,6 +264,7 @@ public class PostsFragment extends BaseFragment {
 
     private void restorePageScrollPosition() {
         if (topicPageView != null) {
+            debugLog("about to restore scroll position (current position = %d)", topicPageView.getScrollY());
             topicPageView.setScrollY(currentScrollPosition);
             debugLog("restored scroll position = %d", currentScrollPosition);
         }
@@ -313,7 +315,10 @@ public class PostsFragment extends BaseFragment {
     @Subscribe
     public void onPageRefreshRequestEvent(PageRefreshRequestEvent event) {
         if (event.getTopic().id() == topic.id() && isVisible()) {
-            refreshPosts(true);
+            boolean isPageConcerned = !event.isPageDefined() || event.getPage() == pageNumber;
+            if (isPageConcerned) {
+                refreshPosts(true);
+            }
         }
     }
 
@@ -327,6 +332,7 @@ public class PostsFragment extends BaseFragment {
         }
 
         savePageScrollPosition();
+        topicPageView.setScrollY(0);
         loadPage();
     }
 
@@ -467,9 +473,15 @@ public class PostsFragment extends BaseFragment {
                 displayedPosts.clear();
                 displayedPosts.addAll(posts);
 
-                debugLog("Done loading page, showing posts");
+                debugLog("Done loading page, showing posts (currentScrollPosition=%d)", currentScrollPosition);
 
-                TopicPage topicPage = TopicPage.create(topic, pageNumber, posts, pageInitialPosition);
+                // Scroll position is saved after a refresh or a configuration change. In this case,
+                // we do not use the initial page position, since the user may have scrolled the
+                // webview. In this case, we wait for the "onPageLoaded" event and restore the saved
+                // position manually.
+                boolean positionAfterPageLoad = currentScrollPosition == -1;
+
+                TopicPage topicPage = TopicPage.create(topic, pageNumber, posts, pageInitialPosition, positionAfterPageLoad);
                 topicPageView.renderPage(topicPage);
 
                 notifyPageLoaded();

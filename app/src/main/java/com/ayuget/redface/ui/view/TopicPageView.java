@@ -173,7 +173,7 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
                 public boolean onDoubleTap(MotionEvent e) {
                     if (appSettings.isDoubleTapToRefreshEnabled()) {
                         wasReloaded = true;
-                        bus.post(new PageRefreshRequestEvent(topicPage.topic()));
+                        bus.post(new PageRefreshRequestEvent(topicPage.topic(), topicPage.page()));
                     }
                     return true;
                 }
@@ -205,7 +205,8 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
             setWebViewClient(new WebViewClient() {
                 @Override
                 public void onPageFinished(WebView view, String url) {
-                    if (onPageLoadedListener != null) {
+                    if (onPageLoadedListener != null && url.startsWith(mdEndpoints.baseurl())) {
+                        Timber.d("URL=%s, Page is done loading, notifying listeners", url);
                         onPageLoadedListener.onPageLoaded();
                     }
                 }

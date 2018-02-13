@@ -17,7 +17,20 @@ function scrollToBottom() {
 * @param id element id
 */
 function scrollToElement(id) {
-    location.hash = "#" + id;
+    var targetHash = "#" + id;
+
+    if (location.hash === targetHash) {
+        document.body.scrollTop = window.activeHashScrollY;
+    }
+    else {
+        location.hash = targetHash;
+    }
+
+    window.activeHashScrollY = window.scrollY;
+}
+
+function scrollToFixedPosition(positionScrollY) {
+    document.body.scrollTop = positionScrollY;
 }
 
 /**

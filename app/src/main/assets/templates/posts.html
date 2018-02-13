@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <title>Redface</title>
-    <link href="http://fonts.googleapis.com/css?family=Roboto:400,300" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,300" rel="stylesheet" type="text/css">
     <link href="file:///android_asset/vendors/material-icons/material-icons.css" rel="stylesheet" type="text/css">
     <style>
         {css}
@@ -17,7 +17,9 @@
 </script>
 <script type="text/javascript">
 window.addEventListener("DOMContentLoaded", function(event) {{
-    scrollToElement('{target_anchor}');
+    if ({position_after_page_load}) {{
+        scrollToElement('{target_anchor}');
+    }
 });
 </script>
 </body>
