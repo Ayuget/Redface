@@ -371,7 +371,7 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
                 break;
             }
             case UIConstants.TOPIC_ACTION_GO_TO_LAST_PAGE:
-                loadTopic(event.getTopic(), event.getTopic().pagesCount(), new PagePosition(PagePosition.TOP));
+                loadTopic(event.getTopic(), event.getTopic().pagesCount(), new PagePosition(PagePosition.BOTTOM));
                 break;
             case UIConstants.TOPIC_ACTION_COPY_LINK:
                 UiUtils.copyToClipboard(this, mdEndpoints.topic(event.getTopic()));

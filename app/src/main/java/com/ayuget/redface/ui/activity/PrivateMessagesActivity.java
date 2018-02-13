@@ -168,7 +168,7 @@ public class PrivateMessagesActivity extends MultiPaneActivity implements Privat
             case UIConstants.TOPIC_ACTION_GO_TO_LAST_PAGE:
                 loadPrivateMessage(event.getPrivateMessage(),
                         event.getPrivateMessage().getPagesCount(),
-                        new PagePosition(PagePosition.TOP));
+                        new PagePosition(PagePosition.BOTTOM));
                 break;
             case UIConstants.TOPIC_ACTION_REPLY_TO_TOPIC:
                 Topic pmAsTopic = event.getPrivateMessage().asTopic()
