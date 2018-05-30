@@ -205,10 +205,6 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
         Timber.d("[Topic=%d], initialPage = %d, initialPagePosition = %s", topic.id(), initialPage, initialPagePosition);
 
-        if (topicPageAdapter == null) {
-            topicPageAdapter = new TopicPageAdapter(getChildFragmentManager(), topic, initialPage, initialPagePosition);
-        }
-
         if (savedInstanceState != null) {
             topicPositionsStack = savedInstanceState.getParcelableArrayList(ARG_TOPIC_POSITIONS_STACK);
             quotedMessagesCache = savedInstanceState.getParcelable(ARG_QUOTED_MESSAGES_CACHE);
@@ -221,6 +217,10 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
         // Start at initial page, currentPage value is updated via the onPageSelected
         // listener on the ViewPager
         currentPage = initialPage;
+
+        if (topicPageAdapter == null) {
+            topicPageAdapter = new TopicPageAdapter(getChildFragmentManager(), topic, currentPage, initialPagePosition);
+        }
 
         if (topicPositionsStack == null) {
             topicPositionsStack = new ArrayList<>();
@@ -239,7 +239,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
         pagerTitleStrip.setDrawFullUnderline(false);
         pagerTitleStrip.setTabIndicatorColor(getResources().getColor(R.color.theme_primary));
         pager.setAdapter(topicPageAdapter);
-        pager.setCurrentItem(initialPage - 1);
+        pager.setCurrentItem(currentPage - 1);
 
         if (userManager.getActiveUser().isGuest()) {
             replyButton.setVisibility(View.INVISIBLE);
