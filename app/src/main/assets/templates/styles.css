@@ -106,6 +106,27 @@ body.redface-night {
     margin: 0 0 10px 0;
 }
 
+.md-stack {
+    position: relative;
+    display: inline-block;
+    width: 2em;
+    height: 2em;
+    line-height: 2em;
+    vertical-align: middle;
+}
+.md-stack-1x,
+.md-stack-2x {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    text-align: center;
+}
+.md-stack-1x {
+    line-height: inherit;
+}
+.md-stack-2x {
+    font-size: 2em;
+}
 
 .stacked {
     color: #FFFFFF;

@@ -24,7 +24,7 @@ import rx.exceptions.Exceptions;
 import rx.schedulers.Schedulers;
 
 public class RehostHostingService implements ImageHostingService {
-    private static final String REHOST_BASE_URL = "http://reho.st/";
+    private static final String REHOST_BASE_URL = "https://reho.st/";
     private static final String REHOST_UPLOAD_URL = REHOST_BASE_URL + "upload";
     private static final long REHOST_UPLOADED_FILES_MAX_SIZE = 2097152; // 2 MB
     private static final int REHOST_UPLOAD_TIMEOUT = 90; // 90 seconds
