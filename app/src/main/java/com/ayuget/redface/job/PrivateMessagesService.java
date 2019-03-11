@@ -37,7 +37,6 @@ import com.ayuget.redface.data.rx.EndlessObserver;
 import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.activity.PrivateMessagesActivity;
-import com.uwetrottmann.androidutils.AndroidUtils;
 
 import java.util.List;
 
@@ -130,11 +129,7 @@ public class PrivateMessagesService extends IntentService {
         Intent i = new Intent(this, PrivateMessagesService.class);
         PendingIntent pi = PendingIntent.getService(this, 0, i, 0);
         Timber.d("Going to sleep, setting wake-up alarm to: %d", wakeUpTime);
-        if (AndroidUtils.isKitKatOrHigher()) {
-            am.setExact(AlarmManager.RTC_WAKEUP, wakeUpTime, pi);
-        } else {
-            am.set(AlarmManager.RTC_WAKEUP, wakeUpTime, pi);
-        }
 
+        am.setExact(AlarmManager.RTC_WAKEUP, wakeUpTime, pi);
     }
 }
