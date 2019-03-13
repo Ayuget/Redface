@@ -32,16 +32,13 @@ public class JsonDiskCachingLayer<T extends Cacheable<String>> implements Cachin
     @Override
     public Observable<Cached<T>> get(final String key) {
         Timber.d("Request for key '%s' from disk", key);
-        DiskLruCache.Snapshot snapshot = null;
 
-        try {
-            snapshot = diskLruCache.get(key);
+        try (DiskLruCache.Snapshot snapshot = diskLruCache.get(key)) {
 
             if (snapshot == null) {
                 Timber.d("Request for key '%s' from disk => no such cached value", key);
                 return Observable.empty();
-            }
-            else {
+            } else {
                 T decodedValue = jsonAdapter.fromJson(snapshot.getString(DATA_POSITION));
 
                 Timber.d("Request for key '%s' from disk => got value '%s'", key, decodedValue);
@@ -50,44 +47,32 @@ public class JsonDiskCachingLayer<T extends Cacheable<String>> implements Cachin
 
                 return Observable.just(Cached.from(decodedValue, valueTimestamp));
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             return Observable.error(e);
-        }
-        finally {
-            if (snapshot != null) {
-                snapshot.close();
-            }
         }
     }
 
     @Override
     public Completable remove(final String key) {
-        return Completable.create(new Completable.CompletableOnSubscribe() {
-            @Override
-            public void call(Completable.CompletableSubscriber completableSubscriber) {
-                try {
-                    diskLruCache.remove(key);
-                    completableSubscriber.onCompleted();
-                } catch (IOException e) {
-                    completableSubscriber.onError(e);
-                }
+        return Completable.create(completableSubscriber -> {
+            try {
+                diskLruCache.remove(key);
+                completableSubscriber.onCompleted();
+            } catch (IOException e) {
+                completableSubscriber.onError(e);
             }
         });
     }
 
     @Override
     public Completable removeAll() {
-        return Completable.create(new Completable.CompletableOnSubscribe() {
-            @Override
-            public void call(Completable.CompletableSubscriber completableSubscriber) {
-                try {
-                    diskLruCache.flush();
-                    completableSubscriber.onCompleted();
-                }
-                catch (IOException e) {
-                    completableSubscriber.onError(e);
-                }
+        return Completable.create(completableSubscriber -> {
+            try {
+                diskLruCache.flush();
+                completableSubscriber.onCompleted();
+            }
+            catch (IOException e) {
+                completableSubscriber.onError(e);
             }
         });
     }
@@ -95,24 +80,21 @@ public class JsonDiskCachingLayer<T extends Cacheable<String>> implements Cachin
     @Override
     public Completable save(final String key, final T value) {
         Timber.d("Saving key '%s' on disk, value is '%s'", key, value);
-        return Completable.create(new Completable.CompletableOnSubscribe() {
-            @Override
-            public void call(Completable.CompletableSubscriber completableSubscriber) {
-                String jsonValue = jsonAdapter.toJson(value);
+        return Completable.create(completableSubscriber -> {
+            String jsonValue = jsonAdapter.toJson(value);
 
-                try {
-                    long nowTimestamp = DateUtils.getCurrentTimestamp();
+            try {
+                long nowTimestamp = DateUtils.getCurrentTimestamp();
 
-                    DiskLruCache.Editor editor = diskLruCache.edit(key);
-                    editor.set(DATA_POSITION, jsonValue);
-                    editor.set(TIMESTAMP_POSITION, String.valueOf(nowTimestamp));
-                    editor.commit();
+                DiskLruCache.Editor editor = diskLruCache.edit(key);
+                editor.set(DATA_POSITION, jsonValue);
+                editor.set(TIMESTAMP_POSITION, String.valueOf(nowTimestamp));
+                editor.commit();
 
-                    Timber.d("Successfully saved key '%s' on disk", key);
-                    completableSubscriber.onCompleted();
-                } catch (IOException e) {
-                    completableSubscriber.onError(e);
-                }
+                Timber.d("Successfully saved key '%s' on disk", key);
+                completableSubscriber.onCompleted();
+            } catch (IOException e) {
+                completableSubscriber.onError(e);
             }
         });
     }
@@ -122,17 +104,17 @@ public class JsonDiskCachingLayer<T extends Cacheable<String>> implements Cachin
         private File cacheDirectory;
         private long cacheMaxSize;
 
-        public Builder<T> jsonAdapter(JsonAdapter<T> jsonAdapter) {
+        Builder<T> jsonAdapter(JsonAdapter<T> jsonAdapter) {
             this.jsonAdapter = jsonAdapter;
             return this;
         }
 
-        public Builder<T> cacheDirectory(File cacheDirectory) {
+        Builder<T> cacheDirectory(File cacheDirectory) {
             this.cacheDirectory = cacheDirectory;
             return this;
         }
 
-        public Builder<T> cacheMaxSize(long cacheMaxSize) {
+        Builder<T> cacheMaxSize(long cacheMaxSize) {
             this.cacheMaxSize = cacheMaxSize;
             return this;
         }

@@ -17,7 +17,7 @@
 package com.ayuget.redface;
 
 import com.ayuget.redface.data.DataModule;
-import com.ayuget.redface.job.PrivateMessagesService;
+import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.ui.UIModule;
 
 import javax.inject.Singleton;
@@ -32,13 +32,14 @@ import dagger.Provides;
     },
     injects = {
         RedfaceApp.class,
-        PrivateMessagesService.class
+        DaggerWorkerFactory.class,
+        RedfaceSettings.class
     }
 )
-public class RedfaceModule {
+class RedfaceModule {
     private final RedfaceApp app;
 
-    public RedfaceModule(RedfaceApp app) {
+    RedfaceModule(RedfaceApp app) {
         this.app = app;
     }
 

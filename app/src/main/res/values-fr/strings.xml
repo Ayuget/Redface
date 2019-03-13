@@ -86,6 +86,10 @@
     <string name="title_activity_login">Se connecter</string>
     <string name="pref_notify_private_messages_summary">Être notifié lors de la réception d\'un MP</string>
     <string name="pref_notify_private_messages_title">Notifications pour les nouveaux MPs</string>
+    <string name="private_messages_notification_channel">Messages Privés</string>
+    <string name="new_private_messages_count">{count} nouveaux messages</string>
+    <string name="new_private_messages_summary">Nouveaux messages privés</string>
+    <string name="new_private_messages_title">Nouveau message privé de {username}</string>
 
     <string-array name="pref_default_topic_filter_values">
         <item>Tous</item>

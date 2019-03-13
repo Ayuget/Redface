@@ -249,7 +249,7 @@
         <item>THUMBNAIL</item>
     </string-array>
 
-
+    <string name="private_messages_notification_channel">Private Messages</string>
     <string name="pref_notification_settings">Notifications</string>
     <string name="pref_enable_pm_notifications_title">Enable private messages notifications</string>
     <string name="pref_enable_pm_notifications_summary">Be notified when you receive a new private message</string>
@@ -328,6 +328,9 @@
     <string name="error_loading_private_messages">Error while private messages</string>
     <string name="error_loading_private_messages_page">Error while loading private messages for page {page}</string>
     <string name="action_new_private_message">New private message</string>
+    <string name="new_private_messages_count">{count} new messages</string>
+    <string name="new_private_messages_summary">New private messages</string>
+    <string name="new_private_messages_title">New private message from {username}</string>
 
     <!-- Login page -->
     <string name="prompt_username">Username</string>

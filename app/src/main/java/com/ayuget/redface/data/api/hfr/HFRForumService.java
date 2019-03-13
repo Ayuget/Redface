@@ -123,13 +123,8 @@ public class HFRForumService implements MDService {
     public Observable<List<Topic>> listTopics(User user, final Category category, final Subcategory subcategory, int page, final TopicFilter filter) {
         return pageFetcher.fetchSource(user, getTopicListEndpoint(category, subcategory, page, filter))
                 .map(new HTMLToTopicList(categoriesStore, this, user))
-                .flatMap(new Func1<List<Topic>, Observable<Topic>>() {
-                    @Override
-                    public Observable<Topic> call(List<Topic> topics) {
-                        return Observable.from(topics);
-                    }
-                })
-                .filter(topic -> topic.hasUnreadPosts() || appSettings.showFullyReadTopics())
+                .flatMap(Observable::from)
+                .filter(topic -> (topic.hasUnreadPosts() != null && topic.hasUnreadPosts() == Boolean.TRUE) || appSettings.showFullyReadTopics())
                 .map(topic -> topic.withCategory(category))
                 .toList();
     }
@@ -138,13 +133,8 @@ public class HFRForumService implements MDService {
     public Observable<List<Topic>> listMetaPageTopics(User user, TopicFilter filter, boolean sortByDate) {
         Observable<Topic> metaPageTopics = pageFetcher.fetchSource(user, mdEndpoints.metaPage(filter))
                 .map(new HTMLToTopicList(categoriesStore, this, user))
-                .flatMap(new Func1<List<Topic>, Observable<Topic>>() {
-                    @Override
-                    public Observable<Topic> call(List<Topic> topics) {
-                        return Observable.from(topics);
-                    }
-                })
-                .filter(topic -> topic.hasUnreadPosts() || appSettings.showFullyReadTopics());
+                .flatMap(Observable::from)
+                .filter(topic -> (topic.hasUnreadPosts() != null && topic.hasUnreadPosts() == Boolean.TRUE) || appSettings.showFullyReadTopics());
 
         if (sortByDate) {
             return metaPageTopics.toSortedList((topic, topic2) -> topic2.lastPostDate().compareTo(topic.lastPostDate()));
@@ -280,12 +270,7 @@ public class HFRForumService implements MDService {
     @Override
     public Observable<List<PrivateMessage>> getNewPrivateMessages(User user) {
         return listPrivateMessages(user, 1)
-                .flatMap(new Func1<List<PrivateMessage>, Observable<PrivateMessage>>() {
-                    @Override
-                    public Observable<PrivateMessage> call(List<PrivateMessage> privateMessages) {
-                        return Observable.from(privateMessages);
-                    }
-                })
+                .flatMap(Observable::from)
                 .filter(PrivateMessage::hasUnreadMessages)
                 .toList();
     }

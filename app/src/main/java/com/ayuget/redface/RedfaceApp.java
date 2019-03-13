@@ -21,7 +21,6 @@ import android.content.Context;
 import android.util.Log;
 
 import com.ayuget.redface.account.AccountModule;
-import com.ayuget.redface.job.JobUtils;
 import com.ayuget.redface.network.NetworkModule;
 import com.ayuget.redface.settings.RedfaceSettings;
 import com.squareup.leakcanary.LeakCanary;
@@ -29,6 +28,8 @@ import com.squareup.leakcanary.RefWatcher;
 
 import net.ypresto.timbertreeutils.CrashlyticsLogTree;
 
+import androidx.work.Configuration;
+import androidx.work.WorkManager;
 import dagger.ObjectGraph;
 import rx_activity_result.RxActivityResult;
 import timber.log.Timber;
@@ -54,17 +55,23 @@ public class RedfaceApp extends Application {
         // Setup dependency injection
         buildObjectGraphAndInject();
 
-        initActiveUser();
+        initWorkerFactory();
 
         refWatcher = LeakCanary.install(this);
 
-        JobUtils.runNotificationService(this);
-
         RxActivityResult.register(this);
+
+        RedfaceNotifications.setupNotifications(this);
     }
 
-    private void initActiveUser() {
+    private void initWorkerFactory() {
+        DaggerWorkerFactory workerFactory = objectGraph.get(DaggerWorkerFactory.class);
 
+        Configuration workManagerConfig = new Configuration.Builder()
+                .setWorkerFactory(workerFactory)
+                .build();
+
+        WorkManager.initialize(this, workManagerConfig);
     }
 
     public void buildObjectGraphAndInject() {
@@ -81,7 +88,7 @@ public class RedfaceApp extends Application {
         objectGraph.inject(o);
     }
 
-    public Object getFromGraph(Class c) {
+    public <T> T getFromGraph(Class<T> c) {
         return objectGraph.get(c);
     }
 
@@ -95,6 +102,7 @@ public class RedfaceApp extends Application {
     }
 
     public RedfaceSettings getSettings() {
-        return (RedfaceSettings) getFromGraph(RedfaceSettings.class);
+        return getFromGraph(RedfaceSettings.class);
     }
+
 }

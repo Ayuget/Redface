@@ -20,6 +20,8 @@ import android.accounts.AccountManager;
 import android.content.Context;
 import android.preference.PreferenceManager;
 
+import com.ayuget.redface.account.UserManager;
+import com.ayuget.redface.data.api.MDService;
 import com.ayuget.redface.data.state.CategoriesStore;
 import com.ayuget.redface.data.state.ResponseStore;
 import com.ayuget.redface.network.HTTPClientProvider;
@@ -39,7 +41,7 @@ import dagger.Provides;
 public class ContextModule {
     private final Context applicationContext;
 
-    public ContextModule(Context applicationContext) {
+    ContextModule(Context applicationContext) {
         this.applicationContext = applicationContext;
     }
 

@@ -21,21 +21,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import com.ayuget.redface.RedfaceApp;
+import com.ayuget.redface.RedfaceNotifications;
+import com.ayuget.redface.settings.RedfaceSettings;
+
 import timber.log.Timber;
 
 public class OnAlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(final Context context, Intent intent) {
         if (Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
-            // postpone notification service launch a minute,
-            // we don't want to slow down booting
-            Timber.d("Postponing notifications service launch");
-            JobUtils.runNotificationServiceDelayed(context);
-        }
-        else {
-            // run the notification service right away
-            Timber.d("Run notifications service right away");
-            JobUtils.runNotificationService(context);
+            RedfaceNotifications.setupNotifications(context);
         }
     }
 }
