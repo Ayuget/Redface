@@ -246,7 +246,7 @@ public class PrivateMessageListFragment extends ToggleToolbarFragment implements
     public void onResume() {
         super.onResume();
 
-        if (displayedPrivateMessages == null) {
+        if (displayedPrivateMessages == null || displayedPrivateMessages.size() == 0 || settings.refreshTopicList()) {
             displayedPrivateMessages = new ArrayList<>();
             loadPrivateMessages(1);
         }
