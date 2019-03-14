@@ -25,6 +25,7 @@ import java.util.List;
 
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
+import timber.log.Timber;
 
 public class PrivateMessagesWorker extends Worker {
     private UserManager userManager;
@@ -50,17 +51,24 @@ public class PrivateMessagesWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
+        Timber.d("PrivateMessagesWorker is running");
+
         Preconditions.checkNotNull(userManager, "UserManager should be injected");
         Preconditions.checkNotNull(mdService, "MdService should be injected");
         Preconditions.checkNotNull(appSettings, "AppSettings should be injected");
 
         if (! appSettings.arePrivateMessagesNoticationsEnabled()) {
+            Timber.d("Private message notifications are disabled, exiting worker");
             return Result.success();
         }
+
+        Timber.d("Notifications are enabled, checking new private messages for all app users");
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
 
         for (User appUser : userManager.getRealUsers()) {
+            Timber.d("Checking new private messages for user '%s'", appUser.getUsername());
+
             List<PrivateMessage> userPrivateMessages = mdService.getNewPrivateMessages(appUser)
                     .toBlocking()
                     .first();
@@ -104,8 +112,8 @@ public class PrivateMessagesWorker extends Worker {
                 .setColor(getApplicationContext().getResources().getColor(R.color.theme_primary))
                 .setContentTitle(privateMessage.getSubject())
                 .setContentText(notificationText)
-                .setGroup(messagesGroup)
                 .setContentIntent(buildPrivateMessageNotificationIntent(getApplicationContext(), privateMessage))
+                .setGroup(messagesGroup)
                 .setAutoCancel(true)
                 .build();
     }
@@ -123,6 +131,7 @@ public class PrivateMessagesWorker extends Worker {
                 .setContentIntent(buildPrivateMessageSummaryNotificationIntent(getApplicationContext()))
                 .setGroup(messagesGroup)
                 .setGroupSummary(true)
+                .setAutoCancel(true)
                 .build();
     }
 

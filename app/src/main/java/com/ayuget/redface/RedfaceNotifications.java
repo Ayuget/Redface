@@ -4,7 +4,9 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Build;
+import android.support.v4.app.NotificationManagerCompat;
 
+import com.ayuget.redface.data.api.model.PrivateMessage;
 import com.ayuget.redface.privatemessages.PrivateMessagesWorker;
 import com.ayuget.redface.settings.RedfaceSettings;
 
@@ -12,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
+import timber.log.Timber;
 
 public class RedfaceNotifications {
     private static final String PRIVATE_MESSAGES_WORKER_TAG = "PRIVATE_MESSAGES";
@@ -42,6 +45,8 @@ public class RedfaceNotifications {
     }
 
     private static void launchPrivateMessagesWorker(int privateMessagesPollingFrequency) {
+        Timber.d("Launching private messages worker with a polling frequency of %d minutes", privateMessagesPollingFrequency);
+
         PeriodicWorkRequest privateMessagesWorkRequest =
                 new PeriodicWorkRequest.Builder(PrivateMessagesWorker.class, privateMessagesPollingFrequency, TimeUnit.MINUTES)
                         .addTag(PRIVATE_MESSAGES_WORKER_TAG)
@@ -59,5 +64,10 @@ public class RedfaceNotifications {
     public static void updateOrLaunchPrivateMessagesWorker(int frequencyInMinutes) {
         disablePrivateMessagesNotifications();
         launchPrivateMessagesWorker(frequencyInMinutes);
+    }
+
+    public static void dismissPrivateMessageNotificationIfNeeded(Context context, PrivateMessage privateMessage) {
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+        notificationManager.cancel((int) privateMessage.getId());
     }
 }
