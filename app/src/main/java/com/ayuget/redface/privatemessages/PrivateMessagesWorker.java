@@ -54,6 +54,10 @@ public class PrivateMessagesWorker extends Worker {
         Preconditions.checkNotNull(mdService, "MdService should be injected");
         Preconditions.checkNotNull(appSettings, "AppSettings should be injected");
 
+        if (! appSettings.arePrivateMessagesNoticationsEnabled()) {
+            return Result.success();
+        }
+
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
 
         for (User appUser : userManager.getRealUsers()) {

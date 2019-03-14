@@ -16,7 +16,6 @@
 
 package com.ayuget.redface.ui.fragment;
 
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
@@ -29,11 +28,13 @@ import android.support.v7.app.AlertDialog;
 
 import com.ayuget.redface.RedfaceApp;
 import com.ayuget.redface.R;
+import com.ayuget.redface.RedfaceNotifications;
 import com.ayuget.redface.account.UserManager;
 import com.ayuget.redface.data.api.model.Category;
 import com.ayuget.redface.data.state.CategoriesStore;
 import com.ayuget.redface.settings.Blacklist;
 import com.ayuget.redface.settings.ProxySettingsChangedEvent;
+import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.settings.SettingsConstants;
 import com.ayuget.redface.ui.event.ThemeChangedEvent;
 import com.google.common.collect.ObjectArrays;
@@ -48,6 +49,9 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import timber.log.Timber;
+
+import static com.ayuget.redface.settings.SettingsConstants.KEY_ENABLE_PRIVATE_MESSAGES_NOTIFICATIONS;
+import static com.ayuget.redface.settings.SettingsConstants.KEY_PRIVATE_MESSAGES_POLLING_FREQUENCY;
 
 @FragmentWithArgs
 public class NestedPreferenceFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
@@ -65,6 +69,9 @@ public class NestedPreferenceFragment extends PreferenceFragment implements Shar
 
     @Inject
     Blacklist blacklist;
+
+    @Inject
+    RedfaceSettings appSettings;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -149,11 +156,11 @@ public class NestedPreferenceFragment extends PreferenceFragment implements Shar
                 initPrefsSummary(sharedPreferences, pCat.getPreference(i));
             }
         } else {
-            updatePreferenceSummary(sharedPreferences, pref);
+            updatePreferenceSummary(pref);
         }
     }
 
-    protected void updatePreferenceSummary(SharedPreferences sharedPreferences, Preference pref) {
+    protected void updatePreferenceSummary(Preference pref) {
         if (pref == null) {
             return;
         }
@@ -192,12 +199,9 @@ public class NestedPreferenceFragment extends PreferenceFragment implements Shar
             for (final String author : blockedUser) {
                 Preference preference = new Preference(getActivity());
                 preference.setTitle(author);
-                preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                    @Override
-                    public boolean onPreferenceClick(Preference preference) {
-                        showAlertDialog(author);
-                        return true;
-                    }
+                preference.setOnPreferenceClickListener(preference1 -> {
+                    showAlertDialog(author);
+                    return true;
                 });
                 category.addPreference(preference);
             }
@@ -210,18 +214,11 @@ public class NestedPreferenceFragment extends PreferenceFragment implements Shar
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(author)
                 .setMessage(getString(R.string.pref_blacklist_alertdialog_message))
-                .setPositiveButton(getString(R.string.pref_blacklist_alertdialog_positive), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        blacklist.unblockAuthor(author);
-                        createBlacklistPreferenceScreen();
-                    }
+                .setPositiveButton(getString(R.string.pref_blacklist_alertdialog_positive), (dialog, id) -> {
+                    blacklist.unblockAuthor(author);
+                    createBlacklistPreferenceScreen();
                 })
-                .setNegativeButton(getString(R.string.pref_blacklist_alertdialog_negative), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                });
+                .setNegativeButton(getString(R.string.pref_blacklist_alertdialog_negative), (dialog, which) -> {});
         builder.show();
     }
 
@@ -244,7 +241,18 @@ public class NestedPreferenceFragment extends PreferenceFragment implements Shar
             findPreference(SettingsConstants.KEY_SHOW_BLOCKED_USER).setEnabled(enable);
         }
 
-        updatePreferenceSummary(sharedPreferences, findPreference(key));
+        if (key.equals(KEY_ENABLE_PRIVATE_MESSAGES_NOTIFICATIONS) || key.equals(KEY_PRIVATE_MESSAGES_POLLING_FREQUENCY)) {
+            boolean arePrivateMessagesEnabled = sharedPreferences.getBoolean(KEY_ENABLE_PRIVATE_MESSAGES_NOTIFICATIONS, true);
+
+            if (arePrivateMessagesEnabled) {
+                RedfaceNotifications.updateOrLaunchPrivateMessagesWorker(appSettings.getPrivateMessagesPollingFrequency());
+            }
+            else {
+                RedfaceNotifications.disablePrivateMessagesNotifications();
+            }
+        }
+
+        updatePreferenceSummary(findPreference(key));
     }
 
 }

@@ -23,7 +23,7 @@ public class RedfaceNotifications {
         RedfaceSettings appSettings = ((RedfaceApp) context.getApplicationContext()).getFromGraph(RedfaceSettings.class);
 
         registerNotificationChannels(context);
-        launchPrivateMessagesWorker(appSettings);
+        launchPrivateMessagesWorker(appSettings.getPrivateMessagesPollingFrequency());
     }
 
     private static void registerNotificationChannels (Context context) {
@@ -41,9 +41,7 @@ public class RedfaceNotifications {
         }
     }
 
-    private static void launchPrivateMessagesWorker(RedfaceSettings appSettings) {
-        int privateMessagesPollingFrequency = appSettings.getPrivateMessagesPollingFrequency();
-
+    private static void launchPrivateMessagesWorker(int privateMessagesPollingFrequency) {
         PeriodicWorkRequest privateMessagesWorkRequest =
                 new PeriodicWorkRequest.Builder(PrivateMessagesWorker.class, privateMessagesPollingFrequency, TimeUnit.MINUTES)
                         .addTag(PRIVATE_MESSAGES_WORKER_TAG)
@@ -51,5 +49,15 @@ public class RedfaceNotifications {
 
         WorkManager.getInstance()
                 .enqueue(privateMessagesWorkRequest);
+    }
+
+    public static void disablePrivateMessagesNotifications() {
+        WorkManager.getInstance()
+                .cancelAllWorkByTag(RedfaceNotifications.PRIVATE_MESSAGES_GROUP);
+    }
+
+    public static void updateOrLaunchPrivateMessagesWorker(int frequencyInMinutes) {
+        disablePrivateMessagesNotifications();
+        launchPrivateMessagesWorker(frequencyInMinutes);
     }
 }
