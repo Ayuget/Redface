@@ -108,7 +108,7 @@ public class PrivateMessagesWorker extends Worker {
                 .format();
 
         return new NotificationCompat.Builder(getApplicationContext(), RedfaceNotifications.PRIVATE_MESSAGES_CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_action_mail)
+                .setSmallIcon(R.drawable.ic_action_emo_wonder)
                 .setColor(getApplicationContext().getResources().getColor(R.color.theme_primary))
                 .setContentTitle(privateMessage.getSubject())
                 .setContentText(notificationText)
@@ -124,7 +124,7 @@ public class PrivateMessagesWorker extends Worker {
                 .format();
 
         return new NotificationCompat.Builder(getApplicationContext(), RedfaceNotifications.PRIVATE_MESSAGES_CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_action_mail)
+                .setSmallIcon(R.drawable.ic_action_emo_wonder)
                 .setColor(getApplicationContext().getResources().getColor(R.color.theme_primary))
                 .setContentTitle(getApplicationContext().getString(R.string.new_private_messages_summary))
                 .setContentText(newMessagesText)
