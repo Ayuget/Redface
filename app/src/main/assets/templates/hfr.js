@@ -2,14 +2,14 @@
 * Scrolls to the top of the page
 */
 function scrollToTop() {
-    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
 }
 
 /**
 * Scrolls to the bottom of the page
 */
 function scrollToBottom() {
-    document.body.scrollTop = document.body.scrollHeight + 300;
+    document.documentElement.scrollTop = document.documentElement.scrollHeight + 300;
 }
 
 /**
@@ -20,7 +20,7 @@ function scrollToElement(id) {
     var targetHash = "#" + id;
 
     if (location.hash === targetHash) {
-        document.body.scrollTop = window.activeHashScrollY;
+        document.documentElement.scrollTop = window.activeHashScrollY;
     }
     else {
         location.hash = targetHash;
@@ -30,7 +30,7 @@ function scrollToElement(id) {
 }
 
 function scrollToFixedPosition(positionScrollY) {
-    document.body.scrollTop = positionScrollY;
+    document.documentElement.scrollTop = positionScrollY;
 }
 
 /**

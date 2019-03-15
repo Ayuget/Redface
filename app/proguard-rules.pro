@@ -114,6 +114,11 @@
 -dontwarn javax.annotation.**
 -dontwarn javax.inject.**
 -dontwarn sun.misc.Unsafe
+-dontwarn afu.org.checkerframework.**
+-dontwarn org.checkerframework.**
+-dontwarn com.google.errorprone.**
+-dontwarn sun.misc.Unsafe
+-dontwarn java.lang.ClassValue
 
 # Guava 19.0
 -dontwarn java.lang.ClassValue
