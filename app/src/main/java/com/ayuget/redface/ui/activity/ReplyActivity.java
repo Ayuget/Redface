@@ -333,6 +333,8 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
 
         // Load default smileys
         loadDefaultSmileys();
+
+        replyEditText.requestFocus();
     }
 
     protected int getLayoutResource() {
