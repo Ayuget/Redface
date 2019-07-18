@@ -82,6 +82,7 @@ import com.ayuget.redface.ui.template.SmileysTemplate;
 import com.ayuget.redface.ui.view.SmileySelectorView;
 import com.ayuget.redface.util.ImageUtils;
 import com.ayuget.redface.util.RetainedFragmentHelper;
+import com.crashlytics.android.Crashlytics;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.squareup.otto.Subscribe;
@@ -808,6 +809,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
             hideImageSelectionView();
         }, t -> {
             Timber.e(t, "Got an error while uploading image");
+            Crashlytics.logException(t);
             SnackbarHelper.makeError(ReplyActivity.this, R.string.image_upload_failed).show();
             hideImageSelectionView();
         });
