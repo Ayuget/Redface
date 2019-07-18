@@ -227,7 +227,9 @@ public class PostsFragment extends BaseFragment {
     public void onPause() {
         super.onPause();
 
-        savePageScrollPosition();
+        if (isPageCurrentlyActive()) {
+            savePageScrollPosition();
+        }
     }
 
     @Override
@@ -273,11 +275,14 @@ public class PostsFragment extends BaseFragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        debugLog("saving '%d' posts / scrollPosition = '%d'", displayedPosts.size(), currentScrollPosition);
-        debugLog("saving posts in cache hint : %s", postsInCacheHint ? "true" : "false");
 
-        outState.putBoolean(ARG_POSTS_IN_CACHE_HINT, postsInCacheHint);
-        outState.putInt(ARG_SAVED_SCROLL_POSITION, currentScrollPosition);
+        if (isPageCurrentlyActive()) {
+            debugLog("saving '%d' posts / scrollPosition = '%d'", displayedPosts.size(), currentScrollPosition);
+            debugLog("saving posts in cache hint : %s", postsInCacheHint ? "true" : "false");
+
+            outState.putBoolean(ARG_POSTS_IN_CACHE_HINT, postsInCacheHint);
+            outState.putInt(ARG_SAVED_SCROLL_POSITION, currentScrollPosition);
+        }
     }
 
     /**
@@ -573,5 +578,9 @@ public class PostsFragment extends BaseFragment {
 
     public TopicPageView getTopicPageView() {
         return topicPageView;
+    }
+
+    private boolean isPageCurrentlyActive() {
+        return ((TopicFragment) getParentFragment()).getCurrentPage() == pageNumber;
     }
 }

@@ -168,15 +168,10 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     Topic topic;
 
     @Arg
-    int initialPage;
+    int currentPage;
 
     @Arg
     PagePosition initialPagePosition;
-
-    /**
-     * Page currently displayed in the viewPager
-     */
-    private int currentPage;
 
     /**
      * Id of the first post of the currently selected page or id of initial post
@@ -203,7 +198,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Timber.d("[Topic=%d], initialPage = %d, initialPagePosition = %s", topic.id(), initialPage, initialPagePosition);
+        Timber.d("[Topic=%d], initialPage = %d, initialPagePosition = %s", topic.id(), currentPage, initialPagePosition);
 
         if (savedInstanceState != null) {
             topicPositionsStack = savedInstanceState.getParcelableArrayList(ARG_TOPIC_POSITIONS_STACK);
@@ -211,12 +206,8 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
             isInActionMode = savedInstanceState.getBoolean(ARG_IS_IN_ACTION_MODE);
             isInSearchMode = savedInstanceState.getBoolean(ARG_IS_IN_SEARCH_MODE);
             currentTopicSearchResult = savedInstanceState.getParcelable(ARG_CURRENT_SEARCH_RESULT);
-            initialPage = savedInstanceState.getInt(ARG_TOPIC_CURRENT_PAGE, initialPage);
+            currentPage = savedInstanceState.getInt(ARG_TOPIC_CURRENT_PAGE);
         }
-
-        // Start at initial page, currentPage value is updated via the onPageSelected
-        // listener on the ViewPager
-        currentPage = initialPage;
 
         if (topicPageAdapter == null) {
             topicPageAdapter = new TopicPageAdapter(getChildFragmentManager(), topic, currentPage, initialPagePosition);
@@ -985,7 +976,9 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     }
 
     public void notifyPageLoaded(int page, long searchStartPostId) {
-        Timber.d("Page '%d' is loaded, search should start at post id '%d'", page, searchStartPostId);
-        this.searchStartPostId = searchStartPostId;
+        if (page == currentPage) {
+            Timber.d("Page '%d' is loaded, search should start at post id '%d'", page, searchStartPostId);
+            this.searchStartPostId = searchStartPostId;
+        }
     }
 }
