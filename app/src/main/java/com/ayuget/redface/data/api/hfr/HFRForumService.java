@@ -46,7 +46,6 @@ import com.ayuget.redface.data.api.model.misc.SmileyResponse;
 import com.ayuget.redface.data.state.CategoriesStore;
 import com.ayuget.redface.network.HTTPClientProvider;
 import com.ayuget.redface.network.PageFetcher;
-import com.ayuget.redface.settings.Blacklist;
 import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.event.TopicPageCountUpdatedEvent;
@@ -84,8 +83,6 @@ public class HFRForumService implements MDService {
     @Inject MDMessageSender mdMessageSender;
 
     @Inject RedfaceSettings appSettings;
-
-    @Inject Blacklist blacklist;
 
     private String currentHashcheck;
 

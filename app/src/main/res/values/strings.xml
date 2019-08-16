@@ -309,6 +309,7 @@
     <string name="quoted_messages">1 quoted message</string>
     <string name="quoted_messages_plural">{count} quoted messages</string>
     <string name="user_blocked">User %1$s blocked !</string>
+    <string name="user_unblocked">User %1$s unblocked !</string>
 
     <!-- Post page -->
     <string name="reload_page">Reload</string>

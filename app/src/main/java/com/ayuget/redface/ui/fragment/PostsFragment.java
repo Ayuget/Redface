@@ -37,9 +37,7 @@ import com.ayuget.redface.data.api.model.TopicPage;
 import com.ayuget.redface.data.api.model.misc.SearchTerms;
 import com.ayuget.redface.data.rx.EndlessObserver;
 import com.ayuget.redface.network.DownloadStrategy;
-import com.ayuget.redface.settings.Blacklist;
 import com.ayuget.redface.settings.RedfaceSettings;
-import com.ayuget.redface.ui.event.BlockUserEvent;
 import com.ayuget.redface.ui.event.DisableSearchModeEvent;
 import com.ayuget.redface.ui.event.OverriddenPagePosition;
 import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
@@ -50,7 +48,6 @@ import com.ayuget.redface.ui.event.TopicPageCountUpdatedEvent;
 import com.ayuget.redface.ui.event.UnquoteAllPostsEvent;
 import com.ayuget.redface.ui.misc.ImageMenuHandler;
 import com.ayuget.redface.ui.misc.PagePosition;
-import com.ayuget.redface.ui.misc.SnackbarHelper;
 import com.ayuget.redface.ui.view.TopicPageView;
 import com.ayuget.redface.util.Connectivity;
 import com.hannesdorfmann.fragmentargs.annotation.Arg;
@@ -111,9 +108,6 @@ public class PostsFragment extends BaseFragment {
 
     @Inject
     MDEndpoints mdEndpoints;
-
-    @Inject
-    Blacklist blacklist;
 
     @Inject
     RedfaceSettings settings;
@@ -413,18 +407,6 @@ public class PostsFragment extends BaseFragment {
 
     private void enableSearchMode(SearchTerms activeSearchTerm) {
         Timber.d("Enabling search mode : %s", activeSearchTerm);
-    }
-
-    /**
-     * Event thrown by {@link com.ayuget.redface.ui.view.TopicPageView} to notify
-     * that an user has been blocked.
-     */
-    @SuppressWarnings("unused")
-    @Subscribe
-    public void onBlockUser(final BlockUserEvent event) {
-        blacklist.addBlockedAuthor(event.getAuthor());
-        SnackbarHelper.makeWithAction(PostsFragment.this, getString(R.string.user_blocked, event.getAuthor()),
-                R.string.action_refresh_topic, v -> bus.post(new PageRefreshRequestEvent(topic))).show();
     }
 
     @SuppressWarnings("unused")

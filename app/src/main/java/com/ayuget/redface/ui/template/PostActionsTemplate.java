@@ -77,6 +77,9 @@ public class PostActionsTemplate extends HTMLTemplate<Post> {
         renderAction(PostAction.FAVORITE, post.getId(), stream);
         renderAction(PostAction.WRITE_PRIVATE_MESSAGE, post.getId(), stream);
         renderAction(PostAction.COPY_LINK_TO_POST, post.getId(), stream);
-        renderAction(PostAction.BLOCK_USER, post.getId(), stream);
+
+        if (!userManager.isActiveUser(post.getAuthor())) {
+            renderAction(PostAction.BLOCK_USER, post.getId(), stream);
+        }
     }
 }
