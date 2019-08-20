@@ -17,7 +17,6 @@
 package com.ayuget.redface.storage;
 
 import android.content.Context;
-import android.content.ContextWrapper;
 
 import com.jakewharton.disklrucache.DiskLruCache;
 
@@ -31,7 +30,7 @@ public class DiskLruCacheFactory {
 
     private static final int CACHE_VALUE_COUNT = 2;
 
-    private static final long CACHE_MAX_SIZE = 1024 * 1024; // 1MB
+    private static final long DEFAULT_CACHE_MAX_SIZE = 1024 * 1024; // 1MB
 
     private final File cacheDirectory;
 
@@ -54,10 +53,14 @@ public class DiskLruCacheFactory {
     }
 
     public DiskLruCache create(String resourceName) {
+        return create(resourceName, DEFAULT_CACHE_MAX_SIZE);
+    }
+
+    public DiskLruCache create(String resourceName, long maxCacheSize) {
         File resourceCacheDir = getResourceCacheDir(resourceName);
 
         try {
-            return DiskLruCache.open(resourceCacheDir, CACHING_APP_VERSION, CACHE_VALUE_COUNT, CACHE_MAX_SIZE);
+            return DiskLruCache.open(resourceCacheDir, CACHING_APP_VERSION, CACHE_VALUE_COUNT, maxCacheSize);
         }
         catch (IOException e) {
             throw new RuntimeException("Unable to create disk LRU cache", e);
