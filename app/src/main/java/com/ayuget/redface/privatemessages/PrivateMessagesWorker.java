@@ -31,6 +31,7 @@ public class PrivateMessagesWorker extends Worker {
     private UserManager userManager;
     private MDService mdService;
     private RedfaceSettings appSettings;
+    private PrivateMessagesNotificationHandler privateMessagesNotificationHandler;
 
     public PrivateMessagesWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
@@ -46,6 +47,10 @@ public class PrivateMessagesWorker extends Worker {
 
     public void setSettings(RedfaceSettings settings) {
         this.appSettings = settings;
+    }
+
+    public void setPrivateMessagesNotificationHandler(PrivateMessagesNotificationHandler privateMessagesNotificationHandler) {
+        this.privateMessagesNotificationHandler = privateMessagesNotificationHandler;
     }
 
     @NonNull
@@ -80,15 +85,19 @@ public class PrivateMessagesWorker extends Worker {
             String userNotificationsGroup = RedfaceNotifications.PRIVATE_MESSAGES_GROUP + appUser.getUsername();
 
             for (PrivateMessage privateMessage : userPrivateMessages) {
-                Notification notificationForPrivateMessage = createNotificationForPrivateMessage(userNotificationsGroup, privateMessage);
+                if (privateMessagesNotificationHandler.wasNotificationAlreadySent(appUser, privateMessage)) {
+                    Timber.d("Notification already sent for privateMessage(id=%d, totalMessages=%d)", privateMessage.getId(), privateMessage.getTotalMessages());
 
+                    continue;
+                }
+
+                Notification notificationForPrivateMessage = createNotificationForPrivateMessage(userNotificationsGroup, privateMessage);
                 int privateMessageId = (int) privateMessage.getId();
 
                 notificationManager.notify(privateMessageId, notificationForPrivateMessage);
-            }
 
-            Notification notificationSummary = createNotificationSummaryForUser(userNotificationsGroup, userPrivateMessages);
-            notificationManager.notify(RedfaceNotifications.PRIVATE_MESSAGES_SUMMARY_ID, notificationSummary);
+                privateMessagesNotificationHandler.storeNotificationAsSent(appUser, privateMessage);
+            }
         }
 
         return Result.success();
@@ -114,23 +123,6 @@ public class PrivateMessagesWorker extends Worker {
                 .setContentText(notificationText)
                 .setContentIntent(buildPrivateMessageNotificationIntent(getApplicationContext(), privateMessage))
                 .setGroup(messagesGroup)
-                .setAutoCancel(true)
-                .build();
-    }
-
-    private Notification createNotificationSummaryForUser(String messagesGroup, List<PrivateMessage> privateMessages) {
-        CharSequence newMessagesText = Phrase.from(getApplicationContext(), R.string.new_private_messages_count)
-                .put("count", privateMessages.size())
-                .format();
-
-        return new NotificationCompat.Builder(getApplicationContext(), RedfaceNotifications.PRIVATE_MESSAGES_CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_action_emo_wonder)
-                .setColor(getApplicationContext().getResources().getColor(R.color.theme_primary))
-                .setContentTitle(getApplicationContext().getString(R.string.new_private_messages_summary))
-                .setContentText(newMessagesText)
-                .setContentIntent(buildPrivateMessageSummaryNotificationIntent(getApplicationContext()))
-                .setGroup(messagesGroup)
-                .setGroupSummary(true)
                 .setAutoCancel(true)
                 .build();
     }

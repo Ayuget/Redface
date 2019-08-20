@@ -12,14 +12,14 @@ import com.ayuget.redface.settings.RedfaceSettings;
 
 import java.util.concurrent.TimeUnit;
 
+import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 import timber.log.Timber;
 
 public class RedfaceNotifications {
-    private static final String PRIVATE_MESSAGES_WORKER_TAG = "PRIVATE_MESSAGES";
     public static final String PRIVATE_MESSAGES_CHANNEL_ID = "PRIVATE_MESSAGES";
-    public static final int PRIVATE_MESSAGES_SUMMARY_ID = 0;
+    public static final String PRIVATE_MESSAGES_WORK_TASK_TAG = "PRIVATE_MESSAGES";
     public static final String PRIVATE_MESSAGES_GROUP = "com.ayuget.redface.PRIVATE_MESSAGES";
 
     public static void setupNotifications(Context context) {
@@ -47,13 +47,12 @@ public class RedfaceNotifications {
     private static void launchPrivateMessagesWorker(int privateMessagesPollingFrequency) {
         Timber.d("Launching private messages worker with a polling frequency of %d minutes", privateMessagesPollingFrequency);
 
-        PeriodicWorkRequest privateMessagesWorkRequest =
-                new PeriodicWorkRequest.Builder(PrivateMessagesWorker.class, privateMessagesPollingFrequency, TimeUnit.MINUTES)
-                        .addTag(PRIVATE_MESSAGES_WORKER_TAG)
-                        .build();
-
         WorkManager.getInstance()
-                .enqueue(privateMessagesWorkRequest);
+                .enqueueUniquePeriodicWork(
+                        PRIVATE_MESSAGES_WORK_TASK_TAG,
+                        ExistingPeriodicWorkPolicy.KEEP,
+                        new PeriodicWorkRequest.Builder(PrivateMessagesWorker.class, privateMessagesPollingFrequency, TimeUnit.MINUTES, 5, TimeUnit.MINUTES).build()
+                );
     }
 
     public static void disablePrivateMessagesNotifications() {
