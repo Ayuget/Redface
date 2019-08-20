@@ -7,7 +7,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.3.2'
+        classpath 'com.android.tools.build:gradle:3.5.0'
         classpath 'io.fabric.tools:gradle:1.+'
     }
 }
@@ -74,7 +74,7 @@ dependencies {
     implementation 'com.android.support:customtabs:28.0.0'
 
     // WorkManager
-    implementation "android.arch.work:work-runtime:1.0.0"
+    implementation "android.arch.work:work-runtime:1.0.1"
 
     // Dependency injection
     implementation 'com.squareup.dagger:dagger:1.2.2'
@@ -106,11 +106,11 @@ dependencies {
     // Misc...
     implementation 'com.squareup:otto:1.3.5'
     implementation 'com.squareup.retrofit:retrofit:1.9.0'
-    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
+    implementation 'com.squareup.okhttp3:okhttp:3.12.0'
     implementation 'com.squareup.okhttp3:okhttp-urlconnection:3.4.1'
     implementation 'com.squareup.phrase:phrase:1.0.3'
     implementation 'com.google.guava:guava:27.1-android'
-    implementation 'com.squareup.moshi:moshi:1.1.0'
+    implementation 'com.squareup.moshi:moshi:1.8.0'
     implementation 'com.jakewharton:disklrucache:2.0.2'
     implementation "com.github.VictorAlbertos:RxActivityResult:0.3.4"
 
