@@ -86,16 +86,6 @@ public interface MDService {
     Observable<String> getPostContent(User user, Topic topic, int postId);
 
     /**
-     * Returns a list of the smileys the most recently used by the user
-     */
-    Observable<List<Smiley>> getRecentlyUsedSmileys(User user);
-
-    /**
-     * Returns a list of popular smileys
-     */
-    Observable<List<Smiley>> getPopularSmileys();
-
-    /**
      * Search for smileys
      * @param searchExpression search criteria
      * @return list of smileys matching the expression

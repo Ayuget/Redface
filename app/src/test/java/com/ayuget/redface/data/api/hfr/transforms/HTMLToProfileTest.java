@@ -36,6 +36,19 @@ public class HTMLToProfileTest extends BaseTestCase {
 
         Profile profile = htmlToProfile.call(readAssetFile("hfr_profile_page.html"));
 
-        assertThat(profile.getAvatarUrl()).isEqualTo("http://forum-images.hardware.fr/images/mesdiscussions-963963.jpg");
+        assertThat(profile.username()).isEqualTo("Ayuget");
+        assertThat(profile.avatarUrl()).isEqualTo("https://forum-images.hardware.fr/images/mesdiscussions-65747.jpg");
+        assertThat(profile.emailAddress()).isEqualTo("<i>Vous n'avez pas accès à cette information</i>");
+        assertThat(profile.birthday()).isNull();
+        assertThat(profile.sexGenre()).isEqualTo("homme");
+        assertThat(profile.city()).isNull();
+        assertThat(profile.employment()).isNull();
+        assertThat(profile.hobbies()).isNull();
+        assertThat(profile.status()).isEqualTo("Membre");
+        assertThat(profile.messageCount()).isEqualTo(15116);
+        assertThat(profile.arrivalDate()).isEqualTo("07/10/2002");
+        assertThat(profile.lastMessageDate()).isEqualTo("30-07-2019 à 09:28");
+        assertThat(profile.personalQuote()).isEqualTo("R.oger");
+        assertThat(profile.messageSignature()).isNull();
     }
 }

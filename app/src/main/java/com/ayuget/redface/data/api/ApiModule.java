@@ -55,12 +55,4 @@ public class ApiModule {
     @Provides @Singleton UrlParser provideUrlParser(MDEndpoints endpoints, CategoriesStore categoriesStore) {
         return new HFRUrlParser(endpoints, categoriesStore);
     }
-
-    @Provides @Singleton SmileyService provideSmileyService(MDEndpoints endpoints) {
-        RestAdapter restAdapter = new RestAdapter.Builder()
-                .setEndpoint(endpoints.smileyApiHost())
-                .build();
-
-        return restAdapter.create(SmileyService.class);
-    }
 }

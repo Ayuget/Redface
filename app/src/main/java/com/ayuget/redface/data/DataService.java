@@ -107,16 +107,8 @@ public class DataService {
         return postsSubscriptionHandler.loadAndCache(TopicPage.create(topic, page), mdService.listPosts(user, topic, page, imagesEnabled, avatarsEnabled, smileysEnabled), observer);
     }
 
-    public Subscription getRecentlyUsedSmileys(final User user, Observer<List<Smiley>> observer) {
-        return recentSmileysHandler.loadAndCache(user, mdService.getRecentlyUsedSmileys(user), observer);
-    }
-
     public Subscription searchForSmileys(final User user, final String searchExpression, Observer<List<Smiley>> observer) {
         return smileysSearchHandler.loadAndCache(searchExpression, mdService.searchSmileys(user, searchExpression), observer);
-    }
-
-    public Subscription getPopularSmileys(Observer<List<Smiley>> observer) {
-        return popularSmileysHandler.loadAndCache(null, mdService.getPopularSmileys(), observer);
     }
 
     public void clearPostsCache(final Topic topic, int page) {

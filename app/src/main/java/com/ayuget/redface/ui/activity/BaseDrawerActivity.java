@@ -212,7 +212,7 @@ public class BaseDrawerActivity extends BaseActivity {
             public void onNext(Profile profile) {
                 currentDrawerUser.setProfile(profile);
                 Picasso.with(BaseDrawerActivity.this)
-                        .load(profile.getAvatarUrl())
+                        .load(profile.avatarUrl())
                         .into(activeUserPicture);
             }
 

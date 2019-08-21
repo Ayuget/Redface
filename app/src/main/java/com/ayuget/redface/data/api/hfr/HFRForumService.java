@@ -22,7 +22,6 @@ import android.os.Looper;
 import com.ayuget.redface.data.api.MDEndpoints;
 import com.ayuget.redface.data.api.MDMessageSender;
 import com.ayuget.redface.data.api.MDService;
-import com.ayuget.redface.data.api.SmileyService;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToBBCode;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToCategoryList;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToPostList;
@@ -74,8 +73,6 @@ public class HFRForumService implements MDService {
     @Inject MDEndpoints mdEndpoints;
 
     @Inject HTTPClientProvider httpClientProvider;
-
-    @Inject SmileyService smileyService;
 
     @Inject Bus bus;
 
@@ -203,31 +200,9 @@ public class HFRForumService implements MDService {
     }
 
     @Override
-    public Observable<List<Smiley>> getRecentlyUsedSmileys(User user) {
-        if (user.isGuest()) {
-            return Observable.empty();
-        }
-        else {
-            Optional<Integer> userId = UserUtils.identifyUserFromCookies(httpClientProvider.getUserCookieStore(user));
-
-            if (userId.isPresent()) {
-                return smileyService.getUserSmileys(userId.get()).map(SmileyResponse::getSmileys);
-            }
-            else {
-                return Observable.empty();
-            }
-        }
-    }
-
-    @Override
     public Observable<Topic> getTopic(User user, Category category, int topicId) {
         return pageFetcher.fetchSource(user, mdEndpoints.topic(category, topicId))
                 .map(new HTMLToTopic());
-    }
-
-    @Override
-    public Observable<List<Smiley>> getPopularSmileys() {
-        return smileyService.getPopularSmileys().map(SmileyResponse::getSmileys);
     }
 
     @Override
