@@ -31,10 +31,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class HTMLToProfileTest extends BaseTestCase {
 
     @Test
-    public void test_parseProfile() throws IOException {
+    public void parseAyugetProfile() throws IOException {
         HTMLToProfile htmlToProfile = new HTMLToProfile();
 
-        Profile profile = htmlToProfile.call(readAssetFile("hfr_profile_page.html"));
+        Profile profile = htmlToProfile.call(readAssetFile("hfr_profile_page_ayuget.html"));
 
         assertThat(profile.username()).isEqualTo("Ayuget");
         assertThat(profile.avatarUrl()).isEqualTo("https://forum-images.hardware.fr/images/mesdiscussions-65747.jpg");
@@ -50,5 +50,42 @@ public class HTMLToProfileTest extends BaseTestCase {
         assertThat(profile.lastMessageDate()).isEqualTo("30-07-2019 à 09:28");
         assertThat(profile.personalQuote()).isEqualTo("R.oger");
         assertThat(profile.messageSignature()).isNull();
+        assertThat(profile.personalSmilies()).hasSize(7);
+    }
+
+    @Test
+    public void parseMarcProfile() throws IOException {
+        HTMLToProfile htmlToProfile = new HTMLToProfile();
+
+        Profile profile = htmlToProfile.call(readAssetFile("hfr_profile_page_marc.html"));
+
+        assertThat(profile.username()).isEqualTo("Marc");
+        assertThat(profile.status()).isEqualTo("Super Administrateur");
+        assertThat(profile.city()).isEqualTo("Lyon");
+        assertThat(profile.hobbies()).isEqualTo("Marie, Noémie et Simon");
+        assertThat(profile.messageCount()).isEqualTo(110623);
+        assertThat(profile.personalSmilies()).hasSize(2);
+    }
+
+    @Test
+    public void parseManuLMProfile() throws IOException {
+        HTMLToProfile htmlToProfile = new HTMLToProfile();
+
+        Profile profile = htmlToProfile.call(readAssetFile("hfr_profile_page_manulm.html"));
+
+        assertThat(profile.username()).isEqualTo("ManuLM");
+        assertThat(profile.personalSmilies()).hasSize(0);
+    }
+
+    @Test
+    public void parseToyonosProfile() throws IOException {
+        HTMLToProfile htmlToProfile = new HTMLToProfile();
+
+        Profile profile = htmlToProfile.call(readAssetFile("hfr_profile_page_toyonos.html"));
+
+        assertThat(profile.username()).isEqualTo("toyonos");
+        assertThat(profile.employment()).isEqualTo("Ingénieur info (pour faire original)");
+        assertThat(profile.arrivalDate()).isEqualTo("18/02/2002");
+        assertThat(profile.messageSignature()).isEqualTo("<a rel=\"nofollow\" href=\"http://bit.ly/18R06ju\" target=\"_blank\" class=\"cLink\"><strong>Marre de perdre du temps à chercher vos sous titres ?</strong></a> | <a rel=\"nofollow\" href=\"http://bit.ly/17O2DZU\" target=\"_blank\" class=\"cLink\">HFR4droid</a>");
     }
 }

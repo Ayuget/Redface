@@ -1,8 +1,10 @@
 package com.ayuget.redface.data.api.hfr.transforms;
 
 import com.ayuget.redface.data.api.model.Profile;
+import com.ayuget.redface.data.api.model.Smiley;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,19 +19,16 @@ public class HTMLToProfile implements Func1<String, Profile> {
     private static final String INFO_CELL_LABEL_START = "<td class=\"profilCase2\">";
     private static final String INFO_CELL_CONTENT_START = "<td class=\"profilCase3\">";
     private static final String INFO_CELL_END = "</td>";
-    private static final String SIGNATURE_EXTRA_TAGS = "<br /><div style=\"clear: both;\"> </div>";
 
-    public static final Pattern PROFILE_PATTERN = Pattern.compile(
-            "<td\\s*class=\"profilCase4\"\\s*rowspan=\"6\"\\s*style=\"text-align:center\">\\s*" +
-                    "(?:(?:<div\\s*class=\"avatar_center\"\\s*style=\"clear:both\"><img\\s*src=\"(.*?)\")|</td>).*?" +
-                    "<td\\s*class=\"profilCase2\">Date de naissance.*?</td>\\s*<td\\s*class=\"profilCase3\">(.*?)</td>.*?"
-            , Pattern.CASE_INSENSITIVE | Pattern.DOTALL
-    );
+    private static final String SIGNATURE_EXTRA_TAGS = "<br /><div style=\"clear: both;\"> </div>";
+    private static final String CUSTOM_SMILIES_START = "<td class=\"profilCase4\" rowspan=\"6\">";
+    private static final String CUSTOM_SMILIES_SEPARATOR = "<br />";
+    private static final String CUSTOM_SMILIES_END = "</td>";
+
+    private static final Pattern CUSTOM_SMILIES_PATTERN = Pattern.compile("((?:\\[)(?:.*?)(?:])).*?(?:<img src=\")(.*?)(?:\")(?:.*?)(?:/>)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
     @Override
     public Profile call(String s) {
-        Matcher m = PROFILE_PATTERN.matcher(s);
-
         int currentOffset = 0;
 
         Cell usernameCell = findNextCell(s, currentOffset);
@@ -112,6 +111,7 @@ public class HTMLToProfile implements Func1<String, Profile> {
         }
 
         profileBuilder.messageCount(Long.valueOf(messageCountCell.content));
+        profileBuilder.personalSmilies(parseCustomSmiliesList(s, messageCountCell.endOffset));
 
         Cell arrivalDateCell = findNextCell(s, messageCountCell.endOffset);
         if (arrivalDateCell == null) {
@@ -212,6 +212,34 @@ public class HTMLToProfile implements Func1<String, Profile> {
         }
 
         return pageContent.substring(avatarLinkContentStart, avatarLinkEndIndex).trim();
+    }
+
+    private List<Smiley> parseCustomSmiliesList(String pageContent, int currentOffset) {
+        int customSmiliesStartTagIndex = pageContent.indexOf(CUSTOM_SMILIES_START, currentOffset);
+        if (customSmiliesStartTagIndex == -1) {
+            return new ArrayList<>();
+        }
+
+        int customSmiliesCellContentStartIndex = customSmiliesStartTagIndex + CUSTOM_SMILIES_START.length();
+
+        int customSmiliesCellEndTagIndex = pageContent.indexOf(CUSTOM_SMILIES_END, customSmiliesCellContentStartIndex);
+        if (customSmiliesCellEndTagIndex == -1) {
+            return new ArrayList<>();
+        }
+
+        String customSmiliesCellContent = pageContent.substring(customSmiliesCellContentStartIndex, customSmiliesCellEndTagIndex)
+                .replaceAll("&nbsp;", " ")
+                .trim();
+
+        Matcher smiliesMatcher = CUSTOM_SMILIES_PATTERN.matcher(customSmiliesCellContent);
+
+        List<Smiley> customSmilies = new ArrayList<>();
+
+        while (smiliesMatcher.find()) {
+            customSmilies.add(Smiley.create(smiliesMatcher.group(1), smiliesMatcher.group(2)));
+        }
+
+        return customSmilies;
     }
 
     private static class Cell {
