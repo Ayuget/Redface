@@ -25,6 +25,7 @@ import android.widget.Toast;
 import com.ayuget.redface.R;
 import com.ayuget.redface.data.api.hfr.HFRUrlParser;
 import com.ayuget.redface.data.api.model.Category;
+import com.ayuget.redface.data.api.model.Profile;
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.api.model.TopicStatus;
 import com.ayuget.redface.data.api.model.User;
@@ -39,6 +40,7 @@ import com.ayuget.redface.ui.event.InternalLinkClickedEvent;
 import com.ayuget.redface.ui.event.PostActionEvent;
 import com.ayuget.redface.ui.event.QuotePostEvent;
 import com.ayuget.redface.ui.event.TopicContextItemSelectedEvent;
+import com.ayuget.redface.ui.event.ViewUserProfileEvent;
 import com.ayuget.redface.ui.fragment.DefaultFragment;
 import com.ayuget.redface.ui.fragment.DetailsDefaultFragment;
 import com.ayuget.redface.ui.fragment.MetaPageFragmentBuilder;
@@ -74,6 +76,8 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
     private SubscriptionHandler<Integer, Topic> topicDetailsSearchHandler = new SubscriptionHandler<>();
 
     private SubscriptionHandler<Topic, String> quoteHandler = new SubscriptionHandler<>();
+
+    private SubscriptionHandler<Integer, Profile> profileHandler = new SubscriptionHandler<>();
 
     private SubscriptionHandler<User, Boolean> unflagSubscriptionHandler = new SubscriptionHandler<>();
 
@@ -443,6 +447,15 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
             @Override
             public void onNext(String messageBBCode) {
                 startEditActivity(event.getTopic(), event.getPostId(), messageBBCode);
+            }
+        }));
+    }
+
+    @Subscribe public void onViewUserProfile(final ViewUserProfileEvent event) {
+        subscribe(profileHandler.load(event.getUserId(), mdService.getProfile(userManager.getActiveUser(), event.getUserId()), new EndlessObserver<Profile>() {
+            @Override
+            public void onNext(Profile profile) {
+                startViewUserProfileActivity(profile);
             }
         }));
     }

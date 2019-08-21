@@ -53,6 +53,7 @@ import com.ayuget.redface.ui.event.InternalLinkClickedEvent;
 import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
 import com.ayuget.redface.ui.event.PostActionEvent;
 import com.ayuget.redface.ui.event.QuotePostEvent;
+import com.ayuget.redface.ui.event.ViewUserProfileEvent;
 import com.ayuget.redface.ui.event.WritePrivateMessageEvent;
 import com.ayuget.redface.ui.misc.DummyGestureListener;
 import com.ayuget.redface.ui.misc.NestedScrollingWebView;
@@ -364,6 +365,16 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
         }
 
         @JavascriptInterface
+        public void viewUserProfile(final int postId) {
+            Timber.d("View user profile for post '%d'", postId);
+            for (final Post post : topicPage.posts()) {
+                if (post.getId() == postId) {
+                    TopicPageView.this.post(() -> bus.post(new ViewUserProfileEvent(post.getAuthorId())));
+                }
+            }
+        }
+
+        @JavascriptInterface
         public void writePrivateMessage(final int postId) {
             for (final Post post : topicPage.posts()) {
                 if (post.getId() == postId) {
@@ -385,11 +396,6 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
         public void copyLinkToPost(final int postId) {
             Timber.d("Copying link to post '%d' in clipboard", postId);
             TopicPageView.this.post(() -> UiUtils.copyToClipboard(getContext(), mdEndpoints.post(topicPage.topic().category(), topicPage.topic(), topicPage.page(), postId)));
-        }
-
-        @JavascriptInterface
-        public void showProfile (String username){
-            Timber.d("Profile requested for user '%s'", username);
         }
 
         @JavascriptInterface

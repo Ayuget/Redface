@@ -344,6 +344,7 @@ img {
     margin: 0;
     padding-left: 10px;
     display: none;
+    overflow-x: scroll;
 }
 
 .redface-dark .post-overflow-icons {

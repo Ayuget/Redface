@@ -27,6 +27,7 @@ import com.ayuget.redface.ui.activity.EditPostActivity;
 import com.ayuget.redface.ui.activity.ExifDetailsActivity;
 import com.ayuget.redface.ui.activity.ImageSharingActivity;
 import com.ayuget.redface.ui.activity.PrivateMessagesActivity;
+import com.ayuget.redface.ui.activity.ProfileActivity;
 import com.ayuget.redface.ui.activity.ReplyActivity;
 import com.ayuget.redface.ui.activity.SettingsActivity;
 import com.ayuget.redface.ui.activity.TopicsActivity;
@@ -82,7 +83,8 @@ import dagger.Provides;
                 PrivateMessageListFragment.class,
                 WritePrivateMessageActivity.class,
                 ExifDetailsActivity.class,
-                ImageSharingActivity.class
+                ImageSharingActivity.class,
+                ProfileActivity.class,
         },
         library =  true,
         complete = false

@@ -94,6 +94,8 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".ui.activity.ProfileActivity" />
+
         <meta-data android:name="com.crashlytics.ApiKey" android:value="b1f369fddd2fed6f71072ef7db728637b1c633bc"/>
 
         <!-- Disable default WorkManagerFactory since we have a custom DI-friendly implementation -->
