@@ -435,4 +435,17 @@
     <string name="search_topic_in_progress">Search in progress</string>
     <string name="search_topic_error">Search failed</string>
     <string name="search_topic_ended">No more results</string>
+    <string name="profile_email_label">Email</string>
+    <string name="profile_birthday_label">Birthday</string>
+    <string name="profile_gender_label">Gender</string>
+    <string name="profile_city_label">City</string>
+    <string name="profile_employment_label">Employment</string>
+    <string name="profile_hobbies_label">Hobbies</string>
+    <string name="profile_status_label">Status</string>
+    <string name="profile_message_count_label">Messages</string>
+    <string name="profile_arrival_date_label">Date of arrival on the forum</string>
+    <string name="profile_last_message_date">Last message date</string>
+    <string name="profile_personal_quote_label">Personal quote</string>
+    <string name="profile_signature_label">Message signature</string>
+    <string name="profile_personal_smilies_label">Personal smilies</string>
 </resources>

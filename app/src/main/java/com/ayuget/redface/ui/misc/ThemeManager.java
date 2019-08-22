@@ -115,6 +115,17 @@ public class ThemeManager {
         return settings.isUseModernQuoteStyleEnabled() ? MODERN_QUOTE_STYLE_CLASS : OLD_QUOTE_STYLE_CLASS;
     }
 
+    public int getProfileAvatarBackgroundDrawable() {
+        RedfaceTheme activeTheme = settings.getTheme();
+
+        if (activeTheme == RedfaceTheme.LIGHT) {
+            return R.drawable.profile_avatar_background_light;
+        }
+        else {
+            return R.drawable.profile_avatar_background_dark;
+        }
+    }
+
     public boolean isRefreshNeeded() {
         return refreshNeeded;
     }

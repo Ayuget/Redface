@@ -1,7 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
-	<include layout="@layout/toolbar_actionbar" />
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+	<LinearLayout
+		android:orientation="vertical"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent">
+		<include layout="@layout/toolbar_actionbar" />
 
-</LinearLayout>
+		<ImageView
+			android:maxWidth="150dp"
+			android:layout_width="wrap_content"
+			android:layout_height="@dimen/navdrawer_chosen_account_height"
+			android:scaleType="fitCenter"
+			android:adjustViewBounds="true"
+			android:id="@+id/profile_picture"
+			android:layout_marginBottom="16dp"
+			android:layout_gravity="center"/>
+
+		<TextView
+			android:id="@+id/username"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center"
+			tools:text="Username"
+			style="@style/Redface.ProfileDetails.Username" />
+
+		<TextView
+			android:id="@+id/status"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center"
+			tools:text="Super Administrateur"
+			style="@style/Redface.ProfileDetails.Status" />
+
+		<LinearLayout
+			android:id="@+id/profile_attributes"
+			android:orientation="vertical"
+			android:layout_marginTop="@dimen/activity_vertical_margin"
+			android:layout_marginBottom="16dp"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent" />
+	</LinearLayout>
+</ScrollView>

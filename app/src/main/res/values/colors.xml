@@ -16,6 +16,8 @@
   -->
 
 <resources>
+    <color name="app_bar_transparent">@android:color/transparent</color>
+
     <color name="app_background_light">#ffffff</color>
     <color name="app_background_dark">#222222</color>
     <color name="app_background_night">#000000</color>
