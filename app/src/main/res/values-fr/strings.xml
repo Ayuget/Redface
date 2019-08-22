@@ -300,4 +300,12 @@
     <string name="profile_personal_quote_label">Citation personnelle</string>
     <string name="profile_signature_label">Signature des messages</string>
     <string name="profile_personal_smilies_label">Smilies perso</string>
+    <string name="action_report_post_label">Demande de modération</string>
+    <string name="action_report_validate">Envoyer</string>
+    <string name="report_post_failed">Erreur lors de la demande de modération</string>
+    <string name="report_join_label">Une demande de modération a déjà été envoyée sur ce message, voulez vous vous joindre à cette demande ?</string>
+    <string name="report_text_hint">Raison de la demande de modération</string>
+    <string name="report_request_in_progress">Votre demande de modération est en cours de traitement</string>
+    <string name="report_already_treated">Demande de modération déjà traitée</string>
+    <string name="report_request_success">Demande de modération correctement envoyée</string>
 </resources>

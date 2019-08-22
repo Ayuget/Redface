@@ -46,9 +46,11 @@ public class HFRMessageSender implements MDMessageSender {
     private static final Pattern POST_SUCCESSFULLY_EDITED_PATTERN = Pattern.compile("(.*)(Votre message a été édité avec succès)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private static final Pattern INVALID_PASSWORD_PATTERN = Pattern.compile("(.*)((Mot de passe incorrect !)|((.*)(Votre mot de passe ou nom d'utilisateur n'est pas valide)(.*)))(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private static final Pattern POST_FLOOD_PATTERN = Pattern.compile("(.*)(réponses consécutives)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private static final Pattern MESSAGE_ALERT_SUCCESSFULLY_JOINED = Pattern.compile("(.*)(Vous êtes désormais)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private static final Pattern TOPIC_FLOOD_PATTERN = Pattern.compile("(.*)(nouveaux sujets consécutifs)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private static final Pattern FAVORITE_SUCCESSFULLY_ADDED = Pattern.compile("(.*)(Favori positionné avec succès)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private static final Pattern MESSAGE_SUCCESSFULLY_DELETED = Pattern.compile("(.*)(Message effacé avec succès)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private static final Pattern MESSAGE_SUCCESSFULLY_REPORTED = Pattern.compile("(.*)(Un message a été envoyé avec succès aux modérateurs)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private static final Pattern FLAG_SUCCESSFULLY_REMOVED = Pattern.compile("(.*)(Drapeau effacé avec succès)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private static final Pattern EXTRACT_SEARCHED_POST_LOCATION_PATTERN = Pattern.compile("(?:page=)(\\d+)(?:.*?)(?:currentnum=)(\\d+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private final HTTPClientProvider httpClientProvider;
@@ -319,8 +321,66 @@ public class HFRMessageSender implements MDMessageSender {
     }
 
     @Override
-    public Observable<Boolean> reportPost(User user, Topic topic, int postId) {
-        return null;
+    public Observable<Boolean> reportPost(User user, Topic topic, int postId, String reason, boolean joinReport, final String hashcheck) {
+        return Observable.create(subscriber -> {
+            Timber.d("Reporting post '%d' as user '%s' in topic '%s'", postId, user.getUsername(), topic.title());
+
+            OkHttpClient httpClient = httpClientProvider.getClientForUser(user);
+
+            RequestBody formBody;
+
+            if (joinReport) {
+                formBody = new FormBody.Builder()
+                        .add("hash_check", hashcheck)
+                        .add("referer_page", mdEndpoints.topic(topic))
+                        .add("cfmodoalert", "1")
+                        .build();
+            }
+            else {
+                formBody = new FormBody.Builder()
+                        .add("hash_check", hashcheck)
+                        .add("referer_page", mdEndpoints.topic(topic))
+                        .add("raison", reason)
+                        .build();
+            }
+
+            Request request = new Request.Builder()
+                    .url(mdEndpoints.reportPost(topic.category(), topic, postId))
+                    .post(formBody)
+                    .build();
+
+            try {
+                okhttp3.Response response = httpClient.newCall(request).execute();
+
+                if (response.isSuccessful()) {
+                    final String responseBody = response.body().string();
+
+                    Timber.d("Successful response");
+                    Timber.d(responseBody);
+
+                    boolean success;
+
+                    if (joinReport) {
+                        success = matchesPattern(MESSAGE_ALERT_SUCCESSFULLY_JOINED, responseBody);
+                    }
+                    else {
+                        success = matchesPattern(MESSAGE_SUCCESSFULLY_REPORTED, responseBody);
+                    }
+
+                    subscriber.onNext(success);
+                }
+                else {
+                    Timber.d("Error HTTP Code, response is : %s", response.body().string());
+                    subscriber.onNext(false);
+                }
+
+                subscriber.onCompleted();
+            }
+            catch (IOException e) {
+                Timber.e(e, "Exception while reporting post");
+                subscriber.onError(e);
+            }
+        });
     }
 
     @Override

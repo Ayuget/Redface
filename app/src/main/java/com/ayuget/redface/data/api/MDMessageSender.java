@@ -62,7 +62,7 @@ public interface MDMessageSender {
     /**
      * Reports a post to the moderators.
      */
-    Observable<Boolean> reportPost(User user, Topic topic, int postId);
+    Observable<Boolean> reportPost(User user, Topic topic, int postId, String reason, boolean joinReport, final String hashcheck);
 
     /**
      * Removes a flag (or a favorite) on a given {@link Topic}

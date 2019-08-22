@@ -342,9 +342,12 @@ img {
     color: #ffffff;
     height: 48px;
     margin: 0;
-    padding-left: 10px;
     display: none;
     overflow-x: scroll;
+}
+
+.post-action-container:first-child {
+    padding-left: 10px;
 }
 
 .redface-dark .post-overflow-icons {

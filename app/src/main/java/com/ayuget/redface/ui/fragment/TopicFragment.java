@@ -66,12 +66,14 @@ import com.ayuget.redface.ui.event.GoToPostEvent;
 import com.ayuget.redface.ui.event.OverriddenPagePosition;
 import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
 import com.ayuget.redface.ui.event.PageSelectedEvent;
+import com.ayuget.redface.ui.event.ReportPostEvent;
 import com.ayuget.redface.ui.event.ScrollToPositionEvent;
 import com.ayuget.redface.ui.event.ShowAllSpoilersEvent;
 import com.ayuget.redface.ui.event.TopicPageCountUpdatedEvent;
 import com.ayuget.redface.ui.event.UnquoteAllPostsEvent;
 import com.ayuget.redface.ui.event.WritePrivateMessageEvent;
 import com.ayuget.redface.ui.misc.PagePosition;
+import com.ayuget.redface.ui.misc.PostReportStatus;
 import com.ayuget.redface.ui.misc.SnackbarHelper;
 import com.ayuget.redface.ui.misc.TopicPosition;
 import com.ayuget.redface.ui.misc.UiUtils;
@@ -87,6 +89,8 @@ import java.util.List;
 import javax.inject.Inject;
 
 import butterknife.InjectView;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 import static android.content.DialogInterface.BUTTON_POSITIVE;
@@ -106,6 +110,8 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     private TopicPageAdapter topicPageAdapter;
 
     private EditText goToPageEditText;
+
+    private EditText reportPostReasonEditText;
 
     private ArrayList<TopicPosition> topicPositionsStack;
 
@@ -557,6 +563,93 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
         }
     }
 
+    @Subscribe
+    public void onPostReported(ReportPostEvent reportPostEvent) {
+        if (! reportPostEvent.getTopic().equals(topic)) {
+            return;
+        }
+
+        Timber.d("Reporting post %d", reportPostEvent.getPostId());
+
+        subscribe(mdService.checkPostReportStatus(userManager.getActiveUser(), topic, reportPostEvent.getPostId())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new EndlessObserver<PostReportStatus>() {
+                    @Override
+                    public void onNext(PostReportStatus postReportStatus) {
+
+                        if (postReportStatus == PostReportStatus.JOIN_REPORT) {
+                            Timber.d("Existing report for post %d", reportPostEvent.getPostId());
+                            showJoinReportDialog(reportPostEvent.getPostId());
+                        }
+                        else if (postReportStatus == PostReportStatus.REPORT_IN_PROGRESS) {
+                            Timber.d("Report is in progress for post %d", reportPostEvent.getPostId());
+                            Toast.makeText(TopicFragment.this.getActivity(), R.string.report_request_in_progress, Toast.LENGTH_SHORT).show();
+                        }
+                        else if (postReportStatus == PostReportStatus.REPORT_TREATED) {
+                            Timber.d("Report has already been treated for post %d", reportPostEvent.getPostId());
+                            Toast.makeText(TopicFragment.this.getActivity(), R.string.report_already_treated, Toast.LENGTH_SHORT).show();
+                        }
+                        else {
+                            Timber.d("No existing report for post %d, asking for reason", reportPostEvent.getPostId());
+                            showReportPostDialog(reportPostEvent.getPostId());
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable throwable) {
+                        Timber.e(throwable, "Unexpected error while reporting post");
+                        Toast.makeText(TopicFragment.this.getActivity(), R.string.report_post_failed, Toast.LENGTH_SHORT).show();
+                    }
+                }));
+    }
+
+    private void showReportPostDialog(int postId) {
+        AlertDialog reportPostDialog = new AlertDialog.Builder(getActivity())
+                .setView(R.layout.dialog_report_post)
+                .setPositiveButton(R.string.action_report_validate, (dialog1, which) -> {
+                    String reportReason = reportPostReasonEditText.getText().toString();
+                    reportPost(postId, reportReason, false);
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+
+        reportPostReasonEditText = reportPostDialog.findViewById(R.id.post_report_reason);
+    }
+
+    private void showJoinReportDialog(int postId) {
+        AlertDialog reportPostDialog = new AlertDialog.Builder(getActivity())
+                .setView(R.layout.dialog_join_report)
+                .setPositiveButton(R.string.action_report_validate, (dialog1, which) -> {
+                    reportPost(postId, null, true);
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
+
+    private void reportPost(int postId, String reason, boolean joinReport) {
+        subscribe(mdService.reportPost(userManager.getActiveUser(), topic, postId, reason, joinReport)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new EndlessObserver<Boolean>() {
+                    @Override
+                    public void onNext(Boolean success) {
+                        if (success) {
+                            SnackbarHelper.make(TopicFragment.this, R.string.report_request_success).show();
+                        }
+                        else {
+                            Toast.makeText(TopicFragment.this.getActivity(), R.string.report_post_failed, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable throwable) {
+                        Timber.e(throwable, "Unexpected error while deleting post");
+                        Toast.makeText(TopicFragment.this.getActivity(), R.string.delete_post_failed, Toast.LENGTH_SHORT).show();
+                    }
+                }));
+    }
+
     /**
      * Callback called by the activity when the back key has been pressed
      * @return true if event was consumed, false otherwise
@@ -584,6 +677,8 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
             return true;
         }
     }
+
+
 
     /**
      * Returns the currently displayed topic

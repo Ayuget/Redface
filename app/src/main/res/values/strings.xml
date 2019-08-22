@@ -448,4 +448,12 @@
     <string name="profile_personal_quote_label">Personal quote</string>
     <string name="profile_signature_label">Message signature</string>
     <string name="profile_personal_smilies_label">Personal smilies</string>
+    <string name="action_report_post_label">Moderation request</string>
+    <string name="action_report_validate">Send</string>
+    <string name="report_post_failed">Error when reporting post to moderation</string>
+    <string name="report_join_label">An existing moderation request has already been sent. Join existing request?</string>
+    <string name="report_text_hint">Moderation request reason</string>
+    <string name="report_request_in_progress">Your moderation request has not yet been treated</string>
+    <string name="report_already_treated">Moderation request already treated</string>
+    <string name="report_request_success">Moderation request successfully sent</string>
 </resources>

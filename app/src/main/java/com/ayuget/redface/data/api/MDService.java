@@ -27,6 +27,7 @@ import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.api.model.TopicFilter;
 import com.ayuget.redface.data.api.model.TopicSearchResult;
 import com.ayuget.redface.data.api.model.User;
+import com.ayuget.redface.ui.misc.PostReportStatus;
 
 import java.util.List;
 
@@ -120,7 +121,8 @@ public interface MDService {
     /**
      * Reports a given post to moderators
      */
-    Observable<Boolean> reportPost(User user, Topic topic, int postId);
+    Observable<Boolean> reportPost(User user, Topic topic, int postId, String reason, boolean joinReport);
+    Observable<PostReportStatus> checkPostReportStatus(User user, Topic topic, int postId);
 
     /**
      * Get a user profile

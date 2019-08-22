@@ -59,6 +59,8 @@ public class HFREndpoints implements MDEndpoints {
 
     private static final String EDIT_URL = "{base_url}/message.php?config=hfr.inc&cat={category_id}&post={topic_id}&numreponse={post_id}";
 
+    private static final String REPORT_URL = "{base_url}/user/modo.php?config=hfr.inc&cat={category_id}&post={topic_id}&numreponse={post_id}";
+
     private static final String USER_FORUM_PREFERENCES_URL = "{base_url}/user/editprofil.php?config=hfr.inc&page=3";
 
     private static final String META_PAGE_URL = "{base_url}/forum1f.php?config=hfr.inc&owntopic={filter_id}&new=0&nojs=0";
@@ -261,6 +263,16 @@ public class HFREndpoints implements MDEndpoints {
     }
 
     @Override
+    public String reportPost(Category category, Topic topic, int postId) {
+        return Phrase.from(REPORT_URL)
+                .put("base_url", FORUM_BASE_URL)
+                .put("category_id", getTopicRealCategoryId(topic))
+                .put("topic_id", topic.id())
+                .put("post_id", postId)
+                .format().toString();
+    }
+
+    @Override
     public String userForumPreferences() {
         return Phrase.from(USER_FORUM_PREFERENCES_URL)
                 .put("base_url", USER_FORUM_PREFERENCES_URL)
@@ -303,11 +315,6 @@ public class HFREndpoints implements MDEndpoints {
                 .put("base_url", FORUM_BASE_URL)
                 .format()
                 .toString();
-    }
-
-    @Override
-    public String reportPost() {
-        return null;
     }
 
     @Override

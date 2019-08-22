@@ -53,6 +53,7 @@ import com.ayuget.redface.ui.event.InternalLinkClickedEvent;
 import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
 import com.ayuget.redface.ui.event.PostActionEvent;
 import com.ayuget.redface.ui.event.QuotePostEvent;
+import com.ayuget.redface.ui.event.ReportPostEvent;
 import com.ayuget.redface.ui.event.ViewUserProfileEvent;
 import com.ayuget.redface.ui.event.WritePrivateMessageEvent;
 import com.ayuget.redface.ui.misc.DummyGestureListener;
@@ -381,6 +382,11 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
                     TopicPageView.this.post(() -> bus.post(new WritePrivateMessageEvent(post.getAuthor())));
                 }
             }
+        }
+
+        @JavascriptInterface
+        public void reportPost(final int postId) {
+            TopicPageView.this.post(() -> bus.post(new ReportPostEvent(topicPage.topic(), postId)));
         }
 
         @JavascriptInterface

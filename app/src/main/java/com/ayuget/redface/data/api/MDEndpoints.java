@@ -67,6 +67,8 @@ public interface MDEndpoints {
 
     String editPost(Category category, Topic topic, int postId);
 
+    String reportPost(Category category, Topic topic, int postId);
+
     String userForumPreferences();
 
     String metaPage(TopicFilter topicFilter);
@@ -74,8 +76,6 @@ public interface MDEndpoints {
     String favorite(Category category, Topic topic, int postId);
 
     String deletePost();
-
-    String reportPost();
 
     String privateMessages();
 

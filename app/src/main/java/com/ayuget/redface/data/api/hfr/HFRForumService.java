@@ -49,11 +49,13 @@ import com.ayuget.redface.settings.Blacklist;
 import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.event.TopicPageCountUpdatedEvent;
+import com.ayuget.redface.ui.misc.PostReportStatus;
 import com.ayuget.redface.util.UserUtils;
 import com.google.common.base.Optional;
 import com.squareup.otto.Bus;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
@@ -66,6 +68,11 @@ import timber.log.Timber;
  */
 @SuppressWarnings({"WeakerAccess", "Guava"})
 public class HFRForumService implements MDService {
+    private static final Pattern POST_REPORT_IN_PROGRESS_PATTERN = Pattern.compile("(.*)(Votre demande de modération sur ce message n'est pas encore traitée)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private static final Pattern POST_JOIN_REPORT_ALERT = Pattern.compile("(.*)(Une demande de modération a déjà été envoyée sur ce message)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private static final Pattern POST_REPORT_TREATED = Pattern.compile("(.*)(Votre demande de modération sur ce message a été traitée)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private static final Pattern POST_JOIN_REPORT_IN_PROGRESS = Pattern.compile("(.*)(La demande de modération sur ce message à laquelle vous vous êtes joint n'est pas encore traitée)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+
     @Inject PageFetcher pageFetcher;
 
     @Inject PostsTweaker postsTweaker;
@@ -251,8 +258,27 @@ public class HFRForumService implements MDService {
     }
 
     @Override
-    public Observable<Boolean> reportPost(User user, Topic topic, int postId) {
-        return null;
+    public Observable<Boolean> reportPost(User user, Topic topic, int postId, String reason, boolean joinReport) {
+        return mdMessageSender.reportPost(user, topic, postId, reason, joinReport, currentHashcheck);
+    }
+
+    @Override
+    public Observable<PostReportStatus> checkPostReportStatus(User user, Topic topic, int postId) {
+        return pageFetcher.fetchSource(user, mdEndpoints.reportPost(topic.category(), topic, postId))
+                .map(pageSource -> {
+                    if (matchesPattern(POST_JOIN_REPORT_ALERT, pageSource)) {
+                        return PostReportStatus.JOIN_REPORT;
+                    }
+                    else if (matchesPattern(POST_REPORT_IN_PROGRESS_PATTERN, pageSource) || matchesPattern(POST_JOIN_REPORT_IN_PROGRESS, pageSource)) {
+                        return PostReportStatus.REPORT_IN_PROGRESS;
+                    }
+                    else if (matchesPattern(POST_REPORT_TREATED, pageSource)) {
+                        return PostReportStatus.REPORT_TREATED;
+                    }
+                    else {
+                        return PostReportStatus.NO_EXISTING_REPORT;
+                    }
+                });
     }
 
     @Override
@@ -276,5 +302,9 @@ public class HFRForumService implements MDService {
     @Override
     public Observable<TopicSearchResult> searchInTopic(User user, Topic topic, long startFromPostId, String word, String author, boolean firstSearch) {
         return mdMessageSender.searchInTopic(user, topic, startFromPostId, word, author, firstSearch, currentHashcheck);
+    }
+
+    private boolean matchesPattern(Pattern p, String content) {
+        return p.matcher(content).matches();
     }
 }
