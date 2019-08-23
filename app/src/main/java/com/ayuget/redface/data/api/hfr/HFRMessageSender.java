@@ -355,9 +355,6 @@ public class HFRMessageSender implements MDMessageSender {
                 if (response.isSuccessful()) {
                     final String responseBody = response.body().string();
 
-                    Timber.d("Successful response");
-                    Timber.d(responseBody);
-
                     boolean success;
 
                     if (joinReport) {
