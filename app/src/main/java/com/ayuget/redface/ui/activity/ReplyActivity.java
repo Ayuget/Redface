@@ -84,11 +84,10 @@ import com.ayuget.redface.ui.view.SmileySelectorView;
 import com.ayuget.redface.util.ImageUtils;
 import com.ayuget.redface.util.RetainedFragmentHelper;
 import com.crashlytics.android.Crashlytics;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -864,11 +863,14 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
     private void showImageVariantsPicker(HostedImage hostedImage, EditTextState editTextState) {
         Timber.d("Requesting variants !!");
 
-        List<Map.Entry<ImageQuality, Integer>> availableVariants = Lists.newArrayList(imageHostingService.availableImageVariants().entrySet());
+        List<Map.Entry<ImageQuality, Integer>> availableVariants = new ArrayList<>(imageHostingService.availableImageVariants().entrySet());
 
-        Iterable<String> collection = Iterables.transform(availableVariants, e -> getString(e.getValue()));
+        List<String> variantNames = new ArrayList<>();
+        for (Map.Entry<ImageQuality, Integer> availableVariant : availableVariants) {
+            variantNames.add(getString(availableVariant.getValue()));
+        }
 
-        ArrayAdapter<String> imageVariantsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, Lists.newArrayList(collection));
+        ArrayAdapter<String> imageVariantsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, variantNames);
 
         new AlertDialog.Builder(this)
             .setTitle(R.string.image_upload_select_variant)

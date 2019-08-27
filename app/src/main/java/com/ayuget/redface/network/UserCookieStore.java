@@ -21,7 +21,6 @@ import android.content.SharedPreferences;
 import android.text.TextUtils;
 
 import com.ayuget.redface.data.api.model.User;
-import com.google.common.base.Preconditions;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -63,7 +62,9 @@ public class UserCookieStore implements CookieStore {
      * @param context Context to attach cookie store to
      */
     public UserCookieStore(Context context, User user) {
-        Preconditions.checkNotNull(user, "User cannot be null");
+        if (user == null) {
+            throw new IllegalArgumentException("User cannot be null");
+        }
 
         cookiePrefs = context.getSharedPreferences(user.getUsername() + COOKIE_PREFS, 0);
         cookies = new HashMap<>();

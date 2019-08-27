@@ -18,9 +18,9 @@ package com.ayuget.redface.ui.activity;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.media.ExifInterface;
+import androidx.exifinterface.media.ExifInterface;
 import android.os.Bundle;
-import android.view.View;
+import android.text.TextUtils;
 import android.widget.LinearLayout;
 
 import androidx.annotation.DrawableRes;
@@ -30,18 +30,17 @@ import com.ayuget.redface.R;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.misc.ImageMenuHandler;
 import com.ayuget.redface.ui.view.ImageDetailsItemView;
-import com.google.common.base.Joiner;
-import com.google.common.base.Predicates;
-import com.google.common.collect.FluentIterable;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import butterknife.InjectView;
 import timber.log.Timber;
 
+@SuppressWarnings("Convert2MethodRef")
 public class ExifDetailsActivity extends BaseActivity {
     public static final String FIELD_SEPARATOR = "  ·  ";
 
@@ -58,12 +57,7 @@ public class ExifDetailsActivity extends BaseActivity {
 
         toolbar.setTitle(R.string.exif_data_title);
         toolbar.setNavigationIcon(R.drawable.ic_close_white_24dp);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        toolbar.setNavigationOnClickListener(v -> finish());
 
         Intent intent = getIntent();
         if (intent == null) {
@@ -145,28 +139,37 @@ public class ExifDetailsActivity extends BaseActivity {
 
         if (width != null && height != null) {
             dimensions = width + " x " + height;
-            megaPixels = String.valueOf(Math.round((Long.parseLong(width) * Long.parseLong(height)) / 102400.0) / 10.0) + " MP";
+            megaPixels = Math.round((Long.parseLong(width) * Long.parseLong(height)) / 102400.0) / 10.0 + " MP";
         }
 
         Timber.d("Image length = %d", imageFile.length());
 
-        String imageSize = null;
+        String imageSize;
         if (imageFile.length() < 1024*1024) {
-            imageSize = String.valueOf(Math.round(10.0 * imageFile.length() / 1024.0) / 10.0) +  " Ko";
+            imageSize = Math.round(10.0 * imageFile.length() / 1024.0) / 10.0 +  " Ko";
         }
         else {
-            imageSize = String.valueOf(Math.round(10.0 * imageFile.length() / 1024*1024.0) / 10.0) + " Mo";
+            imageSize = Math.round(10.0 * imageFile.length() / 1024 * 1024.0) / 10.0 + " Mo";
         }
 
-        List<String> technicalDetails = FluentIterable.from(Arrays.asList(megaPixels, dimensions, imageSize))
-                .filter(Predicates.<String>notNull())
-                .toList();
+
+        List<String> technicalDetails = new ArrayList<>();
+
+        if (megaPixels != null) {
+            technicalDetails.add(megaPixels);
+        }
+
+        if (dimensions != null) {
+            technicalDetails.add(dimensions);
+        }
+
+        technicalDetails.add(imageSize);
 
         if (technicalDetails.size() == 0) {
             return null;
         }
         else {
-            return Joiner.on(FIELD_SEPARATOR).join(technicalDetails);
+            return TextUtils.join(FIELD_SEPARATOR, technicalDetails);
         }
     }
 
@@ -174,9 +177,9 @@ public class ExifDetailsActivity extends BaseActivity {
      * Extracts photo technical details like aperture, focal length, ... Useful for photographers !
      */
     protected String extractTechnicalDetails(ExifInterface exifInterface) {
-        String aperture = exifInterface.getAttribute(ExifInterface.TAG_APERTURE);
+        String aperture = exifInterface.getAttribute(ExifInterface.TAG_APERTURE_VALUE);
         String focalLength = exifInterface.getAttribute(ExifInterface.TAG_FOCAL_LENGTH);
-        String iso = exifInterface.getAttribute(ExifInterface.TAG_ISO);
+        String iso = exifInterface.getAttribute(ExifInterface.TAG_ISO_SPEED);
         String exposureTime = exifInterface.getAttribute(ExifInterface.TAG_EXPOSURE_TIME);
 
         Timber.d("Aperture = %s, Focal Length = %s, ISO = %s, Exposure Time = %s", aperture, focalLength, iso, exposureTime);
@@ -203,18 +206,21 @@ public class ExifDetailsActivity extends BaseActivity {
         }
 
         if (exposureTime != null) {
-            exposureTime = "1/" + String.valueOf(Math.round((1.0 / Double.parseDouble(exposureTime))));
+            exposureTime = "1/" + Math.round((1.0 / Double.parseDouble(exposureTime)));
         }
 
-        List<String> technicalDetails = FluentIterable.from(Arrays.asList(aperture, exposureTime, focalLength, iso))
-                .filter(Predicates.<String>notNull())
-                .toList();
+        List<String> technicalDetails = new ArrayList<>();
+
+        if (aperture != null) { technicalDetails.add(aperture); }
+        if (exposureTime != null) { technicalDetails.add(exposureTime); }
+        if (focalLength != null) { technicalDetails.add(focalLength); }
+        if (iso != null) { technicalDetails.add(iso); }
 
         if (technicalDetails.size() == 0) {
             return null;
         }
         else {
-            return Joiner.on(FIELD_SEPARATOR).join(technicalDetails);
+            return TextUtils.join(FIELD_SEPARATOR, technicalDetails);
         }
     }
 }

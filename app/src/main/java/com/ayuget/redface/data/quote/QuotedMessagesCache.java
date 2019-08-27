@@ -18,8 +18,7 @@ package com.ayuget.redface.data.quote;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-
-import com.google.common.base.Joiner;
+import android.text.TextUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -90,7 +89,7 @@ public class QuotedMessagesCache implements Parcelable {
             bbCodes.add(quotedMessage.bbCode());
         }
 
-        return Joiner.on("\n").join(bbCodes);
+        return TextUtils.join("\n", bbCodes);
     }
 
     /**

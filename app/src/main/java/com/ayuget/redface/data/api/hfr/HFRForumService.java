@@ -41,7 +41,6 @@ import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.api.model.TopicFilter;
 import com.ayuget.redface.data.api.model.TopicSearchResult;
 import com.ayuget.redface.data.api.model.User;
-import com.ayuget.redface.data.api.model.misc.SmileyResponse;
 import com.ayuget.redface.data.state.CategoriesStore;
 import com.ayuget.redface.network.HTTPClientProvider;
 import com.ayuget.redface.network.PageFetcher;
@@ -50,8 +49,6 @@ import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.event.TopicPageCountUpdatedEvent;
 import com.ayuget.redface.ui.misc.PostReportStatus;
-import com.ayuget.redface.util.UserUtils;
-import com.google.common.base.Optional;
 import com.squareup.otto.Bus;
 
 import java.util.List;

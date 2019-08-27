@@ -49,7 +49,6 @@ import com.ayuget.redface.ui.drawer.SimpleDrawerItem;
 import com.ayuget.redface.ui.hfr.HFRIcons;
 import com.ayuget.redface.ui.misc.UiUtils;
 import com.ayuget.redface.util.UserUtils;
-import com.google.common.base.Optional;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -192,13 +191,14 @@ public class BaseDrawerActivity extends BaseActivity {
     }
 
     private void displayUserAvatar() {
-        Optional<Integer> userId = Optional.absent();
+
+        Integer userId = null;
         if (! currentDrawerUser.isGuest() && currentDrawerUser.hasAvatar()) {
             userId = UserUtils.identifyUserFromCookies(httpClientProvider.getUserCookieStore(currentDrawerUser));
         }
 
-        if (userId.isPresent()) {
-            loadUserAvatarFromProfile(userId.get());
+        if (userId != null) {
+            loadUserAvatarFromProfile(userId);
         }
         else {
             loadDefaultProfileImage();

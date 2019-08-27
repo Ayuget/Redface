@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -64,7 +65,6 @@ import com.ayuget.redface.ui.misc.ThemeManager;
 import com.ayuget.redface.ui.misc.UiUtils;
 import com.ayuget.redface.ui.template.PostsTemplate;
 import com.ayuget.redface.util.JsExecutor;
-import com.google.common.base.Joiner;
 import com.squareup.otto.Bus;
 
 import java.util.ArrayList;
@@ -304,7 +304,7 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
         quotedMessages.clear();
         quotedMessages.addAll(posts);
 
-        JsExecutor.execute(this, "setPostsAsQuoted([" + Joiner.on(",").join(posts) + "])");
+        JsExecutor.execute(this, "setPostsAsQuoted([" + TextUtils.join(",", posts) + "])");
     }
 
     /**

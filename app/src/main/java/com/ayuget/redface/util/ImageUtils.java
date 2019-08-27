@@ -4,8 +4,6 @@ package com.ayuget.redface.util;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-import com.google.common.io.ByteStreams;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,7 +13,6 @@ import rx.exceptions.Exceptions;
 
 public class ImageUtils {
     private static final String PNG_FILE_EXTENSION = ".png";
-    private static final String COMPRESSED_EXTENSION = ".compressed.png";
     private static final int INITIAL_SAMPLE_SIZE = 2;
 
     /**
@@ -64,7 +61,17 @@ public class ImageUtils {
 
     public static ByteString readStreamFully(InputStream inputStream) {
         try {
-            return ByteString.of(ByteStreams.toByteArray(inputStream));
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
+            int nRead;
+            byte[] data = new byte[1024];
+            while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
+                buffer.write(data, 0, nRead);
+            }
+
+            buffer.flush();
+
+            return ByteString.of(buffer.toByteArray());
         }
         catch (IOException e) {
             throw Exceptions.propagate(e);

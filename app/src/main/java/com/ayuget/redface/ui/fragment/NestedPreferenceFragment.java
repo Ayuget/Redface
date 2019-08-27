@@ -38,12 +38,13 @@ import com.ayuget.redface.settings.ProxySettingsChangedEvent;
 import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.settings.SettingsConstants;
 import com.ayuget.redface.ui.event.ThemeChangedEvent;
-import com.google.common.collect.ObjectArrays;
 import com.hannesdorfmann.fragmentargs.FragmentArgs;
 import com.hannesdorfmann.fragmentargs.annotation.Arg;
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs;
 import com.squareup.otto.Bus;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -139,8 +140,25 @@ public class NestedPreferenceFragment extends PreferenceFragment implements Shar
                 i++;
             }
 
-            defaultCatPreference.setEntries(ObjectArrays.concat(defaultCatPreference.getEntries(), entries, CharSequence.class));
-            defaultCatPreference.setEntryValues(ObjectArrays.concat(defaultCatPreference.getEntryValues(), values, CharSequence.class));
+            CharSequence[] defaultEntries = defaultCatPreference.getEntries();
+            CharSequence[] defaultEntryValues = defaultCatPreference.getEntryValues();
+
+            List<CharSequence> mergedEntries = new ArrayList<>(defaultEntries.length + entries.length);
+            mergedEntries.addAll(Arrays.asList(defaultEntries));
+            mergedEntries.addAll(Arrays.asList(entries));
+
+            List<CharSequence> mergedEntryValues = new ArrayList<>(defaultEntryValues.length + values.length);
+            mergedEntryValues.addAll(Arrays.asList(defaultEntryValues));
+            mergedEntryValues.addAll(Arrays.asList(values));
+
+            CharSequence[] mergedEntriesArray = new CharSequence[mergedEntries.size()];
+            mergedEntriesArray = mergedEntries.toArray(mergedEntriesArray);
+
+            CharSequence[] mergedEntryValuesArray = new CharSequence[mergedEntryValues.size()];
+            mergedEntryValuesArray = mergedEntryValues.toArray(mergedEntryValuesArray);
+
+            defaultCatPreference.setEntries(mergedEntriesArray);
+            defaultCatPreference.setEntryValues(mergedEntryValuesArray);
         }
     }
 

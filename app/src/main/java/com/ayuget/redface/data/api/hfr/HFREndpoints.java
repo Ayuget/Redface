@@ -22,7 +22,6 @@ import com.ayuget.redface.data.api.model.Subcategory;
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.api.model.TopicFilter;
 import com.ayuget.redface.ui.UIConstants;
-import com.google.common.base.Optional;
 import com.squareup.phrase.Phrase;
 
 import java.io.UnsupportedEncodingException;
@@ -85,16 +84,16 @@ public class HFREndpoints implements MDEndpoints {
         return FORUM_BASE_URL;
     }
 
-    private Optional<Integer> getFilterId(TopicFilter topicFilter) {
-        Optional<Integer> filterId = Optional.absent();
+    private Integer getFilterId(TopicFilter topicFilter) {
+        Integer filterId = null;
         if (topicFilter == TopicFilter.PARTICIPATED) {
-            filterId = Optional.of(1);
+            filterId = 1;
         }
         else if (topicFilter == TopicFilter.FAVORITE) {
-            filterId = Optional.of(3);
+            filterId = 3;
         }
         else if (topicFilter == TopicFilter.READ) {
-            filterId = Optional.of(2);
+            filterId = 2;
         }
 
         return filterId;
@@ -105,9 +104,9 @@ public class HFREndpoints implements MDEndpoints {
      */
     @Override
     public String category(Category category, int page, TopicFilter topicFilter) {
-        Optional<Integer> filterId = getFilterId(topicFilter);
+        Integer filterId = getFilterId(topicFilter);
 
-        if (topicFilter == TopicFilter.NONE || !filterId.isPresent()) {
+        if (topicFilter == TopicFilter.NONE || filterId == null) {
             return Phrase.from(CATEGORY_URL)
                     .put("base_url", FORUM_BASE_URL)
                     .put("category_slug", category.slug())
@@ -120,7 +119,7 @@ public class HFREndpoints implements MDEndpoints {
                     .put("category_id", category.id())
                     .put("subcategory_id", 0)
                     .put("page", page)
-                    .put("filter_id", filterId.get())
+                    .put("filter_id", filterId)
                     .format().toString();
         }
     }
@@ -130,8 +129,8 @@ public class HFREndpoints implements MDEndpoints {
      */
     @Override
     public String subcategory(Category category, Subcategory subcategory, int page, TopicFilter topicFilter) {
-        Optional<Integer> filterId = getFilterId(topicFilter);
-        if (topicFilter == TopicFilter.NONE || !filterId.isPresent()) {
+        Integer filterId = getFilterId(topicFilter);
+        if (topicFilter == TopicFilter.NONE || filterId == null) {
             return Phrase.from(SUBCATEGORY_URL)
                     .put("base_url", FORUM_BASE_URL)
                     .put("category_slug", category.slug())
@@ -145,7 +144,7 @@ public class HFREndpoints implements MDEndpoints {
                     .put("category_id", category.id())
                     .put("subcategory_id", 0) // FIXME fetch subcategory id properly
                     .put("page", page)
-                    .put("filter_id", filterId.get())
+                    .put("filter_id", filterId)
                     .format().toString();
         }
     }
@@ -286,12 +285,12 @@ public class HFREndpoints implements MDEndpoints {
             topicFilter = TopicFilter.PARTICIPATED;
         }
 
-        Optional<Integer> filterId = getFilterId(topicFilter);
+        Integer filterId = getFilterId(topicFilter);
 
-        if (filterId.isPresent()) {
+        if (filterId != null) {
             return Phrase.from(META_PAGE_URL)
                     .put("base_url", FORUM_BASE_URL)
-                    .put("filter_id", filterId.get())
+                    .put("filter_id", filterId)
                     .format().toString();
         }
         else {

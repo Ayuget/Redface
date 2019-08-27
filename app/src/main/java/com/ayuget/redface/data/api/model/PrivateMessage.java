@@ -18,7 +18,6 @@ package com.ayuget.redface.data.api.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import com.google.common.base.Preconditions;
 import java.util.Date;
 
 
@@ -155,12 +154,6 @@ public class PrivateMessage implements Parcelable {
         }
 
         public PrivateMessage build() {
-            Preconditions.checkNotNull(id);
-            Preconditions.checkNotNull(totalMessages);
-            Preconditions.checkNotNull(lastResponseAuthor);
-            Preconditions.checkNotNull(lastResponseDate);
-            Preconditions.checkNotNull(subject);
-            Preconditions.checkNotNull(recipient);
             return new PrivateMessage(id, recipient, subject, totalMessages, hasUnreadMessages, lastResponseDate, lastResponseAuthor, hasBeenReadByRecipient, pagesCount);
         }
     }

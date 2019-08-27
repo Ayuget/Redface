@@ -4,8 +4,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 
-import com.google.common.base.Preconditions;
-
 /**
  * Adapted version of "RetainFragment" project :
  * https://github.com/krpiotrek/RetainFragmentSample
@@ -43,7 +41,6 @@ public class RetainedFragmentHelper {
             return null;
         }
 
-        Preconditions.checkNotNull(instance.getValue());
         return instance.getValue();
     }
 

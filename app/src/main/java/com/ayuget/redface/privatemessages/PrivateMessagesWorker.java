@@ -15,7 +15,6 @@ import com.ayuget.redface.data.api.model.User;
 import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.activity.PrivateMessagesActivity;
-import com.google.common.base.Preconditions;
 import com.squareup.phrase.Phrase;
 
 import java.util.List;
@@ -57,10 +56,6 @@ public class PrivateMessagesWorker extends Worker {
     @Override
     public Result doWork() {
         Timber.d("PrivateMessagesWorker is running");
-
-        Preconditions.checkNotNull(userManager, "UserManager should be injected");
-        Preconditions.checkNotNull(mdService, "MdService should be injected");
-        Preconditions.checkNotNull(appSettings, "AppSettings should be injected");
 
         if (! appSettings.arePrivateMessagesNoticationsEnabled()) {
             Timber.d("Private message notifications are disabled, exiting worker");
