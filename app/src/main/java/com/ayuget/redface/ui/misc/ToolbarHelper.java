@@ -16,10 +16,11 @@
 
 package com.ayuget.redface.ui.misc;
 
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
+
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.widget.Toolbar;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.ayuget.redface.R;
 import com.ayuget.redface.ui.activity.BaseActivity;
@@ -34,6 +35,6 @@ public class ToolbarHelper {
         drawerToggle.setDrawerIndicatorEnabled(true);
 
         drawerLayout.setDrawerListener(drawerToggle);
-        drawerLayout.setDrawerShadow(R.drawable.drawer_shadow, Gravity.START);
+        drawerLayout.setDrawerShadow(R.drawable.drawer_shadow, Gravity.LEFT);
     }
 }

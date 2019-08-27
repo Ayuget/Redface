@@ -20,15 +20,15 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.ExifInterface;
 import android.os.Bundle;
-import android.support.annotation.DrawableRes;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.LinearLayout;
+
+import androidx.annotation.DrawableRes;
+import androidx.appcompat.widget.Toolbar;
 
 import com.ayuget.redface.R;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.misc.ImageMenuHandler;
-import com.ayuget.redface.ui.misc.SnackbarHelper;
 import com.ayuget.redface.ui.view.ImageDetailsItemView;
 import com.google.common.base.Joiner;
 import com.google.common.base.Predicates;

@@ -19,9 +19,10 @@ package com.ayuget.redface.ui.fragment;
 import android.annotation.SuppressLint;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 
 import com.ayuget.redface.R;
 
@@ -33,11 +34,13 @@ public class ToolbarFragment extends BaseFragment {
         toolbar = view.findViewById(R.id.toolbar_actionbar);
 
         if (toolbar != null) {
-            toolbar.setOnMenuItemClickListener(this::onOptionsItemSelected);
-            toolbar.setNavigationOnClickListener(v -> {
-                clearInternalStack();
-                getActivity().onBackPressed();
-            });
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                toolbar.setOnMenuItemClickListener(this::onOptionsItemSelected);
+                toolbar.setNavigationOnClickListener(v -> {
+                    clearInternalStack();
+                    getActivity().onBackPressed();
+                });
+            }
 
             // Inflate a menu to be displayed in the toolbar
             onCreateOptionsMenu(toolbar);

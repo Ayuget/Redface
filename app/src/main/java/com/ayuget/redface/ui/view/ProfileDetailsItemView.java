@@ -2,12 +2,13 @@ package com.ayuget.redface.ui.view;
 
 import android.content.Context;
 import android.os.Build;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.StringRes;
 import android.text.Html;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import androidx.annotation.DrawableRes;
+import androidx.annotation.StringRes;
 
 import com.ayuget.redface.R;
 import com.ayuget.redface.ui.misc.UiUtils;

@@ -1,13 +1,15 @@
 package com.ayuget.redface.ui.event;
 
-import android.support.annotation.Nullable;
+
+import androidx.annotation.Nullable;
 
 import com.ayuget.redface.ui.misc.PagePosition;
 import com.google.auto.value.AutoValue;
 
 @AutoValue
 public abstract class OverriddenPagePosition {
-    @Nullable public abstract PagePosition targetPost();
+    @Nullable
+    public abstract PagePosition targetPost();
     @Nullable public abstract Integer targetScrollY();
 
     public static OverriddenPagePosition toPost(PagePosition targetPost) {

@@ -28,7 +28,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="16dp">
-        <android.support.v7.widget.Toolbar
+        <androidx.appcompat.widget.Toolbar
             xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/toolbar_reply_actions"
             android:layout_height="wrap_content"
@@ -46,9 +46,9 @@
                 wheel:matProg_barColor="?attr/replyToolbarIconsColor"
                 wheel:matProg_progressIndeterminate="true" />
 
-            </android.support.v7.widget.Toolbar>
+            </androidx.appcompat.widget.Toolbar>
 
-        <android.support.v7.widget.Toolbar
+        <androidx.appcompat.widget.Toolbar
             xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/toolbar_reply_extra"
             android:layout_height="wrap_content"
@@ -126,7 +126,7 @@
 
             </HorizontalScrollView>
 
-            </android.support.v7.widget.Toolbar>
+            </androidx.appcompat.widget.Toolbar>
 
 
 
@@ -149,7 +149,7 @@
     <include layout="@layout/smiley_selector" />
 
     <!-- Smileys toolbar -->
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/smileys_toolbar"
         android:layout_height="wrap_content"
@@ -162,10 +162,10 @@
             style="@style/ReplyOptionsIcon"
             android:src="@drawable/ic_action_insert_emoticon" />
         
-        <android.support.v7.widget.SearchView
+        <androidx.appcompat.widget.SearchView
             android:id="@+id/smileys_search"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent" />
-        </android.support.v7.widget.Toolbar>
+        </androidx.appcompat.widget.Toolbar>
 
 </FrameLayout>

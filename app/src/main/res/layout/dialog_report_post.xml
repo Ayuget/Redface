@@ -10,7 +10,7 @@
 		android:gravity="center_vertical|center"
 		android:text="@string/action_report_post_label"
 		tools:text="Moderation request" />
-	<android.support.design.widget.TextInputLayout
+	<com.google.android.material.textfield.TextInputLayout
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content">
 		<EditText
@@ -19,5 +19,5 @@
 			android:layout_height="wrap_content"
 			android:hint="@string/report_text_hint"
 			android:maxLines="4" />
-	</android.support.design.widget.TextInputLayout>
+	</com.google.android.material.textfield.TextInputLayout>
 </LinearLayout>

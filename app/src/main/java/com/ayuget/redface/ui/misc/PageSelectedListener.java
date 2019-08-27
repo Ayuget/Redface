@@ -16,7 +16,7 @@
 
 package com.ayuget.redface.ui.misc;
 
-import android.support.v4.view.ViewPager;
+import androidx.viewpager.widget.ViewPager;
 
 public abstract class PageSelectedListener implements ViewPager.OnPageChangeListener {
     @Override

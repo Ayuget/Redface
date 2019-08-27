@@ -15,20 +15,21 @@
   ~ limitations under the License.
   -->
 
-<android.support.design.widget.CoordinatorLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/appBackgroundColor">
 
-    <android.support.design.widget.AppBarLayout
+    <com.google.android.material.appbar.AppBarLayout
+
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:elevation="0dp">
         <!-- No include like in other fragments because we have a PagerTitleStrip below and don't want
         two shadows drawn -->
-        <android.support.v7.widget.Toolbar
+        <androidx.appcompat.widget.Toolbar
             xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/toolbar_actionbar"
             android:layout_height="wrap_content"
@@ -38,15 +39,15 @@
             app:contentInsetStartWithNavigation="0dp"
             style="@style/RedfaceToolbar"
             />
-    </android.support.design.widget.AppBarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
-    <android.support.v4.view.ViewPager
+    <androidx.viewpager.widget.ViewPager
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/pager"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <android.support.v4.view.PagerTabStrip
+        <androidx.viewpager.widget.PagerTabStrip
             android:id="@+id/titlestrip"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -54,9 +55,9 @@
             android:elevation="4dp"
             style="@style/RedfaceTopicPagerStrip"
             />
-    </android.support.v4.view.ViewPager>
+    </androidx.viewpager.widget.ViewPager>
 
-    <android.support.design.widget.FloatingActionButton
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/reply_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -71,7 +72,7 @@
         android:layout_marginBottom="@dimen/fab_padding"
         android:layout_gravity="bottom|right|end"/>
 
-    <android.support.design.widget.FloatingActionButton
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/move_to_bottom_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -85,7 +86,7 @@
         android:layout_marginBottom="@dimen/move_to_bottom_bottom_padding"
         android:layout_gravity="bottom|right|end"/>
 
-    <android.support.design.widget.FloatingActionButton
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/move_to_top_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -98,4 +99,4 @@
         android:layout_marginRight="@dimen/fab_padding"
         android:layout_marginTop="@dimen/move_to_top_top_padding"
         android:layout_gravity="top|right|end"/>
-</android.support.design.widget.CoordinatorLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

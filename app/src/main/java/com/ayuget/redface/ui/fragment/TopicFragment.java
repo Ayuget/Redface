@@ -23,13 +23,6 @@ import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.AttrRes;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.view.PagerTabStrip;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.ActionMode;
@@ -43,6 +36,13 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.AttrRes;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.Toolbar;
+import androidx.viewpager.widget.PagerTabStrip;
+import androidx.viewpager.widget.ViewPager;
 
 import com.ayuget.redface.R;
 import com.ayuget.redface.account.UserManager;
@@ -78,6 +78,7 @@ import com.ayuget.redface.ui.misc.SnackbarHelper;
 import com.ayuget.redface.ui.misc.TopicPosition;
 import com.ayuget.redface.ui.misc.UiUtils;
 import com.ayuget.redface.ui.view.TopicPageView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.hannesdorfmann.fragmentargs.annotation.Arg;
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs;
 import com.squareup.otto.Subscribe;
@@ -239,7 +240,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
         pager.setCurrentItem(currentPage - 1);
 
         if (userManager.getActiveUser().isGuest()) {
-            replyButton.setVisibility(View.INVISIBLE);
+            replyButton.hide();
         } else {
             replyButton.setOnClickListener((v) -> {
                 if (isInSearchMode) {
@@ -778,8 +779,8 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
             moveToBottomButton.setOnClickListener((c) -> bus.post(ScrollToPositionEvent.create(topic, currentPage, OverriddenPagePosition.toBottom())));
         }
         else {
-            moveToBottomButton.setVisibility(View.GONE);
-            moveToTopButton.setVisibility(View.GONE);
+            moveToBottomButton.hide();
+            moveToTopButton.hide();
         }
     }
 

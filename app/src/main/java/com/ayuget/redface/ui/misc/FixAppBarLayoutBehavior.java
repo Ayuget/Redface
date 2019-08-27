@@ -17,11 +17,13 @@
 package com.ayuget.redface.ui.misc;
 
 import android.content.Context;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.View;
+
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.view.ViewCompat;
+
+import com.google.android.material.appbar.AppBarLayout;
 
 /**
  * Workaround AppBarLayout.Behavior for https://issuetracker.google.com/66996774

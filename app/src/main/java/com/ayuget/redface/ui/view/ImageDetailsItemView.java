@@ -17,11 +17,12 @@
 package com.ayuget.redface.ui.view;
 
 import android.content.Context;
-import android.support.annotation.DrawableRes;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import androidx.annotation.DrawableRes;
+
 import com.ayuget.redface.R;
 import com.ayuget.redface.ui.misc.UiUtils;
 

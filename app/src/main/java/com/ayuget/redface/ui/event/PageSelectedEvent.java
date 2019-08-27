@@ -16,7 +16,7 @@
 
 package com.ayuget.redface.ui.event;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.api.model.misc.SearchTerms;
@@ -26,7 +26,8 @@ import com.google.auto.value.AutoValue;
 public abstract class PageSelectedEvent {
     public abstract Topic topic();
     public abstract int page();
-    @Nullable public abstract OverriddenPagePosition overriddenPagePosition();
+    @Nullable
+    public abstract OverriddenPagePosition overriddenPagePosition();
     @Nullable public abstract SearchTerms activeSearchTerm();
 
     public static PageSelectedEvent create(Topic topic, int page, OverriddenPagePosition overriddenPagePosition) {

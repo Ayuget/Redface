@@ -34,11 +34,6 @@
 # Avoid throws declarations getting removed from retrofit service definitions
 -keepattributes Exceptions
 
-# Allow obfuscation of android.support.v7.internal.view.menu.**
-# to avoid problem on Samsung 4.2.2 devices with appcompat v21
-# see https://code.google.com/p/android/issues/detail?id=78377
--keep class !android.support.v7.internal.view.menu.** { *; }
-
 # ButterKnife uses some annotations not available on Android.
 -dontwarn butterknife.internal.**
 # Prevent ButterKnife annotations from getting renamed.

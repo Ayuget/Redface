@@ -18,9 +18,10 @@ package com.ayuget.redface.ui.misc;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.support.annotation.NonNull;
-import android.support.v7.graphics.Palette;
 import android.widget.ImageView;
+
+import androidx.annotation.NonNull;
+import androidx.palette.graphics.Palette;
 
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;

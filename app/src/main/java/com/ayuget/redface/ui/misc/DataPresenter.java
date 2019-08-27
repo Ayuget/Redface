@@ -16,10 +16,11 @@
 
 package com.ayuget.redface.ui.misc;
 
-import android.support.annotation.IdRes;
-import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.Button;
+
+import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
 
 import com.google.common.base.Preconditions;
 

@@ -1,8 +1,6 @@
 package com.ayuget.redface;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.ayuget.redface.account.UserManager;
 import com.ayuget.redface.data.api.MDService;
@@ -12,6 +10,8 @@ import com.ayuget.redface.settings.RedfaceSettings;
 
 import javax.inject.Inject;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.work.ListenableWorker;
 import androidx.work.WorkerFactory;
 import androidx.work.WorkerParameters;

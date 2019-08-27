@@ -17,11 +17,13 @@
 package com.ayuget.redface.ui.misc;
 
 import android.app.Activity;
-import android.support.annotation.StringRes;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.view.View;
+
+import androidx.annotation.StringRes;
+import androidx.fragment.app.Fragment;
+
 import com.ayuget.redface.R;
+import com.google.android.material.snackbar.Snackbar;
 
 public class SnackbarHelper {
     private SnackbarHelper() {

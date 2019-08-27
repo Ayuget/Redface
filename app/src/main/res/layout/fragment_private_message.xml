@@ -25,7 +25,7 @@
 
     <!-- No include like in other fragments because we have a PagerTitleStrip below and don't want
     two shadows drawn -->
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/toolbar_actionbar"
         android:layout_height="wrap_content"

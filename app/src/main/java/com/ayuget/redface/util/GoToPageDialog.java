@@ -18,12 +18,13 @@ package com.ayuget.redface.util;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AlertDialog;
 
 import com.ayuget.redface.R;
 import com.ayuget.redface.ui.misc.ThemeManager;

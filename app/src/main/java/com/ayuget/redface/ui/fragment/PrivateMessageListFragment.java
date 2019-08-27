@@ -19,10 +19,6 @@ package com.ayuget.redface.ui.fragment;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
@@ -31,6 +27,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.ayuget.redface.R;
 import com.ayuget.redface.account.UserManager;
@@ -149,12 +150,9 @@ public class PrivateMessageListFragment extends ToggleToolbarFragment implements
         pmRecyclerView.setLayoutManager(layoutManager);
         pmRecyclerView.setAdapter(pmAdapter);
 
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                Timber.d("Refreshing private messages");
-                loadPrivateMessages(1);
-            }
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            Timber.d("Refreshing private messages");
+            loadPrivateMessages(1);
         });
 
         dataPresenter = DataPresenter.from(rootView)
@@ -164,12 +162,9 @@ public class PrivateMessageListFragment extends ToggleToolbarFragment implements
                 .withLoadingView(R.id.loading_indicator)
                 .build();
 
-        dataPresenter.setOnRefreshRequestedListener(new DataPresenter.OnRefreshRequestedListener() {
-            @Override
-            public void onRefresh() {
-                dataPresenter.showLoadingView();
-                loadPrivateMessages(1);
-            }
+        dataPresenter.setOnRefreshRequestedListener(() -> {
+            dataPresenter.showLoadingView();
+            loadPrivateMessages(1);
         });
 
         // Style refresh indicator and empty content view

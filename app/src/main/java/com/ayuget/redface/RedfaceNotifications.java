@@ -4,7 +4,6 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Build;
-import android.support.v4.app.NotificationManagerCompat;
 
 import com.ayuget.redface.data.api.model.PrivateMessage;
 import com.ayuget.redface.privatemessages.PrivateMessagesWorker;
@@ -12,6 +11,7 @@ import com.ayuget.redface.settings.RedfaceSettings;
 
 import java.util.concurrent.TimeUnit;
 
+import androidx.core.app.NotificationManagerCompat;
 import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;

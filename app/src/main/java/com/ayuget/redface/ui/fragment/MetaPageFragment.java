@@ -17,13 +17,14 @@
 package com.ayuget.redface.ui.fragment;
 
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.appcompat.widget.Toolbar;
 
 import com.ayuget.redface.R;
 import com.ayuget.redface.data.api.model.Category;
