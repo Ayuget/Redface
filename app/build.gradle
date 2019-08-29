@@ -129,10 +129,7 @@ dependencies {
         transitive = true
     }
 
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
-    debugImplementation 'com.squareup.haha:haha:2.0.3'
-    betaImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
-    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.0-beta-3'
 
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.assertj:assertj-core:1.7.1'
