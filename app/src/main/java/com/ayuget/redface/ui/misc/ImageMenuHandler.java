@@ -108,8 +108,8 @@ public class ImageMenuHandler {
     }
 
     /**
-     * Saves image from network using OkHttp. Picasso is not used because it would strip away the
-     * EXIF data once the image is saved (Picasso directly gives us a Bitmap).
+     * Saves image from network using OkHttp. Glide is not used because it would strip away the
+     * EXIF data once the image is saved (Glide directly gives us a Bitmap).
      */
     private void saveImageFromNetwork(final File mediaFile, final Bitmap.CompressFormat targetFormat, final boolean compressAsPng, final boolean notifyUser, final boolean broadcastSave, final ImageSavedCallback imageSavedCallback) {
         OkHttpClient okHttpClient = new OkHttpClient();

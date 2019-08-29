@@ -83,9 +83,9 @@ import com.ayuget.redface.ui.template.SmileysTemplate;
 import com.ayuget.redface.ui.view.SmileySelectorView;
 import com.ayuget.redface.util.ImageUtils;
 import com.ayuget.redface.util.RetainedFragmentHelper;
+import com.bumptech.glide.Glide;
 import com.crashlytics.android.Crashlytics;
 import com.squareup.otto.Subscribe;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -657,7 +657,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
 
     protected void loadUserAvatarInto(User user, ImageView imageView) {
         if (user.hasAvatar() && user.getProfile() != null && user.getProfile().avatarUrl() != null) {
-            Picasso.with(this)
+            Glide.with(this)
                     .load(user.getProfile().avatarUrl())
                     .into(imageView);
         }

@@ -16,7 +16,7 @@ import com.ayuget.redface.data.api.model.Profile;
 import com.ayuget.redface.ui.misc.ThemeManager;
 import com.ayuget.redface.ui.view.ProfileDetailsItemView;
 import com.ayuget.redface.util.HTMLUtils;
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import javax.inject.Inject;
 
@@ -73,7 +73,7 @@ public class ProfileActivity extends BaseActivity {
 			userProfilePicture.setVisibility(View.GONE);
 		}
 		else {
-			Picasso.with(this)
+			Glide.with(this)
 				.load(profile.avatarUrl())
 				.into(userProfilePicture);
 		}

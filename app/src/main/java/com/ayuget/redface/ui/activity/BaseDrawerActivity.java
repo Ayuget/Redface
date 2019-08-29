@@ -49,7 +49,7 @@ import com.ayuget.redface.ui.drawer.SimpleDrawerItem;
 import com.ayuget.redface.ui.hfr.HFRIcons;
 import com.ayuget.redface.ui.misc.UiUtils;
 import com.ayuget.redface.util.UserUtils;
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -207,12 +207,12 @@ public class BaseDrawerActivity extends BaseActivity {
 
     private void loadUserAvatarFromProfile(int userId) {
         Timber.d("Loading profile for user '%s' (id: '%d')", currentDrawerUser.getUsername(), userId);
-        // TODO cache profile
+
         subscribe(dataService.loadProfile(currentDrawerUser, userId, new EndlessObserver<Profile>() {
             @Override
             public void onNext(Profile profile) {
                 currentDrawerUser.setProfile(profile);
-                Picasso.with(BaseDrawerActivity.this)
+                Glide.with(BaseDrawerActivity.this)
                         .load(profile.avatarUrl())
                         .into(activeUserPicture);
             }
