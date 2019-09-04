@@ -435,6 +435,8 @@
     <string name="search_topic_in_progress">Search in progress</string>
     <string name="search_topic_error">Search failed</string>
     <string name="search_topic_ended">No more results</string>
+    <string name="profile_general_info">General info</string>
+    <string name="profile_forum_info">Forum info</string>
     <string name="profile_email_label">Email</string>
     <string name="profile_birthday_label">Birthday</string>
     <string name="profile_gender_label">Gender</string>
@@ -448,6 +450,11 @@
     <string name="profile_personal_quote_label">Personal quote</string>
     <string name="profile_signature_label">Message signature</string>
     <string name="profile_personal_smilies_label">Personal smilies</string>
+    <string name="profile_personal_smilies_mark_as_favorite">Add to favorites</string>
+    <string name="profile_personal_smilies_remove_from_favorites">Remove from favorites</string>
+    <string name="profile_personal_smilies_edit_smiley_keywords">Edit keywords</string>
+    <string name="profile_personal_smilies_copy_code">Copy code</string>
+    <string name="profile_personal_smilies_code_copied">Smiley code copied to clipboard!</string>
     <string name="action_report_post_label">Moderation request</string>
     <string name="action_report_validate">Send</string>
     <string name="report_post_failed">Error when reporting post to moderation</string>

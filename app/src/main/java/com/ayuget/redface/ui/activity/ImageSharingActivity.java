@@ -77,7 +77,7 @@ public class ImageSharingActivity extends AppCompatActivity {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(hostedImage -> {
                     Timber.d("Successfully shared image ! -> %s", hostedImage);
-                    UiUtils.copyToClipboard(this, hostedImage.url(), false);
+                    UiUtils.copyLinkToClipboard(this, hostedImage.url(), false);
                     Toast.makeText(ImageSharingActivity.this, R.string.image_shared_success, Toast.LENGTH_LONG).show();
                     finishWithoutAnimation();
                 }, error -> {

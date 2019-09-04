@@ -31,23 +31,33 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.StringRes;
+
 import com.ayuget.redface.R;
 
 public class UiUtils {
     /**
      * Copies text into user clipboard
      */
-    public static void copyToClipboard(Context context, String text) {
-        copyToClipboard(context, text, true);
+    public static void copyLinkToClipboard(Context context, String text) {
+        copyLinkToClipboard(context, text, true);
     }
 
-    public static void copyToClipboard(Context context, String text, boolean showToast) {
+    public static void copyLinkToClipboard(Context context, String text, boolean showToast) {
+        copyTextToClipboard(context, text, R.string.link_sucessfully_copied, true);
+    }
+
+    public static void copyTextToClipboard(Context context, String text, @StringRes int toastText) {
+        copyTextToClipboard(context, text, toastText, true);
+    }
+
+    public static void copyTextToClipboard(Context context, String text, @StringRes int toastTextRes, boolean showToast) {
         ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-        ClipData clip = ClipData.newPlainText(context.getString(R.string.link_sucessfully_copied), text);
+        ClipData clip = ClipData.newPlainText(context.getString(toastTextRes), text);
         clipboard.setPrimaryClip(clip);
 
         if (showToast) {
-            Toast.makeText(context, R.string.link_sucessfully_copied, Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, toastTextRes, Toast.LENGTH_SHORT).show();
         }
     }
 

@@ -379,7 +379,7 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
                 loadTopic(event.getTopic(), event.getTopic().pagesCount(), new PagePosition(PagePosition.BOTTOM));
                 break;
             case UIConstants.TOPIC_ACTION_COPY_LINK:
-                UiUtils.copyToClipboard(this, mdEndpoints.topic(event.getTopic()));
+                UiUtils.copyLinkToClipboard(this, mdEndpoints.topic(event.getTopic()));
                 break;
             case UIConstants.TOPIC_ACTION_SHARE: {
                 UiUtils.shareText(this, mdEndpoints.topic(event.getTopic()));

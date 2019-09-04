@@ -229,4 +229,31 @@
         <item name="android:textSize">@dimen/profile_detail_item_secondary_text_size</item>
         <item name="android:textColor">?attr/textColorSecondary</item>
     </style>
+
+    <style name="Redface.ProfileDetails.Heading">
+        <item name="android:textSize">@dimen/profile_detail_heading_text_size</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">72dp</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <style name="Redface.ProfileDetails.Smilies" />
+
+    <style name="Redface.ProfileDetails.Smilies.Container">
+        <item name="android:padding">8dp</item>
+    </style>
+
+    <style name="Redface.ProfileDetails.Smilies.SmileyCode">
+        <item name="android:fontFamily">monospace</item>
+        <item name="android:textColor">?attr/textColorPrimary</item>
+    </style>
+
+    <style name="Redface.ProfileDetails.Smilies.SmileyAction">
+        <item name="android:background">?android:attr/selectableItemBackgroundBorderless</item>
+        <item name="android:tint">?attr/textColorPrimary</item>
+    </style>
 </resources>

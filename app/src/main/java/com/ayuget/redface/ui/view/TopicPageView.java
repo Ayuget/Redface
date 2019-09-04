@@ -402,7 +402,7 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
         @JavascriptInterface
         public void copyLinkToPost(final int postId) {
             Timber.d("Copying link to post '%d' in clipboard", postId);
-            TopicPageView.this.post(() -> UiUtils.copyToClipboard(getContext(), mdEndpoints.post(topicPage.topic().category(), topicPage.topic(), topicPage.page(), postId)));
+            TopicPageView.this.post(() -> UiUtils.copyLinkToClipboard(getContext(), mdEndpoints.post(topicPage.topic().category(), topicPage.topic(), topicPage.page(), postId)));
         }
 
         @JavascriptInterface

@@ -308,4 +308,11 @@
     <string name="report_request_in_progress">Votre demande de modération est en cours de traitement</string>
     <string name="report_already_treated">Demande de modération déjà traitée</string>
     <string name="report_request_success">Demande de modération correctement envoyée</string>
+    <string name="profile_personal_smilies_edit_smiley_keywords">Editer les mots-clefs</string>
+    <string name="profile_personal_smilies_mark_as_favorite">Ajouter aux favoris</string>
+    <string name="profile_personal_smilies_remove_from_favorites">Supprimer des favoris</string>
+    <string name="profile_personal_smilies_copy_code">Copier le code</string>
+    <string name="profile_personal_smilies_code_copied">Code du smiley copié</string>
+    <string name="profile_forum_info">Informations relatives au forum</string>
+    <string name="profile_general_info">Information générales</string>
 </resources>

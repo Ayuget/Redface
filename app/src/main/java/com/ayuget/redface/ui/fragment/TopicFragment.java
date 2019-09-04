@@ -725,7 +725,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
                 return true;
 
             case R.id.action_copy_link:
-                UiUtils.copyToClipboard(getActivity(), topicUrl);
+                UiUtils.copyLinkToClipboard(getActivity(), topicUrl);
                 break;
             case R.id.action_share:
                 UiUtils.shareText(getActivity(), topicUrl);
