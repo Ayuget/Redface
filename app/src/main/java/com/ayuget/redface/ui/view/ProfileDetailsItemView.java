@@ -1,8 +1,7 @@
 package com.ayuget.redface.ui.view;
 
 import android.content.Context;
-import android.os.Build;
-import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -47,9 +46,11 @@ public class ProfileDetailsItemView extends RelativeLayout {
 		ButterKnife.inject(this);
 
 		detailIconView.setImageDrawable(getContext().getResources().getDrawable(icon));
-		mainTextView.setText(value);
 
 		mainTextView.setText(HTMLUtils.unescapeHTML(value));
+		mainTextView.setMovementMethod(LinkMovementMethod.getInstance());
+		mainTextView.setLinksClickable(true);
+
 		secondaryTextView.setText(getContext().getString(labelRes));
 
 		UiUtils.setDrawableColor(detailIconView.getDrawable(), UiUtils.getReplyToolbarIconsColor(getContext()));
