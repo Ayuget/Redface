@@ -16,6 +16,7 @@ import com.ayuget.redface.R;
 import com.ayuget.redface.data.api.model.Profile;
 import com.ayuget.redface.data.api.model.Smiley;
 import com.ayuget.redface.ui.misc.ThemeManager;
+import com.ayuget.redface.ui.misc.UiUtils;
 import com.ayuget.redface.ui.view.ProfileDetailsItemView;
 import com.ayuget.redface.ui.view.ProfileDetailsSmileyView;
 import com.ayuget.redface.util.HTMLUtils;
@@ -65,8 +66,9 @@ public class ProfileActivity extends BaseActivity {
 		}
 
 		toolbar.setNavigationIcon(R.drawable.ic_action_arrow_back);
+		UiUtils.setDrawableColor(toolbar.getNavigationIcon(), UiUtils.resolveColorAttribute(this, R.attr.textColorPrimary));
+
 		toolbar.setNavigationOnClickListener(v -> finish());
-		toolbar.setBackgroundColor(getResources().getColor(R.color.app_bar_transparent));
 
 		userProfilePicture.setBackground(getResources().getDrawable(themeManager.getProfileAvatarBackgroundDrawable()));
 

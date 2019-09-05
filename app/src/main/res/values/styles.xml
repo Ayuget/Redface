@@ -112,6 +112,11 @@
         <item name="contentInsetLeft">0dp</item>
     </style>
 
+    <style name="RedfaceTransparentToolbar" parent="ThemeOverlay.AppCompat.ActionBar">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="colorControlNormal">?attr/textColorPrimary</item>
+    </style>
+
     <style name="RedfaceSmileysToolbar" parent="Widget.AppCompat.Toolbar">
         <item name="android:background">?attr/colorPrimary</item>
         <item name="popupTheme">?attr/toolbarPopupTheme</item>
