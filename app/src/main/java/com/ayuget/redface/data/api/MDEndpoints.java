@@ -83,6 +83,12 @@ public interface MDEndpoints {
 
     String smileySearch(String searchTerm);
 
+    String addFavoriteSmiley();
+
+    String removeFavoriteSmiley();
+
+    String imagesProfilePage();
+
     /**
      * URL used to unflag / unfavorite a topic
      */

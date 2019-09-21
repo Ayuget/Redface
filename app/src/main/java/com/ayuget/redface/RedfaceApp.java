@@ -22,6 +22,7 @@ import android.util.Log;
 
 import com.ayuget.redface.account.AccountModule;
 import com.ayuget.redface.network.NetworkModule;
+import com.ayuget.redface.profile.ProfileModule;
 import com.ayuget.redface.settings.RedfaceSettings;
 
 import net.ypresto.timbertreeutils.CrashlyticsLogTree;

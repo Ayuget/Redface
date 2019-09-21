@@ -73,11 +73,10 @@ public class UiUtils {
     }
 
     public static int resolveColorAttribute(Context context, int attrName) {
-        final TypedArray styledAttributes = context.getTheme().obtainStyledAttributes(new int[] {attrName});
+        final TypedArray styledAttributes = context.getTheme().obtainStyledAttributes(new int[]{attrName});
         try {
             return styledAttributes.getColor(0, 0);
-        }
-        finally {
+        } finally {
             styledAttributes.recycle();
         }
     }
@@ -94,8 +93,9 @@ public class UiUtils {
 
     /**
      * Sets the drawable main color
+     *
      * @param drawable drawable to style
-     * @param color real resolved color, not color resource id
+     * @param color    real resolved color, not color resource id
      */
     public static void setDrawableColor(Drawable drawable, int color) {
         drawable.mutate().setColorFilter(color, PorterDuff.Mode.MULTIPLY);
@@ -157,18 +157,21 @@ public class UiUtils {
         return resolveColorAttribute(context, R.attr.internalBrowserToolbarColor);
     }
 
+    public static int getProfileConnectionStatusBackgroundColor(Context context, boolean isConnectionOk) {
+        int attribute = isConnectionOk ? R.attr.profileConnectionStatusOkBackgroundColor : R.attr.profileConnectionStatusKoBackgroundColor;
+        return resolveColorAttribute(context, attribute);
+    }
+
     private static void insertTextFromSelection(EditText editText, String text, int selectionStart, int selectionEnd) {
         Editable replyText = editText.getText();
 
         if (selectionStart != -1 && selectionEnd != -1) {
             // Some text has been selected by the user
             replyText.replace(selectionStart, selectionEnd, text);
-        }
-        else if (selectionStart != -1) {
+        } else if (selectionStart != -1) {
             // EditText has focus, insert at caret
             replyText.insert(selectionStart, text);
-        }
-        else {
+        } else {
             // No focus
             editText.append(text);
         }
@@ -176,6 +179,7 @@ public class UiUtils {
 
     /**
      * Inserts a text at current caret position
+     *
      * @param text text to insert
      */
     public static void insertText(EditText editText, String text) {
@@ -207,14 +211,14 @@ public class UiUtils {
     }
 
     public static void showVirtualKeyboard(Activity activity) {
-        ((InputMethodManager)activity.getSystemService(Context.INPUT_METHOD_SERVICE)).toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+        ((InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE)).toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
     }
 
     public static void hideVirtualKeyboard(Activity activity) {
         // Check if no view has focus:
         View view = activity.getCurrentFocus();
         if (view != null) {
-            InputMethodManager imm = (InputMethodManager)activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }

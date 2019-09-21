@@ -138,4 +138,20 @@ public interface MDService {
      * Searches a particular word and/or author in a topic, starting at a given post id.
      */
     Observable<TopicSearchResult> searchInTopic(User user, Topic topic, long startFromPostId, String word, String author, boolean firstSearch);
+
+    /**
+     * Returns a list of the user's favorite smileys
+     */
+    Observable<List<Smiley>> getFavoriteSmileys(User user);
+
+    /**
+     * Adds a smiley to the list of user's favorite smileys
+     */
+    Observable<Boolean> addSmileyToFavorites(User user, Smiley smiley);
+
+    /**
+     * Removes a smiley to the list of user's favorite smileys
+     */
+    Observable<Boolean> removeSmileyFromFavorites(User user, Smiley smiley);
+
 }

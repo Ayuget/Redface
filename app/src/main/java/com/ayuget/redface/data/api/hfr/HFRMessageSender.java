@@ -20,6 +20,7 @@ import com.ayuget.redface.data.api.MDEndpoints;
 import com.ayuget.redface.data.api.MDMessageSender;
 import com.ayuget.redface.data.api.model.Response;
 import com.ayuget.redface.data.api.model.ResponseCode;
+import com.ayuget.redface.data.api.model.Smiley;
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.api.model.TopicSearchResult;
 import com.ayuget.redface.data.api.model.User;
@@ -27,6 +28,7 @@ import com.ayuget.redface.network.HTTPClientProvider;
 import com.ayuget.redface.ui.UIConstants;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -53,6 +55,9 @@ public class HFRMessageSender implements MDMessageSender {
     private static final Pattern MESSAGE_SUCCESSFULLY_REPORTED = Pattern.compile("(.*)(Un message a été envoyé avec succès aux modérateurs)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private static final Pattern FLAG_SUCCESSFULLY_REMOVED = Pattern.compile("(.*)(Drapeau effacé avec succès)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private static final Pattern EXTRACT_SEARCHED_POST_LOCATION_PATTERN = Pattern.compile("(?:page=)(\\d+)(?:.*?)(?:currentnum=)(\\d+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private static final Pattern SMILEY_REMOVED_FROM_FAVORITES_PATTERN = Pattern.compile("(.*)(Suppression effectuée avec succès)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private static final Pattern SMILEY_ADDED_TO_FAVORITES_PATTERN = Pattern.compile("(.*)(Ajout effectué avec succès)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+
     private final HTTPClientProvider httpClientProvider;
 
     private final MDEndpoints mdEndpoints;
@@ -462,6 +467,93 @@ public class HFRMessageSender implements MDMessageSender {
         });
     }
 
+    @Override
+    public Observable<Boolean> addSmileyToFavorites(User user, Smiley smiley, String hashcheck) {
+        return Observable.create(subscriber -> {
+            Timber.d("Adding smiley %s as favorite", smiley);
+
+            OkHttpClient httpClient = httpClientProvider.getClientForUser(user);
+
+            RequestBody formBody = new FormBody.Builder()
+                    .add("hash_check", hashcheck)
+                    .add("smilie", String.valueOf(smiley.code()))
+                    .build();
+
+            Request request = new Request.Builder()
+                    .url(mdEndpoints.addFavoriteSmiley())
+                    .post(formBody)
+                    .build();
+
+            try {
+                okhttp3.Response response = httpClient.newCall(request).execute();
+
+                if (response.isSuccessful()) {
+                    final String responseBody = response.body().string();
+                    boolean success = matchesPattern(SMILEY_ADDED_TO_FAVORITES_PATTERN, responseBody);
+                    subscriber.onNext(success);
+                }
+                else {
+                    Timber.d("Error HTTP Code when adding smiley to favorites, response is : %s", response.body().string());
+                    subscriber.onNext(false);
+                }
+
+                subscriber.onCompleted();
+            }
+            catch (IOException e) {
+                Timber.e(e, "Exception while adding smiley to favorites");
+                subscriber.onError(e);
+            }
+        });
+    }
+
+    @Override
+    public Observable<Boolean> removeSmileyFromFavorites(User user, Smiley smiley, List<Smiley> favoriteSmileys, String hashcheck) {
+        return Observable.create(subscriber -> {
+            Timber.d("Removing smiley %s from favorites (keeping: %s)", smiley, favoriteSmileys);
+
+
+            OkHttpClient httpClient = httpClientProvider.getClientForUser(user);
+
+            FormBody.Builder formBodyBuilder = new FormBody.Builder()
+                    .add("hash_check", hashcheck);
+
+            for (int smileyIndex = 0; smileyIndex < favoriteSmileys.size(); smileyIndex++) {
+                boolean isSmileyToDelete = favoriteSmileys.get(smileyIndex).equals(smiley);
+
+                formBodyBuilder.add("smiley" + smileyIndex, smiley.code());
+                formBodyBuilder.add("delete" + smileyIndex, String.valueOf(isSmileyToDelete));
+            }
+
+            RequestBody formBody = formBodyBuilder.build();
+
+            Request request = new Request.Builder()
+                    .url(mdEndpoints.removeFavoriteSmiley())
+                    .post(formBody)
+                    .build();
+
+            try {
+                okhttp3.Response response = httpClient.newCall(request).execute();
+
+                if (response.isSuccessful()) {
+                    final String responseBody = response.body().string();
+                    boolean success = matchesPattern(SMILEY_REMOVED_FROM_FAVORITES_PATTERN, responseBody);
+                    subscriber.onNext(success);
+                }
+                else {
+                    Timber.d("Error HTTP Code when removing smiley to favorites, response is : %s", response.body().string());
+                    subscriber.onNext(false);
+                }
+
+                subscriber.onCompleted();
+            }
+            catch (IOException e) {
+                Timber.e(e, "Exception while removing smiley from favorites");
+                subscriber.onError(e);
+            }
+
+        });
+    }
+
     private TopicSearchResult parseFoundPostLocation(String locationHeader) {
         Matcher matcher = EXTRACT_SEARCHED_POST_LOCATION_PATTERN.matcher(locationHeader);
         if (matcher.find()) {
@@ -471,7 +563,6 @@ public class HFRMessageSender implements MDMessageSender {
             return TopicSearchResult.createAsNoMoreResult();
         }
     }
-
 
     private Response buildResponse(String response) {
         Timber.d(response);

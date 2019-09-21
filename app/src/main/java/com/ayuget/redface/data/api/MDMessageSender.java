@@ -17,9 +17,12 @@
 package com.ayuget.redface.data.api;
 
 import com.ayuget.redface.data.api.model.Response;
+import com.ayuget.redface.data.api.model.Smiley;
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.api.model.TopicSearchResult;
 import com.ayuget.redface.data.api.model.User;
+
+import java.util.List;
 
 import rx.Observable;
 
@@ -73,4 +76,14 @@ public interface MDMessageSender {
      * Searches a particular word and/or author in a topic, starting at a given post id.
      */
     Observable<TopicSearchResult> searchInTopic(User user, Topic topic, long startFromPostId, String word, String author, boolean firstSearch, String hashcheck);
+
+    /**
+     * Adds a smiley to favorites
+     */
+    Observable<Boolean> addSmileyToFavorites(User user, Smiley smiley, String hashcheck);
+
+    /**
+     * Removes a smiley from favorites
+     */
+    Observable<Boolean> removeSmileyFromFavorites(User user, Smiley smiley, List<Smiley> favoriteSmileys, String hashcheck);
 }

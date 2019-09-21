@@ -70,5 +70,6 @@ public class UIConstants {
     /**
      * Profile screen
      */
-    public static final String ARG_PROFILE = "profile";
+    public static final String ARG_PROFILE_ID = "profile";
+    public static final String ARG_IS_OWN_PROFILE = "isOwnProfile";
 }

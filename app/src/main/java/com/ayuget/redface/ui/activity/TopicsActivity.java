@@ -78,8 +78,6 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
 
     private SubscriptionHandler<Topic, String> quoteHandler = new SubscriptionHandler<>();
 
-    private SubscriptionHandler<Integer, Profile> profileHandler = new SubscriptionHandler<>();
-
     private SubscriptionHandler<User, Boolean> unflagSubscriptionHandler = new SubscriptionHandler<>();
 
     @Inject
@@ -453,12 +451,7 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
     }
 
     @Subscribe public void onViewUserProfile(final ViewUserProfileEvent event) {
-        subscribe(profileHandler.load(event.getUserId(), mdService.getProfile(userManager.getActiveUser(), event.getUserId()), new EndlessObserver<Profile>() {
-            @Override
-            public void onNext(Profile profile) {
-                startViewUserProfileActivity(profile);
-            }
-        }));
+        startViewUserProfileActivity(event.getUserId());
     }
 
     @Subscribe public void onPostActionEvent(final PostActionEvent event) {

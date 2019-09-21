@@ -10,6 +10,7 @@ import androidx.appcompat.widget.TooltipCompat;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 import com.ayuget.redface.R;
+import com.ayuget.redface.ui.misc.SmileyType;
 import com.ayuget.redface.ui.misc.UiUtils;
 import com.bumptech.glide.Glide;
 
@@ -29,16 +30,21 @@ public class ProfileDetailsSmileyView extends CoordinatorLayout {
 	@InjectView(R.id.edit_smiley_keywords)
 	ImageButton editSmileyKeywordsButton;
 
-	@InjectView(R.id.toggle_smiley_favorite_status)
-	ImageButton toggleSmileyFavoriteStatusButton;
+	@InjectView(R.id.add_smiley_to_favorites)
+	ImageButton addSmileyToFavoritesButton;
+
+	@InjectView(R.id.remove_smiley_from_favorites)
+	ImageButton removeSmileyFromFavoritesButton;
 
 	private final String smileyUrl;
 	private final String smileyCode;
+	private final SmileyType smileyType;
 
-	public ProfileDetailsSmileyView(@NonNull Context context, @NonNull String smileyUrl, @NonNull String smileyCode) {
+	public ProfileDetailsSmileyView(@NonNull Context context, @NonNull String smileyUrl, @NonNull String smileyCode, SmileyType smileyType) {
 		super(context);
 		this.smileyUrl = smileyUrl;
 		this.smileyCode = smileyCode;
+		this.smileyType = smileyType;
 		initialize();
 	}
 

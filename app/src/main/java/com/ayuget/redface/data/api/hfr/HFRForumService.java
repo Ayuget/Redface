@@ -24,6 +24,7 @@ import com.ayuget.redface.data.api.MDMessageSender;
 import com.ayuget.redface.data.api.MDService;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToBBCode;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToCategoryList;
+import com.ayuget.redface.data.api.hfr.transforms.HTMLToFavoriteSmileyList;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToPostList;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToPrivateMessageList;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToProfile;
@@ -299,6 +300,23 @@ public class HFRForumService implements MDService {
     @Override
     public Observable<TopicSearchResult> searchInTopic(User user, Topic topic, long startFromPostId, String word, String author, boolean firstSearch) {
         return mdMessageSender.searchInTopic(user, topic, startFromPostId, word, author, firstSearch, currentHashcheck);
+    }
+
+    @Override
+    public Observable<List<Smiley>> getFavoriteSmileys(User user) {
+        return pageFetcher.fetchSource(user, mdEndpoints.imagesProfilePage())
+                .map(new HTMLToFavoriteSmileyList());
+    }
+
+    @Override
+    public Observable<Boolean> addSmileyToFavorites(User user, Smiley smiley) {
+        return mdMessageSender.addSmileyToFavorites(user, smiley, currentHashcheck);
+    }
+
+    @Override
+    public Observable<Boolean> removeSmileyFromFavorites(User user, Smiley smiley) {
+        return getFavoriteSmileys(user)
+                .flatMap(favoriteSmileys -> mdMessageSender.removeSmileyFromFavorites(user, smiley, favoriteSmileys, currentHashcheck));
     }
 
     private boolean matchesPattern(Pattern p, String content) {

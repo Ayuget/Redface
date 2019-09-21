@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2015 Ayuget
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -435,6 +434,8 @@
     <string name="search_topic_in_progress">Search in progress</string>
     <string name="search_topic_error">Search failed</string>
     <string name="search_topic_ended">No more results</string>
+
+    <!-- Profile -->
     <string name="profile_general_info">General info</string>
     <string name="profile_forum_info">Forum info</string>
     <string name="profile_email_label">Email</string>
@@ -455,6 +456,25 @@
     <string name="profile_personal_smilies_edit_smiley_keywords">Edit keywords</string>
     <string name="profile_personal_smilies_copy_code">Copy code</string>
     <string name="profile_personal_smilies_code_copied">Smiley code copied to clipboard!</string>
+    <string name="profile_favorite_smilies_label">Favorite smilies</string>
+    <string name="profile_no_favorite_smilies">No favorite smileys defined. You can favorite smileys by long-pressing them when in a topic or when searching for smileys when typing a post.</string>
+
+    <!-- Account -->
+    <string name="profile_account_connection_title">Connection to the forum</string>
+    <string name="profile_account_connection_connected">Connected</string>
+    <string name="profile_account_connection_disconnected">Disconnected</string>
+    <string name="profile_account_connection_action_connect">Connect</string>
+    <string name="profile_account_connection_action_update_credentials">Update credentials</string>
+
+    <!-- Smiley actions -->
+    <string name="add_smiley_as_favorite_success">Smiley successfully added to favorites</string>
+    <string name="add_smiley_as_favorite_failure">Error when adding smiley as favorite</string>
+    <string name="remove_smiley_from_favorites_success">Smiley successfully removed from favorites</string>
+    <string name="remove_smiley_from_favorites_failure">Error when removing smiley from favorites</string>
+    <string name="edit_smiley_keywords_success">Smiley keywords successfully updated</string>
+    <string name="edit_smiley_keywords_failure">Error when updating smiley keywords</string>
+
+    <!-- Report post -->
     <string name="action_report_post_label">Moderation request</string>
     <string name="action_report_validate">Send</string>
     <string name="report_post_failed">Error when reporting post to moderation</string>

@@ -61,13 +61,13 @@
 		android:layout_marginRight="8dp"
 		android:contentDescription="@string/profile_personal_smilies_edit_smiley_keywords"
 		app:layout_constraintBottom_toBottomOf="parent"
-		app:layout_constraintEnd_toStartOf="@+id/toggle_smiley_favorite_status"
+		app:layout_constraintEnd_toStartOf="@+id/add_smiley_to_favorites"
 		app:layout_constraintStart_toEndOf="@+id/copy_smiley_code"
 		app:layout_constraintTop_toTopOf="parent"
 		app:srcCompat="@drawable/ic_action_book" />
 
 	<ImageButton
-		android:id="@+id/toggle_smiley_favorite_status"
+		android:id="@+id/add_smiley_to_favorites"
 		style="@style/Redface.ProfileDetails.Smilies.SmileyAction"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
@@ -76,8 +76,22 @@
 		android:contentDescription="@string/profile_personal_smilies_mark_as_favorite"
 		app:srcCompat="@drawable/ic_action_favorite"
 		app:layout_constraintBottom_toBottomOf="parent"
-		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintEnd_toEndOf="@+id/remove_smiley_from_favorites"
 		app:layout_constraintStart_toEndOf="@+id/edit_smiley_keywords"
+		app:layout_constraintTop_toTopOf="parent" />
+
+	<ImageButton
+		android:id="@+id/remove_smiley_from_favorites"
+		style="@style/Redface.ProfileDetails.Smilies.SmileyAction"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginStart="8dp"
+		android:layout_marginLeft="8dp"
+		android:contentDescription="@string/profile_personal_smilies_remove_from_favorites"
+		app:srcCompat="@drawable/ic_action_delete"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toEndOf="@+id/add_smiley_to_favorites"
 		app:layout_constraintTop_toTopOf="parent" />
 
 

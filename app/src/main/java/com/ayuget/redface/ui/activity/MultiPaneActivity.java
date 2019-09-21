@@ -17,7 +17,6 @@
 package com.ayuget.redface.ui.activity;
 
 import android.content.Intent;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.ayuget.redface.R;
@@ -35,7 +34,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
-import static com.ayuget.redface.ui.UIConstants.ARG_PROFILE;
+import static com.ayuget.redface.ui.UIConstants.ARG_PROFILE_ID;
 
 public class MultiPaneActivity extends BaseDrawerActivity {
     private static final String ARG_TOPIC = "topic";
@@ -167,9 +166,9 @@ public class MultiPaneActivity extends BaseDrawerActivity {
         }
     }
 
-    protected synchronized void startViewUserProfileActivity(Profile userProfile) {
+    protected synchronized void startViewUserProfileActivity(int profileId) {
         Intent intent = new Intent(this, ProfileActivity.class);
-        intent.putExtra(ARG_PROFILE, userProfile);
+        intent.putExtra(ARG_PROFILE_ID, profileId);
         startActivity(intent);
     }
 
