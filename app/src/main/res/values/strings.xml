@@ -467,8 +467,12 @@
     <string name="profile_account_connection_action_update_credentials">Update credentials</string>
 
     <!-- Smiley actions -->
+    <string name="adding_smiley_as_favorite">Adding smiley to favorites…</string>
+    <string name="removing_smiley_from_favorites">Removing smiley from favorites…</string>
     <string name="add_smiley_as_favorite_success">Smiley successfully added to favorites</string>
-    <string name="add_smiley_as_favorite_failure">Error when adding smiley as favorite</string>
+    <string name="add_smiley_as_favorite_unknown_error">Error when adding smiley as favorite</string>
+    <string name="add_smiley_as_favorite_max_reached_out_error">You cannot add more than 10 smilies as favorites</string>
+    <string name="add_smiley_as_favorite_already_added_error">Smiley already added as favorite!</string>
     <string name="remove_smiley_from_favorites_success">Smiley successfully removed from favorites</string>
     <string name="remove_smiley_from_favorites_failure">Error when removing smiley from favorites</string>
     <string name="edit_smiley_keywords_success">Smiley keywords successfully updated</string>

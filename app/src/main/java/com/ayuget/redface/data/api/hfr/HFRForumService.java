@@ -50,6 +50,7 @@ import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.event.TopicPageCountUpdatedEvent;
 import com.ayuget.redface.ui.misc.PostReportStatus;
+import com.ayuget.redface.ui.misc.SmileyFavoriteActionResult;
 import com.squareup.otto.Bus;
 
 import java.util.List;
@@ -58,7 +59,6 @@ import java.util.regex.Pattern;
 import javax.inject.Inject;
 
 import rx.Observable;
-import rx.functions.Func1;
 import timber.log.Timber;
 
 /**
@@ -71,23 +71,32 @@ public class HFRForumService implements MDService {
     private static final Pattern POST_REPORT_TREATED = Pattern.compile("(.*)(Votre demande de modération sur ce message a été traitée)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private static final Pattern POST_JOIN_REPORT_IN_PROGRESS = Pattern.compile("(.*)(La demande de modération sur ce message à laquelle vous vous êtes joint n'est pas encore traitée)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
-    @Inject PageFetcher pageFetcher;
+    @Inject
+    PageFetcher pageFetcher;
 
-    @Inject PostsTweaker postsTweaker;
+    @Inject
+    PostsTweaker postsTweaker;
 
-    @Inject MDEndpoints mdEndpoints;
+    @Inject
+    MDEndpoints mdEndpoints;
 
-    @Inject HTTPClientProvider httpClientProvider;
+    @Inject
+    HTTPClientProvider httpClientProvider;
 
-    @Inject Bus bus;
+    @Inject
+    Bus bus;
 
-    @Inject CategoriesStore categoriesStore;
+    @Inject
+    CategoriesStore categoriesStore;
 
-    @Inject MDMessageSender mdMessageSender;
+    @Inject
+    MDMessageSender mdMessageSender;
 
-    @Inject RedfaceSettings appSettings;
+    @Inject
+    RedfaceSettings appSettings;
 
-    @Inject Blacklist blacklist;
+    @Inject
+    Blacklist blacklist;
 
     private String currentHashcheck;
 
@@ -105,8 +114,7 @@ public class HFRForumService implements MDService {
                         categoriesStore.storeCategories(user, categories);
                         return categories;
                     });
-        }
-        else {
+        } else {
             Timber.d("Successfully retrieved '%d' categories from cache for user '%s'", cachedCategories.size(), user.getUsername());
             return Observable.just(cachedCategories);
         }
@@ -115,8 +123,7 @@ public class HFRForumService implements MDService {
     private String getTopicListEndpoint(final Category category, final Subcategory subcategory, int page, final TopicFilter filter) {
         if (subcategory == null) {
             return mdEndpoints.category(category, page, filter);
-        }
-        else {
+        } else {
             return mdEndpoints.subcategory(category, subcategory, page, filter);
         }
     }
@@ -140,8 +147,7 @@ public class HFRForumService implements MDService {
 
         if (sortByDate) {
             return metaPageTopics.toSortedList((topic, topic2) -> topic2.lastPostDate().compareTo(topic.lastPostDate()));
-        }
-        else {
+        } else {
             return metaPageTopics.toList();
         }
     }
@@ -171,8 +177,7 @@ public class HFRForumService implements MDService {
                     if (!appSettings.showPreviousPageLastPost() && page > 1 && posts.size() > 1) {
                         posts.remove(0);
                         return posts;
-                    }
-                    else {
+                    } else {
                         return posts;
                     }
                 })
@@ -266,14 +271,11 @@ public class HFRForumService implements MDService {
                 .map(pageSource -> {
                     if (matchesPattern(POST_JOIN_REPORT_ALERT, pageSource)) {
                         return PostReportStatus.JOIN_REPORT;
-                    }
-                    else if (matchesPattern(POST_REPORT_IN_PROGRESS_PATTERN, pageSource) || matchesPattern(POST_JOIN_REPORT_IN_PROGRESS, pageSource)) {
+                    } else if (matchesPattern(POST_REPORT_IN_PROGRESS_PATTERN, pageSource) || matchesPattern(POST_JOIN_REPORT_IN_PROGRESS, pageSource)) {
                         return PostReportStatus.REPORT_IN_PROGRESS;
-                    }
-                    else if (matchesPattern(POST_REPORT_TREATED, pageSource)) {
+                    } else if (matchesPattern(POST_REPORT_TREATED, pageSource)) {
                         return PostReportStatus.REPORT_TREATED;
-                    }
-                    else {
+                    } else {
                         return PostReportStatus.NO_EXISTING_REPORT;
                     }
                 });
@@ -305,11 +307,16 @@ public class HFRForumService implements MDService {
     @Override
     public Observable<List<Smiley>> getFavoriteSmileys(User user) {
         return pageFetcher.fetchSource(user, mdEndpoints.imagesProfilePage())
+                .map(htmlSource -> {
+                    // Hashcheck is needed by the server to post new content
+                    currentHashcheck = HashcheckExtractor.extract(htmlSource);
+                    return htmlSource;
+                })
                 .map(new HTMLToFavoriteSmileyList());
     }
 
     @Override
-    public Observable<Boolean> addSmileyToFavorites(User user, Smiley smiley) {
+    public Observable<SmileyFavoriteActionResult> addSmileyToFavorites(User user, Smiley smiley) {
         return mdMessageSender.addSmileyToFavorites(user, smiley, currentHashcheck);
     }
 

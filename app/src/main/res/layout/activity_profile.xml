@@ -112,6 +112,13 @@
                     android:layout_marginBottom="16dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
+
+                <LinearLayout
+                    android:id="@+id/favorite_smilies"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="16dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
             </LinearLayout>
 
 

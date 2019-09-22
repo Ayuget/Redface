@@ -22,7 +22,10 @@ import com.ayuget.redface.data.api.model.Smiley;
 import com.ayuget.redface.data.rx.EndlessObserver;
 import com.ayuget.redface.data.rx.SubscriptionHandler;
 import com.ayuget.redface.profile.ProfileManager;
+import com.ayuget.redface.ui.misc.SmileyAction;
+import com.ayuget.redface.ui.misc.SmileyFavoriteActionResult;
 import com.ayuget.redface.ui.misc.SmileyType;
+import com.ayuget.redface.ui.misc.SnackbarHelper;
 import com.ayuget.redface.ui.misc.ThemeManager;
 import com.ayuget.redface.ui.misc.UiUtils;
 import com.ayuget.redface.ui.view.ProfileConnectionStatusView;
@@ -38,11 +41,12 @@ import javax.inject.Inject;
 import butterknife.InjectView;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
 import static com.ayuget.redface.ui.UIConstants.ARG_IS_OWN_PROFILE;
 import static com.ayuget.redface.ui.UIConstants.ARG_PROFILE_ID;
 
-public class ProfileActivity extends BaseActivity {
+public class ProfileActivity extends BaseActivity implements ProfileDetailsSmileyView.OnSmileyActionPerformedListener {
     @Inject
     ThemeManager themeManager;
 
@@ -81,6 +85,9 @@ public class ProfileActivity extends BaseActivity {
 
     @InjectView(R.id.profile_attributes)
     LinearLayout profileAttributes;
+
+    @InjectView(R.id.favorite_smilies)
+    LinearLayout favoriteSmilies;
 
     private SubscriptionHandler<Integer, Profile> profileHandler = new SubscriptionHandler<>();
     private int profileId;
@@ -205,21 +212,26 @@ public class ProfileActivity extends BaseActivity {
             profileAttributes.addView(personalSmiliesHeading);
 
             for (Smiley smiley : profile.personalSmilies()) {
-                profileAttributes.addView(new ProfileDetailsSmileyView(this, smiley.imageUrl(), smiley.code(), SmileyType.PERSONAL));
+                profileAttributes.addView(new ProfileDetailsSmileyView(this, isOwnProfile, smiley, SmileyType.PERSONAL, this));
             }
         }
 
         if (isOwnProfile) {
-            subscribe(mdService.getFavoriteSmileys(userManager.getActiveUser())
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new EndlessObserver<List<Smiley>>() {
-                        @Override
-                        public void onNext(List<Smiley> smilies) {
-                            listFavoritesSmileys(smilies);
-                        }
-                    }));
+            loadFavoriteSmileys();
         }
+    }
+
+    protected void loadFavoriteSmileys() {
+        subscribe(mdService.getFavoriteSmileys(userManager.getActiveUser())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new EndlessObserver<List<Smiley>>() {
+                    @Override
+                    public void onNext(List<Smiley> smilies) {
+                        favoriteSmilies.removeAllViews();
+                        listFavoritesSmileys(smilies);
+                    }
+                }));
     }
 
     protected void listFavoritesSmileys(List<Smiley> favoriteSmileys) {
@@ -230,10 +242,10 @@ public class ProfileActivity extends BaseActivity {
         TextView favoriteSmileysHeading = new TextView(new ContextThemeWrapper(this, R.style.Redface_ProfileDetails_Heading), null, 0);
         favoriteSmileysHeading.setText(R.string.profile_favorite_smilies_label);
 
-        profileAttributes.addView(favoriteSmileysHeading);
+        favoriteSmilies.addView(favoriteSmileysHeading);
 
         for (Smiley smiley : favoriteSmileys) {
-            profileAttributes.addView(new ProfileDetailsSmileyView(this, smiley.imageUrl(), smiley.code(), SmileyType.FAVORITE));
+            favoriteSmilies.addView(new ProfileDetailsSmileyView(this, isOwnProfile, smiley, SmileyType.FAVORITE, this));
         }
     }
 
@@ -250,5 +262,76 @@ public class ProfileActivity extends BaseActivity {
 
             profileAttributes.addView(detailView);
         }
+    }
+
+    @Override
+    public void onSmileyActionPerformed(Smiley smiley, SmileyAction smileyAction) {
+        switch (smileyAction) {
+            case COPY_CODE_TO_CLIPBOARD:
+                UiUtils.copyTextToClipboard(this, smiley.code(), R.string.profile_personal_smilies_code_copied);
+                break;
+            case ADD_TO_FAVORITES:
+                addSmileyToFavorites(smiley);
+                break;
+            case REMOVE_FROM_FAVORITES:
+                removeSmileyFromFavorites(smiley);
+                break;
+        }
+    }
+
+    private void addSmileyToFavorites(Smiley smiley) {
+        subscribe(mdService.addSmileyToFavorites(userManager.getActiveUser(), smiley).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new EndlessObserver<SmileyFavoriteActionResult>() {
+                    @Override
+                    public void onNext(SmileyFavoriteActionResult result) {
+                        showAddSmileyAsFavoriteResult(result);
+                    }
+
+                    @Override
+                    public void onError(Throwable throwable) {
+                        Timber.e(throwable, "Error when adding smiley to favorites");
+                        SnackbarHelper.makeError(ProfileActivity.this, R.string.add_smiley_as_favorite_unknown_error).show();
+                    }
+                }));
+    }
+
+    private void showAddSmileyAsFavoriteResult(SmileyFavoriteActionResult result) {
+        switch (result) {
+            case ADDED_AS_FAVORITE:
+                SnackbarHelper.make(ProfileActivity.this, R.string.add_smiley_as_favorite_success).show();
+                break;
+            case NOT_ADDED_MAX_REACHED:
+                SnackbarHelper.make(ProfileActivity.this, R.string.add_smiley_as_favorite_max_reached_out_error).show();
+                break;
+            case NOT_ADDED_ALREADY_IN_LIST:
+                SnackbarHelper.make(ProfileActivity.this, R.string.add_smiley_as_favorite_already_added_error).show();
+                break;
+            default:
+                SnackbarHelper.makeError(ProfileActivity.this, R.string.add_smiley_as_favorite_unknown_error).show();
+        }
+    }
+
+    private void removeSmileyFromFavorites(Smiley smiley) {
+        subscribe(mdService.removeSmileyFromFavorites(userManager.getActiveUser(), smiley).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new EndlessObserver<Boolean>() {
+                    @Override
+                    public void onNext(Boolean removeSucceeded) {
+                        if (removeSucceeded) {
+                            SnackbarHelper.make(ProfileActivity.this, R.string.remove_smiley_from_favorites_success).show();
+                        } else {
+                            SnackbarHelper.makeError(ProfileActivity.this, R.string.remove_smiley_from_favorites_failure).show();
+                        }
+
+                        loadFavoriteSmileys();
+                    }
+
+                    @Override
+                    public void onError(Throwable throwable) {
+                        Timber.e(throwable, "Error when removing smiley from favorites");
+                        SnackbarHelper.makeError(ProfileActivity.this, R.string.remove_smiley_from_favorites_failure).show();
+                    }
+                }));
     }
 }

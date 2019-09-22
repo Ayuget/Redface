@@ -21,6 +21,7 @@ import com.ayuget.redface.data.api.model.Smiley;
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.api.model.TopicSearchResult;
 import com.ayuget.redface.data.api.model.User;
+import com.ayuget.redface.ui.misc.SmileyFavoriteActionResult;
 
 import java.util.List;
 
@@ -33,7 +34,7 @@ public interface MDMessageSender {
     /**
      * Posts a reply to the given {@link Topic}. User's signature can be included, using the
      * {@code includeSignature} argument.
-     *
+     * <p>
      * {@code hashcheck} argument is purely a technical one, used as "security" by the forum.
      */
     Observable<Response> replyToTopic(User user, Topic topic, String message, String hashcheck, boolean includeSignature);
@@ -45,7 +46,7 @@ public interface MDMessageSender {
 
     /**
      * Sends a new private message to {@code recipientUsername}.
-     *
+     * <p>
      * While the forum technically allows a private message to be sent to multiple recipients, that
      * features seems to be disabled and therefore not implemented here.
      */
@@ -80,7 +81,7 @@ public interface MDMessageSender {
     /**
      * Adds a smiley to favorites
      */
-    Observable<Boolean> addSmileyToFavorites(User user, Smiley smiley, String hashcheck);
+    Observable<SmileyFavoriteActionResult> addSmileyToFavorites(User user, Smiley smiley, String hashcheck);
 
     /**
      * Removes a smiley from favorites

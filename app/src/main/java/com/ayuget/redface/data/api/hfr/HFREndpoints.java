@@ -78,7 +78,7 @@ public class HFREndpoints implements MDEndpoints {
 
     private static final String ADD_FAVORITE_SMILEY_URL = "{base_url}/user/addperso.php?config=hfr.inc";
 
-    private static final String REMOVE_FAVORITE_SMILEY_URL = "{base_url}/supprperso_validation.php";
+    private static final String REMOVE_FAVORITE_SMILEY_URL = "{base_url}/user/supprperso_validation.php?config=hfr.inc&codehex=2b19933775e62eb7998d7db66177c4f8";
 
     private static final String IMAGES_PROFILE_PAGE_URL = "{base_url}/user/editprofil.php?config=hfr.inc&page=5";
 
@@ -94,11 +94,9 @@ public class HFREndpoints implements MDEndpoints {
         Integer filterId = null;
         if (topicFilter == TopicFilter.PARTICIPATED) {
             filterId = 1;
-        }
-        else if (topicFilter == TopicFilter.FAVORITE) {
+        } else if (topicFilter == TopicFilter.FAVORITE) {
             filterId = 3;
-        }
-        else if (topicFilter == TopicFilter.READ) {
+        } else if (topicFilter == TopicFilter.READ) {
             filterId = 2;
         }
 
@@ -118,8 +116,7 @@ public class HFREndpoints implements MDEndpoints {
                     .put("category_slug", category.slug())
                     .put("page", page)
                     .format().toString();
-        }
-        else {
+        } else {
             return Phrase.from(FILTERED_URL)
                     .put("base_url", FORUM_BASE_URL)
                     .put("category_id", category.id())
@@ -143,8 +140,7 @@ public class HFREndpoints implements MDEndpoints {
                     .put("subcategory_slug", subcategory.slug())
                     .put("page", page)
                     .format().toString();
-        }
-        else {
+        } else {
             return Phrase.from(FILTERED_URL)
                     .put("base_url", FORUM_BASE_URL)
                     .put("category_id", category.id())
@@ -298,8 +294,7 @@ public class HFREndpoints implements MDEndpoints {
                     .put("base_url", FORUM_BASE_URL)
                     .put("filter_id", filterId)
                     .format().toString();
-        }
-        else {
+        } else {
             throw new IllegalStateException("Invalid topic filter for meta page");
         }
     }

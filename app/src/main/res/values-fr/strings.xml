@@ -315,7 +315,7 @@
     <string name="profile_forum_info">Informations relatives au forum</string>
     <string name="profile_general_info">Information générales</string>
     <string name="add_smiley_as_favorite_success">Smiley correctement ajouté en favori</string>
-    <string name="add_smiley_as_favorite_failure">Erreur lors de l\'ajout du smiley en tant que favori</string>
+    <string name="add_smiley_as_favorite_unknown_error">Erreur lors de l\'ajout du smiley en tant que favori</string>
     <string name="edit_smiley_keywords_success">Mots-clef du smiley correctement mis à jour</string>
     <string name="edit_smiley_keywords_failure">Erreur lors de la mise à jour des mots-clef du smiley</string>
     <string name="remove_smiley_from_favorites_success">Smiley correctement supprimé des favoris</string>
@@ -327,4 +327,8 @@
     <string name="profile_account_connection_connected">Connecté</string>
     <string name="profile_account_connection_disconnected">Déconnecté</string>
     <string name="profile_account_connection_title">Connexion au forum</string>
+    <string name="adding_smiley_as_favorite">Ajout du smileys aux favoris…</string>
+    <string name="removing_smiley_from_favorites">Suppression du smiley des favoris…</string>
+    <string name="add_smiley_as_favorite_max_reached_out_error">Impossible d\'ajouter plus de 10 smileys favoris</string>
+    <string name="add_smiley_as_favorite_already_added_error">Smiley déjà ajouté en favori</string>
 </resources>
