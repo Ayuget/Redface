@@ -97,6 +97,7 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx_activity_result.RxActivityResult;
 import timber.log.Timber;
 
@@ -362,10 +363,9 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
             boolean hasResponse = actualReply.length() > 0;
             boolean textWasModified = (initialReplyContent == null) || !initialReplyContent.equals(actualReply);
 
-            if(hasResponse && textWasModified) {
+            if (hasResponse && textWasModified) {
                 responseStore.storeResponse(userManager.getActiveUser(), currentTopic, replyEditText.getText().toString());
-            }
-            else {
+            } else {
                 responseStore.removeResponse(userManager.getActiveUser(), currentTopic);
             }
         }
@@ -389,8 +389,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
         Intent intent;
         if (Build.VERSION.SDK_INT < KITKAT) {
             intent = new Intent(Intent.ACTION_GET_CONTENT);
-        }
-        else {
+        } else {
             intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
             intent.addCategory(Intent.CATEGORY_OPENABLE);
         }
@@ -426,6 +425,25 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
     @OnClick(R.id.default_smileys)
     protected void loadDefaultSmileys() {
         smileyList.setSmileys(Smileys.defaultSmileys());
+    }
+
+    /**
+     * Loads favorite smileys in the smiley selector
+     */
+    @OnClick(R.id.favorite_smileys_tab)
+    protected void loadFavoriteSmileys() {
+        subscribe(mdService.getFavoriteSmileys(userManager.getActiveUser())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new EndlessObserver<List<Smiley>>() {
+                    @Override
+                    public void onNext(List<Smiley> favoriteSmilies) {
+                        ArrayList<Smiley> smiliesList = new ArrayList<>(userManager.getActiveUser().getProfile().personalSmilies());
+                        smiliesList.addAll(favoriteSmilies);
+
+                        smileyList.setSmileys(smiliesList);
+                    }
+                }));
     }
 
     protected void showSendingMessageSpinner() {
@@ -483,7 +501,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
                             // Show or hide the smileys toolbar based on current position
                             if (isUpwardMovement && smileysSelector.getY() < replyWindowMaxHeight) {
                                 showSmileysToolbar();
-                            } else if (dy > REPLACE_SMILEY_SELECTOR_THRESHOLD){
+                            } else if (dy > REPLACE_SMILEY_SELECTOR_THRESHOLD) {
                                 hideSmileysToolbar();
                             }
                         }
@@ -504,14 +522,13 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
                         // Moving too far, let's avoid this
                         yTranslation = -(smileysSelector.getY() - toolbarHeight);
                     } else {
-                        if(isUpwardMovement || (!isUpwardMovement && lastDy > REPLACE_SMILEY_SELECTOR_THRESHOLD)) {
+                        if (isUpwardMovement || (!isUpwardMovement && lastDy > REPLACE_SMILEY_SELECTOR_THRESHOLD)) {
                             // If the upward movement is below the animation threshold, or if the
                             // movement is downwards & sufficient, replace the smiley selector at
                             // its original position (bottom)
                             yTranslation = smileySelectorTopOffset - smileysSelector.getY();
                             hideSmileysToolbar();
-                        }
-                        else {
+                        } else {
                             // Moved downwards, but not enough, replace smiley selector at the top
                             yTranslation = -(smileysSelector.getY() - toolbarHeight);
                             showSmileysToolbar();
@@ -539,7 +556,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
      * Hides the soft keyboard
      */
     public void hideSoftKeyboard() {
-        if(getCurrentFocus()!=null) {
+        if (getCurrentFocus() != null) {
             InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
             inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
         }
@@ -562,14 +579,14 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
     /**
      * Smoothly hides the smileys toolbar
      */
-    protected void  hideSmileysToolbar() {
+    protected void hideSmileysToolbar() {
         smileysToolbar.animate().translationY(-toolbarHeight).setInterpolator(new AccelerateDecelerateInterpolator()).start();
     }
 
     /**
      * Smoothly shows the smiley toolbar
      */
-    protected void  showSmileysToolbar() {
+    protected void showSmileysToolbar() {
         smileysToolbar.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
     }
 
@@ -585,12 +602,10 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
     protected void setupUserSwitcher(LayoutInflater inflater, List<User> users) {
         if (users.size() == 0) {
             Timber.e("Empty user list");
-        }
-        else if (users.size() == 1 || !canSwitchUser()) {
+        } else if (users.size() == 1 || !canSwitchUser()) {
             View userView = setupUserView(inflater, canSwitchUser() ? users.get(0) : userManager.getActiveUser());
             actionsToolbar.addView(userView);
-        }
-        else {
+        } else {
             // Setup spinner for user selection
             Timber.d("Initializing spinner for '%d' users", users.size());
             View spinnerContainer = inflater.inflate(R.layout.reply_user_spinner, actionsToolbar, false);
@@ -620,8 +635,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
     public void onBackPressed() {
         if (isImageSelectionViewVisible()) {
             hideImageSelectionView();
-        }
-        else {
+        } else {
             super.onBackPressed();
         }
 
@@ -635,7 +649,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
         avatarView.setImageResource(R.drawable.profile_background_red);
         usernameView.setText(user.getUsername());
 
-        if (! user.isGuest()) {
+        if (!user.isGuest()) {
             loadUserAvatarInto(user, avatarView);
         }
 
@@ -676,7 +690,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
         int selectionStart = replyEditText.getSelectionStart();
         int selectionEnd = replyEditText.getSelectionEnd();
 
-        String selectedText =  (selectionEnd == - 1 || selectionEnd <= selectionStart) ? "" : replyEditText.getText().toString().substring(selectionStart, selectionEnd);
+        String selectedText = (selectionEnd == -1 || selectionEnd <= selectionStart) ? "" : replyEditText.getText().toString().substring(selectionStart, selectionEnd);
 
         String tagOpen = isSmiley ? "[:" : String.format("[%s]", tag);
         String tagClose = isSmiley ? "]" : String.format("[/%s]", tag);
@@ -749,8 +763,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
     public void onImageInsertionRequested() {
         if (isImageSelectionViewVisible()) {
             hideImageSelectionView();
-        }
-        else {
+        } else {
             showImageSelectionView();
         }
     }
@@ -775,7 +788,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
     }
 
     private void hideImageSelectionView() {
-        if (! isImageSelectionViewVisible()) {
+        if (!isImageSelectionViewVisible()) {
             return;
         }
 
@@ -833,6 +846,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
                 .setNegativeButton(R.string.image_enter_url_cancel, (dialog, which) -> hideImageSelectionView())
                 .show();
     }
+
     /**
      * Uploads user selected image to remote hosting service
      */
@@ -873,19 +887,19 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
         ArrayAdapter<String> imageVariantsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, variantNames);
 
         new AlertDialog.Builder(this)
-            .setTitle(R.string.image_upload_select_variant)
-            .setAdapter(imageVariantsAdapter, (dialog, which) -> {
-                ImageQuality selectedImageQuality = availableVariants.get(which).getKey();
-                Timber.d("Selected '%s' image quality !", selectedImageQuality);
+                .setTitle(R.string.image_upload_select_variant)
+                .setAdapter(imageVariantsAdapter, (dialog, which) -> {
+                    ImageQuality selectedImageQuality = availableVariants.get(which).getKey();
+                    Timber.d("Selected '%s' image quality !", selectedImageQuality);
 
-                String variantUrl = hostedImage.variant(selectedImageQuality);
-                if (variantUrl == null) {
-                    variantUrl = hostedImage.url();
-                }
+                    String variantUrl = hostedImage.variant(selectedImageQuality);
+                    if (variantUrl == null) {
+                        variantUrl = hostedImage.url();
+                    }
 
-                UiUtils.insertTextFromState(replyEditText, String.format(UPLOADED_IMAGE_BB_CODE, hostedImage.url(), variantUrl), editTextState);
-            })
-            .show();
+                    UiUtils.insertTextFromState(replyEditText, String.format(UPLOADED_IMAGE_BB_CODE, hostedImage.url(), variantUrl), editTextState);
+                })
+                .show();
     }
 
     /**
@@ -1023,7 +1037,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
             viewHolder.username.setText(user.getUsername());
             viewHolder.avatar.setImageResource(R.drawable.profile_background_red);
 
-            if (! user.isGuest()) {
+            if (!user.isGuest()) {
                 loadUserAvatarInto(user, viewHolder.avatar);
             }
         }

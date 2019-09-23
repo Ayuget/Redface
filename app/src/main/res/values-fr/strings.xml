@@ -333,4 +333,5 @@
     <string name="add_smiley_as_favorite_already_added_error">Smiley déjà ajouté en favori</string>
     <string name="action_add_smiley_to_favorites">Ajouter le smiley aux favoris</string>
     <string name="action_copy_smiley_code">Copier le code du smiley</string>
+    <string name="favorite_smileys_button_description">Smileys favoris</string>
 </resources>

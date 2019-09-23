@@ -358,6 +358,7 @@
     <string name="popular_smileys_button_description">Popular smileys</string>
     <string name="recent_smileys_button_description">Recent smileys</string>
     <string name="default_smileys_button_description">Default smileys</string>
+    <string name="favorite_smileys_button_description">Favorite smileys</string>
 
     <string name="show_smileys_picker">Show smileys picker</string>
     <string name="no_smileys_found">No result</string>
