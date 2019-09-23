@@ -119,9 +119,11 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
      */
     private List<OnTopicClickedListener> onTopicClickedListeners;
 
-    @Inject DataService dataService;
+    @Inject
+    DataService dataService;
 
-    @Inject RedfaceSettings settings;
+    @Inject
+    RedfaceSettings settings;
 
     public TopicListFragment() {
         onTopicClickedListeners = new ArrayList<>();
@@ -194,6 +196,14 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
         return rootView;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        swipeRefreshLayout.setOnRefreshListener(null);
+        dataPresenter.setOnRefreshRequestedListener(null);
+    }
+
     private void refreshTopicList() {
         Timber.d("Refreshing topic list for category %s (refresh)", category);
         dataService.clearTopicListCache();
@@ -217,8 +227,7 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
         if (displayedTopics == null || displayedTopics.size() == 0 || settings.refreshTopicList()) {
             displayedTopics = new ArrayList<>();
             loadTopics();
-        }
-        else {
+        } else {
             showTopics();
         }
     }
@@ -262,6 +271,7 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             boolean first = true;
+
             @Override
             public void onItemSelected(AdapterView<?> spinner, View view, int position, long itemId) {
                 if (first) {
@@ -375,8 +385,7 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
 
                 if (displayedTopics.size() == 0) {
                     dataPresenter.showErrorView();
-                }
-                else {
+                } else {
                     SnackbarHelper.make(TopicListFragment.this, R.string.error_loading_topics).show();
                 }
 
@@ -387,6 +396,7 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
 
     /**
      * Loads a given topics page for the current category, subcategory and topic filter
+     *
      * @param page page to load (1..n)
      */
     protected void loadPage(final int page) {
@@ -425,7 +435,7 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
     }
 
     public void addOnTopicClickedListener(OnTopicClickedListener onTopicClickedListener) {
-        if (! onTopicClickedListeners.contains(onTopicClickedListener)) {
+        if (!onTopicClickedListeners.contains(onTopicClickedListener)) {
             onTopicClickedListeners.add(onTopicClickedListener);
         }
     }
@@ -433,7 +443,7 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
     @Override
     public void onTopicClicked(Topic topic) {
         // Dispatch event to all subscribers
-        for(OnTopicClickedListener listener : onTopicClickedListeners) {
+        for (OnTopicClickedListener listener : onTopicClickedListeners) {
             listener.onTopicClicked(topic);
         }
     }
@@ -441,8 +451,7 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
     protected void showTopics() {
         if (displayedTopics.size() > 0) {
             dataPresenter.showDataView();
-        }
-        else {
+        } else {
             dataPresenter.showEmptyView();
         }
 
