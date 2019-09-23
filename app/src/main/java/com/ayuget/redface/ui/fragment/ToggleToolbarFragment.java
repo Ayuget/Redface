@@ -37,7 +37,19 @@ public class ToggleToolbarFragment extends ToolbarFragment {
         drawerToggle = new ActionBarDrawerToggle(activity, drawerLayout, getToolbar(), R.string.drawer_open, R.string.drawer_close);
         drawerToggle.setDrawerIndicatorEnabled(true);
 
-        drawerLayout.setDrawerListener(drawerToggle);
+        drawerLayout.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        BaseActivity activity = (BaseActivity) getActivity();
+        DrawerLayout drawerLayout = activity.getDrawerLayout();
+
+        if (drawerLayout != null) {
+            drawerLayout.removeDrawerListener(drawerToggle);
+        }
     }
 }
