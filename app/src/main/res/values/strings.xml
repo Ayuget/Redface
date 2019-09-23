@@ -478,6 +478,9 @@
     <string name="edit_smiley_keywords_success">Smiley keywords successfully updated</string>
     <string name="edit_smiley_keywords_failure">Error when updating smiley keywords</string>
 
+    <string name="action_add_smiley_to_favorites">Add smiley to favorites</string>
+    <string name="action_copy_smiley_code">Copy smiley code to the clipboard</string>
+
     <!-- Report post -->
     <string name="action_report_post_label">Moderation request</string>
     <string name="action_report_validate">Send</string>

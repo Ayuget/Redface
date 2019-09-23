@@ -41,7 +41,9 @@ public interface MDEndpoints {
      * Topic URL
      */
     String topic(Topic topic, int page);
+
     String topic(Topic topic);
+
     String topic(Category category, int topicId);
 
     /**
@@ -95,4 +97,8 @@ public interface MDEndpoints {
     String removeFlag(Category category, Topic topic);
 
     String searchTopic();
+
+    boolean isSmiliesUrl(String imageUrl);
+
+    boolean isBuiltInSmileyUrl(String imageUrl);
 }

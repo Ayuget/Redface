@@ -23,36 +23,52 @@ import com.ayuget.redface.data.api.hfr.HFRMessageSender;
 import com.ayuget.redface.data.api.hfr.HFRUrlParser;
 import com.ayuget.redface.data.state.CategoriesStore;
 import com.ayuget.redface.network.HTTPClientProvider;
-import com.squareup.otto.Bus;
+import com.ayuget.redface.ui.misc.SmileyRegistry;
 
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import retrofit.RestAdapter;
 
 @Module(
-    complete = false,
-    library = true
+        complete = false,
+        library = true
 )
 public class ApiModule {
-    @Provides @Singleton MDService provideMDService(HFRForumService hfrForumService) {
+    @Provides
+    @Singleton
+    MDService provideMDService(HFRForumService hfrForumService) {
         return hfrForumService;
     }
 
-    @Provides @Singleton MDEndpoints provideEndpoints() {
+    @Provides
+    @Singleton
+    MDEndpoints provideEndpoints() {
         return new HFREndpoints();
     }
 
-    @Provides @Singleton MDAuthenticator provideAuthenticator(HTTPClientProvider httpClientProvider, MDEndpoints mdEndpoints) {
+    @Provides
+    @Singleton
+    MDAuthenticator provideAuthenticator(HTTPClientProvider httpClientProvider, MDEndpoints mdEndpoints) {
         return new HFRAuthenticator(httpClientProvider, mdEndpoints);
     }
 
-    @Provides @Singleton MDMessageSender provideMessageSender(HTTPClientProvider httpClientProvider, MDEndpoints mdEndpoints) {
+    @Provides
+    @Singleton
+    MDMessageSender provideMessageSender(HTTPClientProvider httpClientProvider, MDEndpoints mdEndpoints) {
         return new HFRMessageSender(httpClientProvider, mdEndpoints);
     }
 
-    @Provides @Singleton UrlParser provideUrlParser(MDEndpoints endpoints, CategoriesStore categoriesStore) {
+    @Provides
+    @Singleton
+    UrlParser provideUrlParser(MDEndpoints endpoints, CategoriesStore categoriesStore) {
         return new HFRUrlParser(endpoints, categoriesStore);
+    }
+
+
+    @Provides
+    @Singleton
+    SmileyRegistry provideSmileyRegistry() {
+        return new SmileyRegistry();
     }
 }

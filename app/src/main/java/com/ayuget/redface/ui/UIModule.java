@@ -86,44 +86,61 @@ import dagger.Provides;
                 ImageSharingActivity.class,
                 ProfileActivity.class,
         },
-        library =  true,
+        library = true,
         complete = false
 )
 public class UIModule {
-    @Provides @Singleton AvatarTemplate provideAvatarTemplate(RedfaceApp app) {
+    @Provides
+    @Singleton
+    AvatarTemplate provideAvatarTemplate(RedfaceApp app) {
         return new AvatarTemplate(app.getApplicationContext());
     }
 
-    @Provides @Singleton SmileyTemplate provideSmileyTemplate(RedfaceApp app) {
+    @Provides
+    @Singleton
+    SmileyTemplate provideSmileyTemplate(RedfaceApp app) {
         return new SmileyTemplate(app.getApplicationContext());
     }
 
-    @Provides @Singleton QuickActionsTemplate provideQuickActions(RedfaceApp app, UserManager userManager) {
+    @Provides
+    @Singleton
+    QuickActionsTemplate provideQuickActions(RedfaceApp app, UserManager userManager) {
         return new QuickActionsTemplate(app.getApplicationContext(), userManager);
     }
 
-    @Provides @Singleton PostTemplate providePostTemplate(RedfaceApp app, UserManager userManager, AvatarTemplate avatarTemplate, PostExtraDetailsTemplate extraDetailsTemplate, PostActionsTemplate postActionsTemplate, QuickActionsTemplate quickActionsTemplate, RedfaceSettings appSettings, Blacklist blacklist) {
+    @Provides
+    @Singleton
+    PostTemplate providePostTemplate(RedfaceApp app, UserManager userManager, AvatarTemplate avatarTemplate, PostExtraDetailsTemplate extraDetailsTemplate, PostActionsTemplate postActionsTemplate, QuickActionsTemplate quickActionsTemplate, RedfaceSettings appSettings, Blacklist blacklist) {
         return new PostTemplate(app.getApplicationContext(), userManager, avatarTemplate, extraDetailsTemplate, postActionsTemplate, quickActionsTemplate, appSettings, blacklist);
     }
 
-    @Provides @Singleton PostsTemplate providePostsTemplate(RedfaceApp app, PostTemplate postTemplate, ThemeManager themeManager) {
+    @Provides
+    @Singleton
+    PostsTemplate providePostsTemplate(RedfaceApp app, PostTemplate postTemplate, ThemeManager themeManager) {
         return new PostsTemplate(app.getApplicationContext(), postTemplate, themeManager);
     }
 
-    @Provides @Singleton SmileysTemplate provideSmileysTemplate(RedfaceApp app, SmileyTemplate smileyTemplate, ThemeManager themeManager) {
+    @Provides
+    @Singleton
+    SmileysTemplate provideSmileysTemplate(RedfaceApp app, SmileyTemplate smileyTemplate, ThemeManager themeManager) {
         return new SmileysTemplate(app.getApplicationContext(), smileyTemplate, themeManager);
     }
 
-    @Provides @Singleton PostActionsTemplate providePostActionsTemplate(RedfaceApp app, UserManager userManager) {
+    @Provides
+    @Singleton
+    PostActionsTemplate providePostActionsTemplate(RedfaceApp app, UserManager userManager) {
         return new PostActionsTemplate(app.getApplicationContext(), userManager);
     }
 
-    @Provides @Singleton
+    @Provides
+    @Singleton
     PostExtraDetailsTemplate providePostExtraDetailsTemplate(RedfaceApp app) {
         return new PostExtraDetailsTemplate(app.getApplicationContext());
     }
 
-    @Provides @Singleton ThemeManager provideThemeManager(RedfaceSettings settings) {
+    @Provides
+    @Singleton
+    ThemeManager provideThemeManager(RedfaceSettings settings) {
         return new ThemeManager(settings);
     }
 }

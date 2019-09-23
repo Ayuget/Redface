@@ -82,6 +82,9 @@ public class HFREndpoints implements MDEndpoints {
 
     private static final String IMAGES_PROFILE_PAGE_URL = "{base_url}/user/editprofil.php?config=hfr.inc&page=5";
 
+    private static final String BUILT_IN_SMILIES_BASE_URL = "https://forum-images.hardware.fr/icones/";
+    private static final String CUSTOM_SMILIES_BASE_URL = "https://forum-images.hardware.fr/images/perso/";
+
     /**
      * Homepage URL (with the list of categories)
      */
@@ -386,5 +389,15 @@ public class HFREndpoints implements MDEndpoints {
                 .put("base_url", FORUM_BASE_URL)
                 .format()
                 .toString();
+    }
+
+    @Override
+    public boolean isSmiliesUrl(String imageUrl) {
+        return imageUrl.startsWith(BUILT_IN_SMILIES_BASE_URL) || imageUrl.startsWith(CUSTOM_SMILIES_BASE_URL);
+    }
+
+    @Override
+    public boolean isBuiltInSmileyUrl(String imageUrl) {
+        return imageUrl.startsWith(BUILT_IN_SMILIES_BASE_URL);
     }
 }

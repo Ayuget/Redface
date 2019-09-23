@@ -51,6 +51,7 @@ import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.event.TopicPageCountUpdatedEvent;
 import com.ayuget.redface.ui.misc.PostReportStatus;
 import com.ayuget.redface.ui.misc.SmileyFavoriteActionResult;
+import com.ayuget.redface.ui.misc.SmileyRegistry;
 import com.squareup.otto.Bus;
 
 import java.util.List;
@@ -97,6 +98,9 @@ public class HFRForumService implements MDService {
 
     @Inject
     Blacklist blacklist;
+
+    @Inject
+    SmileyRegistry smileyRegistry;
 
     private String currentHashcheck;
 
@@ -170,6 +174,7 @@ public class HFRForumService implements MDService {
                     currentHashcheck = HashcheckExtractor.extract(htmlSource);
                     return htmlSource;
                 })
+                .doOnNext(pageSource -> smileyRegistry.registerSmiliesFromSource(pageSource))
                 .map(new HTMLToPostList()) // Convert HTML source to objects
                 .map(posts -> {
                     // Last post of previous page is automatically put in first position of

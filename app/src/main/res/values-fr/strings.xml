@@ -331,4 +331,6 @@
     <string name="removing_smiley_from_favorites">Suppression du smiley des favoris…</string>
     <string name="add_smiley_as_favorite_max_reached_out_error">Impossible d\'ajouter plus de 10 smileys favoris</string>
     <string name="add_smiley_as_favorite_already_added_error">Smiley déjà ajouté en favori</string>
+    <string name="action_add_smiley_to_favorites">Ajouter le smiley aux favoris</string>
+    <string name="action_copy_smiley_code">Copier le code du smiley</string>
 </resources>

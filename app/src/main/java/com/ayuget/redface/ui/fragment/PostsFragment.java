@@ -17,6 +17,7 @@
 package com.ayuget.redface.ui.fragment;
 
 import android.os.Bundle;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,6 +34,7 @@ import com.ayuget.redface.data.DataService;
 import com.ayuget.redface.data.api.MDEndpoints;
 import com.ayuget.redface.data.api.MDService;
 import com.ayuget.redface.data.api.model.Post;
+import com.ayuget.redface.data.api.model.Smiley;
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.api.model.TopicPage;
 import com.ayuget.redface.data.api.model.misc.SearchTerms;
@@ -51,7 +53,10 @@ import com.ayuget.redface.ui.event.TopicPageCountUpdatedEvent;
 import com.ayuget.redface.ui.event.UnquoteAllPostsEvent;
 import com.ayuget.redface.ui.misc.ImageMenuHandler;
 import com.ayuget.redface.ui.misc.PagePosition;
+import com.ayuget.redface.ui.misc.SmileyFavoriteActionResult;
+import com.ayuget.redface.ui.misc.SmileyRegistry;
 import com.ayuget.redface.ui.misc.SnackbarHelper;
+import com.ayuget.redface.ui.misc.UiUtils;
 import com.ayuget.redface.ui.view.TopicPageView;
 import com.ayuget.redface.util.Connectivity;
 import com.hannesdorfmann.fragmentargs.annotation.Arg;
@@ -65,6 +70,8 @@ import java.util.Locale;
 import javax.inject.Inject;
 
 import butterknife.InjectView;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 @FragmentWithArgs
@@ -119,6 +126,9 @@ public class PostsFragment extends BaseFragment {
     @Inject
     RedfaceSettings settings;
 
+    @Inject
+    SmileyRegistry smileyRegistry;
+
     /**
      * Current scroll position in the webview.
      */
@@ -136,8 +146,7 @@ public class PostsFragment extends BaseFragment {
 
         if (savedInstanceState == null) {
             currentScrollPosition = -1;
-        }
-        else {
+        } else {
             currentScrollPosition = savedInstanceState.getInt(ARG_SAVED_SCROLL_POSITION, -1);
         }
     }
@@ -157,7 +166,7 @@ public class PostsFragment extends BaseFragment {
         }
 
         // Default view is the loading indicator
-        if (! postsInCacheHint) {
+        if (!postsInCacheHint) {
             debugLog("posts probably not in cache, showing loading indicator");
             showLoadingIndicator();
         }
@@ -187,7 +196,7 @@ public class PostsFragment extends BaseFragment {
         super.onResume();
         debugLog("onResume (isInitialPage = %s)", isInitialPage);
 
-        topicPageView.setOnQuoteListener((TopicFragment)getParentFragment());
+        topicPageView.setOnQuoteListener((TopicFragment) getParentFragment());
         topicPageView.setOnPageLoadedListener(() -> {
             if (currentScrollPosition > 0) {
                 restorePageScrollPosition();
@@ -196,7 +205,7 @@ public class PostsFragment extends BaseFragment {
             updateQuotedPostsStatus();
         });
 
-        boolean isCurrentPage = ((TopicFragment)getParentFragment()).getCurrentPage() == pageNumber;
+        boolean isCurrentPage = ((TopicFragment) getParentFragment()).getCurrentPage() == pageNumber;
         if (isInitialPage || isCurrentPage) {
             boolean hasNoVisiblePosts = (displayedPosts != null && displayedPosts.size() == 0) || displayedPosts == null;
 
@@ -211,14 +220,12 @@ public class PostsFragment extends BaseFragment {
             } else {
                 updateQuotedPostsStatus();
             }
-        }
-        else {
+        } else {
             // If posts are probably in cache, it is safe to try to load them, because it definitely
             // means the page has already been loaded once, hence we won't mess up topic flags.
             if (postsInCacheHint) {
                 loadPage();
-            }
-            else {
+            } else {
                 debugLog("Posts are probably not in cache, and not initial page, waiting for user swipe");
             }
         }
@@ -310,8 +317,7 @@ public class PostsFragment extends BaseFragment {
 
             if (event.activeSearchTerm() == null) {
                 disableSearchMode();
-            }
-            else {
+            } else {
                 enableSearchMode(event.activeSearchTerm());
             }
         }
@@ -379,8 +385,7 @@ public class PostsFragment extends BaseFragment {
 
             if (event.activeSearchTerm() == null) {
                 disableSearchMode();
-            }
-            else {
+            } else {
                 enableSearchMode(event.activeSearchTerm());
             }
         }
@@ -394,8 +399,7 @@ public class PostsFragment extends BaseFragment {
             if (targetPost != null) {
                 topicPageView.setPagePosition(targetPost);
             }
-        }
-        else {
+        } else {
             Integer targetScrollY = overriddenPagePosition.targetScrollY();
             if (targetScrollY != null) {
                 topicPageView.setScrollY(targetScrollY);
@@ -438,30 +442,48 @@ public class PostsFragment extends BaseFragment {
 
     private void showLoadingIndicator() {
         debugLog("Showing loading layout");
-        if (errorView != null) { errorView.setVisibility(View.GONE); }
-        if (loadingIndicator != null) { loadingIndicator.setVisibility(View.VISIBLE); }
-        if (swipeRefreshLayout != null) { swipeRefreshLayout.setVisibility(View.GONE); }
+        if (errorView != null) {
+            errorView.setVisibility(View.GONE);
+        }
+        if (loadingIndicator != null) {
+            loadingIndicator.setVisibility(View.VISIBLE);
+        }
+        if (swipeRefreshLayout != null) {
+            swipeRefreshLayout.setVisibility(View.GONE);
+        }
     }
 
     private void showErrorView() {
         debugLog("Showing error layout");
-        if (errorView != null) { errorView.setVisibility(View.VISIBLE); }
-        if (loadingIndicator != null) { loadingIndicator.setVisibility(View.GONE); }
-        if (swipeRefreshLayout != null) { swipeRefreshLayout.setVisibility(View.GONE); }
+        if (errorView != null) {
+            errorView.setVisibility(View.VISIBLE);
+        }
+        if (loadingIndicator != null) {
+            loadingIndicator.setVisibility(View.GONE);
+        }
+        if (swipeRefreshLayout != null) {
+            swipeRefreshLayout.setVisibility(View.GONE);
+        }
     }
 
     private void showPosts() {
         debugLog("Showing posts layout");
-        if (errorView != null) { errorView.setVisibility(View.GONE); }
-        if (loadingIndicator != null) { loadingIndicator.setVisibility(View.GONE); }
-        if (swipeRefreshLayout != null) { swipeRefreshLayout.setVisibility(View.VISIBLE); }
+        if (errorView != null) {
+            errorView.setVisibility(View.GONE);
+        }
+        if (loadingIndicator != null) {
+            loadingIndicator.setVisibility(View.GONE);
+        }
+        if (swipeRefreshLayout != null) {
+            swipeRefreshLayout.setVisibility(View.VISIBLE);
+        }
     }
 
     private boolean isDownloadStrategyMatching(DownloadStrategy strategy) {
         return strategy != DownloadStrategy.NEVER &&
                 (strategy == DownloadStrategy.ALWAYS ||
-                 (strategy == DownloadStrategy.FASTCX && Connectivity.isConnectedFast(getContext())) ||
-                 (strategy == DownloadStrategy.WIFI && Connectivity.isConnectedWifi(getContext())));
+                        (strategy == DownloadStrategy.FASTCX && Connectivity.isConnectedFast(getContext())) ||
+                        (strategy == DownloadStrategy.WIFI && Connectivity.isConnectedWifi(getContext())));
     }
 
     public void loadPage() {
@@ -471,37 +493,37 @@ public class PostsFragment extends BaseFragment {
                 isDownloadStrategyMatching(settings.getAvatarsStrategy()),
                 isDownloadStrategyMatching(settings.getSmileysStrategy()),
                 new EndlessObserver<List<Post>>() {
-            @Override
-            public void onNext(List<Post> posts) {
-                postsInCacheHint = true;
-                swipeRefreshLayout.setRefreshing(false);
+                    @Override
+                    public void onNext(List<Post> posts) {
+                        postsInCacheHint = true;
+                        swipeRefreshLayout.setRefreshing(false);
 
-                displayedPosts.clear();
-                displayedPosts.addAll(posts);
+                        displayedPosts.clear();
+                        displayedPosts.addAll(posts);
 
-                debugLog("Done loading page, showing posts (currentScrollPosition=%d)", currentScrollPosition);
+                        debugLog("Done loading page, showing posts (currentScrollPosition=%d)", currentScrollPosition);
 
-                // Scroll position is saved after a refresh or a configuration change. In this case,
-                // we do not use the initial page position, since the user may have scrolled the
-                // webview. In this case, we wait for the "onPageLoaded" event and restore the saved
-                // position manually.
-                boolean positionAfterPageLoad = currentScrollPosition == -1;
+                        // Scroll position is saved after a refresh or a configuration change. In this case,
+                        // we do not use the initial page position, since the user may have scrolled the
+                        // webview. In this case, we wait for the "onPageLoaded" event and restore the saved
+                        // position manually.
+                        boolean positionAfterPageLoad = currentScrollPosition == -1;
 
-                TopicPage topicPage = TopicPage.create(topic, pageNumber, posts, pageInitialPosition, positionAfterPageLoad);
-                topicPageView.renderPage(topicPage);
+                        TopicPage topicPage = TopicPage.create(topic, pageNumber, posts, pageInitialPosition, positionAfterPageLoad);
+                        topicPageView.renderPage(topicPage);
 
-                notifyPageLoaded();
-                showPosts();
-            }
+                        notifyPageLoaded();
+                        showPosts();
+                    }
 
-            @Override
-            public void onError(Throwable throwable) {
-                swipeRefreshLayout.setRefreshing(false);
+                    @Override
+                    public void onError(Throwable throwable) {
+                        swipeRefreshLayout.setRefreshing(false);
 
-                Timber.e(throwable, "Error displaying topic '%s'", topic);
-                showErrorView();
-            }
-        }));
+                        Timber.e(throwable, "Error displaying topic '%s'", topic);
+                        showErrorView();
+                    }
+                }));
     }
 
     private void notifyPageLoaded() {
@@ -513,8 +535,7 @@ public class PostsFragment extends BaseFragment {
         long searchStartPostId = pageInitialPosition.getPostId();
         if (pageInitialPosition.isTop()) {
             searchStartPostId = displayedPosts.get(0).getId();
-        }
-        else if (pageInitialPosition.isBottom()) {
+        } else if (pageInitialPosition.isBottom()) {
             searchStartPostId = displayedPosts.get(displayedPosts.size() - 1).getId();
         }
 
@@ -523,7 +544,7 @@ public class PostsFragment extends BaseFragment {
     }
 
     private void updateQuotedPostsStatus() {
-        List<Long> quotedPosts = ((TopicFragment)getParentFragment()).getPageQuotedPosts(pageNumber);
+        List<Long> quotedPosts = ((TopicFragment) getParentFragment()).getPageQuotedPosts(pageNumber);
         debugLog("already quoted posts for page = %s", quotedPosts);
         if (quotedPosts.size() > 0) {
             topicPageView.setQuotedPosts(quotedPosts);
@@ -535,42 +556,80 @@ public class PostsFragment extends BaseFragment {
         topicPageView.setOnCreateContextMenuListener((menu, v, menuInfo) -> {
             WebView.HitTestResult result = ((WebView) v).getHitTestResult();
             if (result.getType() == WebView.HitTestResult.IMAGE_TYPE || result.getType() == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE) {
-                final String url = result.getExtra();
+                final String imageUrl = result.getExtra();
 
-                final ImageMenuHandler imageMenuHandler = new ImageMenuHandler(getActivity(), url);
-                MenuItem.OnMenuItemClickListener itemClickListener = item -> {
-                    switch (item.getItemId()) {
-                        case R.id.action_save_original_image:
-                            imageMenuHandler.saveImage(false);
-                            break;
-                        case R.id.action_save_image_as_png:
-                            imageMenuHandler.saveImage(true);
-                            break;
-                        case R.id.action_open_image:
-                            imageMenuHandler.openImage();
-                            break;
-                        case R.id.action_share_image:
-                            imageMenuHandler.shareImage();
-                            break;
-                        case R.id.action_exif_data:
-                            imageMenuHandler.openExifData();
-                            break;
-                        default:
-                            Timber.e("Unknow menu item clicked");
-                    }
+                Timber.w("Image url = " + imageUrl);
 
-                    return true;
-                };
-
-                if (! url.contains(mdEndpoints.baseurl())) {
-                    menu.setHeaderTitle(url);
-                    getActivity().getMenuInflater().inflate(R.menu.menu_save_image, menu);
-                    for (int i = 0; i < menu.size(); i++) {
-                        menu.getItem(i).setOnMenuItemClickListener(itemClickListener);
-                    }
+                if (mdEndpoints.isSmiliesUrl(imageUrl)) {
+                    createSmileyContextMenu(menu, imageUrl);
+                } else if (!imageUrl.contains(mdEndpoints.baseurl())) {
+                    createRegularImageContextMenu(menu, imageUrl);
                 }
             }
         });
+    }
+
+    private void createRegularImageContextMenu(ContextMenu contextMenu, String imageUrl) {
+        final ImageMenuHandler imageMenuHandler = new ImageMenuHandler(getActivity(), imageUrl);
+        MenuItem.OnMenuItemClickListener itemClickListener = item -> {
+            switch (item.getItemId()) {
+                case R.id.action_save_original_image:
+                    imageMenuHandler.saveImage(false);
+                    break;
+                case R.id.action_save_image_as_png:
+                    imageMenuHandler.saveImage(true);
+                    break;
+                case R.id.action_open_image:
+                    imageMenuHandler.openImage();
+                    break;
+                case R.id.action_share_image:
+                    imageMenuHandler.shareImage();
+                    break;
+                case R.id.action_exif_data:
+                    imageMenuHandler.openExifData();
+                    break;
+                default:
+                    Timber.e("Unknow menu item clicked");
+            }
+
+            return true;
+        };
+
+        contextMenu.setHeaderTitle(imageUrl);
+        getActivity().getMenuInflater().inflate(R.menu.menu_save_image, contextMenu);
+        for (int i = 0; i < contextMenu.size(); i++) {
+            contextMenu.getItem(i).setOnMenuItemClickListener(itemClickListener);
+        }
+    }
+
+    private void createSmileyContextMenu(ContextMenu contextMenu, String smileyUrl) {
+        Smiley smiley = smileyRegistry.getSmileyFromUrl(smileyUrl);
+
+        if (smiley == null) {
+            Timber.w("Unable to find smiley in registry from URL: " + smileyUrl);
+            return;
+        } else if (mdEndpoints.isBuiltInSmileyUrl(smileyUrl)) {
+            return;
+        }
+
+        MenuItem.OnMenuItemClickListener itemClickListener = item -> {
+            switch (item.getItemId()) {
+                case R.id.action_add_smiley_to_favorites:
+                    addSmileyToFavorites(smiley);
+                    break;
+                case R.id.action_copy_smiley_code:
+                    UiUtils.copyTextToClipboard(getContext(), smiley.code(), R.string.profile_personal_smilies_code_copied);
+                    break;
+            }
+
+            return true;
+        };
+
+        contextMenu.setHeaderTitle(smiley.code());
+        getActivity().getMenuInflater().inflate(R.menu.menu_smiley_actions, contextMenu);
+        for (int i = 0; i < contextMenu.size(); i++) {
+            contextMenu.getItem(i).setOnMenuItemClickListener(itemClickListener);
+        }
     }
 
     private void debugLog(String message, Object... args) {
@@ -583,5 +642,38 @@ public class PostsFragment extends BaseFragment {
 
     private boolean isPageCurrentlyActive() {
         return ((TopicFragment) getParentFragment()).getCurrentPage() == pageNumber;
+    }
+
+    private void addSmileyToFavorites(Smiley smiley) {
+        subscribe(mdService.addSmileyToFavorites(userManager.getActiveUser(), smiley).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new EndlessObserver<SmileyFavoriteActionResult>() {
+                    @Override
+                    public void onNext(SmileyFavoriteActionResult result) {
+                        showAddSmileyAsFavoriteResult(result);
+                    }
+
+                    @Override
+                    public void onError(Throwable throwable) {
+                        Timber.e(throwable, "Error when adding smiley to favorites");
+                        SnackbarHelper.makeError(getActivity(), R.string.add_smiley_as_favorite_unknown_error).show();
+                    }
+                }));
+    }
+
+    private void showAddSmileyAsFavoriteResult(SmileyFavoriteActionResult result) {
+        switch (result) {
+            case ADDED_AS_FAVORITE:
+                SnackbarHelper.make(getActivity(), R.string.add_smiley_as_favorite_success).show();
+                break;
+            case NOT_ADDED_MAX_REACHED:
+                SnackbarHelper.make(getActivity(), R.string.add_smiley_as_favorite_max_reached_out_error).show();
+                break;
+            case NOT_ADDED_ALREADY_IN_LIST:
+                SnackbarHelper.make(getActivity(), R.string.add_smiley_as_favorite_already_added_error).show();
+                break;
+            default:
+                SnackbarHelper.makeError(getActivity(), R.string.add_smiley_as_favorite_unknown_error).show();
+        }
     }
 }
