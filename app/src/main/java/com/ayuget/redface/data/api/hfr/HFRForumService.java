@@ -174,7 +174,11 @@ public class HFRForumService implements MDService {
                     currentHashcheck = HashcheckExtractor.extract(htmlSource);
                     return htmlSource;
                 })
-                .doOnNext(pageSource -> smileyRegistry.registerSmiliesFromSource(pageSource))
+                .doOnNext(pageSource -> {
+                    if (appSettings.areSmileyActionsEnabled()) {
+                        smileyRegistry.registerSmiliesFromSource(pageSource);
+                    }
+                })
                 .map(new HTMLToPostList()) // Convert HTML source to objects
                 .map(posts -> {
                     // Last post of previous page is automatically put in first position of

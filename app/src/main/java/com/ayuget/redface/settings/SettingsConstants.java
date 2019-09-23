@@ -78,4 +78,6 @@ public class SettingsConstants {
     public static final String KEY_AVATARS_STRATEGY = "avatars_strategy";
 
     public static final String KEY_SMILEYS_STRATEGY = "smileys_strategy";
+
+    public static final String KEY_ENABLE_SMILIES_ACTIONS = "enable_smilies_actions";
 }

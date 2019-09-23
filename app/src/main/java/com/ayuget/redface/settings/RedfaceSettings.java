@@ -159,4 +159,8 @@ public class RedfaceSettings {
     public boolean showBlockedUser() {
         return sharedPreferences.getBoolean(SettingsConstants.KEY_SHOW_BLOCKED_USER, true);
     }
+
+    public boolean areSmileyActionsEnabled() {
+        return sharedPreferences.getBoolean(SettingsConstants.KEY_ENABLE_SMILIES_ACTIONS, true);
+    }
 }

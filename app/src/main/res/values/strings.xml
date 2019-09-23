@@ -286,6 +286,10 @@
     <string name="pref_blacklist_show_blocked">Show blocked user</string>
     <string name="pref_blaclist_show_blocked_summary">Show the name of the blocked user instead of the message</string>
 
+    <!-- Smilies actions preferences -->
+    <string name="pref_enable_smilies_actions_title">Enable smilies actions</string>
+    <string name="pref_enable_smilies_actions_summary">Allow actions on smileys in a topic. Can slow down the display of messages a little bit.</string>
+
     <!-- About page -->
     <string name="menu_about">About</string>
 

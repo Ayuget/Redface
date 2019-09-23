@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2015 Ayuget
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -68,8 +67,13 @@
         android:summary="@string/pref_enable_internal_browser_summary"
         android:defaultValue="true" />
 
-    <PreferenceCategory
-        android:title="@string/pref_notification_settings">
+    <CheckBoxPreference
+        android:key="enable_smilies_actions"
+        android:title="@string/pref_enable_smilies_actions_title"
+        android:summary="@string/pref_enable_smilies_actions_summary"
+        android:defaultValue="true" />
+
+    <PreferenceCategory android:title="@string/pref_notification_settings">
         <CheckBoxPreference
             android:key="enable_pm_notifications"
             android:title="@string/pref_enable_pm_notifications_title"
@@ -84,8 +88,7 @@
             android:dependency="enable_pm_notifications" />
     </PreferenceCategory>
 
-    <PreferenceCategory
-        android:title="@string/pref_images_settings">
+    <PreferenceCategory android:title="@string/pref_images_settings">
         <ListPreference
             android:key="images_strategy"
             android:title="@string/pref_images_strategy"
@@ -106,8 +109,7 @@
             android:entryValues="@array/pref_smileys_strategy_values" />
     </PreferenceCategory>
 
-    <PreferenceCategory
-        android:title="@string/pref_rehost_settings">
+    <PreferenceCategory android:title="@string/pref_rehost_settings">
         <ListPreference
             android:key="rehost_default_variant"
             android:title="@string/pref_default_uploaded_image_variant"

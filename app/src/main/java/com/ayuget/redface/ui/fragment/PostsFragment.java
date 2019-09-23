@@ -560,7 +560,7 @@ public class PostsFragment extends BaseFragment {
 
                 Timber.w("Image url = " + imageUrl);
 
-                if (mdEndpoints.isSmiliesUrl(imageUrl)) {
+                if (mdEndpoints.isSmiliesUrl(imageUrl) && settings.areSmileyActionsEnabled()) {
                     createSmileyContextMenu(menu, imageUrl);
                 } else if (!imageUrl.contains(mdEndpoints.baseurl())) {
                     createRegularImageContextMenu(menu, imageUrl);

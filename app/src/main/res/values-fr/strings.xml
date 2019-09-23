@@ -334,4 +334,6 @@
     <string name="action_add_smiley_to_favorites">Ajouter le smiley aux favoris</string>
     <string name="action_copy_smiley_code">Copier le code du smiley</string>
     <string name="favorite_smileys_button_description">Smileys favoris</string>
+    <string name="pref_enable_smilies_actions_title">Activer les actions sur les smileys</string>
+    <string name="pref_enable_smilies_actions_summary">Permettre les actions sur les smileys dans un sujet. Peut un peu ralentir l\'affichage des messages.</string>
 </resources>
