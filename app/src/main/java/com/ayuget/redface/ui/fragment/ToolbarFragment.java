@@ -34,18 +34,36 @@ public class ToolbarFragment extends BaseFragment {
         toolbar = view.findViewById(R.id.toolbar_actionbar);
 
         if (toolbar != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                toolbar.setOnMenuItemClickListener(this::onOptionsItemSelected);
-                toolbar.setNavigationOnClickListener(v -> {
-                    clearInternalStack();
-                    getActivity().onBackPressed();
-                });
-            }
-
-            // Inflate a menu to be displayed in the toolbar
             onCreateOptionsMenu(toolbar);
             onToolbarInitialized(toolbar);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (toolbar != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            toolbar.setOnMenuItemClickListener(this::onOptionsItemSelected);
+            setupToolbarNavigation();
+        }
+    }
+
+    protected void setupToolbarNavigation() {
+        toolbar.setNavigationOnClickListener(v -> {
+            clearInternalStack();
+            getActivity().onBackPressed();
+        });
+    }
+
+    @Override
+    public void onPause() {
+        if (toolbar != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            toolbar.setOnMenuItemClickListener(null);
+            toolbar.setNavigationOnClickListener(null);
+        }
+
+        super.onPause();
     }
 
     public Toolbar getToolbar() {

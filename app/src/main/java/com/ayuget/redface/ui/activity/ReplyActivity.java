@@ -33,6 +33,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewPropertyAnimator;
+import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
@@ -248,6 +249,9 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
 
     private boolean replyIsSuccessful = false;
 
+    private ViewTreeObserver.OnGlobalLayoutListener replyWindowResizeListener;
+    private SearchView.OnQueryTextListener searchQueryListener;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -275,7 +279,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
         setupSmileySelector();
 
         actionsToolbar.inflateMenu(R.menu.menu_reply);
-        actionsToolbar.setOnMenuItemClickListener(this);
+
 
         setupUserSwitcher(getLayoutInflater(), userManager.getRealUsers());
 
@@ -285,7 +289,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
         // and usable.
         //
         // As any hack, this method is probably very buggy...
-        replyWindowRoot.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+        replyWindowResizeListener = () -> {
             Rect r = new Rect();
             replyWindowRoot.getWindowVisibleDisplayFrame(r);
 
@@ -303,13 +307,9 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
                     mainReplyFrame.setLayoutParams(lp);
                 }
             }
-        });
+        };
 
-        styleToolbarButtons(extrasToolbar);
-        styleToolbarMenu(actionsToolbar);
-        setupImageSelectionButtons();
-
-        smileysSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        searchQueryListener = new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
                 if (s.trim().length() > 0) {
@@ -330,7 +330,11 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
             public boolean onQueryTextChange(String s) {
                 return false;
             }
-        });
+        };
+
+        styleToolbarButtons(extrasToolbar);
+        styleToolbarMenu(actionsToolbar);
+        setupImageSelectionButtons();
 
         // Load default smileys
         loadDefaultSmileys();
@@ -355,33 +359,51 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-
-        if (!isReplySuccessful() && replyEditText != null && currentTopic != null) {
-            String actualReply = replyEditText.getText().toString();
-            boolean hasResponse = actualReply.length() > 0;
-            boolean textWasModified = (initialReplyContent == null) || !initialReplyContent.equals(actualReply);
-
-            if (hasResponse && textWasModified) {
-                responseStore.storeResponse(userManager.getActiveUser(), currentTopic, replyEditText.getText().toString());
-            } else {
-                responseStore.removeResponse(userManager.getActiveUser(), currentTopic);
-            }
-        }
-    }
-
-    @Override
     protected void onResume() {
         super.onResume();
 
-        if (currentTopic != null) {
-            String storedResponse = responseStore.getResponse(userManager.getActiveUser(), currentTopic);
+        actionsToolbar.setOnMenuItemClickListener(this);
+        smileysSearch.setOnQueryTextListener(searchQueryListener);
+        replyWindowRoot.getViewTreeObserver().addOnGlobalLayoutListener(replyWindowResizeListener);
 
-            if (storedResponse != null && replyEditText.getText().length() == 0) {
-                replyEditText.setText(storedResponse);
-                replyEditText.setSelection(replyEditText.getText().length());
-            }
+        if (currentTopic != null) {
+            restoreSavedResponseIfPresent();
+        }
+    }
+
+
+    @Override
+    protected void onPause() {
+        actionsToolbar.setOnMenuItemClickListener(null);
+        smileysSearch.setOnQueryTextListener(null);
+        replyWindowRoot.getViewTreeObserver().removeOnGlobalLayoutListener(replyWindowResizeListener);
+
+        if (!isReplySuccessful() && replyEditText != null && currentTopic != null) {
+            saveCurrentResponse();
+        }
+
+        super.onPause();
+    }
+
+    private void saveCurrentResponse() {
+        String actualReply = replyEditText.getText().toString();
+        boolean hasResponse = actualReply.length() > 0;
+        boolean textWasModified = (initialReplyContent == null) || !initialReplyContent.equals(actualReply);
+
+        if (hasResponse && textWasModified) {
+            responseStore.storeResponse(userManager.getActiveUser(), currentTopic, replyEditText.getText().toString());
+        } else {
+            responseStore.removeResponse(userManager.getActiveUser(), currentTopic);
+        }
+    }
+
+    private void restoreSavedResponseIfPresent() {
+        String storedResponse = responseStore.getResponse(userManager.getActiveUser(), currentTopic);
+        boolean isReplyTextareaEmpty = replyEditText.getText().length() == 0;
+
+        if (storedResponse != null && isReplyTextareaEmpty) {
+            replyEditText.setText(storedResponse);
+            replyEditText.setSelection(replyEditText.getText().length());
         }
     }
 

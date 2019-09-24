@@ -150,11 +150,6 @@ public class PrivateMessageListFragment extends ToggleToolbarFragment implements
         pmRecyclerView.setLayoutManager(layoutManager);
         pmRecyclerView.setAdapter(pmAdapter);
 
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            Timber.d("Refreshing private messages");
-            loadPrivateMessages(1);
-        });
-
         dataPresenter = DataPresenter.from(rootView)
                 .withDataView(R.id.pm_list_swipe_refresh_layout)
                 .withEmptyView(R.id.empty_content_layout, R.id.empty_reload_button)
@@ -162,16 +157,16 @@ public class PrivateMessageListFragment extends ToggleToolbarFragment implements
                 .withLoadingView(R.id.loading_indicator)
                 .build();
 
-        dataPresenter.setOnRefreshRequestedListener(() -> {
-            dataPresenter.showLoadingView();
-            loadPrivateMessages(1);
-        });
-
         // Style refresh indicator and empty content view
         swipeRefreshLayout.setColorSchemeResources(R.color.theme_primary, R.color.theme_primary_dark);
         UiUtils.setDrawableColor(noPrivateMessagesImage.getDrawable(), getResources().getColor(R.color.empty_view_image_color));
 
         return rootView;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -241,13 +236,30 @@ public class PrivateMessageListFragment extends ToggleToolbarFragment implements
     public void onResume() {
         super.onResume();
 
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            Timber.d("Refreshing private messages");
+            loadPrivateMessages(1);
+        });
+
+        dataPresenter.setOnRefreshRequestedListener(() -> {
+            dataPresenter.showLoadingView();
+            loadPrivateMessages(1);
+        });
+
         if (displayedPrivateMessages == null || displayedPrivateMessages.size() == 0 || settings.refreshTopicList()) {
             displayedPrivateMessages = new ArrayList<>();
             loadPrivateMessages(1);
-        }
-        else {
+        } else {
             showPrivateMessages();
         }
+    }
+
+    @Override
+    public void onPause() {
+        swipeRefreshLayout.setOnRefreshListener(null);
+        dataPresenter.setOnRefreshRequestedListener(null);
+
+        super.onPause();
     }
 
     @Override
@@ -264,6 +276,7 @@ public class PrivateMessageListFragment extends ToggleToolbarFragment implements
             onPrivateMessageClickedListener.onPrivateMessageClicked(privateMessage);
         }
     }
+
     /**
      * Initialize context menu for long clicks on topics
      */
@@ -288,14 +301,14 @@ public class PrivateMessageListFragment extends ToggleToolbarFragment implements
     private void showPrivateMessages() {
         if (displayedPrivateMessages.size() > 0) {
             dataPresenter.showDataView();
-        }
-        else {
+        } else {
             dataPresenter.showEmptyView();
         }
     }
 
     /**
      * Loads private messages
+     *
      * @param page page to load
      */
     private void loadPrivateMessages(final int page) {
@@ -314,8 +327,7 @@ public class PrivateMessageListFragment extends ToggleToolbarFragment implements
 
                 if (page == 1) {
                     pmAdapter.replaceWith(privateMessages);
-                }
-                else {
+                } else {
                     pmAdapter.extendWith(privateMessages);
                 }
 
@@ -333,8 +345,7 @@ public class PrivateMessageListFragment extends ToggleToolbarFragment implements
                 // Do not display error view because some private messages are displayed (we are "just" loading additional content)
                 if (page == 1) {
                     dataPresenter.showErrorView();
-                }
-                else {
+                } else {
                     SnackbarHelper.make(
                             PrivateMessageListFragment.this,
                             Phrase.from(getActivity(), R.string.error_loading_private_messages_page).put("page", page).format()

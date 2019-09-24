@@ -37,7 +37,8 @@ import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
 
 public class BaseFragment extends Fragment {
-    @Inject Bus bus;
+    @Inject
+    Bus bus;
 
     @Inject
     ThemeManager themeManager;
@@ -57,8 +58,8 @@ public class BaseFragment extends Fragment {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
+    public void onResume() {
+        super.onResume();
 
         // Proper RxJava subscriptions management with CompositeSubscription
         subscriptions = new CompositeSubscription();
@@ -67,11 +68,11 @@ public class BaseFragment extends Fragment {
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
-
+    public void onPause() {
         bus.unregister(this);
         subscriptions.unsubscribe();
+
+        super.onPause();
     }
 
     protected void subscribe(Subscription s) {
@@ -80,7 +81,7 @@ public class BaseFragment extends Fragment {
 
     /**
      * Inflates fragment root view and deals with view injections through ButterKnife
-     *
+     * <p>
      * Also applies app custom theme
      */
     protected ViewGroup inflateRootView(@LayoutRes int viewResId, LayoutInflater inflater, ViewGroup container) {

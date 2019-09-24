@@ -241,15 +241,6 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
         if (userManager.getActiveUser().isGuest()) {
             replyButton.hide();
-        } else {
-            replyButton.setOnClickListener((v) -> {
-                if (isInSearchMode) {
-                    searchInTopic();
-                }
-                else {
-                    replyToTopic();
-                }
-            });
         }
 
         setupQuickNavigationButtons();
@@ -270,16 +261,35 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
         }
 
         pager.addOnPageChangeListener(this);
+
+        if (settings.areNavigationButtonsEnabled()) {
+            moveToTopButton.setOnClickListener((c) -> bus.post(ScrollToPositionEvent.create(topic, currentPage, OverriddenPagePosition.toTop())));
+            moveToBottomButton.setOnClickListener((c) -> bus.post(ScrollToPositionEvent.create(topic, currentPage, OverriddenPagePosition.toBottom())));
+        }
+
+        if (!userManager.getActiveUser().isGuest()) {
+            replyButton.setOnClickListener((v) -> {
+                if (isInSearchMode) {
+                    searchInTopic();
+                } else {
+                    replyToTopic();
+                }
+            });
+        }
     }
 
     @Override
     public void onPause() {
-        super.onPause();
-
         if (isInSearchMode) {
             stopSearchMode(getToolbar(), false);
         }
+
         pager.removeOnPageChangeListener(this);
+        moveToBottomButton.setOnClickListener(null);
+        moveToTopButton.setOnClickListener(null);
+        replyButton.setOnClickListener(null);
+
+        super.onPause();
     }
 
     @Override
@@ -302,8 +312,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
         if (isInActionMode) {
             outState.putParcelable(ARG_QUOTED_MESSAGES_CACHE, quotedMessagesCache);
             outState.putBoolean(ARG_IS_IN_ACTION_MODE, isInActionMode);
-        }
-        else {
+        } else {
             quotedMessagesCache.clear();
         }
 
@@ -401,8 +410,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     private void startSearchMode(Toolbar toolbar, boolean progressively) {
         if (progressively) {
             tintToolbarProgressively(toolbar, R.attr.colorPrimary, R.attr.statusBarBackgroundColor, R.attr.replyButtonBackground, R.attr.actionModeBackground, R.attr.actionModeBackground, R.attr.replyButtonBackground);
-        }
-        else {
+        } else {
             tintToolbarImmediately(toolbar, R.attr.actionModeBackground, R.attr.actionModeBackground, R.attr.replyButtonBackground);
         }
 
@@ -421,8 +429,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
         if (progressively) {
             tintToolbarProgressively(toolbar, R.attr.actionModeBackground, R.attr.actionModeBackground, R.attr.replyButtonBackground, R.attr.colorPrimary, R.attr.statusBarBackgroundColor, R.attr.replyButtonBackground);
-        }
-        else {
+        } else {
             tintToolbarImmediately(toolbar, R.attr.colorPrimary, R.attr.statusBarBackgroundColor, R.attr.replyButtonBackground);
         }
 
@@ -492,7 +499,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     public void onToolbarInitialized(Toolbar toolbar) {
         MultiPaneActivity hostActivity = (MultiPaneActivity) getActivity();
 
-        if (! hostActivity.isTwoPaneMode()) {
+        if (!hostActivity.isTwoPaneMode()) {
             showUpButton();
         }
 
@@ -505,11 +512,10 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     public void onBatchOperation(boolean active) {
         MultiPaneActivity hostActivity = (MultiPaneActivity) getActivity();
 
-        if (! hostActivity.isTwoPaneMode()) {
+        if (!hostActivity.isTwoPaneMode()) {
             if (active) {
                 tintToolbarProgressively(getToolbar(), R.attr.colorPrimary, R.attr.statusBarBackgroundColor, R.attr.replyButtonBackground, R.attr.actionModeBackground, R.attr.actionModeBackground, R.attr.replyButtonBackground);
-            }
-            else {
+            } else {
                 tintToolbarImmediately(getToolbar(), R.attr.colorPrimary, R.attr.statusBarBackgroundColor, R.attr.replyButtonBackground);
             }
         }
@@ -555,8 +561,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
         if (currentPage == event.getPage()) {
             event.getTopicPageView().setPagePosition(event.getTargetPost());
-        }
-        else {
+        } else {
             overriddenPagePosition = OverriddenPagePosition.toPost(event.getTargetPost());
             if (pager != null) {
                 pager.setCurrentItem(event.getPage() - 1);
@@ -566,7 +571,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
     @Subscribe
     public void onPostReported(ReportPostEvent reportPostEvent) {
-        if (! reportPostEvent.getTopic().equals(topic)) {
+        if (!reportPostEvent.getTopic().equals(topic)) {
             return;
         }
 
@@ -582,16 +587,13 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
                         if (postReportStatus == PostReportStatus.JOIN_REPORT) {
                             Timber.d("Existing report for post %d", reportPostEvent.getPostId());
                             showJoinReportDialog(reportPostEvent.getPostId());
-                        }
-                        else if (postReportStatus == PostReportStatus.REPORT_IN_PROGRESS) {
+                        } else if (postReportStatus == PostReportStatus.REPORT_IN_PROGRESS) {
                             Timber.d("Report is in progress for post %d", reportPostEvent.getPostId());
                             Toast.makeText(TopicFragment.this.getActivity(), R.string.report_request_in_progress, Toast.LENGTH_SHORT).show();
-                        }
-                        else if (postReportStatus == PostReportStatus.REPORT_TREATED) {
+                        } else if (postReportStatus == PostReportStatus.REPORT_TREATED) {
                             Timber.d("Report has already been treated for post %d", reportPostEvent.getPostId());
                             Toast.makeText(TopicFragment.this.getActivity(), R.string.report_already_treated, Toast.LENGTH_SHORT).show();
-                        }
-                        else {
+                        } else {
                             Timber.d("No existing report for post %d, asking for reason", reportPostEvent.getPostId());
                             showReportPostDialog(reportPostEvent.getPostId());
                         }
@@ -637,8 +639,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
                     public void onNext(Boolean success) {
                         if (success) {
                             SnackbarHelper.make(TopicFragment.this, R.string.report_request_success).show();
-                        }
-                        else {
+                        } else {
                             Toast.makeText(TopicFragment.this.getActivity(), R.string.report_post_failed, Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -653,24 +654,22 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
     /**
      * Callback called by the activity when the back key has been pressed
+     *
      * @return true if event was consumed, false otherwise
      */
     public boolean onBackPressed() {
         if (isInSearchMode) {
             getToolbar().collapseActionView();
             return true;
-        }
-        else if (topicPositionsStack == null || topicPositionsStack.size() == 0) {
+        } else if (topicPositionsStack == null || topicPositionsStack.size() == 0) {
             return false;
-        }
-        else {
+        } else {
             TopicPosition topicPosition = topicPositionsStack.remove(topicPositionsStack.size() - 1);
 
             if (currentPage == topicPosition.page()) {
                 OverriddenPagePosition targetPagePosition = OverriddenPagePosition.toScrollY(topicPosition.pageScrollYTarget());
                 bus.post(ScrollToPositionEvent.create(topic, currentPage, targetPagePosition));
-            }
-            else {
+            } else {
                 overriddenPagePosition = OverriddenPagePosition.toScrollY(topicPosition.pageScrollYTarget());
                 pager.setCurrentItem(topicPosition.page() - 1);
             }
@@ -678,7 +677,6 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
             return true;
         }
     }
-
 
 
     /**
@@ -774,13 +772,8 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
             float buttonsAlpha = 0.30f;
             moveToTopButton.setAlpha(buttonsAlpha);
             moveToBottomButton.setAlpha(buttonsAlpha);
-
-            moveToTopButton.setOnClickListener((c) -> bus.post(ScrollToPositionEvent.create(topic, currentPage, OverriddenPagePosition.toTop())));
-            moveToBottomButton.setOnClickListener((c) -> bus.post(ScrollToPositionEvent.create(topic, currentPage, OverriddenPagePosition.toBottom())));
-        }
-        else {
-            moveToBottomButton.hide();
-            moveToTopButton.hide();
+            moveToTopButton.show();
+            moveToBottomButton.show();
         }
     }
 
@@ -791,8 +784,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
                     try {
                         int pageNumber = Integer.valueOf(goToPageEditText.getText().toString());
                         pager.setCurrentItem(pageNumber - 1);
-                    }
-                    catch (NumberFormatException e) {
+                    } catch (NumberFormatException e) {
                         Timber.e(e, "Invalid page number entered : %s", goToPageEditText.getText().toString());
                         SnackbarHelper.make(TopicFragment.this, R.string.invalid_page_number).show();
                     }
@@ -819,12 +811,10 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
                     try {
                         int pageNumber = Integer.valueOf(s.toString());
                         positiveAction.setEnabled(pageNumber >= 1 && pageNumber <= topic.pagesCount());
-                    }
-                    catch (NumberFormatException e) {
+                    } catch (NumberFormatException e) {
                         positiveAction.setEnabled(false);
                     }
-                }
-                else {
+                } else {
                     positiveAction.setEnabled(false);
                 }
             }
@@ -841,7 +831,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
     @Override
     public void onPostQuoted(final int page, final long postId) {
-        if (! isInActionMode) {
+        if (!isInActionMode) {
             startMultiQuoteAction(true);
         }
 
@@ -890,8 +880,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
                 // previously saved state.
                 if (quotedMessagesCache.size() > 1) {
                     actionMode.setTitle(Phrase.from(getContext(), R.string.quoted_messages_plural).put("count", quotedMessagesCache.size()).format());
-                }
-                else {
+                } else {
                     actionMode.setTitle(R.string.quoted_messages);
                 }
 
@@ -927,7 +916,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
     /**
      * Starts the multi-quote action mode.
-     *
+     * <p>
      * Note : quoted messages cache is not cleared, because it's impossible (without hacks) to
      * differentiate when the action mode is actually destroyed by the user (back button pressed,
      * or close button in the CAB) from configuration changes (rotation, change of context, ...)
@@ -951,8 +940,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
         if (quoteActionMode != null) {
             if (quotedMessagesCache.size() > 1) {
                 quoteActionMode.setTitle(Phrase.from(getContext(), R.string.quoted_messages_plural).put("count", quotedMessagesCache.size()).format());
-            }
-            else {
+            } else {
                 quoteActionMode.setTitle(R.string.quoted_messages);
             }
         }
@@ -968,8 +956,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
             stopMultiQuoteAction();
             replyToTopic(quotedContent);
 
-        }
-        else {
+        } else {
             quotedMessagesCache.clear();
             replyToTopic(null);
         }
@@ -1031,8 +1018,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
                 if (topicSearchResult.noMoreResult()) {
                     SnackbarHelper.make(TopicFragment.this, R.string.search_topic_ended).show();
-                }
-                else {
+                } else {
                     goToSearchResult(topicSearchResult);
                 }
             }
@@ -1051,8 +1037,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
         if (currentPage == topicSearchResult.page()) {
             bus.post(ScrollToPositionEvent.create(topic, topicSearchResult.page(), OverriddenPagePosition.toPost(targetPagePosition), getActiveSearchTerms()));
-        }
-        else {
+        } else {
             overriddenPagePosition = OverriddenPagePosition.toPost(targetPagePosition);
             if (pager != null) {
                 pager.setCurrentItem(topicSearchResult.page() - 1);
@@ -1065,8 +1050,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
             String wordSearchText = topicWordSearch.getText().toString();
             String authorSearchText = topicAuthorSearch.getText().toString();
             return SearchTerms.create(wordSearchText, authorSearchText);
-        }
-        else {
+        } else {
             return null;
         }
     }

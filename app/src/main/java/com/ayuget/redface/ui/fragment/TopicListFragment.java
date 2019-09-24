@@ -142,21 +142,15 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
         setHasOptionsMenu(true);
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        if (topicsAdapter != null) {
-            topicsAdapter.setOnTopicClickedListener(null);
-        }
-    }
-
     protected void initializeAdapters() {
         subcategoriesAdapter = new SubcategoriesAdapter(getActivity(), topicFilter);
         subcategoriesAdapter.replaceWith(category);
 
-        topicsAdapter = new TopicsAdapter(new ContextThemeWrapper(getActivity(), themeManager.getActiveThemeStyle()), themeManager, settings.isCompactModeEnabled(), settings.isEnhancedCompactModeEnabled());
-        topicsAdapter.setOnTopicClickedListener(this);
+        topicsAdapter = createTopicsAdapter();
+    }
+
+    protected TopicsAdapter createTopicsAdapter() {
+        return new TopicsAdapter(new ContextThemeWrapper(getActivity(), themeManager.getActiveThemeStyle()), themeManager, settings.isCompactModeEnabled(), settings.isEnhancedCompactModeEnabled());
     }
 
     @Override
@@ -174,9 +168,6 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
         topicsRecyclerView.setLayoutManager(layoutManager);
         topicsRecyclerView.setAdapter(topicsAdapter);
 
-        // Implement swipe to refresh
-        swipeRefreshLayout.setOnRefreshListener(this::refreshTopicList);
-
         swipeRefreshLayout.setColorSchemeResources(R.color.theme_primary, R.color.theme_primary_dark);
 
         dataPresenter = DataPresenter.from(rootView)
@@ -186,22 +177,9 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
                 .withLoadingView(R.id.loading_indicator)
                 .build();
 
-        dataPresenter.setOnRefreshRequestedListener(() -> {
-            dataPresenter.showLoadingView();
-            refreshTopicList();
-        });
-
         UiUtils.setDrawableColor(emptyTopicsImage.getDrawable(), getResources().getColor(R.color.empty_view_image_color));
 
         return rootView;
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-
-        swipeRefreshLayout.setOnRefreshListener(null);
-        dataPresenter.setOnRefreshRequestedListener(null);
     }
 
     private void refreshTopicList() {
@@ -224,12 +202,29 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
     public void onResume() {
         super.onResume();
 
+        swipeRefreshLayout.setOnRefreshListener(this::refreshTopicList);
+        dataPresenter.setOnRefreshRequestedListener(() -> {
+            dataPresenter.showLoadingView();
+            refreshTopicList();
+        });
+
         if (displayedTopics == null || displayedTopics.size() == 0 || settings.refreshTopicList()) {
             displayedTopics = new ArrayList<>();
             loadTopics();
         } else {
             showTopics();
         }
+
+        topicsAdapter.setOnTopicClickedListener(this);
+    }
+
+    @Override
+    public void onPause() {
+        swipeRefreshLayout.setOnRefreshListener(null);
+        dataPresenter.setOnRefreshRequestedListener(null);
+        topicsAdapter.setOnTopicClickedListener(null);
+
+        super.onPause();
     }
 
     @Override

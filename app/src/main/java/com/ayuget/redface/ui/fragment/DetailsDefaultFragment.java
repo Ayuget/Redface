@@ -27,7 +27,7 @@ import com.ayuget.redface.ui.misc.UiUtils;
 
 import butterknife.InjectView;
 
-public class DetailsDefaultFragment extends BaseFragment{
+public class DetailsDefaultFragment extends BaseFragment {
     @InjectView(R.id.empty_content_image)
     ImageView emptyContentImage;
 
@@ -38,12 +38,6 @@ public class DetailsDefaultFragment extends BaseFragment{
 
     public DetailsDefaultFragment() {
         // Required empty public constructor
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
     }
 
     @Override

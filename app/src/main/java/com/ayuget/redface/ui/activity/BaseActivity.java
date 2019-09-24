@@ -25,21 +25,19 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-import com.ayuget.redface.RedfaceApp;
 import com.ayuget.redface.R;
+import com.ayuget.redface.RedfaceApp;
 import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.ui.customtabs.CustomTabActivityHelper;
 import com.ayuget.redface.ui.misc.ThemeManager;
 import com.ayuget.redface.ui.misc.UiUtils;
-
-import io.fabric.sdk.android.Fabric;
-
 import com.crashlytics.android.Crashlytics;
 import com.squareup.otto.Bus;
 
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
+import io.fabric.sdk.android.Fabric;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
 
@@ -63,9 +61,13 @@ public class BaseActivity extends AppCompatActivity {
      */
     private final CustomTabActivityHelper.ConnectionCallback customTabConnect
             = new CustomTabActivityHelper.ConnectionCallback() {
-        @Override public void onCustomTabsConnected() { }
+        @Override
+        public void onCustomTabsConnected() {
+        }
 
-        @Override public void onCustomTabsDisconnected() { }
+        @Override
+        public void onCustomTabsDisconnected() {
+        }
     };
 
     @Override
@@ -85,36 +87,29 @@ public class BaseActivity extends AppCompatActivity {
         customTab = new CustomTabActivityHelper();
         customTab.setConnectionCallback(customTabConnect);
     }
-
+    
     @Override
-    protected void onStart() {
-        super.onStart();
+    protected void onResume() {
+        super.onResume();
 
         // Proper RxJava subscriptions management with CompositeSubscription
         subscriptions = new CompositeSubscription();
         bus.register(this);
         customTab.bindCustomTabsService(this);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-        bus.unregister(this);
-        customTab.unbindCustomTabsService(this);
-        subscriptions.unsubscribe();
-    }
-
-
-
-    @Override
-    protected void onResume() {
-        super.onResume();
 
         if (themeManager.isRefreshNeeded()) {
             themeManager.setRefreshNeeded(false);
             refreshTheme();
         }
+    }
+
+    @Override
+    protected void onPause() {
+        bus.unregister(this);
+        customTab.unbindCustomTabsService(this);
+        subscriptions.unsubscribe();
+
+        super.onPause();
     }
 
     @Override
@@ -135,8 +130,7 @@ public class BaseActivity extends AppCompatActivity {
 
         if (savedInstanceState == null) {
             onSetupUiState();
-        }
-        else {
+        } else {
             onRestoreUiState(savedInstanceState);
         }
     }
@@ -156,6 +150,7 @@ public class BaseActivity extends AppCompatActivity {
     /**
      * Custom callback to restore (mostly fragments) state, because onRestoreInstanceState() is called
      * too late in the activity lifecycle
+     *
      * @param savedInstanceState saved state
      */
     protected void onRestoreUiState(Bundle savedInstanceState) {
@@ -174,7 +169,7 @@ public class BaseActivity extends AppCompatActivity {
         // Status bar color is forced this way (thus overriding the statusBarColor attributes in the
         // theme) because of a weird issue of status bar color not respecting the active theme
         // on context change (orientation, ...)
-        if(android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().setStatusBarColor(UiUtils.getStatusBarBackgroundColor(this));
         }
     }
@@ -209,8 +204,7 @@ public class BaseActivity extends AppCompatActivity {
                             .setToolbarColor(UiUtils.getInternalBrowserToolbarColor(this))
                             .build(),
                     Uri.parse(url));
-        }
-        else {
+        } else {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
         }
     }

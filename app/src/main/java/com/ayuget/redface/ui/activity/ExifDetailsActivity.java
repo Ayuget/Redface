@@ -17,14 +17,13 @@
 package com.ayuget.redface.ui.activity;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import androidx.exifinterface.media.ExifInterface;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.LinearLayout;
 
 import androidx.annotation.DrawableRes;
 import androidx.appcompat.widget.Toolbar;
+import androidx.exifinterface.media.ExifInterface;
 
 import com.ayuget.redface.R;
 import com.ayuget.redface.ui.UIConstants;
@@ -34,7 +33,6 @@ import com.ayuget.redface.ui.view.ImageDetailsItemView;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import butterknife.InjectView;
@@ -62,8 +60,7 @@ public class ExifDetailsActivity extends BaseActivity {
         Intent intent = getIntent();
         if (intent == null) {
             throw new IllegalStateException("No intent passed");
-        }
-        else {
+        } else {
             String imageUrl = intent.getStringExtra(UIConstants.ARG_EXIF_IMAGE);
 
             if (imageUrl == null) {
@@ -71,12 +68,7 @@ public class ExifDetailsActivity extends BaseActivity {
             }
 
             ImageMenuHandler imageMenuHandler = new ImageMenuHandler(this, imageUrl);
-            imageMenuHandler.saveImage(false, false, false, false, new ImageMenuHandler.ImageSavedCallback() {
-                @Override
-                public void onImageSaved(File savedImage, Bitmap.CompressFormat format) {
-                    loadExifDetails(savedImage);
-                }
-            });
+            imageMenuHandler.saveImage(false, false, false, false, (savedImage, format) -> loadExifDetails(savedImage));
         }
     }
 
@@ -90,8 +82,7 @@ public class ExifDetailsActivity extends BaseActivity {
 
             addDetailIfPresent(imageFile.getName(), extractImageSize(imageFile, exifInterface), R.drawable.ic_photo_white_24dp);
             addDetailIfPresent(extractCameraModel(exifInterface), extractTechnicalDetails(exifInterface), R.drawable.ic_camera_white_24dp);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             Timber.e(e, "Unable to extract EXIF information from file '%s'", imageFile.getAbsolutePath());
         }
     }
@@ -108,8 +99,7 @@ public class ExifDetailsActivity extends BaseActivity {
                     .build();
 
             imageAttributes.addView(detailView);
-        }
-        else {
+        } else {
             Timber.d("Missing information : mainText = %s, secondaryText = %s", mainText, secondaryText);
         }
     }
@@ -145,10 +135,9 @@ public class ExifDetailsActivity extends BaseActivity {
         Timber.d("Image length = %d", imageFile.length());
 
         String imageSize;
-        if (imageFile.length() < 1024*1024) {
-            imageSize = Math.round(10.0 * imageFile.length() / 1024.0) / 10.0 +  " Ko";
-        }
-        else {
+        if (imageFile.length() < 1024 * 1024) {
+            imageSize = Math.round(10.0 * imageFile.length() / 1024.0) / 10.0 + " Ko";
+        } else {
             imageSize = Math.round(10.0 * imageFile.length() / 1024 * 1024.0) / 10.0 + " Mo";
         }
 
@@ -167,8 +156,7 @@ public class ExifDetailsActivity extends BaseActivity {
 
         if (technicalDetails.size() == 0) {
             return null;
-        }
-        else {
+        } else {
             return TextUtils.join(FIELD_SEPARATOR, technicalDetails);
         }
     }
@@ -199,8 +187,7 @@ public class ExifDetailsActivity extends BaseActivity {
 
             if (dotPos > 0) {
                 aperture = "f/" + aperture.substring(0, dotPos + 2);
-            }
-            else {
+            } else {
                 aperture = "f/" + aperture;
             }
         }
@@ -211,15 +198,22 @@ public class ExifDetailsActivity extends BaseActivity {
 
         List<String> technicalDetails = new ArrayList<>();
 
-        if (aperture != null) { technicalDetails.add(aperture); }
-        if (exposureTime != null) { technicalDetails.add(exposureTime); }
-        if (focalLength != null) { technicalDetails.add(focalLength); }
-        if (iso != null) { technicalDetails.add(iso); }
+        if (aperture != null) {
+            technicalDetails.add(aperture);
+        }
+        if (exposureTime != null) {
+            technicalDetails.add(exposureTime);
+        }
+        if (focalLength != null) {
+            technicalDetails.add(focalLength);
+        }
+        if (iso != null) {
+            technicalDetails.add(iso);
+        }
 
         if (technicalDetails.size() == 0) {
             return null;
-        }
-        else {
+        } else {
             return TextUtils.join(FIELD_SEPARATOR, technicalDetails);
         }
     }

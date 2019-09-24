@@ -173,8 +173,6 @@ public class PostsFragment extends BaseFragment {
 
         displayedPosts = new ArrayList<>();
 
-        // Implement swipe to refresh
-        swipeRefreshLayout.setOnRefreshListener(() -> refreshPosts(false));
         swipeRefreshLayout.setColorSchemeResources(R.color.theme_primary, R.color.theme_primary_dark);
 
         if (errorReloadButton != null) {
@@ -195,6 +193,8 @@ public class PostsFragment extends BaseFragment {
     public void onResume() {
         super.onResume();
         debugLog("onResume (isInitialPage = %s)", isInitialPage);
+
+        swipeRefreshLayout.setOnRefreshListener(() -> refreshPosts(false));
 
         topicPageView.setOnQuoteListener((TopicFragment) getParentFragment());
         topicPageView.setOnPageLoadedListener(() -> {
@@ -233,27 +233,14 @@ public class PostsFragment extends BaseFragment {
 
     @Override
     public void onPause() {
-        super.onPause();
-
         if (isPageCurrentlyActive()) {
             savePageScrollPosition();
         }
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
 
         if (topicPageView != null) {
             unregisterForContextMenu(topicPageView);
-
             topicPageView.setOnPageLoadedListener(null);
-
-            // Unregister parent fragment as quote listener to avoid memory leaks
             topicPageView.setOnQuoteListener(null);
-
-            topicPageView.removeAllViews();
-            topicPageView.destroy();
         }
 
         if (swipeRefreshLayout != null) {
@@ -263,6 +250,8 @@ public class PostsFragment extends BaseFragment {
         if (errorReloadButton != null) {
             errorReloadButton.setOnClickListener(null);
         }
+
+        super.onPause();
     }
 
     private void savePageScrollPosition() {

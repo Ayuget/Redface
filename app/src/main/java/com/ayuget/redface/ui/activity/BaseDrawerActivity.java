@@ -157,7 +157,6 @@ public class BaseDrawerActivity extends BaseActivity {
         updateActiveUser();
     }
 
-
     @Override
     protected void onStart() {
         super.onStart();

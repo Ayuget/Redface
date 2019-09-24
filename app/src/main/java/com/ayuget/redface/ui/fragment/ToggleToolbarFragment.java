@@ -26,6 +26,7 @@ import com.ayuget.redface.ui.activity.BaseActivity;
 
 public class ToggleToolbarFragment extends ToolbarFragment {
     protected ActionBarDrawerToggle drawerToggle;
+    private DrawerLayout drawerLayout;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -33,23 +34,20 @@ public class ToggleToolbarFragment extends ToolbarFragment {
 
         BaseActivity activity = (BaseActivity) getActivity();
 
-        DrawerLayout drawerLayout = activity.getDrawerLayout();
+        drawerLayout = activity.getDrawerLayout();
         drawerToggle = new ActionBarDrawerToggle(activity, drawerLayout, getToolbar(), R.string.drawer_open, R.string.drawer_close);
         drawerToggle.setDrawerIndicatorEnabled(true);
+    }
 
+    @Override
+    protected void setupToolbarNavigation() {
         drawerLayout.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-
-        BaseActivity activity = (BaseActivity) getActivity();
-        DrawerLayout drawerLayout = activity.getDrawerLayout();
-
-        if (drawerLayout != null) {
-            drawerLayout.removeDrawerListener(drawerToggle);
-        }
+    public void onPause() {
+        drawerLayout.removeDrawerListener(drawerToggle);
+        super.onPause();
     }
 }
