@@ -26,7 +26,6 @@ import androidx.fragment.app.FragmentTransaction;
 import com.ayuget.redface.R;
 import com.ayuget.redface.data.api.hfr.HFRUrlParser;
 import com.ayuget.redface.data.api.model.Category;
-import com.ayuget.redface.data.api.model.Profile;
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.api.model.TopicStatus;
 import com.ayuget.redface.data.api.model.User;
@@ -99,20 +98,21 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
         if (getIntent().getData() != null) {
             restoredInstanceState = true;
             parseIntentUrl(getIntent().getData().toString());
-        }
-        else if (savedInstanceState == null) {
+        } else if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
-
             if (extras != null) {
-                Category savedCategory = extras.getParcelable(UIConstants.ARG_SELECTED_CATEGORY);
-                if (savedCategory != null) {
-                    if (savedCategory.id() == categoriesStore.getMetaCategory().id()) {
-                        onMyTopicsClicked();
-                    }
-                    else {
-                        onCategoryClicked(savedCategory);
-                    }
-                }
+                parseSelectedCategoryFromBundle(extras);
+            }
+        }
+    }
+
+    private void parseSelectedCategoryFromBundle(Bundle intentBundle) {
+        Category selectedCategory = intentBundle.getParcelable(UIConstants.ARG_SELECTED_CATEGORY);
+        if (selectedCategory != null) {
+            if (selectedCategory.id() == categoriesStore.getMetaCategory().id()) {
+                onMyTopicsClicked();
+            } else {
+                onCategoryClicked(selectedCategory);
             }
         }
     }
@@ -123,6 +123,8 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
 
         if (intent.getData() != null) {
             parseIntentUrl(intent.getData().toString());
+        } else if (intent.getExtras() != null) {
+            parseSelectedCategoryFromBundle(intent.getExtras());
         }
     }
 
@@ -151,8 +153,7 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
                     .replace(R.id.container, defaultFragment, DEFAULT_FRAGMENT_TAG)
                     .replace(R.id.details_container, detailsDefaultFragment, DETAILS_DEFAULT_FRAGMENT_TAG)
                     .commit();
-        }
-        else {
+        } else {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.container, defaultFragment, DEFAULT_FRAGMENT_TAG)
                     .commit();
@@ -179,15 +180,15 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
 
         // Restore topic list fragment to the correct pane if we come from portrait mode
         if (isTwoPaneMode() && (topicListFragment != null && !topicListFragment.isVisible())) {
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.container, topicListFragment, TOPICS_FRAGMENT_TAG)
-                        .commit();
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.container, topicListFragment, TOPICS_FRAGMENT_TAG)
+                    .commit();
         }
     }
 
     @Override
-    protected void onSaveInstanceState (Bundle outState) {
+    protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
         if (currentCategory != null) {
@@ -205,8 +206,7 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
         if (currentCategory == null) {
             Timber.d("Loading default category");
             loadDefaultCategory();
-        }
-        else {
+        } else {
             Timber.d("Ignoring categories loaded event, state has been restored");
         }
     }
@@ -227,11 +227,9 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
         Category defaultCategory = categoriesStore.getCategoryById(defaultCatId);
         if (defaultCategory == null) {
             Timber.w("Category '%d' not found in cache", defaultCatId);
-        }
-        else if (defaultCategory.id() == CategoriesStore.META_CATEGORY_ID) {
+        } else if (defaultCategory.id() == CategoriesStore.META_CATEGORY_ID) {
             onMyTopicsClicked();
-        }
-        else {
+        } else {
             onCategoryClicked(defaultCategory);
         }
     }
@@ -276,8 +274,7 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
         if (topic.status() == TopicStatus.FAVORITE_NEW_CONTENT || topic.status() == TopicStatus.READ_NEW_CONTENT || topic.status() == TopicStatus.FLAGGED_NEW_CONTENT) {
             pageToLoad = topic.lastReadPage();
             pagePosition = new PagePosition(topic.lastReadPostId());
-        }
-        else {
+        } else {
             pageToLoad = 1;
             pagePosition = new PagePosition(PagePosition.TOP);
         }
@@ -342,7 +339,8 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
      * Called when an item of the topic contextual menu has been clicked. This menu is accessible via long-press
      * on a topic and gives additional actions to the user.
      */
-    @Subscribe public void onTopicContextItemSelected(TopicContextItemSelectedEvent event) {
+    @Subscribe
+    public void onTopicContextItemSelected(TopicContextItemSelectedEvent event) {
         Timber.d("Received topic contextItem event : %d for topic %s", event.getItemId(), event.getTopic().title());
 
         switch (event.getItemId()) {
@@ -441,7 +439,8 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
         }));
     }
 
-    @Subscribe public void onEditPost(final EditPostEvent event) {
+    @Subscribe
+    public void onEditPost(final EditPostEvent event) {
         subscribe(quoteHandler.load(event.getTopic(), mdService.getPostContent(userManager.getActiveUser(), event.getTopic(), event.getPostId()), new EndlessObserver<String>() {
             @Override
             public void onNext(String messageBBCode) {
@@ -450,11 +449,13 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
         }));
     }
 
-    @Subscribe public void onViewUserProfile(final ViewUserProfileEvent event) {
+    @Subscribe
+    public void onViewUserProfile(final ViewUserProfileEvent event) {
         startViewUserProfileActivity(event.getUserId());
     }
 
-    @Subscribe public void onPostActionEvent(final PostActionEvent event) {
+    @Subscribe
+    public void onPostActionEvent(final PostActionEvent event) {
         switch (event.getPostAction()) {
             case FAVORITE:
                 Timber.d("About to mark post as favorite");
@@ -488,8 +489,7 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
                     public void onNext(Boolean success) {
                         if (success) {
                             Toast.makeText(TopicsActivity.this, R.string.mark_as_favorite_success, Toast.LENGTH_SHORT).show();
-                        }
-                        else {
+                        } else {
                             Toast.makeText(TopicsActivity.this, R.string.mark_as_favorite_failed, Toast.LENGTH_SHORT).show();
                         }
                     }
