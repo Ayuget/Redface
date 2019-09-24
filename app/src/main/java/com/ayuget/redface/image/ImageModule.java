@@ -9,9 +9,10 @@ import dagger.Module;
 import dagger.Provides;
 import okhttp3.OkHttpClient;
 
-@Module(library = true)
+@Module
 public class ImageModule {
-    @Provides @Singleton
+    @Provides
+    @Singleton
     ImageHostingService provideImageHostingService() {
         return new RehostHostingService(new OkHttpClient(), new RehostResultParser());
     }

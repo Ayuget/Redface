@@ -37,7 +37,6 @@ import androidx.annotation.NonNull;
 
 import com.ayuget.redface.BuildConfig;
 import com.ayuget.redface.R;
-import com.ayuget.redface.RedfaceApp;
 import com.ayuget.redface.data.api.MDEndpoints;
 import com.ayuget.redface.data.api.UrlParser;
 import com.ayuget.redface.data.api.model.Post;
@@ -71,8 +70,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import javax.inject.Inject;
-
 import timber.log.Timber;
 
 public class TopicPageView extends NestedScrollingWebView implements View.OnTouchListener {
@@ -102,17 +99,12 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
      */
     private ArrayList<Long> quotedMessages;
 
-    @Inject PostsTemplate postsTemplate;
-
-    @Inject MDEndpoints mdEndpoints;
-
-    @Inject UrlParser urlParser;
-
-    @Inject Bus bus;
-
-    @Inject ThemeManager themeManager;
-
-    @Inject RedfaceSettings appSettings;
+    PostsTemplate postsTemplate;
+    MDEndpoints mdEndpoints;
+    UrlParser urlParser;
+    Bus bus;
+    ThemeManager themeManager;
+    RedfaceSettings appSettings;
 
     boolean wasReloaded = false;
 
@@ -121,6 +113,7 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
      */
     public interface OnQuoteListener {
         void onPostQuoted(int page, long postId);
+
         void onPostUnquoted(int page, long postId);
     }
 
@@ -138,20 +131,13 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
     public TopicPageView(Context context) {
         super(context);
         initialized = false;
-
-        setupDependencyInjection(context);
         initialize(context);
     }
 
     public TopicPageView(Context context, AttributeSet attrs) {
         super(context, attrs);
         initialized = false;
-        setupDependencyInjection(context);
         initialize(context);
-    }
-
-    private void setupDependencyInjection(Context context) {
-        RedfaceApp.get(context).inject(this);
     }
 
     // It is safe here to use Javascript interface because we control entirely what's loaded in the
@@ -160,8 +146,7 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
     private void initialize(Context context) {
         if (initialized) {
             throw new IllegalStateException("View is already initialized");
-        }
-        else {
+        } else {
             quotedMessages = new ArrayList<>();
 
             // Deal with double-tap to refresh
@@ -197,7 +182,7 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
 
             // Making the WebView debuggable is insanely useful to debug what's happening in it.
             // Any WebView rendered in the app can then be inspected via "chrome://inspect" URL
-            if(BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     WebView.setWebContentsDebuggingEnabled(true);
                 }
@@ -228,6 +213,30 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
 
             initialized = true;
         }
+    }
+
+    public void setPostsTemplate(PostsTemplate postsTemplate) {
+        this.postsTemplate = postsTemplate;
+    }
+
+    public void setMdEndpoints(MDEndpoints mdEndpoints) {
+        this.mdEndpoints = mdEndpoints;
+    }
+
+    public void setUrlParser(UrlParser urlParser) {
+        this.urlParser = urlParser;
+    }
+
+    public void setBus(Bus bus) {
+        this.bus = bus;
+    }
+
+    public void setThemeManager(ThemeManager themeManager) {
+        this.themeManager = themeManager;
+    }
+
+    public void setAppSettings(RedfaceSettings appSettings) {
+        this.appSettings = appSettings;
     }
 
     public void setOnQuoteListener(OnQuoteListener onQuoteListener) {
@@ -268,11 +277,9 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
         Timber.d("Page position = %s", pagePosition);
         if (pagePosition.isBottom()) {
             scrollToBottom();
-        }
-        else if (pagePosition.isTop()) {
+        } else if (pagePosition.isTop()) {
             scrollToTop();
-        }
-        else {
+        } else {
             scrollToPost(pagePosition.getPostId());
         }
     }
@@ -339,8 +346,7 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
                 if (onQuoteListener != null) {
                     TopicPageView.this.post(() -> onQuoteListener.onPostUnquoted(topicPage.page(), postId));
                 }
-            }
-            else {
+            } else {
                 quotedMessages.add(postId);
                 if (onQuoteListener != null) {
                     TopicPageView.this.post(() -> onQuoteListener.onPostQuoted(topicPage.page(), postId));
@@ -431,8 +437,7 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
                             }
 
                             bus.post(new GoToPostEvent(destinationPage, targetPagePosition, TopicPageView.this));
-                        }
-                        else {
+                        } else {
                             bus.post(new GoToTopicEvent(category, topicId, targetPage, pagePosition));
                         }
                     }).ifInvalid(() -> {

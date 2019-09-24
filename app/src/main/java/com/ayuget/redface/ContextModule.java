@@ -20,8 +20,6 @@ import android.accounts.AccountManager;
 import android.content.Context;
 import android.preference.PreferenceManager;
 
-import com.ayuget.redface.account.UserManager;
-import com.ayuget.redface.data.api.MDService;
 import com.ayuget.redface.data.state.CategoriesStore;
 import com.ayuget.redface.data.state.ResponseStore;
 import com.ayuget.redface.network.HTTPClientProvider;
@@ -35,48 +33,59 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 
-@Module(
-        library = true
-)
+@Module
 public class ContextModule {
-    private final Context applicationContext;
-
-    ContextModule(Context applicationContext) {
-        this.applicationContext = applicationContext;
+    @Provides
+    Context provideContext(RedfaceApp redfaceApp) {
+        return redfaceApp.getApplicationContext();
     }
 
-    @Provides @Singleton AccountManager provideAccountManager() {
+    @Provides
+    @Singleton
+    AccountManager provideAccountManager(Context applicationContext) {
         return AccountManager.get(applicationContext);
     }
 
-    @Provides @Singleton
-    RedfaceSettings provideRedfaceSettings() {
+    @Provides
+    @Singleton
+    RedfaceSettings provideRedfaceSettings(Context applicationContext) {
         return new RedfaceSettings(applicationContext, PreferenceManager.getDefaultSharedPreferences(applicationContext));
     }
 
-    @Provides @Singleton HTTPClientProvider provideHTTPClientProvider(RedfaceSettings settings, Bus bus) {
+    @Provides
+    @Singleton
+    HTTPClientProvider provideHTTPClientProvider(Context applicationContext, RedfaceSettings settings, Bus bus) {
         return new HTTPClientProvider(applicationContext, settings, bus);
     }
 
-    @Provides @Singleton Bus provideBus() {
+    @Provides
+    @Singleton
+    Bus provideBus() {
         return new Bus();
     }
 
 
-    @Provides @Singleton CategoriesStore provideCategoriesStore() {
+    @Provides
+    @Singleton
+    CategoriesStore provideCategoriesStore(Context applicationContext) {
         return new CategoriesStore(applicationContext);
     }
 
-    @Provides @Singleton ResponseStore provideResponseStore() {
+    @Provides
+    @Singleton
+    ResponseStore provideResponseStore(Context applicationContext) {
         return new ResponseStore(applicationContext);
     }
 
-    @Provides @Singleton Blacklist provideBlacklist() {
+    @Provides
+    @Singleton
+    Blacklist provideBlacklist(Context applicationContext) {
         return new Blacklist(applicationContext);
     }
 
-    @Provides @Singleton
-    DiskLruCacheFactory provideDiskLRUCacheFactory() {
+    @Provides
+    @Singleton
+    DiskLruCacheFactory provideDiskLRUCacheFactory(Context applicationContext) {
         return new DiskLruCacheFactory(applicationContext);
     }
 }

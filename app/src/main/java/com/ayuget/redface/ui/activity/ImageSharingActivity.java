@@ -11,7 +11,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.ayuget.redface.R;
-import com.ayuget.redface.RedfaceApp;
 import com.ayuget.redface.image.HostedImage;
 import com.ayuget.redface.image.ImageHostingService;
 import com.ayuget.redface.ui.misc.UiUtils;
@@ -19,6 +18,7 @@ import com.ayuget.redface.util.ImageUtils;
 
 import javax.inject.Inject;
 
+import dagger.android.AndroidInjection;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import timber.log.Timber;
@@ -31,14 +31,12 @@ public class ImageSharingActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        RedfaceApp app = RedfaceApp.get(this);
-        app.inject(this);
+        AndroidInjection.inject(this);
 
         Uri imageUri = parseUriFromIntent();
         if (imageUri == null) {
             finishWithoutAnimation();
-        }
-        else {
+        } else {
             new AlertDialog.Builder(this)
                     .setPositiveButton(R.string.image_sharing_confirmation_positive, (dialog, which) -> shareImage(imageUri))
                     .setNegativeButton(R.string.image_sharing_confirmation_negative, (dialog, which) -> finishWithoutAnimation())
@@ -49,11 +47,10 @@ public class ImageSharingActivity extends AppCompatActivity {
 
     private Uri parseUriFromIntent() {
         Intent intent = getIntent();
-        if (intent != null && intent.getAction() !=null && intent.getAction().equals(Intent.ACTION_SEND)) {
+        if (intent != null && intent.getAction() != null && intent.getAction().equals(Intent.ACTION_SEND)) {
             Bundle extras = intent.getExtras();
             return (Uri) extras.get(Intent.EXTRA_STREAM);
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -90,6 +87,7 @@ public class ImageSharingActivity extends AppCompatActivity {
         finish();
         overridePendingTransition(0, 0);
     }
+
     private boolean uriStartsWithHTTPProtocol(Uri uri) {
         return uri.toString().startsWith("http://") || uri.toString().startsWith("https://");
     }

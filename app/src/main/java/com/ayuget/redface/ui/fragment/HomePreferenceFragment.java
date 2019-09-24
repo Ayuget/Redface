@@ -20,7 +20,6 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 
-import com.ayuget.redface.RedfaceApp;
 import com.ayuget.redface.R;
 import com.ayuget.redface.settings.SettingsConstants;
 import com.ayuget.redface.ui.event.NestedPreferenceSelectedEvent;
@@ -30,6 +29,7 @@ import com.squareup.otto.Bus;
 
 import javax.inject.Inject;
 
+import dagger.android.AndroidInjection;
 import timber.log.Timber;
 
 @FragmentWithArgs
@@ -45,8 +45,7 @@ public class HomePreferenceFragment extends PreferenceFragment implements Prefer
         FragmentArgs.inject(this);
 
         // Inject dependencies
-        RedfaceApp app = RedfaceApp.get(getActivity());
-        app.inject(this);
+        AndroidInjection.inject(this);
 
         addPreferencesFromResource(R.xml.home_preferences);
 

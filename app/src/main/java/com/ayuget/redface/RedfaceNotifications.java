@@ -5,16 +5,17 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Build;
 
+import androidx.core.app.NotificationManagerCompat;
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
+
 import com.ayuget.redface.data.api.model.PrivateMessage;
 import com.ayuget.redface.privatemessages.PrivateMessagesWorker;
 import com.ayuget.redface.settings.RedfaceSettings;
 
 import java.util.concurrent.TimeUnit;
 
-import androidx.core.app.NotificationManagerCompat;
-import androidx.work.ExistingPeriodicWorkPolicy;
-import androidx.work.PeriodicWorkRequest;
-import androidx.work.WorkManager;
 import timber.log.Timber;
 
 public class RedfaceNotifications {
@@ -23,13 +24,13 @@ public class RedfaceNotifications {
     public static final String PRIVATE_MESSAGES_GROUP = "com.ayuget.redface.PRIVATE_MESSAGES";
 
     public static void setupNotifications(Context context) {
-        RedfaceSettings appSettings = ((RedfaceApp) context.getApplicationContext()).getFromGraph(RedfaceSettings.class);
+        RedfaceSettings appSettings = ((RedfaceApp) context.getApplicationContext()).getSettings();
 
         registerNotificationChannels(context);
         launchPrivateMessagesWorker(appSettings.getPrivateMessagesPollingFrequency());
     }
 
-    private static void registerNotificationChannels (Context context) {
+    private static void registerNotificationChannels(Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = context.getString(R.string.private_messages_notification_channel);
             String description = context.getString(R.string.pref_enable_pm_notifications_summary);

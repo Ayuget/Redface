@@ -21,8 +21,7 @@ import com.ayuget.redface.ContextModule;
 import dagger.Module;
 
 @Module(
-        includes = ContextModule.class,
-        library = true
+        includes = ContextModule.class
 )
 public class NetworkModule {
 }

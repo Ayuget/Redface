@@ -336,6 +336,10 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
         styleToolbarMenu(actionsToolbar);
         setupImageSelectionButtons();
 
+        smileyList.setBus(bus);
+        smileyList.setMdEndpoints(mdEndpoints);
+        smileyList.setSmileysTemplate(smileysTemplate);
+
         // Load default smileys
         loadDefaultSmileys();
 

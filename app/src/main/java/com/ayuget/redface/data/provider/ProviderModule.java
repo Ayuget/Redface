@@ -16,11 +16,8 @@
 
 package com.ayuget.redface.data.provider;
 
-import android.content.Context;
-
 import com.ayuget.redface.data.api.MDEndpoints;
 import com.ayuget.redface.data.api.model.Profile;
-import com.ayuget.redface.data.api.model.User;
 import com.ayuget.redface.network.PageFetcher;
 import com.ayuget.redface.storage.BoundedDiskCache;
 import com.ayuget.redface.storage.DiskLruCacheFactory;
@@ -31,16 +28,17 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 
-@Module(
-        complete = false,
-        library = true
-)
+@Module
 public class ProviderModule {
-    @Provides @Singleton Moshi provideMoshi() {
+    @Provides
+    @Singleton
+    Moshi provideMoshi() {
         return new Moshi.Builder().build();
     }
 
-    @Provides @Singleton ProfileProvider provideProfileProvider(DiskLruCacheFactory diskLruCacheFactory, PageFetcher pageFetcher, MDEndpoints mdEndpoints, Moshi moshi) {
+    @Provides
+    @Singleton
+    ProfileProvider provideProfileProvider(DiskLruCacheFactory diskLruCacheFactory, PageFetcher pageFetcher, MDEndpoints mdEndpoints, Moshi moshi) {
         BoundedDiskCache<Integer, Profile> profileCache = new BoundedDiskCache<>(diskLruCacheFactory.create("profile"), moshi.adapter(Profile.class));
         return new ProfileProvider(profileCache, pageFetcher, mdEndpoints);
     }

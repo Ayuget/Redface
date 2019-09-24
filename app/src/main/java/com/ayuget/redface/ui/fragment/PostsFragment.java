@@ -33,6 +33,7 @@ import com.ayuget.redface.account.UserManager;
 import com.ayuget.redface.data.DataService;
 import com.ayuget.redface.data.api.MDEndpoints;
 import com.ayuget.redface.data.api.MDService;
+import com.ayuget.redface.data.api.UrlParser;
 import com.ayuget.redface.data.api.model.Post;
 import com.ayuget.redface.data.api.model.Smiley;
 import com.ayuget.redface.data.api.model.Topic;
@@ -56,7 +57,9 @@ import com.ayuget.redface.ui.misc.PagePosition;
 import com.ayuget.redface.ui.misc.SmileyFavoriteActionResult;
 import com.ayuget.redface.ui.misc.SmileyRegistry;
 import com.ayuget.redface.ui.misc.SnackbarHelper;
+import com.ayuget.redface.ui.misc.ThemeManager;
 import com.ayuget.redface.ui.misc.UiUtils;
+import com.ayuget.redface.ui.template.PostsTemplate;
 import com.ayuget.redface.ui.view.TopicPageView;
 import com.ayuget.redface.util.Connectivity;
 import com.hannesdorfmann.fragmentargs.annotation.Arg;
@@ -129,6 +132,15 @@ public class PostsFragment extends BaseFragment {
     @Inject
     SmileyRegistry smileyRegistry;
 
+    @Inject
+    PostsTemplate postsTemplate;
+
+    @Inject
+    UrlParser urlParser;
+
+    @Inject
+    ThemeManager themeManager;
+
     /**
      * Current scroll position in the webview.
      */
@@ -158,6 +170,13 @@ public class PostsFragment extends BaseFragment {
         final View rootView = inflateRootView(R.layout.fragment_posts, inflater, container);
 
         topicPageView.setHostActivity(getActivity());
+
+        topicPageView.setAppSettings(settings);
+        topicPageView.setBus(bus);
+        topicPageView.setPostsTemplate(postsTemplate);
+        topicPageView.setMdEndpoints(mdEndpoints);
+        topicPageView.setUrlParser(urlParser);
+        topicPageView.setThemeManager(themeManager);
 
         if (savedInstanceState != null) {
             debugLog("trying to restore state");

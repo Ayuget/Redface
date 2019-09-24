@@ -40,7 +40,7 @@ import timber.log.Timber;
 
 @Singleton
 public class DataService {
-    @Inject MDService mdService;
+    private final MDService mdService;
 
     private SubscriptionHandler<User, Profile> profileSubscriptionHandler = new SubscriptionHandler<>();
     private SubscriptionHandler<User, List<Category>> categoriesSubscriptionHandler = new SubscriptionHandler<>();
@@ -51,9 +51,15 @@ public class DataService {
     private SubscriptionHandler<String, List<Smiley>> smileysSearchHandler = new SubscriptionHandler<>();
     private SubscriptionHandler<String, List<Smiley>> popularSmileysHandler = new SubscriptionHandler<>();
 
+    @Inject
+    public DataService(MDService mdService) {
+        this.mdService = mdService;
+    }
+
     @AutoValue
     public static abstract class TopicPage {
         public abstract Topic topic();
+
         public abstract int page();
 
         public static TopicPage create(Topic topic, int page) {
@@ -64,7 +70,10 @@ public class DataService {
     @AutoValue
     public static abstract class MetaPageOptions {
         public abstract User user();
-        @Nullable public abstract TopicFilter topicFilter();
+
+        @Nullable
+        public abstract TopicFilter topicFilter();
+
         public abstract boolean sortByDate();
 
         public static MetaPageOptions create(User user, @Nullable TopicFilter topicFilter, boolean sortByDate) {
@@ -75,9 +84,15 @@ public class DataService {
     @AutoValue
     public static abstract class CategoryPage {
         public abstract User user();
+
         public abstract Category category();
-        @Nullable public abstract Subcategory subcategory();
-        @Nullable public abstract TopicFilter topicFilter();
+
+        @Nullable
+        public abstract Subcategory subcategory();
+
+        @Nullable
+        public abstract TopicFilter topicFilter();
+
         public abstract int page();
 
         public static CategoryPage create(User user, Category category, @Nullable Subcategory subcategory, @Nullable TopicFilter topicFilter, int page) {

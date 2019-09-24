@@ -7,14 +7,11 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 
-@Module(
-	complete = false,
-	library = true
-)
+@Module
 public class ProfileModule {
-	@Singleton
-	@Provides
-	ProfileManager provideProfileManager(MDService mdService) {
-		return new ProfileManager(mdService);
-	}
+    @Singleton
+    @Provides
+    ProfileManager provideProfileManager(MDService mdService) {
+        return new ProfileManager(mdService);
+    }
 }

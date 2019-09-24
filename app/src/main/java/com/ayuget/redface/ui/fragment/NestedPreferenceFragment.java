@@ -27,7 +27,6 @@ import android.preference.PreferenceScreen;
 
 import androidx.appcompat.app.AlertDialog;
 
-import com.ayuget.redface.RedfaceApp;
 import com.ayuget.redface.R;
 import com.ayuget.redface.RedfaceNotifications;
 import com.ayuget.redface.account.UserManager;
@@ -50,6 +49,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import dagger.android.AndroidInjection;
 import timber.log.Timber;
 
 import static com.ayuget.redface.settings.SettingsConstants.KEY_ENABLE_PRIVATE_MESSAGES_NOTIFICATIONS;
@@ -83,8 +83,7 @@ public class NestedPreferenceFragment extends PreferenceFragment implements Shar
         FragmentArgs.inject(this);
 
         // Inject dependencies
-        RedfaceApp app = RedfaceApp.get(getActivity());
-        app.inject(this);
+        AndroidInjection.inject(this);
 
         checkPreferenceResource();
     }
@@ -163,7 +162,7 @@ public class NestedPreferenceFragment extends PreferenceFragment implements Shar
     }
 
     protected void initSummary() {
-        for(int i = 0; i < getPreferenceScreen().getPreferenceCount(); i++) {
+        for (int i = 0; i < getPreferenceScreen().getPreferenceCount(); i++) {
             initPrefsSummary(getPreferenceManager().getSharedPreferences(), getPreferenceScreen().getPreference(i));
         }
     }
@@ -187,8 +186,7 @@ public class NestedPreferenceFragment extends PreferenceFragment implements Shar
         if (pref instanceof ListPreference) {
             ListPreference listPref = (ListPreference) pref;
             listPref.setSummary(listPref.getEntry());
-        }
-        else if (pref instanceof EditTextPreference) {
+        } else if (pref instanceof EditTextPreference) {
             EditTextPreference editTextPref = (EditTextPreference) pref;
             editTextPref.setSummary(editTextPref.getText());
         }
@@ -197,8 +195,7 @@ public class NestedPreferenceFragment extends PreferenceFragment implements Shar
     /**
      * Create a preference screen based on the blacklist.
      */
-    private void createBlacklistPreferenceScreen()
-    {
+    private void createBlacklistPreferenceScreen() {
         /* erase old list in case it already exists */
         setPreferenceScreen(null);
         addPreferencesFromResource(R.xml.blacklist_preference);
@@ -237,7 +234,8 @@ public class NestedPreferenceFragment extends PreferenceFragment implements Shar
                     blacklist.unblockAuthor(author);
                     createBlacklistPreferenceScreen();
                 })
-                .setNegativeButton(getString(R.string.pref_blacklist_alertdialog_negative), (dialog, which) -> {});
+                .setNegativeButton(getString(R.string.pref_blacklist_alertdialog_negative), (dialog, which) -> {
+                });
         builder.show();
     }
 
@@ -265,8 +263,7 @@ public class NestedPreferenceFragment extends PreferenceFragment implements Shar
 
             if (arePrivateMessagesEnabled) {
                 RedfaceNotifications.updateOrLaunchPrivateMessagesWorker(appSettings.getPrivateMessagesPollingFrequency());
-            }
-            else {
+            } else {
                 RedfaceNotifications.disablePrivateMessagesNotifications();
             }
         }

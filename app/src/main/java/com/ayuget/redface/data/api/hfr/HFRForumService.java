@@ -72,35 +72,30 @@ public class HFRForumService implements MDService {
     private static final Pattern POST_REPORT_TREATED = Pattern.compile("(.*)(Votre demande de modération sur ce message a été traitée)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private static final Pattern POST_JOIN_REPORT_IN_PROGRESS = Pattern.compile("(.*)(La demande de modération sur ce message à laquelle vous vous êtes joint n'est pas encore traitée)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
-    @Inject
-    PageFetcher pageFetcher;
+    private final PageFetcher pageFetcher;
+    private final PostsTweaker postsTweaker;
+    private final MDEndpoints mdEndpoints;
+    private final HTTPClientProvider httpClientProvider;
+    private final Bus bus;
+    private final CategoriesStore categoriesStore;
+    private final MDMessageSender mdMessageSender;
+    private final RedfaceSettings appSettings;
+    private final Blacklist blacklist;
+    private final SmileyRegistry smileyRegistry;
 
     @Inject
-    PostsTweaker postsTweaker;
-
-    @Inject
-    MDEndpoints mdEndpoints;
-
-    @Inject
-    HTTPClientProvider httpClientProvider;
-
-    @Inject
-    Bus bus;
-
-    @Inject
-    CategoriesStore categoriesStore;
-
-    @Inject
-    MDMessageSender mdMessageSender;
-
-    @Inject
-    RedfaceSettings appSettings;
-
-    @Inject
-    Blacklist blacklist;
-
-    @Inject
-    SmileyRegistry smileyRegistry;
+    public HFRForumService(PageFetcher pageFetcher, PostsTweaker postsTweaker, MDEndpoints mdEndpoints, HTTPClientProvider httpClientProvider, Bus bus, CategoriesStore categoriesStore, MDMessageSender mdMessageSender, RedfaceSettings appSettings, Blacklist blacklist, SmileyRegistry smileyRegistry) {
+        this.pageFetcher = pageFetcher;
+        this.postsTweaker = postsTweaker;
+        this.mdEndpoints = mdEndpoints;
+        this.httpClientProvider = httpClientProvider;
+        this.bus = bus;
+        this.categoriesStore = categoriesStore;
+        this.mdMessageSender = mdMessageSender;
+        this.appSettings = appSettings;
+        this.blacklist = blacklist;
+        this.smileyRegistry = smileyRegistry;
+    }
 
     private String currentHashcheck;
 

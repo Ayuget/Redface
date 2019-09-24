@@ -23,9 +23,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.LayoutRes;
-import androidx.fragment.app.Fragment;
 
-import com.ayuget.redface.RedfaceApp;
 import com.ayuget.redface.ui.misc.ThemeManager;
 import com.hannesdorfmann.fragmentargs.FragmentArgs;
 import com.squareup.otto.Bus;
@@ -33,10 +31,11 @@ import com.squareup.otto.Bus;
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
+import dagger.android.support.DaggerFragment;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
 
-public class BaseFragment extends Fragment {
+public class BaseFragment extends DaggerFragment {
     @Inject
     Bus bus;
 
@@ -51,10 +50,6 @@ public class BaseFragment extends Fragment {
 
         // Read fragment args from bundle
         FragmentArgs.inject(this);
-
-        // Inject dependencies
-        RedfaceApp app = RedfaceApp.get(getActivity());
-        app.inject(this);
     }
 
     @Override
