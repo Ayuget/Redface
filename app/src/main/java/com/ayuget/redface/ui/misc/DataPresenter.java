@@ -16,12 +16,13 @@
 
 package com.ayuget.redface.ui.misc;
 
-import android.support.annotation.IdRes;
-import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.Button;
 
-import com.google.common.base.Preconditions;
+import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
+import androidx.core.util.Preconditions;
+
 
 public class DataPresenter {
     private final View errorView;
@@ -54,21 +55,15 @@ public class DataPresenter {
     }
 
     private void setupClickCallbacks() {
-        this.errorViewButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (onRefreshRequestedListener != null) {
-                    onRefreshRequestedListener.onRefresh();
-                }
+        this.errorViewButton.setOnClickListener(v -> {
+            if (onRefreshRequestedListener != null) {
+                onRefreshRequestedListener.onRefresh();
             }
         });
 
-        this.emptyViewButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (onRefreshRequestedListener != null) {
-                    onRefreshRequestedListener.onRefresh();
-                }
+        this.emptyViewButton.setOnClickListener(v -> {
+            if (onRefreshRequestedListener != null) {
+                onRefreshRequestedListener.onRefresh();
             }
         });
     }
@@ -165,7 +160,6 @@ public class DataPresenter {
         }
 
         public DataPresenter build() {
-            Preconditions.checkNotNull(rootView, "rootView == null");
             return new DataPresenter(rootView, errorViewRes, errorViewButtonRes, loadingViewRes, dataViewRes, emptyViewRes, emptyViewButtonRes);
         }
     }

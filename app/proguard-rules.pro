@@ -34,15 +34,20 @@
 # Avoid throws declarations getting removed from retrofit service definitions
 -keepattributes Exceptions
 
-# Allow obfuscation of android.support.v7.internal.view.menu.**
-# to avoid problem on Samsung 4.2.2 devices with appcompat v21
-# see https://code.google.com/p/android/issues/detail?id=78377
--keep class !android.support.v7.internal.view.menu.** { *; }
+# Retain generated class which implement Unbinder.
+-keep public class * implements butterknife.Unbinder { public <init>(**, android.view.View); }
 
-# ButterKnife uses some annotations not available on Android.
--dontwarn butterknife.internal.**
-# Prevent ButterKnife annotations from getting renamed.
--keepnames class * { @butterknife.InjectView *;}
+-keep class dagger.* { *; }
+-keep class javax.inject.* { *; }
+-keep class * extends dagger.internal.Binding
+-keep class * extends dagger.internal.ModuleAdapter
+-keep class * extends dagger.internal.StaticInjection
+
+# Prevent obfuscation of types which use ButterKnife annotations since the simple name
+# is used to reflectively look up the generated ViewBinding.
+-keep class butterknife.*
+-keepclasseswithmembernames class * { @butterknife.* <methods>; }
+-keepclasseswithmembernames class * { @butterknife.* <fields>; }
 
 # Do not touch Otto annotated classes
 -keepattributes *Annotation*
@@ -92,28 +97,15 @@
 # Marshmallow removed Notification.setLatestEventInfo()
 -dontwarn android.app.Notification
 
--keep class com.google.common.io.Resources {
-    public static <methods>;
-}
--keep class com.google.common.collect.Lists {
-    public static ** reverse(**);
-}
--keep class com.google.common.base.Charsets {
-    public static <fields>;
-}
-
--keep class com.google.common.base.Joiner {
-    public static com.google.common.base.Joiner on(java.lang.String);
-    public ** join(...);
-}
-
--keep class com.google.common.collect.MapMakerInternalMap$ReferenceEntry
--keep class com.google.common.cache.LocalCache$ReferenceEntry
-
 # http://stackoverflow.com/questions/9120338/proguard-configuration-for-guava-with-obfuscation-and-optimization
 -dontwarn javax.annotation.**
 -dontwarn javax.inject.**
 -dontwarn sun.misc.Unsafe
+-dontwarn afu.org.checkerframework.**
+-dontwarn org.checkerframework.**
+-dontwarn com.google.errorprone.**
+-dontwarn sun.misc.Unsafe
+-dontwarn java.lang.ClassValue
 
 # Guava 19.0
 -dontwarn java.lang.ClassValue
@@ -125,3 +117,16 @@
 
 # Unused classes in MaterialProgressBar
 -dontwarn me.zhanghai.android.materialprogressbar.**
+
+# Dagger
+-dontwarn dagger.internal.codegen.**
+-keepclassmembers,allowobfuscation class * {
+    @javax.inject.* *;
+    @dagger.* *;
+    <init>();
+}
+
+-keepclassmembers class rx.internal.util.unsafe.** {
+    long producerIndex;
+    long consumerIndex;
+}

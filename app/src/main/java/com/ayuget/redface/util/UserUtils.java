@@ -16,8 +16,6 @@
 
 package com.ayuget.redface.util;
 
-import com.google.common.base.Optional;
-
 import java.net.CookieStore;
 import java.net.HttpCookie;
 
@@ -25,13 +23,13 @@ public class UserUtils {
     /**
      * Ugly method to fetch a user id from stored cookies
      */
-    public static Optional<Integer> identifyUserFromCookies(CookieStore cookieStore) {
+    public static Integer identifyUserFromCookies(CookieStore cookieStore) {
         for (HttpCookie cookie : cookieStore.getCookies()) {
             if (cookie.getName().equals("md_id")) {
-                return Optional.of(Integer.valueOf(cookie.getValue()));
+                return Integer.valueOf(cookie.getValue());
             }
         }
 
-        return Optional.absent();
+        return null;
     }
 }

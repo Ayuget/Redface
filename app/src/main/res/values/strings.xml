@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2015 Ayuget
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -249,7 +248,7 @@
         <item>THUMBNAIL</item>
     </string-array>
 
-
+    <string name="private_messages_notification_channel">Private Messages</string>
     <string name="pref_notification_settings">Notifications</string>
     <string name="pref_enable_pm_notifications_title">Enable private messages notifications</string>
     <string name="pref_enable_pm_notifications_summary">Be notified when you receive a new private message</string>
@@ -286,6 +285,16 @@
     <string name="pref_blacklist_alertdialog_negative">@android:string/cancel</string>
     <string name="pref_blacklist_show_blocked">Show blocked user</string>
     <string name="pref_blaclist_show_blocked_summary">Show the name of the blocked user instead of the message</string>
+
+    <!-- Smilies actions preferences -->
+    <string name="pref_enable_smilies_actions_title">Enable smilies actions</string>
+    <string name="pref_enable_smilies_actions_summary">Allow actions on smileys in a topic. Can slow down the display of messages a little bit.</string>
+
+    <!-- Technical preferences -->
+    <string name="pref_technical_category">Technical</string>
+    <string name="pref_clear_categories_cache_label">Clear category cache</string>
+    <string name="pref_clear_categories_cache_summary">Clears the category cache for the given user</string>
+    <string name="categories_cache_cleared">Categories cache cleared, please kill and reload the app</string>
 
     <!-- About page -->
     <string name="menu_about">About</string>
@@ -328,6 +337,9 @@
     <string name="error_loading_private_messages">Error while private messages</string>
     <string name="error_loading_private_messages_page">Error while loading private messages for page {page}</string>
     <string name="action_new_private_message">New private message</string>
+    <string name="new_private_messages_count">{count} new messages</string>
+    <string name="new_private_messages_summary">New private messages</string>
+    <string name="new_private_messages_title">New private message from {username}</string>
 
     <!-- Login page -->
     <string name="prompt_username">Username</string>
@@ -356,6 +368,7 @@
     <string name="popular_smileys_button_description">Popular smileys</string>
     <string name="recent_smileys_button_description">Recent smileys</string>
     <string name="default_smileys_button_description">Default smileys</string>
+    <string name="favorite_smileys_button_description">Favorite smileys</string>
 
     <string name="show_smileys_picker">Show smileys picker</string>
     <string name="no_smileys_found">No result</string>
@@ -432,4 +445,60 @@
     <string name="search_topic_in_progress">Search in progress</string>
     <string name="search_topic_error">Search failed</string>
     <string name="search_topic_ended">No more results</string>
+
+    <!-- Profile -->
+    <string name="profile_general_info">General info</string>
+    <string name="profile_forum_info">Forum info</string>
+    <string name="profile_email_label">Email</string>
+    <string name="profile_birthday_label">Birthday</string>
+    <string name="profile_gender_label">Gender</string>
+    <string name="profile_city_label">City</string>
+    <string name="profile_employment_label">Employment</string>
+    <string name="profile_hobbies_label">Hobbies</string>
+    <string name="profile_status_label">Status</string>
+    <string name="profile_message_count_label">Messages</string>
+    <string name="profile_arrival_date_label">Date of arrival on the forum</string>
+    <string name="profile_last_message_date">Last message date</string>
+    <string name="profile_personal_quote_label">Personal quote</string>
+    <string name="profile_signature_label">Message signature</string>
+    <string name="profile_personal_smilies_label">Personal smilies</string>
+    <string name="profile_personal_smilies_mark_as_favorite">Add to favorites</string>
+    <string name="profile_personal_smilies_remove_from_favorites">Remove from favorites</string>
+    <string name="profile_personal_smilies_edit_smiley_keywords">Edit keywords</string>
+    <string name="profile_personal_smilies_copy_code">Copy code</string>
+    <string name="profile_personal_smilies_code_copied">Smiley code copied to clipboard!</string>
+    <string name="profile_favorite_smilies_label">Favorite smilies</string>
+    <string name="profile_no_favorite_smilies">No favorite smileys defined. You can favorite smileys by long-pressing them when in a topic or when searching for smileys when typing a post.</string>
+
+    <!-- Account -->
+    <string name="profile_account_connection_title">Connection to the forum</string>
+    <string name="profile_account_connection_connected">Connected</string>
+    <string name="profile_account_connection_disconnected">Disconnected</string>
+    <string name="profile_account_connection_action_connect">Connect</string>
+    <string name="profile_account_connection_action_update_credentials">Update credentials</string>
+
+    <!-- Smiley actions -->
+    <string name="adding_smiley_as_favorite">Adding smiley to favorites…</string>
+    <string name="removing_smiley_from_favorites">Removing smiley from favorites…</string>
+    <string name="add_smiley_as_favorite_success">Smiley successfully added to favorites</string>
+    <string name="add_smiley_as_favorite_unknown_error">Error when adding smiley as favorite</string>
+    <string name="add_smiley_as_favorite_max_reached_out_error">You cannot add more than 10 smilies as favorites</string>
+    <string name="add_smiley_as_favorite_already_added_error">Smiley already added as favorite!</string>
+    <string name="remove_smiley_from_favorites_success">Smiley successfully removed from favorites</string>
+    <string name="remove_smiley_from_favorites_failure">Error when removing smiley from favorites</string>
+    <string name="edit_smiley_keywords_success">Smiley keywords successfully updated</string>
+    <string name="edit_smiley_keywords_failure">Error when updating smiley keywords</string>
+
+    <string name="action_add_smiley_to_favorites">Add smiley to favorites</string>
+    <string name="action_copy_smiley_code">Copy smiley code to the clipboard</string>
+
+    <!-- Report post -->
+    <string name="action_report_post_label">Moderation request</string>
+    <string name="action_report_validate">Send</string>
+    <string name="report_post_failed">Error when reporting post to moderation</string>
+    <string name="report_join_label">An existing moderation request has already been sent. Join existing request?</string>
+    <string name="report_text_hint">Moderation request reason</string>
+    <string name="report_request_in_progress">Your moderation request has not yet been treated</string>
+    <string name="report_already_treated">Moderation request already treated</string>
+    <string name="report_request_success">Moderation request successfully sent</string>
 </resources>

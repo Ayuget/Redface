@@ -16,7 +16,7 @@
 
 package com.ayuget.redface.ui.drawer;
 
-import android.support.annotation.DrawableRes;
+import androidx.annotation.DrawableRes;
 
 import com.ayuget.redface.data.api.model.Category;
 

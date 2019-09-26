@@ -22,7 +22,6 @@ import com.ayuget.redface.data.api.model.Subcategory;
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.api.model.TopicFilter;
 import com.ayuget.redface.ui.UIConstants;
-import com.google.common.base.Optional;
 import com.squareup.phrase.Phrase;
 
 import java.io.UnsupportedEncodingException;
@@ -59,6 +58,8 @@ public class HFREndpoints implements MDEndpoints {
 
     private static final String EDIT_URL = "{base_url}/message.php?config=hfr.inc&cat={category_id}&post={topic_id}&numreponse={post_id}";
 
+    private static final String REPORT_URL = "{base_url}/user/modo.php?config=hfr.inc&cat={category_id}&post={topic_id}&numreponse={post_id}";
+
     private static final String USER_FORUM_PREFERENCES_URL = "{base_url}/user/editprofil.php?config=hfr.inc&page=3";
 
     private static final String META_PAGE_URL = "{base_url}/forum1f.php?config=hfr.inc&owntopic={filter_id}&new=0&nojs=0";
@@ -75,6 +76,15 @@ public class HFREndpoints implements MDEndpoints {
 
     private static final String SEARCH_TOPIC_URL = "{base_url}/transsearch.php";
 
+    private static final String ADD_FAVORITE_SMILEY_URL = "{base_url}/user/addperso.php?config=hfr.inc";
+
+    private static final String REMOVE_FAVORITE_SMILEY_URL = "{base_url}/user/supprperso_validation.php?config=hfr.inc&codehex=2b19933775e62eb7998d7db66177c4f8";
+
+    private static final String IMAGES_PROFILE_PAGE_URL = "{base_url}/user/editprofil.php?config=hfr.inc&page=5";
+
+    private static final String BUILT_IN_SMILIES_BASE_URL = "https://forum-images.hardware.fr/icones/";
+    private static final String CUSTOM_SMILIES_BASE_URL = "https://forum-images.hardware.fr/images/perso/";
+
     /**
      * Homepage URL (with the list of categories)
      */
@@ -83,16 +93,14 @@ public class HFREndpoints implements MDEndpoints {
         return FORUM_BASE_URL;
     }
 
-    private Optional<Integer> getFilterId(TopicFilter topicFilter) {
-        Optional<Integer> filterId = Optional.absent();
+    private Integer getFilterId(TopicFilter topicFilter) {
+        Integer filterId = null;
         if (topicFilter == TopicFilter.PARTICIPATED) {
-            filterId = Optional.of(1);
-        }
-        else if (topicFilter == TopicFilter.FAVORITE) {
-            filterId = Optional.of(3);
-        }
-        else if (topicFilter == TopicFilter.READ) {
-            filterId = Optional.of(2);
+            filterId = 1;
+        } else if (topicFilter == TopicFilter.FAVORITE) {
+            filterId = 3;
+        } else if (topicFilter == TopicFilter.READ) {
+            filterId = 2;
         }
 
         return filterId;
@@ -103,22 +111,21 @@ public class HFREndpoints implements MDEndpoints {
      */
     @Override
     public String category(Category category, int page, TopicFilter topicFilter) {
-        Optional<Integer> filterId = getFilterId(topicFilter);
+        Integer filterId = getFilterId(topicFilter);
 
-        if (topicFilter == TopicFilter.NONE || !filterId.isPresent()) {
+        if (topicFilter == TopicFilter.NONE || filterId == null) {
             return Phrase.from(CATEGORY_URL)
                     .put("base_url", FORUM_BASE_URL)
                     .put("category_slug", category.slug())
                     .put("page", page)
                     .format().toString();
-        }
-        else {
+        } else {
             return Phrase.from(FILTERED_URL)
                     .put("base_url", FORUM_BASE_URL)
                     .put("category_id", category.id())
                     .put("subcategory_id", 0)
                     .put("page", page)
-                    .put("filter_id", filterId.get())
+                    .put("filter_id", filterId)
                     .format().toString();
         }
     }
@@ -128,22 +135,21 @@ public class HFREndpoints implements MDEndpoints {
      */
     @Override
     public String subcategory(Category category, Subcategory subcategory, int page, TopicFilter topicFilter) {
-        Optional<Integer> filterId = getFilterId(topicFilter);
-        if (topicFilter == TopicFilter.NONE || !filterId.isPresent()) {
+        Integer filterId = getFilterId(topicFilter);
+        if (topicFilter == TopicFilter.NONE || filterId == null) {
             return Phrase.from(SUBCATEGORY_URL)
                     .put("base_url", FORUM_BASE_URL)
                     .put("category_slug", category.slug())
                     .put("subcategory_slug", subcategory.slug())
                     .put("page", page)
                     .format().toString();
-        }
-        else {
+        } else {
             return Phrase.from(FILTERED_URL)
                     .put("base_url", FORUM_BASE_URL)
                     .put("category_id", category.id())
                     .put("subcategory_id", 0) // FIXME fetch subcategory id properly
                     .put("page", page)
-                    .put("filter_id", filterId.get())
+                    .put("filter_id", filterId)
                     .format().toString();
         }
     }
@@ -261,6 +267,16 @@ public class HFREndpoints implements MDEndpoints {
     }
 
     @Override
+    public String reportPost(Category category, Topic topic, int postId) {
+        return Phrase.from(REPORT_URL)
+                .put("base_url", FORUM_BASE_URL)
+                .put("category_id", getTopicRealCategoryId(topic))
+                .put("topic_id", topic.id())
+                .put("post_id", postId)
+                .format().toString();
+    }
+
+    @Override
     public String userForumPreferences() {
         return Phrase.from(USER_FORUM_PREFERENCES_URL)
                 .put("base_url", USER_FORUM_PREFERENCES_URL)
@@ -274,15 +290,14 @@ public class HFREndpoints implements MDEndpoints {
             topicFilter = TopicFilter.PARTICIPATED;
         }
 
-        Optional<Integer> filterId = getFilterId(topicFilter);
+        Integer filterId = getFilterId(topicFilter);
 
-        if (filterId.isPresent()) {
+        if (filterId != null) {
             return Phrase.from(META_PAGE_URL)
                     .put("base_url", FORUM_BASE_URL)
-                    .put("filter_id", filterId.get())
+                    .put("filter_id", filterId)
                     .format().toString();
-        }
-        else {
+        } else {
             throw new IllegalStateException("Invalid topic filter for meta page");
         }
     }
@@ -303,11 +318,6 @@ public class HFREndpoints implements MDEndpoints {
                 .put("base_url", FORUM_BASE_URL)
                 .format()
                 .toString();
-    }
-
-    @Override
-    public String reportPost() {
-        return null;
     }
 
     @Override
@@ -355,5 +365,39 @@ public class HFREndpoints implements MDEndpoints {
                 .put("base_url", FORUM_BASE_URL)
                 .format()
                 .toString();
+    }
+
+    @Override
+    public String addFavoriteSmiley() {
+        return Phrase.from(ADD_FAVORITE_SMILEY_URL)
+                .put("base_url", FORUM_BASE_URL)
+                .format()
+                .toString();
+    }
+
+    @Override
+    public String removeFavoriteSmiley() {
+        return Phrase.from(REMOVE_FAVORITE_SMILEY_URL)
+                .put("base_url", FORUM_BASE_URL)
+                .format()
+                .toString();
+    }
+
+    @Override
+    public String imagesProfilePage() {
+        return Phrase.from(IMAGES_PROFILE_PAGE_URL)
+                .put("base_url", FORUM_BASE_URL)
+                .format()
+                .toString();
+    }
+
+    @Override
+    public boolean isSmiliesUrl(String imageUrl) {
+        return imageUrl.startsWith(BUILT_IN_SMILIES_BASE_URL) || imageUrl.startsWith(CUSTOM_SMILIES_BASE_URL);
+    }
+
+    @Override
+    public boolean isBuiltInSmileyUrl(String imageUrl) {
+        return imageUrl.startsWith(BUILT_IN_SMILIES_BASE_URL);
     }
 }

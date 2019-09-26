@@ -39,14 +39,20 @@ public final class PostsTweaker {
     private static final CallbackMatcher QUOTES_AND_SPOILERS = new CallbackMatcher("(?:<div class=\\\"container\\\"><table class=\\\")(oldcitation|citation|spoiler)(?:[^>]+)(?:>)(?:.*?)(?:<b class=\\\")(s1|s1Topic)(?:\\\">)(?:(?:<a href=\")([^\\\"]+)(?:\")(?:[^>]+)(?:>))?(.+?:)?", Pattern.DOTALL);
     private static final CallbackMatcher END_OF_QUOTES = new CallbackMatcher("(?:</td></tr></tbody></table>)", Pattern.DOTALL);
     private static final Pattern AUTHOR_NAME = Pattern.compile("(.+?) a écrit :");
-    @Inject MDEndpoints mdEndpoints;
 
-    @Inject Blacklist blacklist;
+    private final MDEndpoints mdEndpoints;
+    private final Blacklist blacklist;
+    private final RedfaceSettings appSettings;
 
-    @Inject RedfaceSettings appSettings;
+    @Inject
+    public PostsTweaker(MDEndpoints mdEndpoints, Blacklist blacklist, RedfaceSettings appSettings) {
+        this.mdEndpoints = mdEndpoints;
+        this.blacklist = blacklist;
+        this.appSettings = appSettings;
+    }
 
     public List<Post> tweak(List<Post> posts, boolean imagesEnabled, boolean avatarsEnabled, boolean smileysEnabled) {
-        for(final Post post : posts) {
+        for (final Post post : posts) {
             String htmlContent = post.getHtmlContent();
 
             // Adds callbacks to directly handle all links (internal and external) within the app.
@@ -72,7 +78,7 @@ public final class PostsTweaker {
                     user = matchResult.group(4);
                 }
 
-                String output = "<div class=\"" + quote + "\"" + onClickEvent + "><b class=\"" + (isQuote ? "s1": "s1Topic") + "\">";
+                String output = "<div class=\"" + quote + "\"" + onClickEvent + "><b class=\"" + (isQuote ? "s1" : "s1Topic") + "\">";
 
                 if (isQuote) {
                     output += "<a onclick=\"handleUrl(event, " + post.getId() + ", '" + mdEndpoints.baseurl() + matchResult.group(3) + "')\">";
@@ -102,8 +108,7 @@ public final class PostsTweaker {
                     // todo handle smileys caching
                     String smileyUrl = matchResult.group(1);
                     return matchResult.group();
-                }
-                else {
+                } else {
                     return matchResult.group(2);
                 }
             });

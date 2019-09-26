@@ -25,11 +25,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.view.MotionEventCompat;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -38,6 +33,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewPropertyAnimator;
+import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
@@ -54,6 +50,12 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.MotionEventCompat;
 
 import com.ayuget.redface.R;
 import com.ayuget.redface.account.UserManager;
@@ -82,20 +84,21 @@ import com.ayuget.redface.ui.template.SmileysTemplate;
 import com.ayuget.redface.ui.view.SmileySelectorView;
 import com.ayuget.redface.util.ImageUtils;
 import com.ayuget.redface.util.RetainedFragmentHelper;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
+import com.bumptech.glide.Glide;
+import com.crashlytics.android.Crashlytics;
 import com.squareup.otto.Subscribe;
-import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
 
-import butterknife.InjectView;
+import butterknife.BindView;
 import butterknife.OnClick;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx_activity_result.RxActivityResult;
 import timber.log.Timber;
 
@@ -142,76 +145,76 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
     /**
      * Main reply window (with user picker, toolbars, ...)
      */
-    @InjectView(R.id.main_reply_frame)
+    @BindView(R.id.main_reply_frame)
     RelativeLayout mainReplyFrame;
 
     /**
      * Primary dialog toolbar, with user selection and send button
      */
-    @InjectView(R.id.toolbar_reply_actions)
+    @BindView(R.id.toolbar_reply_actions)
     Toolbar actionsToolbar;
 
     /**
      * Secondary action toolbar (bold, italic, links, ...)
      */
-    @InjectView(R.id.toolbar_reply_extra)
+    @BindView(R.id.toolbar_reply_extra)
     Toolbar extrasToolbar;
 
     /**
      * Finger draggable view to select smileys
      */
-    @InjectView(R.id.smiley_selector_view)
+    @BindView(R.id.smiley_selector_view)
     View smileysSelector;
 
     /**
      * Toolbar to switch between popular / recent / favorite smileys
      */
-    @InjectView(R.id.smileys_toolbar)
+    @BindView(R.id.smileys_toolbar)
     Toolbar smileysToolbar;
 
     /**
      * Reply text box
      */
-    @InjectView(R.id.reply_text)
+    @BindView(R.id.reply_text)
     EditText replyEditText;
 
     /**
      * Smiley list loading indicator
      */
-    @InjectView(R.id.loading_indicator)
+    @BindView(R.id.loading_indicator)
     View smileysLoadingIndicator;
 
     /**
      * Smiley list
      */
-    @InjectView(R.id.smileyList)
+    @BindView(R.id.smileyList)
     SmileySelectorView smileyList;
 
     /**
      * Root ViewGroup for the reply window
      */
-    @InjectView(R.id.reply_window_root)
+    @BindView(R.id.reply_window_root)
     FrameLayout replyWindowRoot;
 
     /**
      * Smileys search box
      */
-    @InjectView(R.id.smileys_search)
+    @BindView(R.id.smileys_search)
     SearchView smileysSearch;
 
-    @InjectView(R.id.sending_message_spinner)
+    @BindView(R.id.sending_message_spinner)
     View sendingMessageSpinner;
 
-    @InjectView(R.id.image_selection_view)
+    @BindView(R.id.image_selection_view)
     View imageSelectionView;
 
-    @InjectView(R.id.add_image_from_gallery)
+    @BindView(R.id.add_image_from_gallery)
     Button addImageFromGalleryButton;
 
-    @InjectView(R.id.add_image_from_url)
+    @BindView(R.id.add_image_from_url)
     Button addImageFromUrlButton;
 
-    @InjectView(R.id.image_upload_progress_bar)
+    @BindView(R.id.image_upload_progress_bar)
     ProgressBar imageUploadProgressBar;
 
     @Inject
@@ -246,6 +249,9 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
 
     private boolean replyIsSuccessful = false;
 
+    private ViewTreeObserver.OnGlobalLayoutListener replyWindowResizeListener;
+    private SearchView.OnQueryTextListener searchQueryListener;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -273,7 +279,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
         setupSmileySelector();
 
         actionsToolbar.inflateMenu(R.menu.menu_reply);
-        actionsToolbar.setOnMenuItemClickListener(this);
+
 
         setupUserSwitcher(getLayoutInflater(), userManager.getRealUsers());
 
@@ -283,7 +289,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
         // and usable.
         //
         // As any hack, this method is probably very buggy...
-        replyWindowRoot.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+        replyWindowResizeListener = () -> {
             Rect r = new Rect();
             replyWindowRoot.getWindowVisibleDisplayFrame(r);
 
@@ -301,13 +307,9 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
                     mainReplyFrame.setLayoutParams(lp);
                 }
             }
-        });
+        };
 
-        styleToolbarButtons(extrasToolbar);
-        styleToolbarMenu(actionsToolbar);
-        setupImageSelectionButtons();
-
-        smileysSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        searchQueryListener = new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
                 if (s.trim().length() > 0) {
@@ -328,10 +330,20 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
             public boolean onQueryTextChange(String s) {
                 return false;
             }
-        });
+        };
+
+        styleToolbarButtons(extrasToolbar);
+        styleToolbarMenu(actionsToolbar);
+        setupImageSelectionButtons();
+
+        smileyList.setBus(bus);
+        smileyList.setMdEndpoints(mdEndpoints);
+        smileyList.setSmileysTemplate(smileysTemplate);
 
         // Load default smileys
         loadDefaultSmileys();
+
+        replyEditText.requestFocus();
     }
 
     protected int getLayoutResource() {
@@ -351,34 +363,51 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-
-        if (!isReplySuccessful() && replyEditText != null && currentTopic != null) {
-            String actualReply = replyEditText.getText().toString();
-            boolean hasResponse = actualReply.length() > 0;
-            boolean textWasModified = (initialReplyContent == null) || !initialReplyContent.equals(actualReply);
-
-            if(hasResponse && textWasModified) {
-                responseStore.storeResponse(userManager.getActiveUser(), currentTopic, replyEditText.getText().toString());
-            }
-            else {
-                responseStore.removeResponse(userManager.getActiveUser(), currentTopic);
-            }
-        }
-    }
-
-    @Override
     protected void onResume() {
         super.onResume();
 
-        if (currentTopic != null) {
-            String storedResponse = responseStore.getResponse(userManager.getActiveUser(), currentTopic);
+        actionsToolbar.setOnMenuItemClickListener(this);
+        smileysSearch.setOnQueryTextListener(searchQueryListener);
+        replyWindowRoot.getViewTreeObserver().addOnGlobalLayoutListener(replyWindowResizeListener);
 
-            if (storedResponse != null && replyEditText.getText().length() == 0) {
-                replyEditText.setText(storedResponse);
-                replyEditText.setSelection(replyEditText.getText().length());
-            }
+        if (currentTopic != null) {
+            restoreSavedResponseIfPresent();
+        }
+    }
+
+
+    @Override
+    protected void onPause() {
+        actionsToolbar.setOnMenuItemClickListener(null);
+        smileysSearch.setOnQueryTextListener(null);
+        replyWindowRoot.getViewTreeObserver().removeOnGlobalLayoutListener(replyWindowResizeListener);
+
+        if (!isReplySuccessful() && replyEditText != null && currentTopic != null) {
+            saveCurrentResponse();
+        }
+
+        super.onPause();
+    }
+
+    private void saveCurrentResponse() {
+        String actualReply = replyEditText.getText().toString();
+        boolean hasResponse = actualReply.length() > 0;
+        boolean textWasModified = (initialReplyContent == null) || !initialReplyContent.equals(actualReply);
+
+        if (hasResponse && textWasModified) {
+            responseStore.storeResponse(userManager.getActiveUser(), currentTopic, replyEditText.getText().toString());
+        } else {
+            responseStore.removeResponse(userManager.getActiveUser(), currentTopic);
+        }
+    }
+
+    private void restoreSavedResponseIfPresent() {
+        String storedResponse = responseStore.getResponse(userManager.getActiveUser(), currentTopic);
+        boolean isReplyTextareaEmpty = replyEditText.getText().length() == 0;
+
+        if (storedResponse != null && isReplyTextareaEmpty) {
+            replyEditText.setText(storedResponse);
+            replyEditText.setSelection(replyEditText.getText().length());
         }
     }
 
@@ -386,8 +415,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
         Intent intent;
         if (Build.VERSION.SDK_INT < KITKAT) {
             intent = new Intent(Intent.ACTION_GET_CONTENT);
-        }
-        else {
+        } else {
             intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
             intent.addCategory(Intent.CATEGORY_OPENABLE);
         }
@@ -423,6 +451,25 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
     @OnClick(R.id.default_smileys)
     protected void loadDefaultSmileys() {
         smileyList.setSmileys(Smileys.defaultSmileys());
+    }
+
+    /**
+     * Loads favorite smileys in the smiley selector
+     */
+    @OnClick(R.id.favorite_smileys_tab)
+    protected void loadFavoriteSmileys() {
+        subscribe(mdService.getFavoriteSmileys(userManager.getActiveUser())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new EndlessObserver<List<Smiley>>() {
+                    @Override
+                    public void onNext(List<Smiley> favoriteSmilies) {
+                        ArrayList<Smiley> smiliesList = new ArrayList<>(userManager.getActiveUser().getProfile().personalSmilies());
+                        smiliesList.addAll(favoriteSmilies);
+
+                        smileyList.setSmileys(smiliesList);
+                    }
+                }));
     }
 
     protected void showSendingMessageSpinner() {
@@ -480,7 +527,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
                             // Show or hide the smileys toolbar based on current position
                             if (isUpwardMovement && smileysSelector.getY() < replyWindowMaxHeight) {
                                 showSmileysToolbar();
-                            } else if (dy > REPLACE_SMILEY_SELECTOR_THRESHOLD){
+                            } else if (dy > REPLACE_SMILEY_SELECTOR_THRESHOLD) {
                                 hideSmileysToolbar();
                             }
                         }
@@ -501,14 +548,13 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
                         // Moving too far, let's avoid this
                         yTranslation = -(smileysSelector.getY() - toolbarHeight);
                     } else {
-                        if(isUpwardMovement || (!isUpwardMovement && lastDy > REPLACE_SMILEY_SELECTOR_THRESHOLD)) {
+                        if (isUpwardMovement || (!isUpwardMovement && lastDy > REPLACE_SMILEY_SELECTOR_THRESHOLD)) {
                             // If the upward movement is below the animation threshold, or if the
                             // movement is downwards & sufficient, replace the smiley selector at
                             // its original position (bottom)
                             yTranslation = smileySelectorTopOffset - smileysSelector.getY();
                             hideSmileysToolbar();
-                        }
-                        else {
+                        } else {
                             // Moved downwards, but not enough, replace smiley selector at the top
                             yTranslation = -(smileysSelector.getY() - toolbarHeight);
                             showSmileysToolbar();
@@ -536,7 +582,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
      * Hides the soft keyboard
      */
     public void hideSoftKeyboard() {
-        if(getCurrentFocus()!=null) {
+        if (getCurrentFocus() != null) {
             InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
             inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
         }
@@ -559,14 +605,14 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
     /**
      * Smoothly hides the smileys toolbar
      */
-    protected void  hideSmileysToolbar() {
+    protected void hideSmileysToolbar() {
         smileysToolbar.animate().translationY(-toolbarHeight).setInterpolator(new AccelerateDecelerateInterpolator()).start();
     }
 
     /**
      * Smoothly shows the smiley toolbar
      */
-    protected void  showSmileysToolbar() {
+    protected void showSmileysToolbar() {
         smileysToolbar.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
     }
 
@@ -582,12 +628,10 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
     protected void setupUserSwitcher(LayoutInflater inflater, List<User> users) {
         if (users.size() == 0) {
             Timber.e("Empty user list");
-        }
-        else if (users.size() == 1 || !canSwitchUser()) {
+        } else if (users.size() == 1 || !canSwitchUser()) {
             View userView = setupUserView(inflater, canSwitchUser() ? users.get(0) : userManager.getActiveUser());
             actionsToolbar.addView(userView);
-        }
-        else {
+        } else {
             // Setup spinner for user selection
             Timber.d("Initializing spinner for '%d' users", users.size());
             View spinnerContainer = inflater.inflate(R.layout.reply_user_spinner, actionsToolbar, false);
@@ -617,8 +661,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
     public void onBackPressed() {
         if (isImageSelectionViewVisible()) {
             hideImageSelectionView();
-        }
-        else {
+        } else {
             super.onBackPressed();
         }
 
@@ -632,7 +675,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
         avatarView.setImageResource(R.drawable.profile_background_red);
         usernameView.setText(user.getUsername());
 
-        if (! user.isGuest()) {
+        if (!user.isGuest()) {
             loadUserAvatarInto(user, avatarView);
         }
 
@@ -653,9 +696,9 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
     }
 
     protected void loadUserAvatarInto(User user, ImageView imageView) {
-        if (user.hasAvatar() && user.getProfile() != null && user.getProfile().getAvatarUrl() != null) {
-            Picasso.with(this)
-                    .load(user.getProfile().getAvatarUrl())
+        if (user.hasAvatar() && user.getProfile() != null && user.getProfile().avatarUrl() != null) {
+            Glide.with(this)
+                    .load(user.getProfile().avatarUrl())
                     .into(imageView);
         }
     }
@@ -673,7 +716,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
         int selectionStart = replyEditText.getSelectionStart();
         int selectionEnd = replyEditText.getSelectionEnd();
 
-        String selectedText =  (selectionEnd == - 1 || selectionEnd <= selectionStart) ? "" : replyEditText.getText().toString().substring(selectionStart, selectionEnd);
+        String selectedText = (selectionEnd == -1 || selectionEnd <= selectionStart) ? "" : replyEditText.getText().toString().substring(selectionStart, selectionEnd);
 
         String tagOpen = isSmiley ? "[:" : String.format("[%s]", tag);
         String tagClose = isSmiley ? "]" : String.format("[/%s]", tag);
@@ -746,8 +789,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
     public void onImageInsertionRequested() {
         if (isImageSelectionViewVisible()) {
             hideImageSelectionView();
-        }
-        else {
+        } else {
             showImageSelectionView();
         }
     }
@@ -772,7 +814,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
     }
 
     private void hideImageSelectionView() {
-        if (! isImageSelectionViewVisible()) {
+        if (!isImageSelectionViewVisible()) {
             return;
         }
 
@@ -808,6 +850,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
             hideImageSelectionView();
         }, t -> {
             Timber.e(t, "Got an error while uploading image");
+            Crashlytics.logException(t);
             SnackbarHelper.makeError(ReplyActivity.this, R.string.image_upload_failed).show();
             hideImageSelectionView();
         });
@@ -829,6 +872,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
                 .setNegativeButton(R.string.image_enter_url_cancel, (dialog, which) -> hideImageSelectionView())
                 .show();
     }
+
     /**
      * Uploads user selected image to remote hosting service
      */
@@ -859,26 +903,29 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
     private void showImageVariantsPicker(HostedImage hostedImage, EditTextState editTextState) {
         Timber.d("Requesting variants !!");
 
-        List<Map.Entry<ImageQuality, Integer>> availableVariants = Lists.newArrayList(imageHostingService.availableImageVariants().entrySet());
+        List<Map.Entry<ImageQuality, Integer>> availableVariants = new ArrayList<>(imageHostingService.availableImageVariants().entrySet());
 
-        Iterable<String> collection = Iterables.transform(availableVariants, e -> getString(e.getValue()));
+        List<String> variantNames = new ArrayList<>();
+        for (Map.Entry<ImageQuality, Integer> availableVariant : availableVariants) {
+            variantNames.add(getString(availableVariant.getValue()));
+        }
 
-        ArrayAdapter<String> imageVariantsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, Lists.newArrayList(collection));
+        ArrayAdapter<String> imageVariantsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, variantNames);
 
         new AlertDialog.Builder(this)
-            .setTitle(R.string.image_upload_select_variant)
-            .setAdapter(imageVariantsAdapter, (dialog, which) -> {
-                ImageQuality selectedImageQuality = availableVariants.get(which).getKey();
-                Timber.d("Selected '%s' image quality !", selectedImageQuality);
+                .setTitle(R.string.image_upload_select_variant)
+                .setAdapter(imageVariantsAdapter, (dialog, which) -> {
+                    ImageQuality selectedImageQuality = availableVariants.get(which).getKey();
+                    Timber.d("Selected '%s' image quality !", selectedImageQuality);
 
-                String variantUrl = hostedImage.variant(selectedImageQuality);
-                if (variantUrl == null) {
-                    variantUrl = hostedImage.url();
-                }
+                    String variantUrl = hostedImage.variant(selectedImageQuality);
+                    if (variantUrl == null) {
+                        variantUrl = hostedImage.url();
+                    }
 
-                UiUtils.insertTextFromState(replyEditText, String.format(UPLOADED_IMAGE_BB_CODE, hostedImage.url(), variantUrl), editTextState);
-            })
-            .show();
+                    UiUtils.insertTextFromState(replyEditText, String.format(UPLOADED_IMAGE_BB_CODE, hostedImage.url(), variantUrl), editTextState);
+                })
+                .show();
     }
 
     /**
@@ -1016,7 +1063,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
             viewHolder.username.setText(user.getUsername());
             viewHolder.avatar.setImageResource(R.drawable.profile_background_red);
 
-            if (! user.isGuest()) {
+            if (!user.isGuest()) {
                 loadUserAvatarInto(user, viewHolder.avatar);
             }
         }

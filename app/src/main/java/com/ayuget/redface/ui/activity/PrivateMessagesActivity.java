@@ -18,10 +18,12 @@ package com.ayuget.redface.ui.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AlertDialog;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.ayuget.redface.R;
+import com.ayuget.redface.RedfaceNotifications;
 import com.ayuget.redface.data.api.model.PrivateMessage;
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.rx.EndlessObserver;
@@ -168,7 +170,7 @@ public class PrivateMessagesActivity extends MultiPaneActivity implements Privat
             case UIConstants.TOPIC_ACTION_GO_TO_LAST_PAGE:
                 loadPrivateMessage(event.getPrivateMessage(),
                         event.getPrivateMessage().getPagesCount(),
-                        new PagePosition(PagePosition.TOP));
+                        new PagePosition(PagePosition.BOTTOM));
                 break;
             case UIConstants.TOPIC_ACTION_REPLY_TO_TOPIC:
                 Topic pmAsTopic = event.getPrivateMessage().asTopic()
@@ -233,6 +235,8 @@ public class PrivateMessagesActivity extends MultiPaneActivity implements Privat
      */
     private void loadPrivateMessage(PrivateMessage privateMessage, int page, PagePosition pagePosition) {
         Timber.d("Loading private message '%s' at page '%d'", privateMessage.getSubject(), page);
+
+        RedfaceNotifications.dismissPrivateMessageNotificationIfNeeded(this, privateMessage);
 
         // Mask private message as a regular topic (kinda ugly, btw...)
         Topic pmAsTopic = privateMessage.asTopic().withCategory(categoriesStore.getPrivateMessagesCategory());

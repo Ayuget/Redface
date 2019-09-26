@@ -17,13 +17,14 @@
 package com.ayuget.redface.ui.fragment;
 
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.appcompat.widget.Toolbar;
 
 import com.ayuget.redface.R;
 import com.ayuget.redface.data.api.model.Category;
@@ -33,6 +34,7 @@ import com.ayuget.redface.data.state.CategoriesStore;
 import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.ui.activity.TopicsActivity;
 import com.ayuget.redface.ui.adapter.MetaPageTopicsAdapter;
+import com.ayuget.redface.ui.adapter.TopicsAdapter;
 import com.ayuget.redface.ui.misc.MetaPageOrdering;
 import com.ayuget.redface.ui.misc.SnackbarHelper;
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs;
@@ -50,9 +52,10 @@ import timber.log.Timber;
 public class MetaPageFragment extends TopicListFragment implements StickyRecyclerHeadersTouchListener.OnHeaderClickListener {
     private static final String ARG_META_PAGE_SORTED_BY_DATE = "meta_page_ordering";
 
-    private  StickyRecyclerHeadersDecoration headerDecoration;
+    private StickyRecyclerHeadersDecoration headerDecoration;
 
     private MetaPageOrdering pageOrdering;
+    private StickyRecyclerHeadersTouchListener touchListener;
 
     @Inject
     CategoriesStore categoriesStore;
@@ -62,8 +65,12 @@ public class MetaPageFragment extends TopicListFragment implements StickyRecycle
 
     @Override
     protected void initializeAdapters() {
-        topicsAdapter = new MetaPageTopicsAdapter(new ContextThemeWrapper(getActivity(), themeManager.getActiveThemeStyle()), themeManager, settings.isCompactModeEnabled(), settings.isEnhancedCompactModeEnabled());
-        topicsAdapter.setOnTopicClickedListener(this);
+        topicsAdapter = createTopicsAdapter();
+    }
+
+    @Override
+    protected TopicsAdapter createTopicsAdapter() {
+        return new MetaPageTopicsAdapter(new ContextThemeWrapper(getActivity(), themeManager.getActiveThemeStyle()), themeManager, settings.isCompactModeEnabled(), settings.isEnhancedCompactModeEnabled());
     }
 
     @Override
@@ -78,8 +85,7 @@ public class MetaPageFragment extends TopicListFragment implements StickyRecycle
 
         if (savedInstanceState == null) {
             pageOrdering = settings.getDefaultMetaPageOrdering();
-        }
-        else {
+        } else {
             boolean sortedByDate = savedInstanceState.getBoolean(ARG_META_PAGE_SORTED_BY_DATE, false);
             pageOrdering = sortedByDate ? MetaPageOrdering.SORT_BY_DATE : MetaPageOrdering.GROUP_BY_CATS;
         }
@@ -89,17 +95,30 @@ public class MetaPageFragment extends TopicListFragment implements StickyRecycle
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View createdView =  super.onCreateView(inflater, container, savedInstanceState);
+        View createdView = super.onCreateView(inflater, container, savedInstanceState);
 
         headerDecoration = new StickyRecyclerHeadersDecoration((MetaPageTopicsAdapter) topicsAdapter);
 
-        StickyRecyclerHeadersTouchListener touchListener = new StickyRecyclerHeadersTouchListener(topicsRecyclerView, headerDecoration);
-        touchListener.setOnHeaderClickListener(this);
+        touchListener = new StickyRecyclerHeadersTouchListener(topicsRecyclerView, headerDecoration);
 
         topicsRecyclerView.addItemDecoration(headerDecoration);
         topicsRecyclerView.addOnItemTouchListener(touchListener);
 
         return createdView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        touchListener.setOnHeaderClickListener(this);
+    }
+
+    @Override
+    public void onPause() {
+        touchListener.setOnHeaderClickListener(null);
+
+        super.onPause();
     }
 
     @Override
@@ -123,8 +142,7 @@ public class MetaPageFragment extends TopicListFragment implements StickyRecycle
             sortByDateItem.setEnabled(true);
             groupByCatsItem.setVisible(false);
             groupByCatsItem.setEnabled(false);
-        }
-        else if (pageOrdering == MetaPageOrdering.SORT_BY_DATE) {
+        } else if (pageOrdering == MetaPageOrdering.SORT_BY_DATE) {
             sortByDateItem.setVisible(false);
             sortByDateItem.setEnabled(false);
             groupByCatsItem.setVisible(true);
@@ -190,7 +208,6 @@ public class MetaPageFragment extends TopicListFragment implements StickyRecycle
                 topicsAdapter.replaceWith(loadedTopics);
                 headerDecoration.invalidateHeaders();
 
-                swipeRefreshLayout.setRefreshing(false);
                 lastLoadedPage = 1;
                 showTopics();
             }
@@ -199,13 +216,13 @@ public class MetaPageFragment extends TopicListFragment implements StickyRecycle
             public void onError(Throwable throwable) {
                 Timber.e(throwable, "Error loading meta category");
 
-                swipeRefreshLayout.setRefreshing(false);
-
                 if (displayedTopics.size() == 0) {
                     dataPresenter.showErrorView();
                 } else {
                     SnackbarHelper.makeError(MetaPageFragment.this, R.string.error_loading_topics).show();
                 }
+
+                hideSwipeToRefreshIndicator();
             }
         }));
     }

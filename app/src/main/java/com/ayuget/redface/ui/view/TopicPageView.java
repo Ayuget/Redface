@@ -22,7 +22,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
-import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -33,9 +33,10 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
 import com.ayuget.redface.BuildConfig;
 import com.ayuget.redface.R;
-import com.ayuget.redface.RedfaceApp;
 import com.ayuget.redface.data.api.MDEndpoints;
 import com.ayuget.redface.data.api.UrlParser;
 import com.ayuget.redface.data.api.model.Post;
@@ -53,6 +54,8 @@ import com.ayuget.redface.ui.event.InternalLinkClickedEvent;
 import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
 import com.ayuget.redface.ui.event.PostActionEvent;
 import com.ayuget.redface.ui.event.QuotePostEvent;
+import com.ayuget.redface.ui.event.ReportPostEvent;
+import com.ayuget.redface.ui.event.ViewUserProfileEvent;
 import com.ayuget.redface.ui.event.WritePrivateMessageEvent;
 import com.ayuget.redface.ui.misc.DummyGestureListener;
 import com.ayuget.redface.ui.misc.NestedScrollingWebView;
@@ -61,14 +64,11 @@ import com.ayuget.redface.ui.misc.ThemeManager;
 import com.ayuget.redface.ui.misc.UiUtils;
 import com.ayuget.redface.ui.template.PostsTemplate;
 import com.ayuget.redface.util.JsExecutor;
-import com.google.common.base.Joiner;
 import com.squareup.otto.Bus;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
-import javax.inject.Inject;
 
 import timber.log.Timber;
 
@@ -99,17 +99,12 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
      */
     private ArrayList<Long> quotedMessages;
 
-    @Inject PostsTemplate postsTemplate;
-
-    @Inject MDEndpoints mdEndpoints;
-
-    @Inject UrlParser urlParser;
-
-    @Inject Bus bus;
-
-    @Inject ThemeManager themeManager;
-
-    @Inject RedfaceSettings appSettings;
+    PostsTemplate postsTemplate;
+    MDEndpoints mdEndpoints;
+    UrlParser urlParser;
+    Bus bus;
+    ThemeManager themeManager;
+    RedfaceSettings appSettings;
 
     boolean wasReloaded = false;
 
@@ -118,6 +113,7 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
      */
     public interface OnQuoteListener {
         void onPostQuoted(int page, long postId);
+
         void onPostUnquoted(int page, long postId);
     }
 
@@ -135,20 +131,13 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
     public TopicPageView(Context context) {
         super(context);
         initialized = false;
-
-        setupDependencyInjection(context);
         initialize(context);
     }
 
     public TopicPageView(Context context, AttributeSet attrs) {
         super(context, attrs);
         initialized = false;
-        setupDependencyInjection(context);
         initialize(context);
-    }
-
-    private void setupDependencyInjection(Context context) {
-        RedfaceApp.get(context).inject(this);
     }
 
     // It is safe here to use Javascript interface because we control entirely what's loaded in the
@@ -157,8 +146,7 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
     private void initialize(Context context) {
         if (initialized) {
             throw new IllegalStateException("View is already initialized");
-        }
-        else {
+        } else {
             quotedMessages = new ArrayList<>();
 
             // Deal with double-tap to refresh
@@ -173,7 +161,7 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
                 public boolean onDoubleTap(MotionEvent e) {
                     if (appSettings.isDoubleTapToRefreshEnabled()) {
                         wasReloaded = true;
-                        bus.post(new PageRefreshRequestEvent(topicPage.topic()));
+                        bus.post(new PageRefreshRequestEvent(topicPage.topic(), topicPage.page()));
                     }
                     return true;
                 }
@@ -194,7 +182,7 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
 
             // Making the WebView debuggable is insanely useful to debug what's happening in it.
             // Any WebView rendered in the app can then be inspected via "chrome://inspect" URL
-            if(BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     WebView.setWebContentsDebuggingEnabled(true);
                 }
@@ -205,7 +193,8 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
             setWebViewClient(new WebViewClient() {
                 @Override
                 public void onPageFinished(WebView view, String url) {
-                    if (onPageLoadedListener != null) {
+                    if (onPageLoadedListener != null && url.startsWith(mdEndpoints.baseurl())) {
+                        Timber.d("URL=%s, Page is done loading, notifying listeners", url);
                         onPageLoadedListener.onPageLoaded();
                     }
                 }
@@ -224,6 +213,30 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
 
             initialized = true;
         }
+    }
+
+    public void setPostsTemplate(PostsTemplate postsTemplate) {
+        this.postsTemplate = postsTemplate;
+    }
+
+    public void setMdEndpoints(MDEndpoints mdEndpoints) {
+        this.mdEndpoints = mdEndpoints;
+    }
+
+    public void setUrlParser(UrlParser urlParser) {
+        this.urlParser = urlParser;
+    }
+
+    public void setBus(Bus bus) {
+        this.bus = bus;
+    }
+
+    public void setThemeManager(ThemeManager themeManager) {
+        this.themeManager = themeManager;
+    }
+
+    public void setAppSettings(RedfaceSettings appSettings) {
+        this.appSettings = appSettings;
     }
 
     public void setOnQuoteListener(OnQuoteListener onQuoteListener) {
@@ -264,11 +277,9 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
         Timber.d("Page position = %s", pagePosition);
         if (pagePosition.isBottom()) {
             scrollToBottom();
-        }
-        else if (pagePosition.isTop()) {
+        } else if (pagePosition.isTop()) {
             scrollToTop();
-        }
-        else {
+        } else {
             scrollToPost(pagePosition.getPostId());
         }
     }
@@ -300,7 +311,7 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
         quotedMessages.clear();
         quotedMessages.addAll(posts);
 
-        JsExecutor.execute(this, "setPostsAsQuoted([" + Joiner.on(",").join(posts) + "])");
+        JsExecutor.execute(this, "setPostsAsQuoted([" + TextUtils.join(",", posts) + "])");
     }
 
     /**
@@ -335,8 +346,7 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
                 if (onQuoteListener != null) {
                     TopicPageView.this.post(() -> onQuoteListener.onPostUnquoted(topicPage.page(), postId));
                 }
-            }
-            else {
+            } else {
                 quotedMessages.add(postId);
                 if (onQuoteListener != null) {
                     TopicPageView.this.post(() -> onQuoteListener.onPostQuoted(topicPage.page(), postId));
@@ -363,12 +373,27 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
         }
 
         @JavascriptInterface
+        public void viewUserProfile(final int postId) {
+            Timber.d("View user profile for post '%d'", postId);
+            for (final Post post : topicPage.posts()) {
+                if (post.getId() == postId) {
+                    TopicPageView.this.post(() -> bus.post(new ViewUserProfileEvent(post.getAuthorId())));
+                }
+            }
+        }
+
+        @JavascriptInterface
         public void writePrivateMessage(final int postId) {
             for (final Post post : topicPage.posts()) {
                 if (post.getId() == postId) {
                     TopicPageView.this.post(() -> bus.post(new WritePrivateMessageEvent(post.getAuthor())));
                 }
             }
+        }
+
+        @JavascriptInterface
+        public void reportPost(final int postId) {
+            TopicPageView.this.post(() -> bus.post(new ReportPostEvent(topicPage.topic(), postId)));
         }
 
         @JavascriptInterface
@@ -383,12 +408,7 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
         @JavascriptInterface
         public void copyLinkToPost(final int postId) {
             Timber.d("Copying link to post '%d' in clipboard", postId);
-            TopicPageView.this.post(() -> UiUtils.copyToClipboard(getContext(), mdEndpoints.post(topicPage.topic().category(), topicPage.topic(), topicPage.page(), postId)));
-        }
-
-        @JavascriptInterface
-        public void showProfile (String username){
-            Timber.d("Profile requested for user '%s'", username);
+            TopicPageView.this.post(() -> UiUtils.copyLinkToClipboard(getContext(), mdEndpoints.post(topicPage.topic().category(), topicPage.topic(), topicPage.page(), postId)));
         }
 
         @JavascriptInterface
@@ -417,8 +437,7 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
                             }
 
                             bus.post(new GoToPostEvent(destinationPage, targetPagePosition, TopicPageView.this));
-                        }
-                        else {
+                        } else {
                             bus.post(new GoToTopicEvent(category, topicId, targetPage, pagePosition));
                         }
                     }).ifInvalid(() -> {

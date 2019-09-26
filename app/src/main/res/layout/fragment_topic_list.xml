@@ -14,7 +14,8 @@
   ~ limitations under the License.
   -->
 
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:wheel="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main_content"
     android:layout_width="match_parent"
@@ -100,7 +101,7 @@
     </LinearLayout>
 
     <!-- Regular content (topic list) -->
-    <android.support.v4.widget.SwipeRefreshLayout
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/topic_list_swipe_refresh_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -115,13 +116,14 @@
             android:layout_gravity="start"
             android:scrollbars="vertical"
             wheel:layout_behavior="@string/appbar_scrolling_view_behavior"/>
-    </android.support.v4.widget.SwipeRefreshLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <!-- Primary toolbar -->
-    <android.support.design.widget.AppBarLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        wheel:layout_behavior="com.ayuget.redface.ui.misc.FixAppBarLayoutBehavior">
         <include layout="@layout/toolbar_actionbar" />
-    </android.support.design.widget.AppBarLayout>
-</android.support.design.widget.CoordinatorLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

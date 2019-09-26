@@ -32,8 +32,8 @@ public class SmileyTemplate extends HTMLTemplate<Smiley> {
     protected void render(Smiley smiley, Phrase templateContent, StringBuilder stream) {
         stream.append(
                 templateContent
-                        .put("smiley_code", smiley.getCode().replace("'", "\\'"))
-                        .put("smiley_url", smiley.getImageUrl())
+                        .put("smiley_code", smiley.code().replace("'", "\\'"))
+                        .put("smiley_url", smiley.imageUrl())
                         .format()
                         .toString()
         );

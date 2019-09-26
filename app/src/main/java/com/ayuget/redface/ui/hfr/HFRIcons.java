@@ -49,14 +49,14 @@ public class HFRIcons {
         category2Icon.put(25, R.drawable.ic_action_apple);
         category2Icon.put(30, R.drawable.ic_developer_board_white_24dp);
         category2Icon.put(31, R.drawable.ic_shopping_basket_white_24dp);
+        category2Icon.put(0, R.drawable.ic_action_moderate);
         categoriesIcons = Collections.unmodifiableMap(category2Icon);
     }
 
     public static int getCategoryIcon(Category category) {
-        if(category != null && categoriesIcons.containsKey(category.id())) {
+        if (category != null && categoriesIcons.containsKey(category.id())) {
             return categoriesIcons.get(category.id());
-        }
-        else {
+        } else {
             return R.drawable.ic_action_label;
         }
     }

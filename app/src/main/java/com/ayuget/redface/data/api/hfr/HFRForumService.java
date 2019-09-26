@@ -22,9 +22,9 @@ import android.os.Looper;
 import com.ayuget.redface.data.api.MDEndpoints;
 import com.ayuget.redface.data.api.MDMessageSender;
 import com.ayuget.redface.data.api.MDService;
-import com.ayuget.redface.data.api.SmileyService;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToBBCode;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToCategoryList;
+import com.ayuget.redface.data.api.hfr.transforms.HTMLToFavoriteSmileyList;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToPostList;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToPrivateMessageList;
 import com.ayuget.redface.data.api.hfr.transforms.HTMLToProfile;
@@ -42,7 +42,6 @@ import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.api.model.TopicFilter;
 import com.ayuget.redface.data.api.model.TopicSearchResult;
 import com.ayuget.redface.data.api.model.User;
-import com.ayuget.redface.data.api.model.misc.SmileyResponse;
 import com.ayuget.redface.data.state.CategoriesStore;
 import com.ayuget.redface.network.HTTPClientProvider;
 import com.ayuget.redface.network.PageFetcher;
@@ -50,16 +49,17 @@ import com.ayuget.redface.settings.Blacklist;
 import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.event.TopicPageCountUpdatedEvent;
-import com.ayuget.redface.util.UserUtils;
-import com.google.common.base.Optional;
+import com.ayuget.redface.ui.misc.PostReportStatus;
+import com.ayuget.redface.ui.misc.SmileyFavoriteActionResult;
+import com.ayuget.redface.ui.misc.SmileyRegistry;
 import com.squareup.otto.Bus;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
 import rx.Observable;
-import rx.functions.Func1;
 import timber.log.Timber;
 
 /**
@@ -67,25 +67,35 @@ import timber.log.Timber;
  */
 @SuppressWarnings({"WeakerAccess", "Guava"})
 public class HFRForumService implements MDService {
-    @Inject PageFetcher pageFetcher;
+    private static final Pattern POST_REPORT_IN_PROGRESS_PATTERN = Pattern.compile("(.*)(Votre demande de modération sur ce message n'est pas encore traitée)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private static final Pattern POST_JOIN_REPORT_ALERT = Pattern.compile("(.*)(Une demande de modération a déjà été envoyée sur ce message)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private static final Pattern POST_REPORT_TREATED = Pattern.compile("(.*)(Votre demande de modération sur ce message a été traitée)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private static final Pattern POST_JOIN_REPORT_IN_PROGRESS = Pattern.compile("(.*)(La demande de modération sur ce message à laquelle vous vous êtes joint n'est pas encore traitée)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
-    @Inject PostsTweaker postsTweaker;
+    private final PageFetcher pageFetcher;
+    private final PostsTweaker postsTweaker;
+    private final MDEndpoints mdEndpoints;
+    private final HTTPClientProvider httpClientProvider;
+    private final Bus bus;
+    private final CategoriesStore categoriesStore;
+    private final MDMessageSender mdMessageSender;
+    private final RedfaceSettings appSettings;
+    private final Blacklist blacklist;
+    private final SmileyRegistry smileyRegistry;
 
-    @Inject MDEndpoints mdEndpoints;
-
-    @Inject HTTPClientProvider httpClientProvider;
-
-    @Inject SmileyService smileyService;
-
-    @Inject Bus bus;
-
-    @Inject CategoriesStore categoriesStore;
-
-    @Inject MDMessageSender mdMessageSender;
-
-    @Inject RedfaceSettings appSettings;
-
-    @Inject Blacklist blacklist;
+    @Inject
+    public HFRForumService(PageFetcher pageFetcher, PostsTweaker postsTweaker, MDEndpoints mdEndpoints, HTTPClientProvider httpClientProvider, Bus bus, CategoriesStore categoriesStore, MDMessageSender mdMessageSender, RedfaceSettings appSettings, Blacklist blacklist, SmileyRegistry smileyRegistry) {
+        this.pageFetcher = pageFetcher;
+        this.postsTweaker = postsTweaker;
+        this.mdEndpoints = mdEndpoints;
+        this.httpClientProvider = httpClientProvider;
+        this.bus = bus;
+        this.categoriesStore = categoriesStore;
+        this.mdMessageSender = mdMessageSender;
+        this.appSettings = appSettings;
+        this.blacklist = blacklist;
+        this.smileyRegistry = smileyRegistry;
+    }
 
     private String currentHashcheck;
 
@@ -103,8 +113,7 @@ public class HFRForumService implements MDService {
                         categoriesStore.storeCategories(user, categories);
                         return categories;
                     });
-        }
-        else {
+        } else {
             Timber.d("Successfully retrieved '%d' categories from cache for user '%s'", cachedCategories.size(), user.getUsername());
             return Observable.just(cachedCategories);
         }
@@ -113,8 +122,7 @@ public class HFRForumService implements MDService {
     private String getTopicListEndpoint(final Category category, final Subcategory subcategory, int page, final TopicFilter filter) {
         if (subcategory == null) {
             return mdEndpoints.category(category, page, filter);
-        }
-        else {
+        } else {
             return mdEndpoints.subcategory(category, subcategory, page, filter);
         }
     }
@@ -123,13 +131,8 @@ public class HFRForumService implements MDService {
     public Observable<List<Topic>> listTopics(User user, final Category category, final Subcategory subcategory, int page, final TopicFilter filter) {
         return pageFetcher.fetchSource(user, getTopicListEndpoint(category, subcategory, page, filter))
                 .map(new HTMLToTopicList(categoriesStore, this, user))
-                .flatMap(new Func1<List<Topic>, Observable<Topic>>() {
-                    @Override
-                    public Observable<Topic> call(List<Topic> topics) {
-                        return Observable.from(topics);
-                    }
-                })
-                .filter(topic -> topic.hasUnreadPosts() || appSettings.showFullyReadTopics())
+                .flatMap(Observable::from)
+                .filter(topic -> (topic.hasUnreadPosts() != null && topic.hasUnreadPosts() == Boolean.TRUE) || appSettings.showFullyReadTopics())
                 .map(topic -> topic.withCategory(category))
                 .toList();
     }
@@ -138,18 +141,12 @@ public class HFRForumService implements MDService {
     public Observable<List<Topic>> listMetaPageTopics(User user, TopicFilter filter, boolean sortByDate) {
         Observable<Topic> metaPageTopics = pageFetcher.fetchSource(user, mdEndpoints.metaPage(filter))
                 .map(new HTMLToTopicList(categoriesStore, this, user))
-                .flatMap(new Func1<List<Topic>, Observable<Topic>>() {
-                    @Override
-                    public Observable<Topic> call(List<Topic> topics) {
-                        return Observable.from(topics);
-                    }
-                })
-                .filter(topic -> topic.hasUnreadPosts() || appSettings.showFullyReadTopics());
+                .flatMap(Observable::from)
+                .filter(topic -> (topic.hasUnreadPosts() != null && topic.hasUnreadPosts() == Boolean.TRUE) || appSettings.showFullyReadTopics());
 
         if (sortByDate) {
             return metaPageTopics.toSortedList((topic, topic2) -> topic2.lastPostDate().compareTo(topic.lastPostDate()));
-        }
-        else {
+        } else {
             return metaPageTopics.toList();
         }
     }
@@ -172,6 +169,11 @@ public class HFRForumService implements MDService {
                     currentHashcheck = HashcheckExtractor.extract(htmlSource);
                     return htmlSource;
                 })
+                .doOnNext(pageSource -> {
+                    if (appSettings.areSmileyActionsEnabled()) {
+                        smileyRegistry.registerSmiliesFromSource(pageSource);
+                    }
+                })
                 .map(new HTMLToPostList()) // Convert HTML source to objects
                 .map(posts -> {
                     // Last post of previous page is automatically put in first position of
@@ -179,8 +181,7 @@ public class HFRForumService implements MDService {
                     if (!appSettings.showPreviousPageLastPost() && page > 1 && posts.size() > 1) {
                         posts.remove(0);
                         return posts;
-                    }
-                    else {
+                    } else {
                         return posts;
                     }
                 })
@@ -213,31 +214,9 @@ public class HFRForumService implements MDService {
     }
 
     @Override
-    public Observable<List<Smiley>> getRecentlyUsedSmileys(User user) {
-        if (user.isGuest()) {
-            return Observable.empty();
-        }
-        else {
-            Optional<Integer> userId = UserUtils.identifyUserFromCookies(httpClientProvider.getUserCookieStore(user));
-
-            if (userId.isPresent()) {
-                return smileyService.getUserSmileys(userId.get()).map(SmileyResponse::getSmileys);
-            }
-            else {
-                return Observable.empty();
-            }
-        }
-    }
-
-    @Override
     public Observable<Topic> getTopic(User user, Category category, int topicId) {
         return pageFetcher.fetchSource(user, mdEndpoints.topic(category, topicId))
                 .map(new HTMLToTopic());
-    }
-
-    @Override
-    public Observable<List<Smiley>> getPopularSmileys() {
-        return smileyService.getPopularSmileys().map(SmileyResponse::getSmileys);
     }
 
     @Override
@@ -280,19 +259,30 @@ public class HFRForumService implements MDService {
     @Override
     public Observable<List<PrivateMessage>> getNewPrivateMessages(User user) {
         return listPrivateMessages(user, 1)
-                .flatMap(new Func1<List<PrivateMessage>, Observable<PrivateMessage>>() {
-                    @Override
-                    public Observable<PrivateMessage> call(List<PrivateMessage> privateMessages) {
-                        return Observable.from(privateMessages);
-                    }
-                })
+                .flatMap(Observable::from)
                 .filter(PrivateMessage::hasUnreadMessages)
                 .toList();
     }
 
     @Override
-    public Observable<Boolean> reportPost(User user, Topic topic, int postId) {
-        return null;
+    public Observable<Boolean> reportPost(User user, Topic topic, int postId, String reason, boolean joinReport) {
+        return mdMessageSender.reportPost(user, topic, postId, reason, joinReport, currentHashcheck);
+    }
+
+    @Override
+    public Observable<PostReportStatus> checkPostReportStatus(User user, Topic topic, int postId) {
+        return pageFetcher.fetchSource(user, mdEndpoints.reportPost(topic.category(), topic, postId))
+                .map(pageSource -> {
+                    if (matchesPattern(POST_JOIN_REPORT_ALERT, pageSource)) {
+                        return PostReportStatus.JOIN_REPORT;
+                    } else if (matchesPattern(POST_REPORT_IN_PROGRESS_PATTERN, pageSource) || matchesPattern(POST_JOIN_REPORT_IN_PROGRESS, pageSource)) {
+                        return PostReportStatus.REPORT_IN_PROGRESS;
+                    } else if (matchesPattern(POST_REPORT_TREATED, pageSource)) {
+                        return PostReportStatus.REPORT_TREATED;
+                    } else {
+                        return PostReportStatus.NO_EXISTING_REPORT;
+                    }
+                });
     }
 
     @Override
@@ -316,5 +306,31 @@ public class HFRForumService implements MDService {
     @Override
     public Observable<TopicSearchResult> searchInTopic(User user, Topic topic, long startFromPostId, String word, String author, boolean firstSearch) {
         return mdMessageSender.searchInTopic(user, topic, startFromPostId, word, author, firstSearch, currentHashcheck);
+    }
+
+    @Override
+    public Observable<List<Smiley>> getFavoriteSmileys(User user) {
+        return pageFetcher.fetchSource(user, mdEndpoints.imagesProfilePage())
+                .map(htmlSource -> {
+                    // Hashcheck is needed by the server to post new content
+                    currentHashcheck = HashcheckExtractor.extract(htmlSource);
+                    return htmlSource;
+                })
+                .map(new HTMLToFavoriteSmileyList());
+    }
+
+    @Override
+    public Observable<SmileyFavoriteActionResult> addSmileyToFavorites(User user, Smiley smiley) {
+        return mdMessageSender.addSmileyToFavorites(user, smiley, currentHashcheck);
+    }
+
+    @Override
+    public Observable<Boolean> removeSmileyFromFavorites(User user, Smiley smiley) {
+        return getFavoriteSmileys(user)
+                .flatMap(favoriteSmileys -> mdMessageSender.removeSmileyFromFavorites(user, smiley, favoriteSmileys, currentHashcheck));
+    }
+
+    private boolean matchesPattern(Pattern p, String content) {
+        return p.matcher(content).matches();
     }
 }

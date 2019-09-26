@@ -112,6 +112,11 @@
         <item name="contentInsetLeft">0dp</item>
     </style>
 
+    <style name="RedfaceTransparentToolbar" parent="ThemeOverlay.AppCompat.ActionBar">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="colorControlNormal">?attr/textColorPrimary</item>
+    </style>
+
     <style name="RedfaceSmileysToolbar" parent="Widget.AppCompat.Toolbar">
         <item name="android:background">?attr/colorPrimary</item>
         <item name="popupTheme">?attr/toolbarPopupTheme</item>
@@ -204,5 +209,56 @@
     <style name="Redface.ImageDetails.SecondaryText">
         <item name="android:textSize">@dimen/image_detail_item_secondary_text_size</item>
         <item name="android:textColor">?attr/textColorSecondary</item>
+    </style>
+
+    <style name="Redface.ProfileDetails" />
+
+    <style name="Redface.ProfileDetails.Username">
+        <item name="android:textSize">@dimen/profile_detail_item_username_text_size</item>
+        <item name="android:textColor">?attr/textColorPrimary</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Redface.ProfileDetails.Status">
+        <item name="android:textSize">@dimen/profile_detail_item_status_text_size</item>
+        <item name="android:textColor">?attr/textColorSecondary</item>
+        <item name="android:textStyle">italic</item>
+    </style>
+
+    <style name="Redface.ProfileDetails.MainText">
+        <item name="android:textSize">@dimen/profile_detail_item_main_text_size</item>
+        <item name="android:textColor">?attr/textColorPrimary</item>
+    </style>
+
+    <style name="Redface.ProfileDetails.SecondaryText">
+        <item name="android:textSize">@dimen/profile_detail_item_secondary_text_size</item>
+        <item name="android:textColor">?attr/textColorSecondary</item>
+    </style>
+
+    <style name="Redface.ProfileDetails.Heading">
+        <item name="android:textSize">@dimen/profile_detail_heading_text_size</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">72dp</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <style name="Redface.ProfileDetails.Smilies" />
+
+    <style name="Redface.ProfileDetails.Smilies.Container">
+        <item name="android:padding">8dp</item>
+    </style>
+
+    <style name="Redface.ProfileDetails.Smilies.SmileyCode">
+        <item name="android:fontFamily">monospace</item>
+        <item name="android:textColor">?attr/textColorPrimary</item>
+    </style>
+
+    <style name="Redface.ProfileDetails.Smilies.SmileyAction">
+        <item name="android:background">?android:attr/selectableItemBackgroundBorderless</item>
+        <item name="android:tint">?attr/textColorPrimary</item>
     </style>
 </resources>

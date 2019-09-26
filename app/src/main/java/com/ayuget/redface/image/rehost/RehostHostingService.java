@@ -5,9 +5,9 @@ import com.ayuget.redface.image.HostedImage;
 import com.ayuget.redface.image.ImageHostingService;
 import com.ayuget.redface.image.ImageQuality;
 import com.ayuget.redface.util.ImageUtils;
-import com.google.common.collect.ImmutableMap;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -66,12 +66,14 @@ public class RehostHostingService implements ImageHostingService {
 
     @Override
     public Map<ImageQuality, Integer> availableImageVariants() {
-        return ImmutableMap.<ImageQuality, Integer>builder()
-                .put(ImageQuality.ORIGINAL, R.string.image_uploaded_original)
-                .put(ImageQuality.MEDIUM, R.string.image_uploaded_medium)
-                .put(ImageQuality.PREVIEW, R.string.image_uploaded_preview)
-                .put(ImageQuality.THUMBNAIL, R.string.image_uploaded_thumbnail)
-                .build();
+        Map<ImageQuality, Integer> variants = new HashMap<>();
+
+        variants.put(ImageQuality.ORIGINAL, R.string.image_uploaded_original);
+        variants.put(ImageQuality.MEDIUM, R.string.image_uploaded_medium);
+        variants.put(ImageQuality.PREVIEW, R.string.image_uploaded_preview);
+        variants.put(ImageQuality.THUMBNAIL, R.string.image_uploaded_thumbnail);
+
+        return variants;
     }
 
     private HostedImage uploadToRehost(ByteString localImage) throws IOException {

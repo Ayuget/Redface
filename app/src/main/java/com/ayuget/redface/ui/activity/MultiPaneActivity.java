@@ -17,11 +17,11 @@
 package com.ayuget.redface.ui.activity;
 
 import android.content.Intent;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.ayuget.redface.R;
 import com.ayuget.redface.data.api.MDService;
+import com.ayuget.redface.data.api.model.Profile;
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.rx.EndlessObserver;
 import com.ayuget.redface.ui.UIConstants;
@@ -33,6 +33,8 @@ import javax.inject.Inject;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
+
+import static com.ayuget.redface.ui.UIConstants.ARG_PROFILE_ID;
 
 public class MultiPaneActivity extends BaseDrawerActivity {
     private static final String ARG_TOPIC = "topic";
@@ -163,6 +165,13 @@ public class MultiPaneActivity extends BaseDrawerActivity {
             startActivityForResult(intent, UIConstants.REPLY_REQUEST_CODE);
         }
     }
+
+    protected synchronized void startViewUserProfileActivity(int profileId) {
+        Intent intent = new Intent(this, ProfileActivity.class);
+        intent.putExtra(ARG_PROFILE_ID, profileId);
+        startActivity(intent);
+    }
+
 
     /**
      * Deletes a post

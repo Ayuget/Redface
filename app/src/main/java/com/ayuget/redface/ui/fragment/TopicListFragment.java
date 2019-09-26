@@ -19,11 +19,6 @@ package com.ayuget.redface.ui.fragment;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
@@ -33,6 +28,12 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.Spinner;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.ayuget.redface.R;
 import com.ayuget.redface.account.UserManager;
@@ -62,7 +63,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.InjectView;
+import butterknife.BindView;
 import timber.log.Timber;
 
 @FragmentWithArgs
@@ -95,13 +96,13 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
 
     private SubcategoriesAdapter subcategoriesAdapter;
 
-    @InjectView(R.id.topics_list)
+    @BindView(R.id.topics_list)
     ContextMenuRecyclerView topicsRecyclerView;
 
-    @InjectView(R.id.topic_list_swipe_refresh_layout)
+    @BindView(R.id.topic_list_swipe_refresh_layout)
     SwipeRefreshLayout swipeRefreshLayout;
 
-    @InjectView(R.id.empty_content_image)
+    @BindView(R.id.empty_content_image)
     ImageView emptyTopicsImage;
 
     @Inject
@@ -118,9 +119,11 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
      */
     private List<OnTopicClickedListener> onTopicClickedListeners;
 
-    @Inject DataService dataService;
+    @Inject
+    DataService dataService;
 
-    @Inject RedfaceSettings settings;
+    @Inject
+    RedfaceSettings settings;
 
     public TopicListFragment() {
         onTopicClickedListeners = new ArrayList<>();
@@ -139,21 +142,15 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
         setHasOptionsMenu(true);
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        if (topicsAdapter != null) {
-            topicsAdapter.setOnTopicClickedListener(null);
-        }
-    }
-
     protected void initializeAdapters() {
         subcategoriesAdapter = new SubcategoriesAdapter(getActivity(), topicFilter);
         subcategoriesAdapter.replaceWith(category);
 
-        topicsAdapter = new TopicsAdapter(new ContextThemeWrapper(getActivity(), themeManager.getActiveThemeStyle()), themeManager, settings.isCompactModeEnabled(), settings.isEnhancedCompactModeEnabled());
-        topicsAdapter.setOnTopicClickedListener(this);
+        topicsAdapter = createTopicsAdapter();
+    }
+
+    protected TopicsAdapter createTopicsAdapter() {
+        return new TopicsAdapter(new ContextThemeWrapper(getActivity(), themeManager.getActiveThemeStyle()), themeManager, settings.isCompactModeEnabled(), settings.isEnhancedCompactModeEnabled());
     }
 
     @Override
@@ -171,9 +168,6 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
         topicsRecyclerView.setLayoutManager(layoutManager);
         topicsRecyclerView.setAdapter(topicsAdapter);
 
-        // Implement swipe to refresh
-        swipeRefreshLayout.setOnRefreshListener(this::refreshTopicList);
-
         swipeRefreshLayout.setColorSchemeResources(R.color.theme_primary, R.color.theme_primary_dark);
 
         dataPresenter = DataPresenter.from(rootView)
@@ -182,11 +176,6 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
                 .withErrorView(R.id.error_layout, R.id.error_reload_button)
                 .withLoadingView(R.id.loading_indicator)
                 .build();
-
-        dataPresenter.setOnRefreshRequestedListener(() -> {
-            dataPresenter.showLoadingView();
-            refreshTopicList();
-        });
 
         UiUtils.setDrawableColor(emptyTopicsImage.getDrawable(), getResources().getColor(R.color.empty_view_image_color));
 
@@ -213,13 +202,29 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
     public void onResume() {
         super.onResume();
 
+        swipeRefreshLayout.setOnRefreshListener(this::refreshTopicList);
+        dataPresenter.setOnRefreshRequestedListener(() -> {
+            dataPresenter.showLoadingView();
+            refreshTopicList();
+        });
+
         if (displayedTopics == null || displayedTopics.size() == 0 || settings.refreshTopicList()) {
             displayedTopics = new ArrayList<>();
             loadTopics();
-        }
-        else {
+        } else {
             showTopics();
         }
+
+        topicsAdapter.setOnTopicClickedListener(this);
+    }
+
+    @Override
+    public void onPause() {
+        swipeRefreshLayout.setOnRefreshListener(null);
+        dataPresenter.setOnRefreshRequestedListener(null);
+        topicsAdapter.setOnTopicClickedListener(null);
+
+        super.onPause();
     }
 
     @Override
@@ -261,6 +266,7 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             boolean first = true;
+
             @Override
             public void onItemSelected(AdapterView<?> spinner, View view, int position, long itemId) {
                 if (first) {
@@ -338,6 +344,12 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
         return super.onOptionsItemSelected(item);
     }
 
+    protected void hideSwipeToRefreshIndicator() {
+        if (swipeRefreshLayout.isRefreshing()) {
+            swipeRefreshLayout.setRefreshing(false);
+        }
+    }
+
     /**
      * Loads topics for a given category, replacing current topics. Only loads a single topic page,
      * user has to swipe at the bottom of the list to load the next pages
@@ -356,7 +368,6 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
 
                 topicsAdapter.replaceWith(loadedTopics);
 
-                swipeRefreshLayout.setRefreshing(false);
                 lastLoadedPage = 1;
                 layoutManager.scrollToPosition(0);
 
@@ -367,20 +378,20 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
             public void onError(Throwable throwable) {
                 Timber.e(throwable, "Error loading first page for category '%s', subcategory '%s'", category.name(), subcategory);
 
-                swipeRefreshLayout.setRefreshing(false);
-
                 if (displayedTopics.size() == 0) {
                     dataPresenter.showErrorView();
-                }
-                else {
+                } else {
                     SnackbarHelper.make(TopicListFragment.this, R.string.error_loading_topics).show();
                 }
+
+                hideSwipeToRefreshIndicator();
             }
         }));
     }
 
     /**
      * Loads a given topics page for the current category, subcategory and topic filter
+     *
      * @param page page to load (1..n)
      */
     protected void loadPage(final int page) {
@@ -399,7 +410,6 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
                 displayedTopics.addAll(loadedTopics);
                 topicsAdapter.extendWith(loadedTopics);
 
-                swipeRefreshLayout.setRefreshing(false);
                 lastLoadedPage = page;
                 showTopics();
             }
@@ -408,19 +418,19 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
             public void onError(Throwable throwable) {
                 Timber.e(throwable, "Error loading page '%d' for category '%s', subcategory '%s'", page, category.name(), subcategory);
 
-                swipeRefreshLayout.setRefreshing(false);
-
                 // Do not display error view because topics are displayed (we are "just" loading additional content)
                 SnackbarHelper.make(
                         TopicListFragment.this,
                         Phrase.from(getActivity(), R.string.error_loading_topics_page).put("page", page).format()
                 ).show();
+
+                hideSwipeToRefreshIndicator();
             }
         }));
     }
 
     public void addOnTopicClickedListener(OnTopicClickedListener onTopicClickedListener) {
-        if (! onTopicClickedListeners.contains(onTopicClickedListener)) {
+        if (!onTopicClickedListeners.contains(onTopicClickedListener)) {
             onTopicClickedListeners.add(onTopicClickedListener);
         }
     }
@@ -428,7 +438,7 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
     @Override
     public void onTopicClicked(Topic topic) {
         // Dispatch event to all subscribers
-        for(OnTopicClickedListener listener : onTopicClickedListeners) {
+        for (OnTopicClickedListener listener : onTopicClickedListeners) {
             listener.onTopicClicked(topic);
         }
     }
@@ -436,10 +446,11 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
     protected void showTopics() {
         if (displayedTopics.size() > 0) {
             dataPresenter.showDataView();
-        }
-        else {
+        } else {
             dataPresenter.showEmptyView();
         }
+
+        hideSwipeToRefreshIndicator();
     }
 
     @Override

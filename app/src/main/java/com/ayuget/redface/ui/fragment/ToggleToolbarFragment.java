@@ -16,27 +16,31 @@
 
 package com.ayuget.redface.ui.fragment;
 
-import android.os.Bundle;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.ayuget.redface.R;
 import com.ayuget.redface.ui.activity.BaseActivity;
 
 public class ToggleToolbarFragment extends ToolbarFragment {
     protected ActionBarDrawerToggle drawerToggle;
+    private DrawerLayout drawerLayout;
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
+    protected void setupToolbarNavigation() {
         BaseActivity activity = (BaseActivity) getActivity();
 
-        DrawerLayout drawerLayout = activity.getDrawerLayout();
+        drawerLayout = activity.getDrawerLayout();
         drawerToggle = new ActionBarDrawerToggle(activity, drawerLayout, getToolbar(), R.string.drawer_open, R.string.drawer_close);
         drawerToggle.setDrawerIndicatorEnabled(true);
 
-        drawerLayout.setDrawerListener(drawerToggle);
+        drawerLayout.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
+    }
+
+    @Override
+    public void onPause() {
+        drawerLayout.removeDrawerListener(drawerToggle);
+        super.onPause();
     }
 }

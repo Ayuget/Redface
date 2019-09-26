@@ -96,7 +96,6 @@ public class PostTemplate extends HTMLTemplate<Post> {
                         .put("content", post.getHtmlContent())
                         .put("avatar", avatarTemplate.render(post))
                         .put("posted_on", formatDate(post.getPostDate()))
-                        .put("author_id", post.getAuthor())
                         .put("post_id", postId)
                         .put("post_quick_actions", quickActionsTemplate.render(post))
                         .put("extra_details", extraDetailsTemplate.render(post))

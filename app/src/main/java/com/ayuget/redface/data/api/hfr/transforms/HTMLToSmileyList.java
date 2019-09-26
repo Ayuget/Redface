@@ -35,7 +35,7 @@ public class HTMLToSmileyList implements Func1<String, List<Smiley>> {
         List<Smiley> foundSmileys = new ArrayList<>();
 
         while (smileysMatcher.find()) {
-            foundSmileys.add(Smiley.make(smileysMatcher.group(2), smileysMatcher.group(1)));
+            foundSmileys.add(Smiley.create(smileysMatcher.group(2), smileysMatcher.group(1)));
         }
 
         return foundSmileys;

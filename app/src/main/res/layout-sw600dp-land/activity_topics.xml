@@ -15,7 +15,7 @@
   ~ limitations under the License.
   -->
 
-<android.support.v4.widget.DrawerLayout
+<androidx.drawerlayout.widget.DrawerLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/hfr_drawer_layout"
     android:layout_width="match_parent"
@@ -24,23 +24,23 @@
     android:fitsSystemWindows="true">
 
     <!-- Two panes master/detail view -->
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout
         android:id="@+id/main_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clickable="true"
         android:orientation="horizontal"
-        android:weightSum="5">
+        android:weightSum="5"
+        android:focusable="true"
+        android:baselineAligned="false">
 
         <FrameLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/container"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="2" />
 
         <FrameLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/details_container"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -50,4 +50,4 @@
     <!-- Drawer view -->
     <include layout="@layout/navigation_drawer" />
 
-</android.support.v4.widget.DrawerLayout>
+</androidx.drawerlayout.widget.DrawerLayout>

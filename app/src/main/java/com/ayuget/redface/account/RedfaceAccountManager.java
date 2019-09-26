@@ -18,11 +18,8 @@ package com.ayuget.redface.account;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.util.Log;
 
 import com.ayuget.redface.data.api.model.User;
-import com.google.common.base.Objects;
-import com.google.common.base.Preconditions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +35,11 @@ public class RedfaceAccountManager {
     private final AccountManager accountManager;
 
     public RedfaceAccountManager(AccountManager accountManager) {
-        this.accountManager = Preconditions.checkNotNull(accountManager, "accountManager cannot be null");
+        if (accountManager == null) {
+            throw new IllegalArgumentException("accountManager cannot be null");
+        }
+
+        this.accountManager = accountManager;
     }
 
     public List<User> getAccounts() {
@@ -83,7 +84,7 @@ public class RedfaceAccountManager {
     public void updatePassword(User user) {
         final Account[] accounts = accountManager.getAccountsByType(REDFACE_ACCOUNT_TYPE);
         for (final Account account : accounts) {
-            if (Objects.equal(account.name, user.getUsername())) {
+            if (user.getUsername().equals(account.name)) {
                 accountManager.setPassword(account, user.getPassword());
                 return;
             }

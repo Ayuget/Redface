@@ -19,10 +19,6 @@ package com.ayuget.redface.ui.fragment;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
@@ -31,6 +27,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.ayuget.redface.R;
 import com.ayuget.redface.account.UserManager;
@@ -57,7 +58,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.InjectView;
+import butterknife.BindView;
 import timber.log.Timber;
 
 public class PrivateMessageListFragment extends ToggleToolbarFragment implements PrivateMessagesAdapter.OnPMClickedListener {
@@ -87,28 +88,28 @@ public class PrivateMessageListFragment extends ToggleToolbarFragment implements
 
     private OnPrivateMessageClickedListener onPrivateMessageClickedListener;
 
-    @InjectView(R.id.private_messages_list)
+    @BindView(R.id.private_messages_list)
     ContextMenuRecyclerView pmRecyclerView;
 
-    @InjectView(R.id.pm_list_swipe_refresh_layout)
+    @BindView(R.id.pm_list_swipe_refresh_layout)
     SwipeRefreshLayout swipeRefreshLayout;
 
-    @InjectView(R.id.loading_indicator)
+    @BindView(R.id.loading_indicator)
     View loadingIndicator;
 
-    @InjectView(R.id.error_layout)
+    @BindView(R.id.error_layout)
     View errorView;
 
-    @InjectView(R.id.error_reload_button)
+    @BindView(R.id.error_reload_button)
     Button errorReloadButton;
 
-    @InjectView(R.id.empty_reload_button)
+    @BindView(R.id.empty_reload_button)
     Button emptyReloadButton;
 
-    @InjectView(R.id.empty_content_layout)
+    @BindView(R.id.empty_content_layout)
     View noPrivateMessagesLayout;
 
-    @InjectView(R.id.empty_content_image)
+    @BindView(R.id.empty_content_image)
     ImageView noPrivateMessagesImage;
 
     @Inject
@@ -149,14 +150,6 @@ public class PrivateMessageListFragment extends ToggleToolbarFragment implements
         pmRecyclerView.setLayoutManager(layoutManager);
         pmRecyclerView.setAdapter(pmAdapter);
 
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                Timber.d("Refreshing private messages");
-                loadPrivateMessages(1);
-            }
-        });
-
         dataPresenter = DataPresenter.from(rootView)
                 .withDataView(R.id.pm_list_swipe_refresh_layout)
                 .withEmptyView(R.id.empty_content_layout, R.id.empty_reload_button)
@@ -164,19 +157,16 @@ public class PrivateMessageListFragment extends ToggleToolbarFragment implements
                 .withLoadingView(R.id.loading_indicator)
                 .build();
 
-        dataPresenter.setOnRefreshRequestedListener(new DataPresenter.OnRefreshRequestedListener() {
-            @Override
-            public void onRefresh() {
-                dataPresenter.showLoadingView();
-                loadPrivateMessages(1);
-            }
-        });
-
         // Style refresh indicator and empty content view
         swipeRefreshLayout.setColorSchemeResources(R.color.theme_primary, R.color.theme_primary_dark);
         UiUtils.setDrawableColor(noPrivateMessagesImage.getDrawable(), getResources().getColor(R.color.empty_view_image_color));
 
         return rootView;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -246,13 +236,30 @@ public class PrivateMessageListFragment extends ToggleToolbarFragment implements
     public void onResume() {
         super.onResume();
 
-        if (displayedPrivateMessages == null) {
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            Timber.d("Refreshing private messages");
+            loadPrivateMessages(1);
+        });
+
+        dataPresenter.setOnRefreshRequestedListener(() -> {
+            dataPresenter.showLoadingView();
+            loadPrivateMessages(1);
+        });
+
+        if (displayedPrivateMessages == null || displayedPrivateMessages.size() == 0 || settings.refreshTopicList()) {
             displayedPrivateMessages = new ArrayList<>();
             loadPrivateMessages(1);
-        }
-        else {
+        } else {
             showPrivateMessages();
         }
+    }
+
+    @Override
+    public void onPause() {
+        swipeRefreshLayout.setOnRefreshListener(null);
+        dataPresenter.setOnRefreshRequestedListener(null);
+
+        super.onPause();
     }
 
     @Override
@@ -269,6 +276,7 @@ public class PrivateMessageListFragment extends ToggleToolbarFragment implements
             onPrivateMessageClickedListener.onPrivateMessageClicked(privateMessage);
         }
     }
+
     /**
      * Initialize context menu for long clicks on topics
      */
@@ -293,14 +301,14 @@ public class PrivateMessageListFragment extends ToggleToolbarFragment implements
     private void showPrivateMessages() {
         if (displayedPrivateMessages.size() > 0) {
             dataPresenter.showDataView();
-        }
-        else {
+        } else {
             dataPresenter.showEmptyView();
         }
     }
 
     /**
      * Loads private messages
+     *
      * @param page page to load
      */
     private void loadPrivateMessages(final int page) {
@@ -319,8 +327,7 @@ public class PrivateMessageListFragment extends ToggleToolbarFragment implements
 
                 if (page == 1) {
                     pmAdapter.replaceWith(privateMessages);
-                }
-                else {
+                } else {
                     pmAdapter.extendWith(privateMessages);
                 }
 
@@ -338,8 +345,7 @@ public class PrivateMessageListFragment extends ToggleToolbarFragment implements
                 // Do not display error view because some private messages are displayed (we are "just" loading additional content)
                 if (page == 1) {
                     dataPresenter.showErrorView();
-                }
-                else {
+                } else {
                     SnackbarHelper.make(
                             PrivateMessageListFragment.this,
                             Phrase.from(getActivity(), R.string.error_loading_private_messages_page).put("page", page).format()

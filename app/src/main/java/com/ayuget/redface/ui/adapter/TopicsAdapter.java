@@ -20,13 +20,14 @@ import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
-import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.ayuget.redface.R;
 import com.ayuget.redface.data.api.model.Topic;
@@ -70,11 +71,11 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ViewHolder
         public ViewHolder(View itemView) {
             super(itemView);
             parent = itemView;
-            topicSubject = (TextView) itemView.findViewById(R.id.topic_subject);
-            topicIcon = (ImageView) itemView.findViewById(R.id.topic_icon);
-            topicLastPostInfos = (TextView) itemView.findViewById(R.id.topic_last_post_infos);
-            topicPagesCount = (TextView) itemView.findViewById(R.id.topic_pages_count);
-            unreadPagesCount = (TextView) itemView.findViewById(R.id.topic_unread_count);
+            topicSubject = itemView.findViewById(R.id.topic_subject);
+            topicIcon = itemView.findViewById(R.id.topic_icon);
+            topicLastPostInfos = itemView.findViewById(R.id.topic_last_post_infos);
+            topicPagesCount = itemView.findViewById(R.id.topic_pages_count);
+            unreadPagesCount = itemView.findViewById(R.id.topic_unread_count);
             itemView.setLongClickable(true);
         }
 
@@ -113,11 +114,9 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ViewHolder
         int itemLayout;
         if (isCompactMode && isEnhancedCompactMode) {
             itemLayout = R.layout.list_item_topic_compact;
-        }
-        else if (isCompactMode) {
+        } else if (isCompactMode) {
             itemLayout = R.layout.list_item_topic_compact_light;
-        }
-        else {
+        } else {
             itemLayout = R.layout.list_item_topic;
         }
 
@@ -128,8 +127,7 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ViewHolder
     private String getPrintableUnreadPagesCount(int realCount) {
         if (realCount >= 100) {
             return "99+";
-        }
-        else {
+        } else {
             return String.valueOf(realCount);
         }
     }
@@ -157,12 +155,7 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ViewHolder
         Drawable topicIconDrawable = viewHolder.topicIcon.getDrawable();
         topicIconDrawable.mutate().setColorFilter(getTopicIconTextColor(topic), PorterDuff.Mode.MULTIPLY);
 
-        viewHolder.setOnTopicClickedListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onTopicClickedListener.onTopicClicked(topic);
-            }
-        });
+        viewHolder.setOnTopicClickedListener(v -> onTopicClickedListener.onTopicClicked(topic));
 
 
         if (topic.hasUnreadPosts()) {
@@ -174,8 +167,7 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ViewHolder
                 viewHolder.topicLastPostInfos.setTextColor(secondaryTextColor);
                 viewHolder.topicPagesCount.setTextColor(secondaryTextColor);
             }
-        }
-        else {
+        } else {
             viewHolder.unreadPagesCount.setVisibility(View.INVISIBLE);
             viewHolder.topicSubject.setTextColor(readTextColor);
 
@@ -212,17 +204,13 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ViewHolder
     int getTopicIcon(Topic topic) {
         if (topic.isLocked()) {
             return R.drawable.ic_lock_white_24dp;
-        }
-        else if (topic.isSticky()) {
+        } else if (topic.isSticky()) {
             return R.drawable.ic_action_pin;
-        }
-        else if (topic.status() == TopicStatus.FAVORITE_NEW_CONTENT) {
+        } else if (topic.status() == TopicStatus.FAVORITE_NEW_CONTENT) {
             return R.drawable.ic_action_star_10;
-        }
-        else if (topic.hasUnreadPosts()) {
+        } else if (topic.hasUnreadPosts()) {
             return R.drawable.ic_flag_white_24dp;
-        }
-        else {
+        } else {
             return R.drawable.ic_action_tick;
         }
     }
@@ -230,20 +218,15 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ViewHolder
     int getTopicIconBackgroundColor(Topic topic) {
         if (topic.status() == TopicStatus.FAVORITE_NEW_CONTENT) {
             return context.getResources().getColor(R.color.topic_icon_favorite_bg);
-        }
-        else if (topic.status() == TopicStatus.FLAGGED_NEW_CONTENT) {
+        } else if (topic.status() == TopicStatus.FLAGGED_NEW_CONTENT) {
             return context.getResources().getColor(R.color.topic_icon_flagged_bg);
-        }
-        else if (topic.status() == TopicStatus.READ_NEW_CONTENT) {
+        } else if (topic.status() == TopicStatus.READ_NEW_CONTENT) {
             return UiUtils.getReadTopicIconBackgroundColor(context);
-        }
-        else if (topic.isSticky()) {
+        } else if (topic.isSticky()) {
             return context.getResources().getColor(R.color.topic_icon_sticky_bg);
-        }
-        else if (topic.hasUnreadPosts()) {
+        } else if (topic.hasUnreadPosts()) {
             return UiUtils.getDefaultTopicIconBackgroundColor(context);
-        }
-        else {
+        } else {
             return UiUtils.getFullyReadTopicIconBackgroundColor(context);
         }
     }
@@ -251,17 +234,13 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ViewHolder
     int getTopicIconTextColor(Topic topic) {
         if (topic.isSticky()) {
             return context.getResources().getColor(R.color.topic_icon_sticky_color);
-        }
-        else if (topic.status() == TopicStatus.FAVORITE_NEW_CONTENT) {
+        } else if (topic.status() == TopicStatus.FAVORITE_NEW_CONTENT) {
             return context.getResources().getColor(R.color.topic_icon_favorite_color);
-        }
-        else if (topic.status() == TopicStatus.FLAGGED_NEW_CONTENT) {
+        } else if (topic.status() == TopicStatus.FLAGGED_NEW_CONTENT) {
             return context.getResources().getColor(R.color.topic_icon_flagged_color);
-        }
-        else if (topic.status() == TopicStatus.READ_NEW_CONTENT) {
+        } else if (topic.status() == TopicStatus.READ_NEW_CONTENT) {
             return UiUtils.getReadTopicIconTextColor(context);
-        }
-        else {
+        } else {
             return UiUtils.getDefaultTopicIconTextColor(context);
         }
     }

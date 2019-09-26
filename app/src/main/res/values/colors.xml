@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2015 Ayuget
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +15,8 @@
   -->
 
 <resources>
+    <color name="app_bar_transparent">@android:color/transparent</color>
+
     <color name="app_background_light">#ffffff</color>
     <color name="app_background_dark">#222222</color>
     <color name="app_background_night">#000000</color>
@@ -109,4 +110,10 @@
 
     <color name="quick_navigation_button_color_light">#757575</color>
     <color name="quick_navigation_button_color_dark">#9E9E9E</color>
+
+    <!-- Profile -->
+    <color name="profile_connection_status_bg_ok_dark">#2E7D32</color>
+    <color name="profile_connection_status_bg_ok_light">#4CAF50</color>
+    <color name="profile_connection_status_bg_ko_dark">#B71C1C</color>
+    <color name="profile_connection_status_bg_ko_light">#D32F2F</color>
 </resources>

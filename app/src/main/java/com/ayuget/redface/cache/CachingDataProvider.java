@@ -1,8 +1,6 @@
 package com.ayuget.redface.cache;
 
 import com.ayuget.redface.util.DateUtils;
-import com.google.common.base.Function;
-import com.google.common.collect.Iterables;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,13 +9,11 @@ import java.util.concurrent.TimeUnit;
 import rx.Completable;
 import rx.Observable;
 import rx.Scheduler;
-import rx.functions.Action1;
-import rx.functions.Func0;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 
+@SuppressWarnings("Convert2MethodRef")
 public class CachingDataProvider<K, V extends Cacheable<K>> implements DataProvider<K, V> {
     private final DataProvider<K, V> dataProvider;
 
@@ -50,73 +46,50 @@ public class CachingDataProvider<K, V extends Cacheable<K>> implements DataProvi
 
     public void clear(final K key) {
         Timber.d("Clearing caches for key '%s'", key);
-        Completable.merge(Iterables.transform(cachingLayers, new Function<CachingLayer<K, V>, Completable>() {
-            @Override
-            public Completable apply(CachingLayer<K, V> input) {
-                return input.remove(key).subscribeOn(scheduler);
-            }
-        })).await();
+
+        List<Completable> clearingCompletables = new ArrayList<>();
+
+        for (CachingLayer<K, V> cachingLayer : cachingLayers) {
+            clearingCompletables.add(cachingLayer.remove(key).subscribeOn(scheduler));
+        }
+
+        Completable.merge(clearingCompletables).await();
     }
 
     public void clearAll() {
-        Completable.merge(Iterables.transform(cachingLayers, new Function<CachingLayer<K, V>, Completable>() {
-            @Override
-            public Completable apply(CachingLayer<K, V> input) {
-                return input.removeAll().subscribeOn(scheduler);
-            }
-        })).await();
+        List<Completable> clearingCompletables = new ArrayList<>();
+
+        for (CachingLayer<K, V> cachingLayer : cachingLayers) {
+            clearingCompletables.add(cachingLayer.removeAll().subscribeOn(scheduler));
+        }
+
+        Completable.merge(clearingCompletables).await();
     }
 
     private Observable<V> wrapProvider(final K key) {
-        return Observable.defer(new Func0<Observable<V>>() {
-            @Override
-            public Observable<V> call() {
-                return dataProvider.get(key)
-                        .doOnNext(new Action1<V>() {
-                            @Override
-                            public void call(V v) {
-                                cacheValueInUpperLayers(-1, key, v);
-                            }
-                        });
-            }
-        });
+        return Observable.defer(() -> dataProvider.get(key)
+                .doOnNext(v -> cacheValueInUpperLayers(-1, key, v)));
     }
 
     private Observable<V> wrapLayer(final int layerId, final K key) {
-        return Observable.defer(new Func0<Observable<V>>() {
-            @Override
-            public Observable<V> call() {
-                CachingLayer<K, V> cachingLayer = cachingLayers.get(layerId);
+        return Observable.defer(() -> {
+            CachingLayer<K, V> cachingLayer = cachingLayers.get(layerId);
 
-                return cachingLayer.get(key)
-                        // Ignores expired values
-                        .filter(new Func1<Cached<V>, Boolean>() {
-                            @Override
-                            public Boolean call(Cached<V> cached) {
-                                long cachedSince = DateUtils.getCurrentTimestamp() - cached.timestamp();
-                                boolean hasExpired = cachedSince >= cacheExpirationDelay;
+            return cachingLayer.get(key)
+                    // Ignores expired values
+                    .filter(cached -> {
+                        long cachedSince = DateUtils.getCurrentTimestamp() - cached.timestamp();
+                        boolean hasExpired = cachedSince >= cacheExpirationDelay;
 
-                                if (hasExpired) {
-                                    Timber.d("Value has expired (layer %d) !", layerId);
-                                }
+                        if (hasExpired) {
+                            Timber.d("Value has expired (layer %d) !", layerId);
+                        }
 
-                                return !hasExpired;
-                            }
-                        })
-                        .map(new Func1<Cached<V>, V>() {
-                            @Override
-                            public V call(Cached<V> cached) {
-                                return cached.value();
-                            }
-                        })
-                        // Caches returned value in upper caching layers
-                        .doOnNext(new Action1<V>() {
-                            @Override
-                            public void call(V value) {
-                                cacheValueInUpperLayers(layerId, key, value);
-                            }
-                        });
-            }
+                        return !hasExpired;
+                    })
+                    .map(cached -> cached.value())
+                    // Caches returned value in upper caching layers
+                    .doOnNext(value -> cacheValueInUpperLayers(layerId, key, value));
         });
     }
 

@@ -2,14 +2,14 @@
 * Scrolls to the top of the page
 */
 function scrollToTop() {
-    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
 }
 
 /**
 * Scrolls to the bottom of the page
 */
 function scrollToBottom() {
-    document.body.scrollTop = document.body.scrollHeight + 300;
+    document.documentElement.scrollTop = document.documentElement.scrollHeight + 300;
 }
 
 /**
@@ -17,7 +17,20 @@ function scrollToBottom() {
 * @param id element id
 */
 function scrollToElement(id) {
-    location.hash = "#" + id;
+    var targetHash = "#" + id;
+
+    if (location.hash === targetHash) {
+        document.documentElement.scrollTop = window.activeHashScrollY;
+    }
+    else {
+        location.hash = targetHash;
+    }
+
+    window.activeHashScrollY = window.scrollY;
+}
+
+function scrollToFixedPosition(positionScrollY) {
+    document.documentElement.scrollTop = positionScrollY;
 }
 
 /**

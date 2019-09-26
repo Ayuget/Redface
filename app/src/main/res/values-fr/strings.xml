@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2015 Ayuget
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -86,6 +85,10 @@
     <string name="title_activity_login">Se connecter</string>
     <string name="pref_notify_private_messages_summary">Être notifié lors de la réception d\'un MP</string>
     <string name="pref_notify_private_messages_title">Notifications pour les nouveaux MPs</string>
+    <string name="private_messages_notification_channel">Messages Privés</string>
+    <string name="new_private_messages_count">{count} nouveaux messages</string>
+    <string name="new_private_messages_summary">Nouveaux messages privés</string>
+    <string name="new_private_messages_title">Nouveau message privé de {username}</string>
 
     <string-array name="pref_default_topic_filter_values">
         <item>Tous</item>
@@ -283,4 +286,58 @@
     <string name="search_topic_ended">Aucun résultat supplémentaire</string>
     <string name="pref_topic_list_compact_mode_more_info_title">Plus d\'infos en mode compact</string>
     <string name="pref_topic_list_compact_mode_more_info_summary">Affiche plus d\'informations sur le sujet</string>
+    <string name="profile_email_label">Email</string>
+    <string name="profile_birthday_label">Date de naissance</string>
+    <string name="profile_gender_label">Sexe</string>
+    <string name="profile_city_label">Ville</string>
+    <string name="profile_employment_label">Profession</string>
+    <string name="profile_hobbies_label">Loisirs</string>
+    <string name="profile_status_label">Statut</string>
+    <string name="profile_message_count_label">Messages</string>
+    <string name="profile_arrival_date_label">Date d\'arrivée sur le forum</string>
+    <string name="profile_last_message_date">Date du dernier message</string>
+    <string name="profile_personal_quote_label">Citation personnelle</string>
+    <string name="profile_signature_label">Signature des messages</string>
+    <string name="profile_personal_smilies_label">Smilies perso</string>
+    <string name="action_report_post_label">Demande de modération</string>
+    <string name="action_report_validate">Envoyer</string>
+    <string name="report_post_failed">Erreur lors de la demande de modération</string>
+    <string name="report_join_label">Une demande de modération a déjà été envoyée sur ce message, voulez vous vous joindre à cette demande ?</string>
+    <string name="report_text_hint">Raison de la demande de modération</string>
+    <string name="report_request_in_progress">Votre demande de modération est en cours de traitement</string>
+    <string name="report_already_treated">Demande de modération déjà traitée</string>
+    <string name="report_request_success">Demande de modération correctement envoyée</string>
+    <string name="profile_personal_smilies_edit_smiley_keywords">Editer les mots-clefs</string>
+    <string name="profile_personal_smilies_mark_as_favorite">Ajouter aux favoris</string>
+    <string name="profile_personal_smilies_remove_from_favorites">Supprimer des favoris</string>
+    <string name="profile_personal_smilies_copy_code">Copier le code</string>
+    <string name="profile_personal_smilies_code_copied">Code du smiley copié</string>
+    <string name="profile_forum_info">Informations relatives au forum</string>
+    <string name="profile_general_info">Information générales</string>
+    <string name="add_smiley_as_favorite_success">Smiley correctement ajouté en favori</string>
+    <string name="add_smiley_as_favorite_unknown_error">Erreur lors de l\'ajout du smiley en tant que favori</string>
+    <string name="edit_smiley_keywords_success">Mots-clef du smiley correctement mis à jour</string>
+    <string name="edit_smiley_keywords_failure">Erreur lors de la mise à jour des mots-clef du smiley</string>
+    <string name="remove_smiley_from_favorites_success">Smiley correctement supprimé des favoris</string>
+    <string name="remove_smiley_from_favorites_failure">Erreur lors de la suppression du smiley des favoris</string>
+    <string name="profile_favorite_smilies_label">Smileys favoris</string>
+    <string name="profile_no_favorite_smilies">Aucun smiley favori. Vous pouvez en ajouter via un appui-long au sein d\'un sujet ou lorsque vous rechercher des smileys en composant un message.</string>
+    <string name="profile_account_connection_action_connect">Connexion</string>
+    <string name="profile_account_connection_action_update_credentials">Mettre à jour les identifiants</string>
+    <string name="profile_account_connection_connected">Connecté</string>
+    <string name="profile_account_connection_disconnected">Déconnecté</string>
+    <string name="profile_account_connection_title">Connexion au forum</string>
+    <string name="adding_smiley_as_favorite">Ajout du smileys aux favoris…</string>
+    <string name="removing_smiley_from_favorites">Suppression du smiley des favoris…</string>
+    <string name="add_smiley_as_favorite_max_reached_out_error">Impossible d\'ajouter plus de 10 smileys favoris</string>
+    <string name="add_smiley_as_favorite_already_added_error">Smiley déjà ajouté en favori</string>
+    <string name="action_add_smiley_to_favorites">Ajouter le smiley aux favoris</string>
+    <string name="action_copy_smiley_code">Copier le code du smiley</string>
+    <string name="favorite_smileys_button_description">Smileys favoris</string>
+    <string name="pref_enable_smilies_actions_title">Activer les actions sur les smileys</string>
+    <string name="pref_enable_smilies_actions_summary">Permettre les actions sur les smileys dans un sujet. Peut un peu ralentir l\'affichage des messages.</string>
+    <string name="pref_clear_categories_cache_label">Vider le cache des catégories</string>
+    <string name="pref_clear_categories_cache_summary">Vide le cache des catégories pour l\'utilisateur courant</string>
+    <string name="pref_technical_category">Technique</string>
+    <string name="categories_cache_cleared">Cache des catégories vidé, fermez et relancer l\'app</string>
 </resources>

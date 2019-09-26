@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="56dp"
+	android:orientation="horizontal"
+	style="@style/Redface.ProfileDetails.Smilies.Container">
+
+	<ImageView
+		android:id="@+id/smiley_image"
+		android:layout_width="72dp"
+		android:layout_height="wrap_content"
+		android:contentDescription="@string/pref_avatars_strategy"
+		android:scaleType="fitCenter"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent"
+		tools:srcCompat="@tools:sample/backgrounds/scenic" />
+
+	<TextView
+		android:id="@+id/smiley_code"
+		style="@style/Redface.ProfileDetails.Smilies.SmileyCode"
+		android:layout_width="0dp"
+		android:layout_height="0dp"
+		android:gravity="center_vertical"
+		android:paddingLeft="8dp"
+		android:paddingRight="8dp"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toStartOf="@+id/copy_smiley_code"
+		app:layout_constraintHorizontal_bias="0.0"
+		app:layout_constraintStart_toEndOf="@+id/smiley_image"
+		app:layout_constraintTop_toTopOf="parent"
+		app:layout_constraintVertical_bias="1.0"
+		tools:text="[:awesome_smiley_with_a_long_tag]" />
+
+	<ImageButton
+		android:id="@+id/copy_smiley_code"
+		style="@style/Redface.ProfileDetails.Smilies.SmileyAction"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginStart="8dp"
+		android:layout_marginLeft="8dp"
+		android:layout_marginEnd="8dp"
+		android:layout_marginRight="8dp"
+		android:contentDescription="@string/profile_personal_smilies_copy_code"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toStartOf="@+id/edit_smiley_keywords"
+		app:layout_constraintStart_toEndOf="@+id/smiley_code"
+		app:layout_constraintTop_toTopOf="parent"
+		app:srcCompat="@drawable/ic_action_copy" />
+
+	<ImageButton
+		android:id="@+id/edit_smiley_keywords"
+		style="@style/Redface.ProfileDetails.Smilies.SmileyAction"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginStart="8dp"
+		android:layout_marginLeft="8dp"
+		android:layout_marginEnd="8dp"
+		android:layout_marginRight="8dp"
+		android:contentDescription="@string/profile_personal_smilies_edit_smiley_keywords"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toStartOf="@+id/add_smiley_to_favorites"
+		app:layout_constraintStart_toEndOf="@+id/copy_smiley_code"
+		app:layout_constraintTop_toTopOf="parent"
+		app:srcCompat="@drawable/ic_action_book" />
+
+	<ImageButton
+		android:id="@+id/add_smiley_to_favorites"
+		style="@style/Redface.ProfileDetails.Smilies.SmileyAction"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginStart="8dp"
+		android:layout_marginLeft="8dp"
+		android:contentDescription="@string/profile_personal_smilies_mark_as_favorite"
+		app:srcCompat="@drawable/ic_action_favorite"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toEndOf="@+id/remove_smiley_from_favorites"
+		app:layout_constraintStart_toEndOf="@+id/edit_smiley_keywords"
+		app:layout_constraintTop_toTopOf="parent" />
+
+	<ImageButton
+		android:id="@+id/remove_smiley_from_favorites"
+		style="@style/Redface.ProfileDetails.Smilies.SmileyAction"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginStart="8dp"
+		android:layout_marginLeft="8dp"
+		android:contentDescription="@string/profile_personal_smilies_remove_from_favorites"
+		app:srcCompat="@drawable/ic_action_delete"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintStart_toEndOf="@+id/add_smiley_to_favorites"
+		app:layout_constraintTop_toTopOf="parent" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

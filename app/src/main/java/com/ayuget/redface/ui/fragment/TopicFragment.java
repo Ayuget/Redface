@@ -23,13 +23,6 @@ import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.AttrRes;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.view.PagerTabStrip;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.ActionMode;
@@ -43,6 +36,13 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.AttrRes;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.Toolbar;
+import androidx.viewpager.widget.PagerTabStrip;
+import androidx.viewpager.widget.ViewPager;
 
 import com.ayuget.redface.R;
 import com.ayuget.redface.account.UserManager;
@@ -66,16 +66,19 @@ import com.ayuget.redface.ui.event.GoToPostEvent;
 import com.ayuget.redface.ui.event.OverriddenPagePosition;
 import com.ayuget.redface.ui.event.PageRefreshRequestEvent;
 import com.ayuget.redface.ui.event.PageSelectedEvent;
+import com.ayuget.redface.ui.event.ReportPostEvent;
 import com.ayuget.redface.ui.event.ScrollToPositionEvent;
 import com.ayuget.redface.ui.event.ShowAllSpoilersEvent;
 import com.ayuget.redface.ui.event.TopicPageCountUpdatedEvent;
 import com.ayuget.redface.ui.event.UnquoteAllPostsEvent;
 import com.ayuget.redface.ui.event.WritePrivateMessageEvent;
 import com.ayuget.redface.ui.misc.PagePosition;
+import com.ayuget.redface.ui.misc.PostReportStatus;
 import com.ayuget.redface.ui.misc.SnackbarHelper;
 import com.ayuget.redface.ui.misc.TopicPosition;
 import com.ayuget.redface.ui.misc.UiUtils;
 import com.ayuget.redface.ui.view.TopicPageView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.hannesdorfmann.fragmentargs.annotation.Arg;
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs;
 import com.squareup.otto.Subscribe;
@@ -86,13 +89,16 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.InjectView;
+import butterknife.BindView;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 import static android.content.DialogInterface.BUTTON_POSITIVE;
 
 @FragmentWithArgs
 public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageChangeListener, TopicPageView.OnQuoteListener {
+    private static final String ARG_TOPIC_CURRENT_PAGE = "topicCurrentPage";
     private static final String ARG_TOPIC_POSITIONS_STACK = "topicPositionsStack";
     private static final String ARG_QUOTED_MESSAGES_CACHE = "quotedMessagesCache";
     private static final String ARG_IS_IN_ACTION_MODE = "isInActionMode";
@@ -105,6 +111,8 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     private TopicPageAdapter topicPageAdapter;
 
     private EditText goToPageEditText;
+
+    private EditText reportPostReasonEditText;
 
     private ArrayList<TopicPosition> topicPositionsStack;
 
@@ -145,19 +153,19 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     @Inject
     RedfaceSettings settings;
 
-    @InjectView(R.id.pager)
+    @BindView(R.id.pager)
     ViewPager pager;
 
-    @InjectView(R.id.titlestrip)
+    @BindView(R.id.titlestrip)
     PagerTabStrip pagerTitleStrip;
 
-    @InjectView(R.id.reply_button)
+    @BindView(R.id.reply_button)
     FloatingActionButton replyButton;
 
-    @InjectView(R.id.move_to_top_button)
+    @BindView(R.id.move_to_top_button)
     FloatingActionButton moveToTopButton;
 
-    @InjectView(R.id.move_to_bottom_button)
+    @BindView(R.id.move_to_bottom_button)
     FloatingActionButton moveToBottomButton;
 
     TextView topicWordSearch;
@@ -167,15 +175,10 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     Topic topic;
 
     @Arg
-    int initialPage;
+    int currentPage;
 
     @Arg
     PagePosition initialPagePosition;
-
-    /**
-     * Page currently displayed in the viewPager
-     */
-    private int currentPage;
 
     /**
      * Id of the first post of the currently selected page or id of initial post
@@ -202,15 +205,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Timber.d("[Topic=%d], initialPage = %d, initialPagePosition = %s", topic.id(), initialPage, initialPagePosition);
-
-        // Start at initial page, currentPage value is updated via the onPageSelected
-        // listener on the ViewPager
-        currentPage = initialPage;
-
-        if (topicPageAdapter == null) {
-            topicPageAdapter = new TopicPageAdapter(getChildFragmentManager(), topic, initialPage, initialPagePosition);
-        }
+        Timber.d("[Topic=%d], initialPage = %d, initialPagePosition = %s", topic.id(), currentPage, initialPagePosition);
 
         if (savedInstanceState != null) {
             topicPositionsStack = savedInstanceState.getParcelableArrayList(ARG_TOPIC_POSITIONS_STACK);
@@ -218,6 +213,11 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
             isInActionMode = savedInstanceState.getBoolean(ARG_IS_IN_ACTION_MODE);
             isInSearchMode = savedInstanceState.getBoolean(ARG_IS_IN_SEARCH_MODE);
             currentTopicSearchResult = savedInstanceState.getParcelable(ARG_CURRENT_SEARCH_RESULT);
+            currentPage = savedInstanceState.getInt(ARG_TOPIC_CURRENT_PAGE);
+        }
+
+        if (topicPageAdapter == null) {
+            topicPageAdapter = new TopicPageAdapter(getChildFragmentManager(), topic, currentPage, initialPagePosition);
         }
 
         if (topicPositionsStack == null) {
@@ -237,19 +237,10 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
         pagerTitleStrip.setDrawFullUnderline(false);
         pagerTitleStrip.setTabIndicatorColor(getResources().getColor(R.color.theme_primary));
         pager.setAdapter(topicPageAdapter);
-        pager.setCurrentItem(initialPage - 1);
+        pager.setCurrentItem(currentPage - 1);
 
         if (userManager.getActiveUser().isGuest()) {
-            replyButton.setVisibility(View.INVISIBLE);
-        } else {
-            replyButton.setOnClickListener((v) -> {
-                if (isInSearchMode) {
-                    searchInTopic();
-                }
-                else {
-                    replyToTopic();
-                }
-            });
+            replyButton.hide();
         }
 
         setupQuickNavigationButtons();
@@ -270,16 +261,35 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
         }
 
         pager.addOnPageChangeListener(this);
+
+        if (settings.areNavigationButtonsEnabled()) {
+            moveToTopButton.setOnClickListener((c) -> bus.post(ScrollToPositionEvent.create(topic, currentPage, OverriddenPagePosition.toTop())));
+            moveToBottomButton.setOnClickListener((c) -> bus.post(ScrollToPositionEvent.create(topic, currentPage, OverriddenPagePosition.toBottom())));
+        }
+
+        if (!userManager.getActiveUser().isGuest()) {
+            replyButton.setOnClickListener((v) -> {
+                if (isInSearchMode) {
+                    searchInTopic();
+                } else {
+                    replyToTopic();
+                }
+            });
+        }
     }
 
     @Override
     public void onPause() {
-        super.onPause();
-
         if (isInSearchMode) {
             stopSearchMode(getToolbar(), false);
         }
+
         pager.removeOnPageChangeListener(this);
+        moveToBottomButton.setOnClickListener(null);
+        moveToTopButton.setOnClickListener(null);
+        replyButton.setOnClickListener(null);
+
+        super.onPause();
     }
 
     @Override
@@ -297,12 +307,12 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
         outState.putParcelableArrayList(ARG_TOPIC_POSITIONS_STACK, topicPositionsStack);
         outState.putBoolean(ARG_IS_IN_SEARCH_MODE, isInSearchMode);
+        outState.putInt(ARG_TOPIC_CURRENT_PAGE, currentPage);
 
         if (isInActionMode) {
             outState.putParcelable(ARG_QUOTED_MESSAGES_CACHE, quotedMessagesCache);
             outState.putBoolean(ARG_IS_IN_ACTION_MODE, isInActionMode);
-        }
-        else {
+        } else {
             quotedMessagesCache.clear();
         }
 
@@ -400,8 +410,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     private void startSearchMode(Toolbar toolbar, boolean progressively) {
         if (progressively) {
             tintToolbarProgressively(toolbar, R.attr.colorPrimary, R.attr.statusBarBackgroundColor, R.attr.replyButtonBackground, R.attr.actionModeBackground, R.attr.actionModeBackground, R.attr.replyButtonBackground);
-        }
-        else {
+        } else {
             tintToolbarImmediately(toolbar, R.attr.actionModeBackground, R.attr.actionModeBackground, R.attr.replyButtonBackground);
         }
 
@@ -420,8 +429,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
         if (progressively) {
             tintToolbarProgressively(toolbar, R.attr.actionModeBackground, R.attr.actionModeBackground, R.attr.replyButtonBackground, R.attr.colorPrimary, R.attr.statusBarBackgroundColor, R.attr.replyButtonBackground);
-        }
-        else {
+        } else {
             tintToolbarImmediately(toolbar, R.attr.colorPrimary, R.attr.statusBarBackgroundColor, R.attr.replyButtonBackground);
         }
 
@@ -491,7 +499,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     public void onToolbarInitialized(Toolbar toolbar) {
         MultiPaneActivity hostActivity = (MultiPaneActivity) getActivity();
 
-        if (! hostActivity.isTwoPaneMode()) {
+        if (!hostActivity.isTwoPaneMode()) {
             showUpButton();
         }
 
@@ -504,11 +512,10 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     public void onBatchOperation(boolean active) {
         MultiPaneActivity hostActivity = (MultiPaneActivity) getActivity();
 
-        if (! hostActivity.isTwoPaneMode()) {
+        if (!hostActivity.isTwoPaneMode()) {
             if (active) {
                 tintToolbarProgressively(getToolbar(), R.attr.colorPrimary, R.attr.statusBarBackgroundColor, R.attr.replyButtonBackground, R.attr.actionModeBackground, R.attr.actionModeBackground, R.attr.replyButtonBackground);
-            }
-            else {
+            } else {
                 tintToolbarImmediately(getToolbar(), R.attr.colorPrimary, R.attr.statusBarBackgroundColor, R.attr.replyButtonBackground);
             }
         }
@@ -554,8 +561,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
         if (currentPage == event.getPage()) {
             event.getTopicPageView().setPagePosition(event.getTargetPost());
-        }
-        else {
+        } else {
             overriddenPagePosition = OverriddenPagePosition.toPost(event.getTargetPost());
             if (pager != null) {
                 pager.setCurrentItem(event.getPage() - 1);
@@ -563,26 +569,107 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
         }
     }
 
+    @Subscribe
+    public void onPostReported(ReportPostEvent reportPostEvent) {
+        if (!reportPostEvent.getTopic().equals(topic)) {
+            return;
+        }
+
+        Timber.d("Reporting post %d", reportPostEvent.getPostId());
+
+        subscribe(mdService.checkPostReportStatus(userManager.getActiveUser(), topic, reportPostEvent.getPostId())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new EndlessObserver<PostReportStatus>() {
+                    @Override
+                    public void onNext(PostReportStatus postReportStatus) {
+
+                        if (postReportStatus == PostReportStatus.JOIN_REPORT) {
+                            Timber.d("Existing report for post %d", reportPostEvent.getPostId());
+                            showJoinReportDialog(reportPostEvent.getPostId());
+                        } else if (postReportStatus == PostReportStatus.REPORT_IN_PROGRESS) {
+                            Timber.d("Report is in progress for post %d", reportPostEvent.getPostId());
+                            Toast.makeText(TopicFragment.this.getActivity(), R.string.report_request_in_progress, Toast.LENGTH_SHORT).show();
+                        } else if (postReportStatus == PostReportStatus.REPORT_TREATED) {
+                            Timber.d("Report has already been treated for post %d", reportPostEvent.getPostId());
+                            Toast.makeText(TopicFragment.this.getActivity(), R.string.report_already_treated, Toast.LENGTH_SHORT).show();
+                        } else {
+                            Timber.d("No existing report for post %d, asking for reason", reportPostEvent.getPostId());
+                            showReportPostDialog(reportPostEvent.getPostId());
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable throwable) {
+                        Timber.e(throwable, "Unexpected error while reporting post");
+                        Toast.makeText(TopicFragment.this.getActivity(), R.string.report_post_failed, Toast.LENGTH_SHORT).show();
+                    }
+                }));
+    }
+
+    private void showReportPostDialog(int postId) {
+        AlertDialog reportPostDialog = new AlertDialog.Builder(getActivity())
+                .setView(R.layout.dialog_report_post)
+                .setPositiveButton(R.string.action_report_validate, (dialog1, which) -> {
+                    String reportReason = reportPostReasonEditText.getText().toString();
+                    reportPost(postId, reportReason, false);
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+
+        reportPostReasonEditText = reportPostDialog.findViewById(R.id.post_report_reason);
+    }
+
+    private void showJoinReportDialog(int postId) {
+        AlertDialog reportPostDialog = new AlertDialog.Builder(getActivity())
+                .setView(R.layout.dialog_join_report)
+                .setPositiveButton(R.string.action_report_validate, (dialog1, which) -> {
+                    reportPost(postId, null, true);
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
+
+    private void reportPost(int postId, String reason, boolean joinReport) {
+        subscribe(mdService.reportPost(userManager.getActiveUser(), topic, postId, reason, joinReport)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new EndlessObserver<Boolean>() {
+                    @Override
+                    public void onNext(Boolean success) {
+                        if (success) {
+                            SnackbarHelper.make(TopicFragment.this, R.string.report_request_success).show();
+                        } else {
+                            Toast.makeText(TopicFragment.this.getActivity(), R.string.report_post_failed, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable throwable) {
+                        Timber.e(throwable, "Unexpected error while deleting post");
+                        Toast.makeText(TopicFragment.this.getActivity(), R.string.delete_post_failed, Toast.LENGTH_SHORT).show();
+                    }
+                }));
+    }
+
     /**
      * Callback called by the activity when the back key has been pressed
+     *
      * @return true if event was consumed, false otherwise
      */
     public boolean onBackPressed() {
         if (isInSearchMode) {
             getToolbar().collapseActionView();
             return true;
-        }
-        else if (topicPositionsStack == null || topicPositionsStack.size() == 0) {
+        } else if (topicPositionsStack == null || topicPositionsStack.size() == 0) {
             return false;
-        }
-        else {
+        } else {
             TopicPosition topicPosition = topicPositionsStack.remove(topicPositionsStack.size() - 1);
 
             if (currentPage == topicPosition.page()) {
                 OverriddenPagePosition targetPagePosition = OverriddenPagePosition.toScrollY(topicPosition.pageScrollYTarget());
                 bus.post(ScrollToPositionEvent.create(topic, currentPage, targetPagePosition));
-            }
-            else {
+            } else {
                 overriddenPagePosition = OverriddenPagePosition.toScrollY(topicPosition.pageScrollYTarget());
                 pager.setCurrentItem(topicPosition.page() - 1);
             }
@@ -590,6 +677,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
             return true;
         }
     }
+
 
     /**
      * Returns the currently displayed topic
@@ -635,7 +723,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
                 return true;
 
             case R.id.action_copy_link:
-                UiUtils.copyToClipboard(getActivity(), topicUrl);
+                UiUtils.copyLinkToClipboard(getActivity(), topicUrl);
                 break;
             case R.id.action_share:
                 UiUtils.shareText(getActivity(), topicUrl);
@@ -684,13 +772,8 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
             float buttonsAlpha = 0.30f;
             moveToTopButton.setAlpha(buttonsAlpha);
             moveToBottomButton.setAlpha(buttonsAlpha);
-
-            moveToTopButton.setOnClickListener((c) -> bus.post(ScrollToPositionEvent.create(topic, currentPage, OverriddenPagePosition.toTop())));
-            moveToBottomButton.setOnClickListener((c) -> bus.post(ScrollToPositionEvent.create(topic, currentPage, OverriddenPagePosition.toBottom())));
-        }
-        else {
-            moveToBottomButton.setVisibility(View.GONE);
-            moveToTopButton.setVisibility(View.GONE);
+            moveToTopButton.show();
+            moveToBottomButton.show();
         }
     }
 
@@ -701,8 +784,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
                     try {
                         int pageNumber = Integer.valueOf(goToPageEditText.getText().toString());
                         pager.setCurrentItem(pageNumber - 1);
-                    }
-                    catch (NumberFormatException e) {
+                    } catch (NumberFormatException e) {
                         Timber.e(e, "Invalid page number entered : %s", goToPageEditText.getText().toString());
                         SnackbarHelper.make(TopicFragment.this, R.string.invalid_page_number).show();
                     }
@@ -729,12 +811,10 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
                     try {
                         int pageNumber = Integer.valueOf(s.toString());
                         positiveAction.setEnabled(pageNumber >= 1 && pageNumber <= topic.pagesCount());
-                    }
-                    catch (NumberFormatException e) {
+                    } catch (NumberFormatException e) {
                         positiveAction.setEnabled(false);
                     }
-                }
-                else {
+                } else {
                     positiveAction.setEnabled(false);
                 }
             }
@@ -751,7 +831,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
     @Override
     public void onPostQuoted(final int page, final long postId) {
-        if (! isInActionMode) {
+        if (!isInActionMode) {
             startMultiQuoteAction(true);
         }
 
@@ -800,8 +880,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
                 // previously saved state.
                 if (quotedMessagesCache.size() > 1) {
                     actionMode.setTitle(Phrase.from(getContext(), R.string.quoted_messages_plural).put("count", quotedMessagesCache.size()).format());
-                }
-                else {
+                } else {
                     actionMode.setTitle(R.string.quoted_messages);
                 }
 
@@ -837,7 +916,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
     /**
      * Starts the multi-quote action mode.
-     *
+     * <p>
      * Note : quoted messages cache is not cleared, because it's impossible (without hacks) to
      * differentiate when the action mode is actually destroyed by the user (back button pressed,
      * or close button in the CAB) from configuration changes (rotation, change of context, ...)
@@ -861,8 +940,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
         if (quoteActionMode != null) {
             if (quotedMessagesCache.size() > 1) {
                 quoteActionMode.setTitle(Phrase.from(getContext(), R.string.quoted_messages_plural).put("count", quotedMessagesCache.size()).format());
-            }
-            else {
+            } else {
                 quoteActionMode.setTitle(R.string.quoted_messages);
             }
         }
@@ -878,8 +956,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
             stopMultiQuoteAction();
             replyToTopic(quotedContent);
 
-        }
-        else {
+        } else {
             quotedMessagesCache.clear();
             replyToTopic(null);
         }
@@ -941,8 +1018,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
                 if (topicSearchResult.noMoreResult()) {
                     SnackbarHelper.make(TopicFragment.this, R.string.search_topic_ended).show();
-                }
-                else {
+                } else {
                     goToSearchResult(topicSearchResult);
                 }
             }
@@ -961,8 +1037,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
         if (currentPage == topicSearchResult.page()) {
             bus.post(ScrollToPositionEvent.create(topic, topicSearchResult.page(), OverriddenPagePosition.toPost(targetPagePosition), getActiveSearchTerms()));
-        }
-        else {
+        } else {
             overriddenPagePosition = OverriddenPagePosition.toPost(targetPagePosition);
             if (pager != null) {
                 pager.setCurrentItem(topicSearchResult.page() - 1);
@@ -975,14 +1050,15 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
             String wordSearchText = topicWordSearch.getText().toString();
             String authorSearchText = topicAuthorSearch.getText().toString();
             return SearchTerms.create(wordSearchText, authorSearchText);
-        }
-        else {
+        } else {
             return null;
         }
     }
 
     public void notifyPageLoaded(int page, long searchStartPostId) {
-        Timber.d("Page '%d' is loaded, search should start at post id '%d'", page, searchStartPostId);
-        this.searchStartPostId = searchStartPostId;
+        if (page == currentPage) {
+            Timber.d("Page '%d' is loaded, search should start at post id '%d'", page, searchStartPostId);
+            this.searchStartPostId = searchStartPostId;
+        }
     }
 }

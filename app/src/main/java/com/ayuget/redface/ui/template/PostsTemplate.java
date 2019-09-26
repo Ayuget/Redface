@@ -58,6 +58,7 @@ public class PostsTemplate extends HTMLTemplate<TopicPage> {
                         .put("posts", postsBuffer.toString())
                         .put("theme_class", themeManager.getActiveThemeCssClass() + " " + themeManager.getFontSizeCssClass() + " " + themeManager.getQuoteStyleExtraClass())
                         .put("target_anchor", getTargetAnchor(topicPage.pageInitialPosition()))
+                        .put("position_after_page_load", topicPage.positionAfterPageLoad() ? "true" : "false")
                         .format()
                         .toString()
         );

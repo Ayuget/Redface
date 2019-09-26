@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2015 Ayuget
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +15,11 @@
   -->
 
 <resources>
+
     <style name="Theme.Redface.Night.Base" parent="Theme.AppCompat.NoActionBar" />
+
     <style name="Theme.Redface.Dark.Base" parent="Theme.AppCompat.NoActionBar" />
+
     <style name="Theme.Redface.Light.Base" parent="Theme.AppCompat.Light.NoActionBar" />
 
     <!-- Dark theme -->
@@ -70,8 +72,16 @@
         <item name="networkIconDrawable">@drawable/ic_action_cloud</item>
         <item name="blacklistIconDrawable">@drawable/ic_action_block</item>
 
-        <item name="quickNavigationButtonBackground">@color/quick_navigation_button_color_dark</item>
+        <item name="quickNavigationButtonBackground">@color/quick_navigation_button_color_dark
+        </item>
         <item name="replyButtonBackground">@color/theme_primary</item>
+
+        <item name="profileConnectionStatusOkBackgroundColor">
+            @color/profile_connection_status_bg_ok_dark
+        </item>
+        <item name="profileConnectionStatusKoBackgroundColor">
+            @color/profile_connection_status_bg_ko_dark
+        </item>
     </style>
 
     <!-- Light theme -->
@@ -114,7 +124,8 @@
         <item name="toolbarPopupTheme">@style/ThemeOverlay.AppCompat.Light</item>
 
         <item name="pagerTitleStripBackground">@color/pager_strip_background</item>
-        <item name="tabletLandscapePagerBackground">@color/pager_strip_tablet_background_light</item>
+        <item name="tabletLandscapePagerBackground">@color/pager_strip_tablet_background_light
+        </item>
 
         <item name="replyToolbarBackground">@color/reply_actions_toolbar_color_light</item>
         <item name="replyToolbarIconsColor">@color/reply_toolbar_icons_color_light</item>
@@ -124,8 +135,16 @@
         <item name="networkIconDrawable">@drawable/ic_action_cloud_light</item>
         <item name="blacklistIconDrawable">@drawable/ic_action_block_light</item>
 
-        <item name="quickNavigationButtonBackground">@color/quick_navigation_button_color_light</item>
+        <item name="quickNavigationButtonBackground">@color/quick_navigation_button_color_light
+        </item>
         <item name="replyButtonBackground">@color/theme_primary</item>
+
+        <item name="profileConnectionStatusOkBackgroundColor">
+            @color/profile_connection_status_bg_ok_light
+        </item>
+        <item name="profileConnectionStatusKoBackgroundColor">
+            @color/profile_connection_status_bg_ko_light
+        </item>
     </style>
 
     <!-- Night theme -->
@@ -178,8 +197,16 @@
         <item name="networkIconDrawable">@drawable/ic_action_cloud</item>
         <item name="blacklistIconDrawable">@drawable/ic_action_block</item>
 
-        <item name="quickNavigationButtonBackground">@color/quick_navigation_button_color_dark</item>
+        <item name="quickNavigationButtonBackground">@color/quick_navigation_button_color_dark
+        </item>
         <item name="replyButtonBackground">@color/theme_primary</item>
+
+        <item name="profileConnectionStatusOkBackgroundColor">
+            @color/profile_connection_status_bg_ok_dark
+        </item>
+        <item name="profileConnectionStatusKoBackgroundColor">
+            @color/profile_connection_status_bg_ko_dark
+        </item>
     </style>
 
     <style name="Theme.Redface.Transparent.Dark" parent="Theme.Redface.Dark">

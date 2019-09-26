@@ -18,12 +18,12 @@ package com.ayuget.redface.data.state;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
+import android.text.TextUtils;
 
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.api.model.User;
-import com.google.common.base.Splitter;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -125,7 +125,7 @@ public class ResponseStore {
             String entryValue = (String) entry.getValue();
 
             if (entryKey.startsWith(RESPONSE_NAME_PREFIX)) {
-                List<String> tokens = Splitter.on("_").splitToList(entryKey);
+                List<String> tokens = Arrays.asList(TextUtils.split(entryKey, "_"));
 
                 if (tokens.size() == 3) {
                     String username = tokens.get(1);

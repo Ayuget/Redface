@@ -26,20 +26,16 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 
-@Module(
-        includes = ContextModule.class,
-        injects = {
-                RedfaceUserManager.class
-        },
-        library = true
-)
+@Module(includes = {ContextModule.class})
 public class AccountModule {
-    @Provides @Singleton
+    @Provides
+    @Singleton
     RedfaceAccountManager provideAccountManager(AccountManager androidAccountManager) {
         return new RedfaceAccountManager(androidAccountManager);
     }
 
-    @Provides @Singleton
+    @Provides
+    @Singleton
     UserManager provideUserManager(RedfaceSettings settings, RedfaceAccountManager accountManager) {
         return new RedfaceUserManager(settings, accountManager);
     }

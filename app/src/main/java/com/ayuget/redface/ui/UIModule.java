@@ -22,24 +22,6 @@ import com.ayuget.redface.account.UserManager;
 import com.ayuget.redface.image.ImageModule;
 import com.ayuget.redface.settings.Blacklist;
 import com.ayuget.redface.settings.RedfaceSettings;
-import com.ayuget.redface.ui.activity.AccountActivity;
-import com.ayuget.redface.ui.activity.EditPostActivity;
-import com.ayuget.redface.ui.activity.ExifDetailsActivity;
-import com.ayuget.redface.ui.activity.ImageSharingActivity;
-import com.ayuget.redface.ui.activity.PrivateMessagesActivity;
-import com.ayuget.redface.ui.activity.ReplyActivity;
-import com.ayuget.redface.ui.activity.SettingsActivity;
-import com.ayuget.redface.ui.activity.TopicsActivity;
-import com.ayuget.redface.ui.activity.WritePrivateMessageActivity;
-import com.ayuget.redface.ui.fragment.DefaultFragment;
-import com.ayuget.redface.ui.fragment.DetailsDefaultFragment;
-import com.ayuget.redface.ui.fragment.HomePreferenceFragment;
-import com.ayuget.redface.ui.fragment.MetaPageFragment;
-import com.ayuget.redface.ui.fragment.NestedPreferenceFragment;
-import com.ayuget.redface.ui.fragment.PostsFragment;
-import com.ayuget.redface.ui.fragment.PrivateMessageListFragment;
-import com.ayuget.redface.ui.fragment.TopicFragment;
-import com.ayuget.redface.ui.fragment.TopicListFragment;
 import com.ayuget.redface.ui.misc.ThemeManager;
 import com.ayuget.redface.ui.template.AvatarTemplate;
 import com.ayuget.redface.ui.template.PostActionsTemplate;
@@ -49,8 +31,6 @@ import com.ayuget.redface.ui.template.PostsTemplate;
 import com.ayuget.redface.ui.template.QuickActionsTemplate;
 import com.ayuget.redface.ui.template.SmileyTemplate;
 import com.ayuget.redface.ui.template.SmileysTemplate;
-import com.ayuget.redface.ui.view.SmileySelectorView;
-import com.ayuget.redface.ui.view.TopicPageView;
 
 import javax.inject.Singleton;
 
@@ -60,68 +40,62 @@ import dagger.Provides;
 @Module(
         includes = {
                 AccountModule.class,
-                ImageModule.class
-        },
-        injects = {
-                TopicsActivity.class,
-                TopicListFragment.class,
-                TopicPageView.class,
-                PostsFragment.class,
-                TopicFragment.class,
-                DefaultFragment.class,
-                DetailsDefaultFragment.class,
-                AccountActivity.class,
-                ReplyActivity.class,
-                SmileySelectorView.class,
-                NestedPreferenceFragment.class,
-                HomePreferenceFragment.class,
-                SettingsActivity.class,
-                EditPostActivity.class,
-                MetaPageFragment.class,
-                PrivateMessagesActivity.class,
-                PrivateMessageListFragment.class,
-                WritePrivateMessageActivity.class,
-                ExifDetailsActivity.class,
-                ImageSharingActivity.class
-        },
-        library =  true,
-        complete = false
+                ImageModule.class,
+                UiInjectionModule.class
+        }
 )
 public class UIModule {
-    @Provides @Singleton AvatarTemplate provideAvatarTemplate(RedfaceApp app) {
+    @Provides
+    @Singleton
+    AvatarTemplate provideAvatarTemplate(RedfaceApp app) {
         return new AvatarTemplate(app.getApplicationContext());
     }
 
-    @Provides @Singleton SmileyTemplate provideSmileyTemplate(RedfaceApp app) {
+    @Provides
+    @Singleton
+    SmileyTemplate provideSmileyTemplate(RedfaceApp app) {
         return new SmileyTemplate(app.getApplicationContext());
     }
 
-    @Provides @Singleton QuickActionsTemplate provideQuickActions(RedfaceApp app, UserManager userManager) {
+    @Provides
+    @Singleton
+    QuickActionsTemplate provideQuickActions(RedfaceApp app, UserManager userManager) {
         return new QuickActionsTemplate(app.getApplicationContext(), userManager);
     }
 
-    @Provides @Singleton PostTemplate providePostTemplate(RedfaceApp app, UserManager userManager, AvatarTemplate avatarTemplate, PostExtraDetailsTemplate extraDetailsTemplate, PostActionsTemplate postActionsTemplate, QuickActionsTemplate quickActionsTemplate, RedfaceSettings appSettings, Blacklist blacklist) {
+    @Provides
+    @Singleton
+    PostTemplate providePostTemplate(RedfaceApp app, UserManager userManager, AvatarTemplate avatarTemplate, PostExtraDetailsTemplate extraDetailsTemplate, PostActionsTemplate postActionsTemplate, QuickActionsTemplate quickActionsTemplate, RedfaceSettings appSettings, Blacklist blacklist) {
         return new PostTemplate(app.getApplicationContext(), userManager, avatarTemplate, extraDetailsTemplate, postActionsTemplate, quickActionsTemplate, appSettings, blacklist);
     }
 
-    @Provides @Singleton PostsTemplate providePostsTemplate(RedfaceApp app, PostTemplate postTemplate, ThemeManager themeManager) {
+    @Provides
+    @Singleton
+    PostsTemplate providePostsTemplate(RedfaceApp app, PostTemplate postTemplate, ThemeManager themeManager) {
         return new PostsTemplate(app.getApplicationContext(), postTemplate, themeManager);
     }
 
-    @Provides @Singleton SmileysTemplate provideSmileysTemplate(RedfaceApp app, SmileyTemplate smileyTemplate, ThemeManager themeManager) {
+    @Provides
+    @Singleton
+    SmileysTemplate provideSmileysTemplate(RedfaceApp app, SmileyTemplate smileyTemplate, ThemeManager themeManager) {
         return new SmileysTemplate(app.getApplicationContext(), smileyTemplate, themeManager);
     }
 
-    @Provides @Singleton PostActionsTemplate providePostActionsTemplate(RedfaceApp app, UserManager userManager) {
+    @Provides
+    @Singleton
+    PostActionsTemplate providePostActionsTemplate(RedfaceApp app, UserManager userManager) {
         return new PostActionsTemplate(app.getApplicationContext(), userManager);
     }
 
-    @Provides @Singleton
+    @Provides
+    @Singleton
     PostExtraDetailsTemplate providePostExtraDetailsTemplate(RedfaceApp app) {
         return new PostExtraDetailsTemplate(app.getApplicationContext());
     }
 
-    @Provides @Singleton ThemeManager provideThemeManager(RedfaceSettings settings) {
+    @Provides
+    @Singleton
+    ThemeManager provideThemeManager(RedfaceSettings settings) {
         return new ThemeManager(settings);
     }
 }

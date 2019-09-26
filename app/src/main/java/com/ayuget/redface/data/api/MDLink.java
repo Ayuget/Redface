@@ -18,7 +18,6 @@ package com.ayuget.redface.data.api;
 
 import com.ayuget.redface.data.api.model.Category;
 import com.ayuget.redface.ui.misc.PagePosition;
-import com.google.common.base.Preconditions;
 
 /**
  * Represents an internal link, that can be in two forms :
@@ -106,8 +105,8 @@ public class MDLink {
         }
 
         public MDLink build() {
-            if (linkType != LinkType.INVALID) {
-                Preconditions.checkNotNull(this.category, "Category cannot be null");
+            if (linkType != LinkType.INVALID && this.category == null) {
+                throw new IllegalStateException("Category cannot be null");
             }
             return new MDLink(this);
         }

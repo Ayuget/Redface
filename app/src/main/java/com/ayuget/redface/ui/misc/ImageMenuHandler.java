@@ -23,10 +23,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Handler;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.app.ShareCompat;
 import android.view.View;
+
+import androidx.core.app.ActivityOptionsCompat;
+import androidx.core.app.ShareCompat;
 
 import com.ayuget.redface.R;
 import com.ayuget.redface.storage.StorageHelper;
@@ -34,6 +34,7 @@ import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.activity.BaseActivity;
 import com.ayuget.redface.ui.activity.ExifDetailsActivity;
 import com.ayuget.redface.util.ImageUtils;
+import com.google.android.material.snackbar.Snackbar;
 import com.tbruyelle.rxpermissions.RxPermissions;
 
 import java.io.File;
@@ -107,8 +108,8 @@ public class ImageMenuHandler {
     }
 
     /**
-     * Saves image from network using OkHttp. Picasso is not used because it would strip away the
-     * EXIF data once the image is saved (Picasso directly gives us a Bitmap).
+     * Saves image from network using OkHttp. Glide is not used because it would strip away the
+     * EXIF data once the image is saved (Glide directly gives us a Bitmap).
      */
     private void saveImageFromNetwork(final File mediaFile, final Bitmap.CompressFormat targetFormat, final boolean compressAsPng, final boolean notifyUser, final boolean broadcastSave, final ImageSavedCallback imageSavedCallback) {
         OkHttpClient okHttpClient = new OkHttpClient();

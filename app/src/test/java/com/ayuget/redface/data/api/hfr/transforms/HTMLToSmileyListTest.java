@@ -39,6 +39,6 @@ public class HTMLToSmileyListTest extends BaseTestCase {
         List<Smiley> smileys = htmlToSmileyList.call(readAssetFile("hfr_smiley_search.html"));
 
         assertThat(smileys.size()).isEqualTo(53);
-        assertThat(smileys.get(0).getCode()).isEqualTo("[:retarded_roger]");
+        assertThat(smileys.get(0).code()).isEqualTo("[:retarded_roger]");
     }
 }

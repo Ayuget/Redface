@@ -1,10 +1,8 @@
 package com.ayuget.redface.util;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentManager;
-
-import com.google.common.base.Preconditions;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentManager;
 
 /**
  * Adapted version of "RetainFragment" project :
@@ -43,7 +41,6 @@ public class RetainedFragmentHelper {
             return null;
         }
 
-        Preconditions.checkNotNull(instance.getValue());
         return instance.getValue();
     }
 

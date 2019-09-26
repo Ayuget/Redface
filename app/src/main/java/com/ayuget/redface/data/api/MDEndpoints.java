@@ -41,7 +41,9 @@ public interface MDEndpoints {
      * Topic URL
      */
     String topic(Topic topic, int page);
+
     String topic(Topic topic);
+
     String topic(Category category, int topicId);
 
     /**
@@ -67,6 +69,8 @@ public interface MDEndpoints {
 
     String editPost(Category category, Topic topic, int postId);
 
+    String reportPost(Category category, Topic topic, int postId);
+
     String userForumPreferences();
 
     String metaPage(TopicFilter topicFilter);
@@ -75,13 +79,17 @@ public interface MDEndpoints {
 
     String deletePost();
 
-    String reportPost();
-
     String privateMessages();
 
     String privateMessages(int page);
 
     String smileySearch(String searchTerm);
+
+    String addFavoriteSmiley();
+
+    String removeFavoriteSmiley();
+
+    String imagesProfilePage();
 
     /**
      * URL used to unflag / unfavorite a topic
@@ -89,4 +97,8 @@ public interface MDEndpoints {
     String removeFlag(Category category, Topic topic);
 
     String searchTopic();
+
+    boolean isSmiliesUrl(String imageUrl);
+
+    boolean isBuiltInSmileyUrl(String imageUrl);
 }

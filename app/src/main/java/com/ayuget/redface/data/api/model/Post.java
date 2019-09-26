@@ -30,6 +30,8 @@ public class Post implements Parcelable {
 
     private String author;
 
+    private int authorId;
+
     private String avatarUrl;
 
     private Date postDate;
@@ -61,6 +63,14 @@ public class Post implements Parcelable {
 
     public void setAuthor(String author) {
         this.author = author;
+    }
+
+    public int getAuthorId() {
+        return authorId;
+    }
+
+    public void setAuthorId(int authorId) {
+        this.authorId = authorId;
     }
 
     public String getAvatarUrl() {
@@ -128,6 +138,7 @@ public class Post implements Parcelable {
         final StringBuffer sb = new StringBuffer("Post{");
         sb.append("id=").append(id);
         sb.append(", author='").append(author).append('\'');
+        sb.append(", authorId='").append(authorId).append('\'');
         sb.append(", postDate=").append(postDate);
         sb.append('}');
         return sb.toString();
@@ -143,6 +154,7 @@ public class Post implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeLong(this.id);
         dest.writeString(this.author);
+        dest.writeInt(this.authorId);
         dest.writeString(this.avatarUrl);
         dest.writeLong(postDate != null ? postDate.getTime() : -1);
         dest.writeLong(lastEditionDate != null ? lastEditionDate.getTime() : -1);
@@ -155,6 +167,7 @@ public class Post implements Parcelable {
     private Post(Parcel in) {
         this.id = in.readLong();
         this.author = in.readString();
+        this.authorId = in.readInt();
         this.avatarUrl = in.readString();
         long tmpPostDate = in.readLong();
         this.postDate = tmpPostDate == -1 ? null : new Date(tmpPostDate);

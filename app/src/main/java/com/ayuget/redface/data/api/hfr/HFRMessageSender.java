@@ -20,13 +20,16 @@ import com.ayuget.redface.data.api.MDEndpoints;
 import com.ayuget.redface.data.api.MDMessageSender;
 import com.ayuget.redface.data.api.model.Response;
 import com.ayuget.redface.data.api.model.ResponseCode;
+import com.ayuget.redface.data.api.model.Smiley;
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.api.model.TopicSearchResult;
 import com.ayuget.redface.data.api.model.User;
 import com.ayuget.redface.network.HTTPClientProvider;
 import com.ayuget.redface.ui.UIConstants;
+import com.ayuget.redface.ui.misc.SmileyFavoriteActionResult;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -46,11 +49,18 @@ public class HFRMessageSender implements MDMessageSender {
     private static final Pattern POST_SUCCESSFULLY_EDITED_PATTERN = Pattern.compile("(.*)(Votre message a été édité avec succès)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private static final Pattern INVALID_PASSWORD_PATTERN = Pattern.compile("(.*)((Mot de passe incorrect !)|((.*)(Votre mot de passe ou nom d'utilisateur n'est pas valide)(.*)))(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private static final Pattern POST_FLOOD_PATTERN = Pattern.compile("(.*)(réponses consécutives)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private static final Pattern MESSAGE_ALERT_SUCCESSFULLY_JOINED = Pattern.compile("(.*)(Vous êtes désormais)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private static final Pattern TOPIC_FLOOD_PATTERN = Pattern.compile("(.*)(nouveaux sujets consécutifs)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private static final Pattern FAVORITE_SUCCESSFULLY_ADDED = Pattern.compile("(.*)(Favori positionné avec succès)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private static final Pattern MESSAGE_SUCCESSFULLY_DELETED = Pattern.compile("(.*)(Message effacé avec succès)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private static final Pattern MESSAGE_SUCCESSFULLY_REPORTED = Pattern.compile("(.*)(Un message a été envoyé avec succès aux modérateurs)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private static final Pattern FLAG_SUCCESSFULLY_REMOVED = Pattern.compile("(.*)(Drapeau effacé avec succès)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private static final Pattern EXTRACT_SEARCHED_POST_LOCATION_PATTERN = Pattern.compile("(?:page=)(\\d+)(?:.*?)(?:currentnum=)(\\d+)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private static final Pattern SMILEY_REMOVED_FROM_FAVORITES_PATTERN = Pattern.compile("(.*)(Suppression effectuée avec succès)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private static final Pattern SMILEY_ADDED_TO_FAVORITES_PATTERN = Pattern.compile("(.*)(Ajout effectué avec succès)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private static final Pattern SMILEY_MAX_COUNT_REACHED_OUT = Pattern.compile("(.*)(vous ne pouvez rajouter plus de)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private static final Pattern SMILEY_ALREADY_ADDED_AS_FAVORITE = Pattern.compile("(.*)(Ce smilie est déjà dans votre liste)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+
     private final HTTPClientProvider httpClientProvider;
 
     private final MDEndpoints mdEndpoints;
@@ -100,15 +110,13 @@ public class HFRMessageSender implements MDMessageSender {
 
                     if (response.isSuccessful()) {
                         subscriber.onNext(buildResponse(response.body().string()));
-                    }
-                    else {
+                    } else {
                         Timber.d("Error HTTP Code, response is : %s", response.body().string());
                         subscriber.onNext(Response.buildFailure(ResponseCode.UNKNOWN_ERROR));
                     }
 
                     subscriber.onCompleted();
-                }
-                catch (IOException e) {
+                } catch (IOException e) {
                     Timber.e(e, "Exception while posting response");
                     subscriber.onError(e);
                 }
@@ -143,7 +151,7 @@ public class HFRMessageSender implements MDMessageSender {
                 RequestBody formBody = new FormBody.Builder()
                         .add("hash_check", hashcheck)
                         .add("post", String.valueOf(topic.id()))
-                        .add("cat",  isPrivateMessage ? "prive" : String.valueOf(topic.category().id()))
+                        .add("cat", isPrivateMessage ? "prive" : String.valueOf(topic.category().id()))
                         .add("verifrequet", "1100")
                         .add("pseudo", user.getUsername())
                         .add("sujet", topic.title())
@@ -166,15 +174,13 @@ public class HFRMessageSender implements MDMessageSender {
 
                     if (response.isSuccessful()) {
                         subscriber.onNext(buildResponse(response.body().string()));
-                    }
-                    else {
+                    } else {
                         Timber.d("Error HTTP Code, response is : %s", response.body().string());
                         subscriber.onNext(Response.buildFailure(ResponseCode.UNKNOWN_ERROR));
                     }
 
                     subscriber.onCompleted();
-                }
-                catch (IOException e) {
+                } catch (IOException e) {
                     Timber.e(e, "Exception while posting response");
                     subscriber.onError(e);
                 }
@@ -214,15 +220,13 @@ public class HFRMessageSender implements MDMessageSender {
 
                     if (response.isSuccessful()) {
                         subscriber.onNext(buildResponse(response.body().string()));
-                    }
-                    else {
+                    } else {
                         Timber.d("Error HTTP Code, response is : %s", response.body().string());
                         subscriber.onNext(Response.buildFailure(ResponseCode.UNKNOWN_ERROR));
                     }
 
                     subscriber.onCompleted();
-                }
-                catch (IOException e) {
+                } catch (IOException e) {
                     Timber.e(e, "Exception while sending new private message");
                     subscriber.onError(e);
                 }
@@ -250,15 +254,13 @@ public class HFRMessageSender implements MDMessageSender {
                         final String responseBody = response.body().string();
                         boolean success = matchesPattern(FAVORITE_SUCCESSFULLY_ADDED, responseBody);
                         subscriber.onNext(success);
-                    }
-                    else {
+                    } else {
                         Timber.d("Error HTTP Code, response is : %s", response.body().string());
                         subscriber.onNext(false);
                     }
 
                     subscriber.onCompleted();
-                }
-                catch (IOException e) {
+                } catch (IOException e) {
                     Timber.e(e, "Exception while marking post as favorite");
                     subscriber.onError(e);
                 }
@@ -302,15 +304,13 @@ public class HFRMessageSender implements MDMessageSender {
                         final String responseBody = response.body().string();
                         boolean success = matchesPattern(MESSAGE_SUCCESSFULLY_DELETED, responseBody);
                         subscriber.onNext(success);
-                    }
-                    else {
+                    } else {
                         Timber.d("Error HTTP Code, response is : %s", response.body().string());
                         subscriber.onNext(false);
                     }
 
                     subscriber.onCompleted();
-                }
-                catch (IOException e) {
+                } catch (IOException e) {
                     Timber.e(e, "Exception while deleteing post");
                     subscriber.onError(e);
                 }
@@ -319,8 +319,59 @@ public class HFRMessageSender implements MDMessageSender {
     }
 
     @Override
-    public Observable<Boolean> reportPost(User user, Topic topic, int postId) {
-        return null;
+    public Observable<Boolean> reportPost(User user, Topic topic, int postId, String reason, boolean joinReport, final String hashcheck) {
+        return Observable.create(subscriber -> {
+            Timber.d("Reporting post '%d' as user '%s' in topic '%s'", postId, user.getUsername(), topic.title());
+
+            OkHttpClient httpClient = httpClientProvider.getClientForUser(user);
+
+            RequestBody formBody;
+
+            if (joinReport) {
+                formBody = new FormBody.Builder()
+                        .add("hash_check", hashcheck)
+                        .add("referer_page", mdEndpoints.topic(topic))
+                        .add("cfmodoalert", "1")
+                        .build();
+            } else {
+                formBody = new FormBody.Builder()
+                        .add("hash_check", hashcheck)
+                        .add("referer_page", mdEndpoints.topic(topic))
+                        .add("raison", reason)
+                        .build();
+            }
+
+            Request request = new Request.Builder()
+                    .url(mdEndpoints.reportPost(topic.category(), topic, postId))
+                    .post(formBody)
+                    .build();
+
+            try {
+                okhttp3.Response response = httpClient.newCall(request).execute();
+
+                if (response.isSuccessful()) {
+                    final String responseBody = response.body().string();
+
+                    boolean success;
+
+                    if (joinReport) {
+                        success = matchesPattern(MESSAGE_ALERT_SUCCESSFULLY_JOINED, responseBody);
+                    } else {
+                        success = matchesPattern(MESSAGE_SUCCESSFULLY_REPORTED, responseBody);
+                    }
+
+                    subscriber.onNext(success);
+                } else {
+                    Timber.d("Error HTTP Code, response is : %s", response.body().string());
+                    subscriber.onNext(false);
+                }
+
+                subscriber.onCompleted();
+            } catch (IOException e) {
+                Timber.e(e, "Exception while reporting post");
+                subscriber.onError(e);
+            }
+        });
     }
 
     @Override
@@ -343,15 +394,13 @@ public class HFRMessageSender implements MDMessageSender {
                         final String responseBody = response.body().string();
                         boolean success = matchesPattern(FLAG_SUCCESSFULLY_REMOVED, responseBody);
                         subscriber.onNext(success);
-                    }
-                    else {
+                    } else {
                         Timber.d("Error HTTP Code, response is : %s", response.body().string());
                         subscriber.onNext(false);
                     }
 
                     subscriber.onCompleted();
-                }
-                catch (IOException e) {
+                } catch (IOException e) {
                     Timber.e(e, "Exception while removing flag on topic");
                     subscriber.onError(e);
                 }
@@ -379,7 +428,7 @@ public class HFRMessageSender implements MDMessageSender {
                     .add("word", word == null ? "" : word)
                     .add("spseudo", author == null ? "" : author)
                     .add("dep", "0")
-                    .add(firstSearch ? "firstnum": "currentnum", String.valueOf(startFromPostId))
+                    .add(firstSearch ? "firstnum" : "currentnum", String.valueOf(startFromPostId))
                     .build();
 
             Request request = new Request.Builder()
@@ -393,15 +442,100 @@ public class HFRMessageSender implements MDMessageSender {
                 if (response.isRedirect()) {
                     String locationHeader = response.header("Location");
                     subscriber.onNext(parseFoundPostLocation(locationHeader));
-                }
-                else {
+                } else {
                     subscriber.onNext(TopicSearchResult.createAsNoMoreResult());
                 }
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 Timber.e(e, "Exception while removing flag on topic");
                 subscriber.onError(e);
             }
+        });
+    }
+
+    @Override
+    public Observable<SmileyFavoriteActionResult> addSmileyToFavorites(User user, Smiley smiley, String hashcheck) {
+        return Observable.create(subscriber -> {
+            Timber.d("Adding smiley %s as favorite", smiley);
+
+            OkHttpClient httpClient = httpClientProvider.getClientForUser(user);
+
+            RequestBody formBody = new FormBody.Builder()
+                    .add("hash_check", hashcheck)
+                    .add("smilie", String.valueOf(smiley.code()))
+                    .build();
+
+            Request request = new Request.Builder()
+                    .url(mdEndpoints.addFavoriteSmiley())
+                    .post(formBody)
+                    .build();
+
+            try {
+                okhttp3.Response response = httpClient.newCall(request).execute();
+
+                if (response.isSuccessful()) {
+                    final String responseBody = response.body().string();
+                    SmileyFavoriteActionResult actionResult = extractAddToFavoriteActionResult(responseBody);
+                    subscriber.onNext(actionResult);
+                } else {
+                    Timber.d("Error HTTP Code when adding smiley to favorites, response is : %s", response.body().string());
+                    subscriber.onNext(SmileyFavoriteActionResult.NOT_ADDED_UNKNOWN);
+                }
+
+                subscriber.onCompleted();
+            } catch (IOException e) {
+                Timber.e(e, "Exception while adding smiley to favorites");
+                subscriber.onError(e);
+            }
+        });
+    }
+
+    @Override
+    public Observable<Boolean> removeSmileyFromFavorites(User user, Smiley smiley, List<Smiley> favoriteSmileys, String hashcheck) {
+        return Observable.create(subscriber -> {
+            Timber.d("Removing smiley %s from favorites (keeping: %s)", smiley, favoriteSmileys);
+
+
+            OkHttpClient httpClient = httpClientProvider.getClientForUser(user);
+
+            FormBody.Builder formBodyBuilder = new FormBody.Builder()
+                    .add("hash_check", hashcheck);
+
+            for (int smileyIndex = 0; smileyIndex < favoriteSmileys.size(); smileyIndex++) {
+                Smiley currentSmiley = favoriteSmileys.get(smileyIndex);
+
+                formBodyBuilder.add("smiley" + smileyIndex, currentSmiley.code());
+
+                boolean isSmileyToDelete = currentSmiley.equals(smiley);
+                if (isSmileyToDelete) {
+                    formBodyBuilder.add("delete" + smileyIndex, "on");
+                }
+            }
+
+            RequestBody formBody = formBodyBuilder.build();
+
+            Request request = new Request.Builder()
+                    .url(mdEndpoints.removeFavoriteSmiley())
+                    .post(formBody)
+                    .build();
+
+            try {
+                okhttp3.Response response = httpClient.newCall(request).execute();
+
+                if (response.isSuccessful()) {
+                    final String responseBody = response.body().string();
+                    boolean success = matchesPattern(SMILEY_REMOVED_FROM_FAVORITES_PATTERN, responseBody);
+                    subscriber.onNext(success);
+                } else {
+                    Timber.d("Error HTTP Code when removing smiley to favorites, response is : %s", response.body().string());
+                    subscriber.onNext(false);
+                }
+
+                subscriber.onCompleted();
+            } catch (IOException e) {
+                Timber.e(e, "Exception while removing smiley from favorites");
+                subscriber.onError(e);
+            }
+
         });
     }
 
@@ -409,9 +543,20 @@ public class HFRMessageSender implements MDMessageSender {
         Matcher matcher = EXTRACT_SEARCHED_POST_LOCATION_PATTERN.matcher(locationHeader);
         if (matcher.find()) {
             return TopicSearchResult.create(Integer.parseInt(matcher.group(1)), Integer.parseInt(matcher.group(2)));
-        }
-        else {
+        } else {
             return TopicSearchResult.createAsNoMoreResult();
+        }
+    }
+
+    private SmileyFavoriteActionResult extractAddToFavoriteActionResult(String response) {
+        if (matchesPattern(SMILEY_ADDED_TO_FAVORITES_PATTERN, response)) {
+            return SmileyFavoriteActionResult.ADDED_AS_FAVORITE;
+        } else if (matchesPattern(SMILEY_MAX_COUNT_REACHED_OUT, response)) {
+            return SmileyFavoriteActionResult.NOT_ADDED_MAX_REACHED;
+        } else if (matchesPattern(SMILEY_ALREADY_ADDED_AS_FAVORITE, response)) {
+            return SmileyFavoriteActionResult.NOT_ADDED_ALREADY_IN_LIST;
+        } else {
+            return SmileyFavoriteActionResult.NOT_ADDED_UNKNOWN;
         }
     }
 
@@ -421,23 +566,17 @@ public class HFRMessageSender implements MDMessageSender {
 
         if (matchesPattern(POST_SUCCESSFULLY_ADDED_PATTERN, response)) {
             return Response.buildSuccess(ResponseCode.POST_SUCCESSFULLY_ADDED);
-        }
-        else if (matchesPattern(TOPIC_SUCESSFULLY_CREATED_PATTERN, response)) {
+        } else if (matchesPattern(TOPIC_SUCESSFULLY_CREATED_PATTERN, response)) {
             return Response.buildSuccess(ResponseCode.TOPIC_SUCESSFULLY_CREATED);
-        }
-        else if (matchesPattern(POST_SUCCESSFULLY_EDITED_PATTERN, response)) {
+        } else if (matchesPattern(POST_SUCCESSFULLY_EDITED_PATTERN, response)) {
             return Response.buildSuccess(ResponseCode.POST_SUCCESFULLY_EDITED);
-        }
-        else if (matchesPattern(INVALID_PASSWORD_PATTERN, response)) {
+        } else if (matchesPattern(INVALID_PASSWORD_PATTERN, response)) {
             return Response.buildFailure(ResponseCode.INVALID_PASSWORD);
-        }
-        else if (matchesPattern(POST_FLOOD_PATTERN, response)) {
+        } else if (matchesPattern(POST_FLOOD_PATTERN, response)) {
             return Response.buildFailure(ResponseCode.POST_FLOOD);
-        }
-        else if (matchesPattern(TOPIC_FLOOD_PATTERN, response)) {
+        } else if (matchesPattern(TOPIC_FLOOD_PATTERN, response)) {
             return Response.buildFailure(ResponseCode.TOPIC_FLOOD);
-        }
-        else {
+        } else {
             return Response.buildFailure(ResponseCode.UNKNOWN_ERROR);
         }
     }

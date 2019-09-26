@@ -46,7 +46,8 @@ public class PostActionsTemplate extends HTMLTemplate<Post> {
         POST_ACTIONS_MAPPING.put(PostAction.FAVORITE, Pair.create("markPostAsFavorite", "star"));
 
         // SOON :O
-        // POST_ACTIONS_MAPPING.put(PostAction.REPORT, Pair.create("reportPost", "exclamation-triangle"));
+        POST_ACTIONS_MAPPING.put(PostAction.REPORT, Pair.create("reportPost", "warning"));
+        POST_ACTIONS_MAPPING.put(PostAction.VIEW_USER_PROFILE, Pair.create("viewUserProfile", "account_box"));
         POST_ACTIONS_MAPPING.put(PostAction.WRITE_PRIVATE_MESSAGE, Pair.create("writePrivateMessage", "email"));
         POST_ACTIONS_MAPPING.put(PostAction.COPY_LINK_TO_POST, Pair.create("copyLinkToPost", "link"));
         POST_ACTIONS_MAPPING.put(PostAction.BLOCK_USER, Pair.create("blockUser", "block"));
@@ -55,7 +56,7 @@ public class PostActionsTemplate extends HTMLTemplate<Post> {
     /**
      * Action HTML code
      */
-    private static final String POST_ACTION_HTML = "<div><a material onclick=\"Android.%s(%d)\"><i class=\"material-icons\">%s</i></a></div>";
+    private static final String POST_ACTION_HTML = "<div class=\"post-action-container\"><a material onclick=\"Android.%s(%d)\"><i class=\"material-icons\">%s</i></a></div>";
 
     public PostActionsTemplate(Context context, UserManager userManager) {
         super(context, POST_ACTIONS_TEMPLATE);
@@ -73,10 +74,18 @@ public class PostActionsTemplate extends HTMLTemplate<Post> {
             renderAction(PostAction.EDIT, post.getId(), stream);
             renderAction(PostAction.DELETE, post.getId(), stream);
         }
+        else {
+            renderAction(PostAction.VIEW_USER_PROFILE, post.getId(), stream);
+        }
 
         renderAction(PostAction.FAVORITE, post.getId(), stream);
         renderAction(PostAction.WRITE_PRIVATE_MESSAGE, post.getId(), stream);
         renderAction(PostAction.COPY_LINK_TO_POST, post.getId(), stream);
-        renderAction(PostAction.BLOCK_USER, post.getId(), stream);
+
+        if (! userManager.isActiveUser(post.getAuthor())) { // Don't block yourself...
+            renderAction(PostAction.BLOCK_USER, post.getId(), stream);
+        }
+
+        renderAction(PostAction.REPORT, post.getId(), stream);
     }
 }

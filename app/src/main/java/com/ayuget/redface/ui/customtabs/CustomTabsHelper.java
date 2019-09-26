@@ -23,9 +23,10 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
-import android.support.customtabs.CustomTabsService;
 import android.text.TextUtils;
 import android.util.Log;
+
+import androidx.browser.customtabs.CustomTabsService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,18 +42,10 @@ public class CustomTabsHelper {
     static final String BETA_PACKAGE = "com.chrome.beta";
     static final String DEV_PACKAGE = "com.chrome.dev";
     static final String LOCAL_PACKAGE = "com.google.android.apps.chrome";
-    private static final String EXTRA_CUSTOM_TABS_KEEP_ALIVE =
-            "android.support.customtabs.extra.KEEP_ALIVE";
 
     private static String sPackageNameToUse;
 
     private CustomTabsHelper() {}
-
-    public static void addKeepAliveExtra(Context context, Intent intent) {
-        Intent keepAliveIntent = new Intent().setClassName(
-                context.getPackageName(), KeepAliveService.class.getCanonicalName());
-        intent.putExtra(EXTRA_CUSTOM_TABS_KEEP_ALIVE, keepAliveIntent);
-    }
 
     /**
      * Goes through all apps that handle VIEW intents and have a warmup service. Picks

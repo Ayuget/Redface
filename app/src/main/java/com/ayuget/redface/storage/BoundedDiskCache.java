@@ -58,8 +58,18 @@ public class BoundedDiskCache<K, V> {
     }
 
     private String encodeKey(User user, K key) {
-        return user + "_" + key.toString();
+        String encodedUsername = user.getUsername()
+                .toLowerCase()
+                .replace(" ", "-");
+
+
+        // Dirty hack to keep the username part small enough
+        String keyUsername = encodedUsername.substring(0, Math.min(encodedUsername.length(), 15));
+        String encodedKey = keyUsername + "_" + key.toString();
+
+        return encodedKey.substring(0, Math.min(encodedKey.length(), 64));
     }
+
 
     /**
      * Gets a value from the cache

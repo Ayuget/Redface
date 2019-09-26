@@ -19,6 +19,8 @@ package com.ayuget.redface.data;
 import com.ayuget.redface.ContextModule;
 import com.ayuget.redface.data.api.ApiModule;
 import com.ayuget.redface.data.provider.ProviderModule;
+import com.ayuget.redface.privatemessages.PrivateMessagesModule;
+import com.ayuget.redface.profile.ProfileModule;
 
 import dagger.Module;
 
@@ -26,7 +28,9 @@ import dagger.Module;
         includes = {
                 ApiModule.class,
                 ContextModule.class,
-                ProviderModule.class
+                ProviderModule.class,
+                PrivateMessagesModule.class,
+                ProfileModule.class
         }
 )
 public class DataModule {

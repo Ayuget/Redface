@@ -66,4 +66,10 @@ public class UIConstants {
      * Exif details screen
      */
     public static final String ARG_EXIF_IMAGE = "exifImage";
+
+    /**
+     * Profile screen
+     */
+    public static final String ARG_PROFILE_ID = "profile";
+    public static final String ARG_IS_OWN_PROFILE = "isOwnProfile";
 }

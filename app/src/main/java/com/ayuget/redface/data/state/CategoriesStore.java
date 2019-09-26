@@ -18,15 +18,15 @@ package com.ayuget.redface.data.state;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.text.TextUtils;
 
 import com.ayuget.redface.R;
 import com.ayuget.redface.data.api.model.Category;
 import com.ayuget.redface.data.api.model.Subcategory;
 import com.ayuget.redface.data.api.model.User;
 import com.ayuget.redface.ui.UIConstants;
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -43,8 +43,8 @@ public class CategoriesStore {
     private static final String CATEGORY_NAME_PREFIX = "category_";
     private static final String SUBCATEGORY_NAME_PREFIX = "subcategory_";
     private static final String USER_MAPPING_NAME_PREFIX = "user_mapping_";
-    private static final char PRIMARY_SEPARATOR = '|';
-    private static final char SECONDARY_SEPARATOR = '#';
+    private static final String PRIMARY_SEPARATOR = "\\|";
+    private static final String SECONDARY_SEPARATOR = "#";
 
     /**
      * Shared preferences where the categories will be persisted
@@ -133,7 +133,7 @@ public class CategoriesStore {
             String entryValue = (String) entry.getValue();
 
             if (entryKey.startsWith(CATEGORY_NAME_PREFIX)) {
-                List<String> tokens = Splitter.on(PRIMARY_SEPARATOR).splitToList(entryValue);
+                List<String> tokens = Arrays.asList(TextUtils.split(entryValue, PRIMARY_SEPARATOR));
 
                 if (tokens.size() == 4) {
                     int catId = Integer.valueOf(tokens.get(0));
@@ -142,12 +142,12 @@ public class CategoriesStore {
 
                     List<Subcategory> subcategories = new LinkedList<>();
 
-                    for (String subcatSlug : Splitter.on(SECONDARY_SEPARATOR).split(tokens.get(3))) {
+                    for (String subcatSlug : TextUtils.split(tokens.get(3), SECONDARY_SEPARATOR)) {
                         String subcatKey = SUBCATEGORY_NAME_PREFIX + subcatSlug;
 
                         if (categoriesPrefs.contains(subcatKey)) {
                             String subcatValue = categoriesPrefs.getString(subcatKey, "");
-                            List<String> subcatsTokens = Splitter.on(PRIMARY_SEPARATOR).splitToList(subcatValue);
+                            List<String> subcatsTokens = Arrays.asList(TextUtils.split(subcatValue, PRIMARY_SEPARATOR));
 
                             if (subcatsTokens.size() == 2) {
                                 subcategories.add(Subcategory.create(subcatsTokens.get(0), subcatsTokens.get(1)));
@@ -183,7 +183,7 @@ public class CategoriesStore {
 
             List<Category> userCategories = new LinkedList<>();
 
-            for (String category : Splitter.on(PRIMARY_SEPARATOR).split(userMapping)) {
+            for (String category : TextUtils.split(userMapping, PRIMARY_SEPARATOR)) {
                 try {
                     int categoryId = Integer.valueOf(category);
 
@@ -278,11 +278,15 @@ public class CategoriesStore {
             subcatsSlugs.add(subcategory.slug());
         }
 
-        return Joiner.on(PRIMARY_SEPARATOR).join(category.id(), category.name(), category.slug(), Joiner.on(SECONDARY_SEPARATOR).join(subcatsSlugs));
+        List<String> categoryElements = Arrays.asList(
+            String.valueOf(category.id()), category.name(), category.slug(), TextUtils.join(SECONDARY_SEPARATOR, subcatsSlugs)
+        );
+
+        return TextUtils.join(PRIMARY_SEPARATOR, categoryElements);
     }
 
     protected String serializeSubcategory(Subcategory subcategory) {
-        return Joiner.on(PRIMARY_SEPARATOR).join(subcategory.name(), subcategory.slug());
+        return TextUtils.join(PRIMARY_SEPARATOR, Arrays.asList(subcategory.name(), subcategory.slug()));
     }
 
     protected String serializeCategoryIds(List<Category> categories) {
@@ -291,6 +295,6 @@ public class CategoriesStore {
             categoriesIds.add(String.valueOf(category.id()));
         }
 
-        return Joiner.on(PRIMARY_SEPARATOR).join(categoriesIds);
+        return TextUtils.join(PRIMARY_SEPARATOR, categoriesIds);
     }
 }

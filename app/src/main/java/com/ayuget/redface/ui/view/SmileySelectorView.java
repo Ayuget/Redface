@@ -24,7 +24,6 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 import com.ayuget.redface.BuildConfig;
-import com.ayuget.redface.RedfaceApp;
 import com.ayuget.redface.data.api.MDEndpoints;
 import com.ayuget.redface.data.api.model.Smiley;
 import com.ayuget.redface.ui.UIConstants;
@@ -35,38 +34,37 @@ import com.squareup.otto.Bus;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
 import timber.log.Timber;
 
 public class SmileySelectorView extends WebView {
     private boolean initialized;
 
-    @Inject
     MDEndpoints mdEndpoints;
-
-    @Inject
     Bus bus;
-
-    @Inject
     SmileysTemplate smileysTemplate;
 
     public SmileySelectorView(Context context, AttributeSet attrs) {
         super(context, attrs);
         initialized = false;
-        setupDependencyInjection(context);
         initialize();
     }
 
-    private void setupDependencyInjection(Context context) {
-        RedfaceApp.get(context).inject(this);
+    public void setMdEndpoints(MDEndpoints mdEndpoints) {
+        this.mdEndpoints = mdEndpoints;
+    }
+
+    public void setBus(Bus bus) {
+        this.bus = bus;
+    }
+
+    public void setSmileysTemplate(SmileysTemplate smileysTemplate) {
+        this.smileysTemplate = smileysTemplate;
     }
 
     private void initialize() {
         if (initialized) {
             throw new IllegalStateException("View is already initialized");
-        }
-        else {
+        } else {
             getSettings().setJavaScriptEnabled(true);
             getSettings().setBuiltInZoomControls(false);
             getSettings().setAllowFileAccessFromFileURLs(true);
@@ -75,7 +73,7 @@ public class SmileySelectorView extends WebView {
                 getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
             }
 
-            if(BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     WebView.setWebContentsDebuggingEnabled(true);
                 }

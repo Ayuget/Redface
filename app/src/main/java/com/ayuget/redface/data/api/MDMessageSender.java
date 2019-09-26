@@ -17,9 +17,13 @@
 package com.ayuget.redface.data.api;
 
 import com.ayuget.redface.data.api.model.Response;
+import com.ayuget.redface.data.api.model.Smiley;
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.api.model.TopicSearchResult;
 import com.ayuget.redface.data.api.model.User;
+import com.ayuget.redface.ui.misc.SmileyFavoriteActionResult;
+
+import java.util.List;
 
 import rx.Observable;
 
@@ -30,7 +34,7 @@ public interface MDMessageSender {
     /**
      * Posts a reply to the given {@link Topic}. User's signature can be included, using the
      * {@code includeSignature} argument.
-     *
+     * <p>
      * {@code hashcheck} argument is purely a technical one, used as "security" by the forum.
      */
     Observable<Response> replyToTopic(User user, Topic topic, String message, String hashcheck, boolean includeSignature);
@@ -42,7 +46,7 @@ public interface MDMessageSender {
 
     /**
      * Sends a new private message to {@code recipientUsername}.
-     *
+     * <p>
      * While the forum technically allows a private message to be sent to multiple recipients, that
      * features seems to be disabled and therefore not implemented here.
      */
@@ -62,7 +66,7 @@ public interface MDMessageSender {
     /**
      * Reports a post to the moderators.
      */
-    Observable<Boolean> reportPost(User user, Topic topic, int postId);
+    Observable<Boolean> reportPost(User user, Topic topic, int postId, String reason, boolean joinReport, final String hashcheck);
 
     /**
      * Removes a flag (or a favorite) on a given {@link Topic}
@@ -73,4 +77,14 @@ public interface MDMessageSender {
      * Searches a particular word and/or author in a topic, starting at a given post id.
      */
     Observable<TopicSearchResult> searchInTopic(User user, Topic topic, long startFromPostId, String word, String author, boolean firstSearch, String hashcheck);
+
+    /**
+     * Adds a smiley to favorites
+     */
+    Observable<SmileyFavoriteActionResult> addSmileyToFavorites(User user, Smiley smiley, String hashcheck);
+
+    /**
+     * Removes a smiley from favorites
+     */
+    Observable<Boolean> removeSmileyFromFavorites(User user, Smiley smiley, List<Smiley> favoriteSmileys, String hashcheck);
 }

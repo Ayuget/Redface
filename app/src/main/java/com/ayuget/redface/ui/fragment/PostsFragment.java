@@ -17,8 +17,7 @@
 package com.ayuget.redface.ui.fragment;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.widget.SwipeRefreshLayout;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,12 +25,17 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.Button;
 
+import androidx.annotation.Nullable;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.ayuget.redface.R;
 import com.ayuget.redface.account.UserManager;
 import com.ayuget.redface.data.DataService;
 import com.ayuget.redface.data.api.MDEndpoints;
 import com.ayuget.redface.data.api.MDService;
+import com.ayuget.redface.data.api.UrlParser;
 import com.ayuget.redface.data.api.model.Post;
+import com.ayuget.redface.data.api.model.Smiley;
 import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.api.model.TopicPage;
 import com.ayuget.redface.data.api.model.misc.SearchTerms;
@@ -50,7 +54,12 @@ import com.ayuget.redface.ui.event.TopicPageCountUpdatedEvent;
 import com.ayuget.redface.ui.event.UnquoteAllPostsEvent;
 import com.ayuget.redface.ui.misc.ImageMenuHandler;
 import com.ayuget.redface.ui.misc.PagePosition;
+import com.ayuget.redface.ui.misc.SmileyFavoriteActionResult;
+import com.ayuget.redface.ui.misc.SmileyRegistry;
 import com.ayuget.redface.ui.misc.SnackbarHelper;
+import com.ayuget.redface.ui.misc.ThemeManager;
+import com.ayuget.redface.ui.misc.UiUtils;
+import com.ayuget.redface.ui.template.PostsTemplate;
 import com.ayuget.redface.ui.view.TopicPageView;
 import com.ayuget.redface.util.Connectivity;
 import com.hannesdorfmann.fragmentargs.annotation.Arg;
@@ -63,7 +72,9 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
-import butterknife.InjectView;
+import butterknife.BindView;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 @FragmentWithArgs
@@ -83,19 +94,19 @@ public class PostsFragment extends BaseFragment {
     @Arg
     PagePosition pageInitialPosition;
 
-    @InjectView(R.id.loading_indicator)
+    @BindView(R.id.loading_indicator)
     View loadingIndicator;
 
-    @InjectView(R.id.error_layout)
+    @BindView(R.id.error_layout)
     View errorView;
 
-    @InjectView(R.id.error_reload_button)
+    @BindView(R.id.error_reload_button)
     Button errorReloadButton;
 
-    @InjectView(R.id.postsView)
+    @BindView(R.id.postsView)
     TopicPageView topicPageView;
 
-    @InjectView(R.id.topic_list_swipe_refresh_layout)
+    @BindView(R.id.posts_swipe_refresh_layout)
     SwipeRefreshLayout swipeRefreshLayout;
 
     private ArrayList<Post> displayedPosts = new ArrayList<>();
@@ -118,6 +129,18 @@ public class PostsFragment extends BaseFragment {
     @Inject
     RedfaceSettings settings;
 
+    @Inject
+    SmileyRegistry smileyRegistry;
+
+    @Inject
+    PostsTemplate postsTemplate;
+
+    @Inject
+    UrlParser urlParser;
+
+    @Inject
+    ThemeManager themeManager;
+
     /**
      * Current scroll position in the webview.
      */
@@ -134,10 +157,9 @@ public class PostsFragment extends BaseFragment {
         debugLog("onCreate");
 
         if (savedInstanceState == null) {
-            currentScrollPosition = 0;
-        }
-        else {
-            currentScrollPosition = savedInstanceState.getInt(ARG_SAVED_SCROLL_POSITION, 0);
+            currentScrollPosition = -1;
+        } else {
+            currentScrollPosition = savedInstanceState.getInt(ARG_SAVED_SCROLL_POSITION, -1);
         }
     }
 
@@ -149,6 +171,13 @@ public class PostsFragment extends BaseFragment {
 
         topicPageView.setHostActivity(getActivity());
 
+        topicPageView.setAppSettings(settings);
+        topicPageView.setBus(bus);
+        topicPageView.setPostsTemplate(postsTemplate);
+        topicPageView.setMdEndpoints(mdEndpoints);
+        topicPageView.setUrlParser(urlParser);
+        topicPageView.setThemeManager(themeManager);
+
         if (savedInstanceState != null) {
             debugLog("trying to restore state");
             postsInCacheHint = savedInstanceState.getBoolean(ARG_POSTS_IN_CACHE_HINT, false);
@@ -156,15 +185,13 @@ public class PostsFragment extends BaseFragment {
         }
 
         // Default view is the loading indicator
-        if (! postsInCacheHint) {
+        if (!postsInCacheHint) {
             debugLog("posts probably not in cache, showing loading indicator");
             showLoadingIndicator();
         }
 
         displayedPosts = new ArrayList<>();
 
-        // Implement swipe to refresh
-        swipeRefreshLayout.setOnRefreshListener(() -> refreshPosts(false));
         swipeRefreshLayout.setColorSchemeResources(R.color.theme_primary, R.color.theme_primary_dark);
 
         if (errorReloadButton != null) {
@@ -186,7 +213,9 @@ public class PostsFragment extends BaseFragment {
         super.onResume();
         debugLog("onResume (isInitialPage = %s)", isInitialPage);
 
-        topicPageView.setOnQuoteListener((TopicFragment)getParentFragment());
+        swipeRefreshLayout.setOnRefreshListener(() -> refreshPosts(false));
+
+        topicPageView.setOnQuoteListener((TopicFragment) getParentFragment());
         topicPageView.setOnPageLoadedListener(() -> {
             if (currentScrollPosition > 0) {
                 restorePageScrollPosition();
@@ -195,7 +224,8 @@ public class PostsFragment extends BaseFragment {
             updateQuotedPostsStatus();
         });
 
-        if (isInitialPage) {
+        boolean isCurrentPage = ((TopicFragment) getParentFragment()).getCurrentPage() == pageNumber;
+        if (isInitialPage || isCurrentPage) {
             boolean hasNoVisiblePosts = (displayedPosts != null && displayedPosts.size() == 0) || displayedPosts == null;
 
             // Page is loaded instantly only if it's the initial page requested on topic load. Other
@@ -209,14 +239,12 @@ public class PostsFragment extends BaseFragment {
             } else {
                 updateQuotedPostsStatus();
             }
-        }
-        else {
+        } else {
             // If posts are probably in cache, it is safe to try to load them, because it definitely
             // means the page has already been loaded once, hence we won't mess up topic flags.
             if (postsInCacheHint) {
                 loadPage();
-            }
-            else {
+            } else {
                 debugLog("Posts are probably not in cache, and not initial page, waiting for user swipe");
             }
         }
@@ -224,25 +252,14 @@ public class PostsFragment extends BaseFragment {
 
     @Override
     public void onPause() {
-        super.onPause();
-
-        savePageScrollPosition();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
+        if (isPageCurrentlyActive()) {
+            savePageScrollPosition();
+        }
 
         if (topicPageView != null) {
             unregisterForContextMenu(topicPageView);
-
             topicPageView.setOnPageLoadedListener(null);
-
-            // Unregister parent fragment as quote listener to avoid memory leaks
             topicPageView.setOnQuoteListener(null);
-
-            topicPageView.removeAllViews();
-            topicPageView.destroy();
         }
 
         if (swipeRefreshLayout != null) {
@@ -252,6 +269,8 @@ public class PostsFragment extends BaseFragment {
         if (errorReloadButton != null) {
             errorReloadButton.setOnClickListener(null);
         }
+
+        super.onPause();
     }
 
     private void savePageScrollPosition() {
@@ -263,6 +282,7 @@ public class PostsFragment extends BaseFragment {
 
     private void restorePageScrollPosition() {
         if (topicPageView != null) {
+            debugLog("about to restore scroll position (current position = %d)", topicPageView.getScrollY());
             topicPageView.setScrollY(currentScrollPosition);
             debugLog("restored scroll position = %d", currentScrollPosition);
         }
@@ -271,11 +291,14 @@ public class PostsFragment extends BaseFragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        debugLog("saving '%d' posts / scrollPosition = '%d'", displayedPosts.size(), currentScrollPosition);
-        debugLog("saving posts in cache hint : %s", postsInCacheHint ? "true" : "false");
 
-        outState.putBoolean(ARG_POSTS_IN_CACHE_HINT, postsInCacheHint);
-        outState.putInt(ARG_SAVED_SCROLL_POSITION, currentScrollPosition);
+        if (isPageCurrentlyActive()) {
+            debugLog("saving '%d' posts / scrollPosition = '%d'", displayedPosts.size(), currentScrollPosition);
+            debugLog("saving posts in cache hint : %s", postsInCacheHint ? "true" : "false");
+
+            outState.putBoolean(ARG_POSTS_IN_CACHE_HINT, postsInCacheHint);
+            outState.putInt(ARG_SAVED_SCROLL_POSITION, currentScrollPosition);
+        }
     }
 
     /**
@@ -302,8 +325,7 @@ public class PostsFragment extends BaseFragment {
 
             if (event.activeSearchTerm() == null) {
                 disableSearchMode();
-            }
-            else {
+            } else {
                 enableSearchMode(event.activeSearchTerm());
             }
         }
@@ -313,7 +335,10 @@ public class PostsFragment extends BaseFragment {
     @Subscribe
     public void onPageRefreshRequestEvent(PageRefreshRequestEvent event) {
         if (event.getTopic().id() == topic.id() && isVisible()) {
-            refreshPosts(true);
+            boolean isPageConcerned = !event.isPageDefined() || event.getPage() == pageNumber;
+            if (isPageConcerned) {
+                refreshPosts(true);
+            }
         }
     }
 
@@ -327,6 +352,7 @@ public class PostsFragment extends BaseFragment {
         }
 
         savePageScrollPosition();
+        topicPageView.setScrollY(0);
         loadPage();
     }
 
@@ -367,8 +393,7 @@ public class PostsFragment extends BaseFragment {
 
             if (event.activeSearchTerm() == null) {
                 disableSearchMode();
-            }
-            else {
+            } else {
                 enableSearchMode(event.activeSearchTerm());
             }
         }
@@ -382,8 +407,7 @@ public class PostsFragment extends BaseFragment {
             if (targetPost != null) {
                 topicPageView.setPagePosition(targetPost);
             }
-        }
-        else {
+        } else {
             Integer targetScrollY = overriddenPagePosition.targetScrollY();
             if (targetScrollY != null) {
                 topicPageView.setScrollY(targetScrollY);
@@ -426,30 +450,48 @@ public class PostsFragment extends BaseFragment {
 
     private void showLoadingIndicator() {
         debugLog("Showing loading layout");
-        if (errorView != null) { errorView.setVisibility(View.GONE); }
-        if (loadingIndicator != null) { loadingIndicator.setVisibility(View.VISIBLE); }
-        if (swipeRefreshLayout != null) { swipeRefreshLayout.setVisibility(View.GONE); }
+        if (errorView != null) {
+            errorView.setVisibility(View.GONE);
+        }
+        if (loadingIndicator != null) {
+            loadingIndicator.setVisibility(View.VISIBLE);
+        }
+        if (swipeRefreshLayout != null) {
+            swipeRefreshLayout.setVisibility(View.GONE);
+        }
     }
 
     private void showErrorView() {
         debugLog("Showing error layout");
-        if (errorView != null) { errorView.setVisibility(View.VISIBLE); }
-        if (loadingIndicator != null) { loadingIndicator.setVisibility(View.GONE); }
-        if (swipeRefreshLayout != null) { swipeRefreshLayout.setVisibility(View.GONE); }
+        if (errorView != null) {
+            errorView.setVisibility(View.VISIBLE);
+        }
+        if (loadingIndicator != null) {
+            loadingIndicator.setVisibility(View.GONE);
+        }
+        if (swipeRefreshLayout != null) {
+            swipeRefreshLayout.setVisibility(View.GONE);
+        }
     }
 
     private void showPosts() {
         debugLog("Showing posts layout");
-        if (errorView != null) { errorView.setVisibility(View.GONE); }
-        if (loadingIndicator != null) { loadingIndicator.setVisibility(View.GONE); }
-        if (swipeRefreshLayout != null) { swipeRefreshLayout.setVisibility(View.VISIBLE); }
+        if (errorView != null) {
+            errorView.setVisibility(View.GONE);
+        }
+        if (loadingIndicator != null) {
+            loadingIndicator.setVisibility(View.GONE);
+        }
+        if (swipeRefreshLayout != null) {
+            swipeRefreshLayout.setVisibility(View.VISIBLE);
+        }
     }
 
     private boolean isDownloadStrategyMatching(DownloadStrategy strategy) {
         return strategy != DownloadStrategy.NEVER &&
                 (strategy == DownloadStrategy.ALWAYS ||
-                 (strategy == DownloadStrategy.FASTCX && Connectivity.isConnectedFast(getContext())) ||
-                 (strategy == DownloadStrategy.WIFI && Connectivity.isConnectedWifi(getContext())));
+                        (strategy == DownloadStrategy.FASTCX && Connectivity.isConnectedFast(getContext())) ||
+                        (strategy == DownloadStrategy.WIFI && Connectivity.isConnectedWifi(getContext())));
     }
 
     public void loadPage() {
@@ -459,31 +501,37 @@ public class PostsFragment extends BaseFragment {
                 isDownloadStrategyMatching(settings.getAvatarsStrategy()),
                 isDownloadStrategyMatching(settings.getSmileysStrategy()),
                 new EndlessObserver<List<Post>>() {
-            @Override
-            public void onNext(List<Post> posts) {
-                postsInCacheHint = true;
-                swipeRefreshLayout.setRefreshing(false);
+                    @Override
+                    public void onNext(List<Post> posts) {
+                        postsInCacheHint = true;
+                        swipeRefreshLayout.setRefreshing(false);
 
-                displayedPosts.clear();
-                displayedPosts.addAll(posts);
+                        displayedPosts.clear();
+                        displayedPosts.addAll(posts);
 
-                debugLog("Done loading page, showing posts");
+                        debugLog("Done loading page, showing posts (currentScrollPosition=%d)", currentScrollPosition);
 
-                TopicPage topicPage = TopicPage.create(topic, pageNumber, posts, pageInitialPosition);
-                topicPageView.renderPage(topicPage);
+                        // Scroll position is saved after a refresh or a configuration change. In this case,
+                        // we do not use the initial page position, since the user may have scrolled the
+                        // webview. In this case, we wait for the "onPageLoaded" event and restore the saved
+                        // position manually.
+                        boolean positionAfterPageLoad = currentScrollPosition == -1;
 
-                notifyPageLoaded();
-                showPosts();
-            }
+                        TopicPage topicPage = TopicPage.create(topic, pageNumber, posts, pageInitialPosition, positionAfterPageLoad);
+                        topicPageView.renderPage(topicPage);
 
-            @Override
-            public void onError(Throwable throwable) {
-                swipeRefreshLayout.setRefreshing(false);
+                        notifyPageLoaded();
+                        showPosts();
+                    }
 
-                Timber.e(throwable, "Error displaying topic '%s'", topic);
-                showErrorView();
-            }
-        }));
+                    @Override
+                    public void onError(Throwable throwable) {
+                        swipeRefreshLayout.setRefreshing(false);
+
+                        Timber.e(throwable, "Error displaying topic '%s'", topic);
+                        showErrorView();
+                    }
+                }));
     }
 
     private void notifyPageLoaded() {
@@ -495,8 +543,7 @@ public class PostsFragment extends BaseFragment {
         long searchStartPostId = pageInitialPosition.getPostId();
         if (pageInitialPosition.isTop()) {
             searchStartPostId = displayedPosts.get(0).getId();
-        }
-        else if (pageInitialPosition.isBottom()) {
+        } else if (pageInitialPosition.isBottom()) {
             searchStartPostId = displayedPosts.get(displayedPosts.size() - 1).getId();
         }
 
@@ -505,7 +552,7 @@ public class PostsFragment extends BaseFragment {
     }
 
     private void updateQuotedPostsStatus() {
-        List<Long> quotedPosts = ((TopicFragment)getParentFragment()).getPageQuotedPosts(pageNumber);
+        List<Long> quotedPosts = ((TopicFragment) getParentFragment()).getPageQuotedPosts(pageNumber);
         debugLog("already quoted posts for page = %s", quotedPosts);
         if (quotedPosts.size() > 0) {
             topicPageView.setQuotedPosts(quotedPosts);
@@ -517,42 +564,80 @@ public class PostsFragment extends BaseFragment {
         topicPageView.setOnCreateContextMenuListener((menu, v, menuInfo) -> {
             WebView.HitTestResult result = ((WebView) v).getHitTestResult();
             if (result.getType() == WebView.HitTestResult.IMAGE_TYPE || result.getType() == WebView.HitTestResult.SRC_IMAGE_ANCHOR_TYPE) {
-                final String url = result.getExtra();
+                final String imageUrl = result.getExtra();
 
-                final ImageMenuHandler imageMenuHandler = new ImageMenuHandler(getActivity(), url);
-                MenuItem.OnMenuItemClickListener itemClickListener = item -> {
-                    switch (item.getItemId()) {
-                        case R.id.action_save_original_image:
-                            imageMenuHandler.saveImage(false);
-                            break;
-                        case R.id.action_save_image_as_png:
-                            imageMenuHandler.saveImage(true);
-                            break;
-                        case R.id.action_open_image:
-                            imageMenuHandler.openImage();
-                            break;
-                        case R.id.action_share_image:
-                            imageMenuHandler.shareImage();
-                            break;
-                        case R.id.action_exif_data:
-                            imageMenuHandler.openExifData();
-                            break;
-                        default:
-                            Timber.e("Unknow menu item clicked");
-                    }
+                Timber.w("Image url = " + imageUrl);
 
-                    return true;
-                };
-
-                if (! url.contains(mdEndpoints.baseurl())) {
-                    menu.setHeaderTitle(url);
-                    getActivity().getMenuInflater().inflate(R.menu.menu_save_image, menu);
-                    for (int i = 0; i < menu.size(); i++) {
-                        menu.getItem(i).setOnMenuItemClickListener(itemClickListener);
-                    }
+                if (mdEndpoints.isSmiliesUrl(imageUrl) && settings.areSmileyActionsEnabled()) {
+                    createSmileyContextMenu(menu, imageUrl);
+                } else if (!imageUrl.contains(mdEndpoints.baseurl())) {
+                    createRegularImageContextMenu(menu, imageUrl);
                 }
             }
         });
+    }
+
+    private void createRegularImageContextMenu(ContextMenu contextMenu, String imageUrl) {
+        final ImageMenuHandler imageMenuHandler = new ImageMenuHandler(getActivity(), imageUrl);
+        MenuItem.OnMenuItemClickListener itemClickListener = item -> {
+            switch (item.getItemId()) {
+                case R.id.action_save_original_image:
+                    imageMenuHandler.saveImage(false);
+                    break;
+                case R.id.action_save_image_as_png:
+                    imageMenuHandler.saveImage(true);
+                    break;
+                case R.id.action_open_image:
+                    imageMenuHandler.openImage();
+                    break;
+                case R.id.action_share_image:
+                    imageMenuHandler.shareImage();
+                    break;
+                case R.id.action_exif_data:
+                    imageMenuHandler.openExifData();
+                    break;
+                default:
+                    Timber.e("Unknow menu item clicked");
+            }
+
+            return true;
+        };
+
+        contextMenu.setHeaderTitle(imageUrl);
+        getActivity().getMenuInflater().inflate(R.menu.menu_save_image, contextMenu);
+        for (int i = 0; i < contextMenu.size(); i++) {
+            contextMenu.getItem(i).setOnMenuItemClickListener(itemClickListener);
+        }
+    }
+
+    private void createSmileyContextMenu(ContextMenu contextMenu, String smileyUrl) {
+        Smiley smiley = smileyRegistry.getSmileyFromUrl(smileyUrl);
+
+        if (smiley == null) {
+            Timber.w("Unable to find smiley in registry from URL: " + smileyUrl);
+            return;
+        } else if (mdEndpoints.isBuiltInSmileyUrl(smileyUrl)) {
+            return;
+        }
+
+        MenuItem.OnMenuItemClickListener itemClickListener = item -> {
+            switch (item.getItemId()) {
+                case R.id.action_add_smiley_to_favorites:
+                    addSmileyToFavorites(smiley);
+                    break;
+                case R.id.action_copy_smiley_code:
+                    UiUtils.copyTextToClipboard(getContext(), smiley.code(), R.string.profile_personal_smilies_code_copied);
+                    break;
+            }
+
+            return true;
+        };
+
+        contextMenu.setHeaderTitle(smiley.code());
+        getActivity().getMenuInflater().inflate(R.menu.menu_smiley_actions, contextMenu);
+        for (int i = 0; i < contextMenu.size(); i++) {
+            contextMenu.getItem(i).setOnMenuItemClickListener(itemClickListener);
+        }
     }
 
     private void debugLog(String message, Object... args) {
@@ -561,5 +646,42 @@ public class PostsFragment extends BaseFragment {
 
     public TopicPageView getTopicPageView() {
         return topicPageView;
+    }
+
+    private boolean isPageCurrentlyActive() {
+        return ((TopicFragment) getParentFragment()).getCurrentPage() == pageNumber;
+    }
+
+    private void addSmileyToFavorites(Smiley smiley) {
+        subscribe(mdService.addSmileyToFavorites(userManager.getActiveUser(), smiley).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new EndlessObserver<SmileyFavoriteActionResult>() {
+                    @Override
+                    public void onNext(SmileyFavoriteActionResult result) {
+                        showAddSmileyAsFavoriteResult(result);
+                    }
+
+                    @Override
+                    public void onError(Throwable throwable) {
+                        Timber.e(throwable, "Error when adding smiley to favorites");
+                        SnackbarHelper.makeError(getActivity(), R.string.add_smiley_as_favorite_unknown_error).show();
+                    }
+                }));
+    }
+
+    private void showAddSmileyAsFavoriteResult(SmileyFavoriteActionResult result) {
+        switch (result) {
+            case ADDED_AS_FAVORITE:
+                SnackbarHelper.make(getActivity(), R.string.add_smiley_as_favorite_success).show();
+                break;
+            case NOT_ADDED_MAX_REACHED:
+                SnackbarHelper.make(getActivity(), R.string.add_smiley_as_favorite_max_reached_out_error).show();
+                break;
+            case NOT_ADDED_ALREADY_IN_LIST:
+                SnackbarHelper.make(getActivity(), R.string.add_smiley_as_favorite_already_added_error).show();
+                break;
+            default:
+                SnackbarHelper.makeError(getActivity(), R.string.add_smiley_as_favorite_unknown_error).show();
+        }
     }
 }

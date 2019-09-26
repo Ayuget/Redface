@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar_actionbar"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:elevation="4dp"
+            android:minHeight="?attr/actionBarSize"
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:contentInsetStartWithNavigation="0dp"
+            app:theme="@style/RedfaceTransparentToolbar" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <!-- Loading indicator -->
+            <RelativeLayout
+                android:id="@+id/loading_indicator"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center">
+
+                <com.pnikosis.materialishprogress.ProgressWheel
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    app:matProg_barColor="@color/theme_primary"
+                    app:matProg_progressIndeterminate="true" />
+            </RelativeLayout>
+
+            <!-- Error layout -->
+            <LinearLayout
+                android:id="@+id/error_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center_vertical|center"
+                android:visibility="gone">
+
+                <ImageView
+                    android:id="@+id/error_image"
+                    android:src="@drawable/sad_smiley"
+                    android:contentDescription="@string/page_loading_error"
+                    android:layout_width="96dp"
+                    android:layout_height="96dp" />
+
+                <TextView
+                    android:id="@+id/error_message"
+                    android:textSize="16dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:gravity="center"
+                    android:text="@string/page_loading_error" />
+
+                <Button
+                    android:id="@+id/error_reload_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/reload_page" />
+            </LinearLayout>
+
+            <!-- Profile attributes -->
+            <LinearLayout
+                android:id="@+id/profile_wrapper"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone">
+
+                <ImageView
+                    android:maxWidth="150dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/navdrawer_chosen_account_height"
+                    android:scaleType="fitCenter"
+                    android:adjustViewBounds="true"
+                    android:id="@+id/profile_picture"
+                    android:layout_marginBottom="16dp"
+                    android:layout_gravity="center" />
+
+                <TextView
+                    android:id="@+id/username"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    tools:text="Username"
+                    style="@style/Redface.ProfileDetails.Username" />
+
+                <TextView
+                    android:id="@+id/status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    tools:text="Super Administrateur"
+                    style="@style/Redface.ProfileDetails.Status" />
+
+                <LinearLayout
+                    android:id="@+id/profile_attributes"
+                    android:orientation="vertical"
+                    android:layout_marginTop="@dimen/activity_vertical_margin"
+                    android:layout_marginBottom="16dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <LinearLayout
+                    android:id="@+id/favorite_smilies"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="16dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+
+        </FrameLayout>
+
+
+    </LinearLayout>
+</ScrollView>

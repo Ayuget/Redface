@@ -2,7 +2,6 @@ package com.ayuget.redface.image.rehost;
 
 import com.ayuget.redface.image.HostedImage;
 import com.ayuget.redface.image.ImageQuality;
-import com.google.common.collect.ImmutableMap;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -12,12 +11,15 @@ import java.util.regex.Pattern;
 
 public class RehostResultParser {
     private static final Pattern REHOST_RESULTS_PATTERN = Pattern.compile("(?:<h4>)([^<]+)(?:<\\/h4>)(?s:.*?)(?:<code>)(?s:.*?)(?:\\[url=)([^\\]]+)(?:\\])(?s:.*?)(?:\\[img\\])([^\\]]+)(?:\\[\\/img\\])(?:[^<]+)(?:<\\/code>)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-    private static final Map<String, ImageQuality> QUALITY_MAPPINGS = new ImmutableMap.Builder<String, ImageQuality>()
-            .put("Taille reelle", ImageQuality.ORIGINAL)
-            .put("Medium (800)", ImageQuality.MEDIUM)
-            .put("Preview (600)", ImageQuality.PREVIEW)
-            .put("Miniature", ImageQuality.THUMBNAIL)
-            .build();
+    private static final Map<String, ImageQuality> QUALITY_MAPPINGS;
+
+    static {
+        QUALITY_MAPPINGS = new HashMap<>();
+        QUALITY_MAPPINGS.put("Taille reelle", ImageQuality.ORIGINAL);
+        QUALITY_MAPPINGS.put("Medium (800)", ImageQuality.MEDIUM);
+        QUALITY_MAPPINGS.put("Preview (600)", ImageQuality.PREVIEW);
+        QUALITY_MAPPINGS.put("Miniature", ImageQuality.THUMBNAIL);
+    }
 
     HostedImage parseResultPage(String resultPageSource) throws IOException {
         Matcher m = REHOST_RESULTS_PATTERN.matcher(resultPageSource);

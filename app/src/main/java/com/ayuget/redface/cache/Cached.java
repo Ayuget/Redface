@@ -1,6 +1,7 @@
 package com.ayuget.redface.cache;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
+
 import com.ayuget.redface.util.DateUtils;
 
 /**

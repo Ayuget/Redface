@@ -27,6 +27,8 @@ import com.ayuget.redface.data.api.model.Topic;
 import com.ayuget.redface.data.api.model.TopicFilter;
 import com.ayuget.redface.data.api.model.TopicSearchResult;
 import com.ayuget.redface.data.api.model.User;
+import com.ayuget.redface.ui.misc.PostReportStatus;
+import com.ayuget.redface.ui.misc.SmileyFavoriteActionResult;
 
 import java.util.List;
 
@@ -41,15 +43,17 @@ public interface MDService {
 
     /**
      * Lists all topics for a given category
+     *
      * @param category category
-     * @param filter filter to apply
+     * @param filter   filter to apply
      * @return topics list
      */
     Observable<List<Topic>> listTopics(User user, final Category category, final Subcategory subcategory, int page, final TopicFilter filter);
 
     /**
      * Lists all topics for the meta page
-     * @param filter filter to apply
+     *
+     * @param filter     filter to apply
      * @param sortByDate sort topics by date (desc) or group them by categories
      * @return topics list
      */
@@ -86,17 +90,8 @@ public interface MDService {
     Observable<String> getPostContent(User user, Topic topic, int postId);
 
     /**
-     * Returns a list of the smileys the most recently used by the user
-     */
-    Observable<List<Smiley>> getRecentlyUsedSmileys(User user);
-
-    /**
-     * Returns a list of popular smileys
-     */
-    Observable<List<Smiley>> getPopularSmileys();
-
-    /**
      * Search for smileys
+     *
      * @param searchExpression search criteria
      * @return list of smileys matching the expression
      */
@@ -130,7 +125,9 @@ public interface MDService {
     /**
      * Reports a given post to moderators
      */
-    Observable<Boolean> reportPost(User user, Topic topic, int postId);
+    Observable<Boolean> reportPost(User user, Topic topic, int postId, String reason, boolean joinReport);
+
+    Observable<PostReportStatus> checkPostReportStatus(User user, Topic topic, int postId);
 
     /**
      * Get a user profile
@@ -146,4 +143,20 @@ public interface MDService {
      * Searches a particular word and/or author in a topic, starting at a given post id.
      */
     Observable<TopicSearchResult> searchInTopic(User user, Topic topic, long startFromPostId, String word, String author, boolean firstSearch);
+
+    /**
+     * Returns a list of the user's favorite smileys
+     */
+    Observable<List<Smiley>> getFavoriteSmileys(User user);
+
+    /**
+     * Adds a smiley to the list of user's favorite smileys
+     */
+    Observable<SmileyFavoriteActionResult> addSmileyToFavorites(User user, Smiley smiley);
+
+    /**
+     * Removes a smiley to the list of user's favorite smileys
+     */
+    Observable<Boolean> removeSmileyFromFavorites(User user, Smiley smiley);
+
 }

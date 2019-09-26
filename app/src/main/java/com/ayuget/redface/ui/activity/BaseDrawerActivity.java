@@ -22,7 +22,6 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +29,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.ayuget.redface.R;
 import com.ayuget.redface.account.UserManager;
@@ -41,6 +42,7 @@ import com.ayuget.redface.data.api.model.User;
 import com.ayuget.redface.data.rx.EndlessObserver;
 import com.ayuget.redface.data.state.CategoriesStore;
 import com.ayuget.redface.network.HTTPClientProvider;
+import com.ayuget.redface.profile.ProfileManager;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.ui.drawer.CategoryDrawerItem;
 import com.ayuget.redface.ui.drawer.DrawerItem;
@@ -48,18 +50,21 @@ import com.ayuget.redface.ui.drawer.SimpleDrawerItem;
 import com.ayuget.redface.ui.hfr.HFRIcons;
 import com.ayuget.redface.ui.misc.UiUtils;
 import com.ayuget.redface.util.UserUtils;
-import com.google.common.base.Optional;
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.InjectView;
+import butterknife.BindView;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 public class BaseDrawerActivity extends BaseActivity {
+    private static final String ARG_DRAWER_USER = "drawer_user";
+
     private List<View> drawerItemsViews;
 
     boolean accountBoxExpanded = false;
@@ -88,32 +93,40 @@ public class BaseDrawerActivity extends BaseActivity {
     @Inject
     MDEndpoints mdEndpoints;
 
-    @InjectView(R.id.navdrawer_items_list)
+    @Inject
+    ProfileManager profileManager;
+
+    @BindView(R.id.navdrawer_items_list)
     ViewGroup drawerItemsListContainer;
 
-    @InjectView(R.id.profile_picture)
+    @BindView(R.id.profile_picture)
     ImageView activeUserPicture;
 
-    @InjectView(R.id.active_username)
+    @BindView(R.id.active_username)
     TextView activeUserName;
 
-    @InjectView(R.id.expand_account_box_indicator)
+    @BindView(R.id.expand_account_box_indicator)
     ImageView expandAccountBoxIndicator;
 
-    @InjectView(R.id.chosen_account_view)
+    @BindView(R.id.chosen_account_view)
     View choseAccountView;
 
-    @InjectView(R.id.account_list)
+    @BindView(R.id.account_list)
     LinearLayout accountListContainer;
 
-    @InjectView(R.id.hfr_drawer_layout)
+    @BindView(R.id.hfr_drawer_layout)
     DrawerLayout drawerLayout;
 
     private User currentDrawerUser;
+    private Integer currentDrawerUserId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            currentDrawerUser = savedInstanceState.getParcelable(ARG_DRAWER_USER);
+        }
 
         drawerItemsViews = new ArrayList<>();
     }
@@ -150,11 +163,17 @@ public class BaseDrawerActivity extends BaseActivity {
         updateActiveUser();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateUserIfNeeded();
+    }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        updateUserIfNeeded();
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putParcelable(ARG_DRAWER_USER, currentDrawerUser);
     }
 
     private void updateUserIfNeeded() {
@@ -191,37 +210,49 @@ public class BaseDrawerActivity extends BaseActivity {
     }
 
     private void displayUserAvatar() {
-        Optional<Integer> userId = Optional.absent();
-        if (! currentDrawerUser.isGuest() && currentDrawerUser.hasAvatar()) {
-            userId = UserUtils.identifyUserFromCookies(httpClientProvider.getUserCookieStore(currentDrawerUser));
+        if (!currentDrawerUser.isGuest() && currentDrawerUser.hasAvatar()) {
+            currentDrawerUserId = UserUtils.identifyUserFromCookies(httpClientProvider.getUserCookieStore(currentDrawerUser));
         }
 
-        if (userId.isPresent()) {
-            loadUserAvatarFromProfile(userId.get());
-        }
-        else {
+        if (currentDrawerUserId != null) {
+            loadUserProfile(currentDrawerUserId);
+        } else {
             loadDefaultProfileImage();
         }
     }
 
-    private void loadUserAvatarFromProfile(int userId) {
+    private void loadUserProfile(int userId) {
         Timber.d("Loading profile for user '%s' (id: '%d')", currentDrawerUser.getUsername(), userId);
-        // TODO cache profile
-        subscribe(dataService.loadProfile(currentDrawerUser, userId, new EndlessObserver<Profile>() {
-            @Override
-            public void onNext(Profile profile) {
-                currentDrawerUser.setProfile(profile);
-                Picasso.with(BaseDrawerActivity.this)
-                        .load(profile.getAvatarUrl())
-                        .into(activeUserPicture);
-            }
 
-            @Override
-            public void onError(Throwable throwable) {
-                Timber.e(throwable, "Error on retrieving profile for user '%s'", currentDrawerUser);
-                loadDefaultProfileImage();
-            }
-        }));
+        Profile userProfile = profileManager.getProfile(userId);
+        if (userProfile != null) {
+            setDrawerActiveProfile(userProfile);
+            return;
+        }
+
+        subscribe(
+                profileManager.loadProfile(currentDrawerUser, userId)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                this::setDrawerActiveProfile,
+                                (error) -> {
+                                    Timber.e(error, "Error on retrieving profile for user '%s'", currentDrawerUser);
+                                    loadDefaultProfileImage();
+                                })
+        );
+    }
+
+    private void setDrawerActiveProfile(Profile profile) {
+        currentDrawerUser.setProfile(profile);
+
+        if (profile.avatarUrl() == null) {
+            loadDefaultProfileImage();
+        } else {
+            Glide.with(this)
+                    .load(profile.avatarUrl())
+                    .into(activeUserPicture);
+        }
     }
 
     private void loadDefaultProfileImage() {
@@ -230,12 +261,9 @@ public class BaseDrawerActivity extends BaseActivity {
     }
 
     private void setupAccountBox() {
-        expandAccountBoxIndicator.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                accountBoxExpanded = !accountBoxExpanded;
-                setupAccountBoxToggle();
-            }
+        expandAccountBoxIndicator.setOnClickListener(v -> {
+            accountBoxExpanded = !accountBoxExpanded;
+            setupAccountBoxToggle();
         });
 
         setupAccountBoxToggle();
@@ -312,15 +340,12 @@ public class BaseDrawerActivity extends BaseActivity {
         }
 
         View addAccountView = layoutInflater.inflate(R.layout.navigation_drawer_add_account, accountListContainer, false);
-        addAccountView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Add account intent
-                Intent intent = new Intent(BaseDrawerActivity.this, AccountActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-            }
+        addAccountView.setOnClickListener(v -> {
+            // Add account intent
+            Intent intent = new Intent(BaseDrawerActivity.this, AccountActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
         });
 
         accountListContainer.addView(addAccountView);
@@ -330,12 +355,9 @@ public class BaseDrawerActivity extends BaseActivity {
         View accountView = layoutInflater.inflate(R.layout.navigation_drawer_account, accountListContainer, false);
         ((TextView) accountView.findViewById(R.id.account_username)).setText(user.getDisplayUsername(this));
 
-        accountView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                userManager.setActiveUser(user);
-                onActiveUserChanged();
-            }
+        accountView.setOnClickListener(v -> {
+            userManager.setActiveUser(user);
+            onActiveUserChanged();
         });
 
         accountListContainer.addView(accountView);
@@ -403,8 +425,7 @@ public class BaseDrawerActivity extends BaseActivity {
         if (drawerItem.isSeparator()) {
             // Done !
             return view;
-        }
-        else  {
+        } else {
             TextView titleView = (TextView) view.findViewById(R.id.item_name);
             ImageView iconView = (ImageView) view.findViewById(R.id.item_icon);
 
@@ -412,8 +433,7 @@ public class BaseDrawerActivity extends BaseActivity {
                 SimpleDrawerItem simpleDrawerItem = (SimpleDrawerItem) drawerItem;
                 iconView.setImageResource(simpleDrawerItem.getIconResource());
                 titleView.setText(getText(simpleDrawerItem.getTitleResource()));
-            }
-            else {
+            } else {
                 CategoryDrawerItem categoryDrawerItem = (CategoryDrawerItem) drawerItem;
                 iconView.setImageResource(categoryDrawerItem.getIconResource());
                 titleView.setText(categoryDrawerItem.getCategory().name());
@@ -422,12 +442,7 @@ public class BaseDrawerActivity extends BaseActivity {
 
         styleNavDrawerItem(view, drawerItem, false);
 
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onNavDrawerItemClicked(drawerItem);
-            }
-        });
+        view.setOnClickListener(v -> onNavDrawerItemClicked(drawerItem));
 
         return view;
     }
@@ -455,8 +470,7 @@ public class BaseDrawerActivity extends BaseActivity {
                 case NAVDRAWER_ITEM_MY_TOPICS:
                     if (this instanceof TopicsActivity) {
                         onMyTopicsClicked();
-                    }
-                    else {
+                    } else {
                         Intent intent = new Intent(this, TopicsActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                         intent.putExtra(UIConstants.ARG_SELECTED_CATEGORY, categoriesStore.getMetaCategory());
@@ -472,9 +486,14 @@ public class BaseDrawerActivity extends BaseActivity {
                     break;
                 }
                 case NAVDRAWER_ITEM_PROFILE: {
-                    Intent intent = new Intent(this, AccountActivity.class);
+                    if (currentDrawerUserId == null) {
+                        return;
+                    }
+
+                    Intent intent = new Intent(this, ProfileActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    intent.putExtra(UIConstants.ARG_RELOGIN_MODE, true);
+                    intent.putExtra(UIConstants.ARG_PROFILE_ID, currentDrawerUserId);
+                    intent.putExtra(UIConstants.ARG_IS_OWN_PROFILE, true);
                     startActivity(intent);
                     break;
                 }
@@ -485,16 +504,14 @@ public class BaseDrawerActivity extends BaseActivity {
                     break;
                 }
             }
-        }
-        else if (drawerItem.isCategory()) {
+        } else if (drawerItem.isCategory()) {
             CategoryDrawerItem categoryDrawerItem = (CategoryDrawerItem) drawerItem;
 
             dataService.clearTopicListCache();
 
             if (this instanceof TopicsActivity) {
                 onCategoryClicked(categoryDrawerItem.getCategory());
-            }
-            else {
+            } else {
                 Intent intent = new Intent(this, TopicsActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.putExtra(UIConstants.ARG_SELECTED_CATEGORY, categoryDrawerItem.getCategory());
