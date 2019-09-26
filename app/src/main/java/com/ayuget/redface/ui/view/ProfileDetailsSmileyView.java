@@ -66,6 +66,8 @@ public class ProfileDetailsSmileyView extends CoordinatorLayout {
         addSmileyToFavoritesButton.setOnClickListener((click) -> onSmileyActionPerformedListener.onSmileyActionPerformed(smiley, SmileyAction.ADD_TO_FAVORITES));
         removeSmileyFromFavoritesButton.setOnClickListener((click) -> onSmileyActionPerformedListener.onSmileyActionPerformed(smiley, SmileyAction.REMOVE_FROM_FAVORITES));
 
+        editSmileyKeywordsButton.setVisibility(GONE); // Not ready yet
+
         if (smileyType == SmileyType.PERSONAL) { // Personal smilies are necessarily in the favorites
             if (isOwnProfile) { // Personal smilies are necessarily in the favorites
                 addSmileyToFavoritesButton.setVisibility(GONE);
