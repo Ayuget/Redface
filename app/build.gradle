@@ -90,8 +90,8 @@ dependencies {
     // Boilerplate destruction !!
     implementation 'com.jakewharton.timber:timber:4.1.2'
     implementation 'net.ypresto.timbertreeutils:timbertreeutils:1.0.0'
-    implementation 'com.jakewharton:butterknife:6.0.0'
-    annotationProcessor 'com.jakewharton:butterknife:6.0.0'
+    implementation 'com.jakewharton:butterknife:10.2.0'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.0'
     androidTestAnnotationProcessor 'com.jakewharton:butterknife:6.0.0'
     testAnnotationProcessor 'com.jakewharton:butterknife:6.0.0'
     implementation 'com.hannesdorfmann.fragmentargs:annotation:3.0.2'

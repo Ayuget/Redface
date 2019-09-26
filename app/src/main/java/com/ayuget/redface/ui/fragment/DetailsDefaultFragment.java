@@ -25,10 +25,11 @@ import android.widget.ImageView;
 import com.ayuget.redface.R;
 import com.ayuget.redface.ui.misc.UiUtils;
 
-import butterknife.InjectView;
+import butterknife.BindView;
+
 
 public class DetailsDefaultFragment extends BaseFragment {
-    @InjectView(R.id.empty_content_image)
+    @BindView(R.id.empty_content_image)
     ImageView emptyContentImage;
 
     public static DetailsDefaultFragment newInstance() {

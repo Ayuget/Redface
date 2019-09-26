@@ -117,7 +117,7 @@ public class BaseActivity extends AppCompatActivity implements HasAndroidInjecto
     @Override
     public void setContentView(int layoutResID) {
         super.setContentView(layoutResID);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
     }
 
     /**
@@ -126,7 +126,7 @@ public class BaseActivity extends AppCompatActivity implements HasAndroidInjecto
      */
     public void setContentView(int layoutResID, Bundle savedInstanceState) {
         super.setContentView(layoutResID);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
 
         onInitUiState();
 

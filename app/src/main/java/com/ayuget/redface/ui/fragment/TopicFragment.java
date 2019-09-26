@@ -89,7 +89,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.InjectView;
+import butterknife.BindView;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
@@ -153,19 +153,19 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
     @Inject
     RedfaceSettings settings;
 
-    @InjectView(R.id.pager)
+    @BindView(R.id.pager)
     ViewPager pager;
 
-    @InjectView(R.id.titlestrip)
+    @BindView(R.id.titlestrip)
     PagerTabStrip pagerTitleStrip;
 
-    @InjectView(R.id.reply_button)
+    @BindView(R.id.reply_button)
     FloatingActionButton replyButton;
 
-    @InjectView(R.id.move_to_top_button)
+    @BindView(R.id.move_to_top_button)
     FloatingActionButton moveToTopButton;
 
-    @InjectView(R.id.move_to_bottom_button)
+    @BindView(R.id.move_to_bottom_button)
     FloatingActionButton moveToBottomButton;
 
     TextView topicWordSearch;

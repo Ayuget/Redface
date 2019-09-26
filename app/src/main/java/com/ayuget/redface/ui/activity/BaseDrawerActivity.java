@@ -57,7 +57,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.InjectView;
+import butterknife.BindView;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
@@ -96,25 +96,25 @@ public class BaseDrawerActivity extends BaseActivity {
     @Inject
     ProfileManager profileManager;
 
-    @InjectView(R.id.navdrawer_items_list)
+    @BindView(R.id.navdrawer_items_list)
     ViewGroup drawerItemsListContainer;
 
-    @InjectView(R.id.profile_picture)
+    @BindView(R.id.profile_picture)
     ImageView activeUserPicture;
 
-    @InjectView(R.id.active_username)
+    @BindView(R.id.active_username)
     TextView activeUserName;
 
-    @InjectView(R.id.expand_account_box_indicator)
+    @BindView(R.id.expand_account_box_indicator)
     ImageView expandAccountBoxIndicator;
 
-    @InjectView(R.id.chosen_account_view)
+    @BindView(R.id.chosen_account_view)
     View choseAccountView;
 
-    @InjectView(R.id.account_list)
+    @BindView(R.id.account_list)
     LinearLayout accountListContainer;
 
-    @InjectView(R.id.hfr_drawer_layout)
+    @BindView(R.id.hfr_drawer_layout)
     DrawerLayout drawerLayout;
 
     private User currentDrawerUser;

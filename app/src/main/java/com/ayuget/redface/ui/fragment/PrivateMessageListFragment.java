@@ -58,7 +58,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.InjectView;
+import butterknife.BindView;
 import timber.log.Timber;
 
 public class PrivateMessageListFragment extends ToggleToolbarFragment implements PrivateMessagesAdapter.OnPMClickedListener {
@@ -88,28 +88,28 @@ public class PrivateMessageListFragment extends ToggleToolbarFragment implements
 
     private OnPrivateMessageClickedListener onPrivateMessageClickedListener;
 
-    @InjectView(R.id.private_messages_list)
+    @BindView(R.id.private_messages_list)
     ContextMenuRecyclerView pmRecyclerView;
 
-    @InjectView(R.id.pm_list_swipe_refresh_layout)
+    @BindView(R.id.pm_list_swipe_refresh_layout)
     SwipeRefreshLayout swipeRefreshLayout;
 
-    @InjectView(R.id.loading_indicator)
+    @BindView(R.id.loading_indicator)
     View loadingIndicator;
 
-    @InjectView(R.id.error_layout)
+    @BindView(R.id.error_layout)
     View errorView;
 
-    @InjectView(R.id.error_reload_button)
+    @BindView(R.id.error_reload_button)
     Button errorReloadButton;
 
-    @InjectView(R.id.empty_reload_button)
+    @BindView(R.id.empty_reload_button)
     Button emptyReloadButton;
 
-    @InjectView(R.id.empty_content_layout)
+    @BindView(R.id.empty_content_layout)
     View noPrivateMessagesLayout;
 
-    @InjectView(R.id.empty_content_image)
+    @BindView(R.id.empty_content_image)
     ImageView noPrivateMessagesImage;
 
     @Inject

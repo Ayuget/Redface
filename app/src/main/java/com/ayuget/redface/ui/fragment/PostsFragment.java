@@ -72,7 +72,7 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
-import butterknife.InjectView;
+import butterknife.BindView;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
@@ -94,19 +94,19 @@ public class PostsFragment extends BaseFragment {
     @Arg
     PagePosition pageInitialPosition;
 
-    @InjectView(R.id.loading_indicator)
+    @BindView(R.id.loading_indicator)
     View loadingIndicator;
 
-    @InjectView(R.id.error_layout)
+    @BindView(R.id.error_layout)
     View errorView;
 
-    @InjectView(R.id.error_reload_button)
+    @BindView(R.id.error_reload_button)
     Button errorReloadButton;
 
-    @InjectView(R.id.postsView)
+    @BindView(R.id.postsView)
     TopicPageView topicPageView;
 
-    @InjectView(R.id.posts_swipe_refresh_layout)
+    @BindView(R.id.posts_swipe_refresh_layout)
     SwipeRefreshLayout swipeRefreshLayout;
 
     private ArrayList<Post> displayedPosts = new ArrayList<>();

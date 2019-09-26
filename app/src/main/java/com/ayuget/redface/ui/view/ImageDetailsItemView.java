@@ -26,17 +26,17 @@ import androidx.annotation.DrawableRes;
 import com.ayuget.redface.R;
 import com.ayuget.redface.ui.misc.UiUtils;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 
 public class ImageDetailsItemView extends RelativeLayout {
-    @InjectView(R.id.detail_icon)
+    @BindView(R.id.detail_icon)
     ImageView detailIconView;
 
-    @InjectView(R.id.main_text)
+    @BindView(R.id.main_text)
     TextView mainTextView;
 
-    @InjectView(R.id.secondary_text)
+    @BindView(R.id.secondary_text)
     TextView secondaryTextView;
 
     private final String mainText;
@@ -55,7 +55,7 @@ public class ImageDetailsItemView extends RelativeLayout {
 
     private void initialize() {
         inflate(getContext(), R.layout.item_image_detail, this);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
 
         detailIconView.setImageDrawable(getContext().getResources().getDrawable(icon));
         mainTextView.setText(mainText);

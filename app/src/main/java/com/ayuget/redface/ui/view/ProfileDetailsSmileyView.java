@@ -15,26 +15,26 @@ import com.ayuget.redface.ui.misc.SmileyAction;
 import com.ayuget.redface.ui.misc.SmileyType;
 import com.bumptech.glide.Glide;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.InjectView;
 
 public class ProfileDetailsSmileyView extends CoordinatorLayout {
-    @InjectView(R.id.smiley_image)
+    @BindView(R.id.smiley_image)
     ImageView smileyImageView;
 
-    @InjectView(R.id.smiley_code)
+    @BindView(R.id.smiley_code)
     TextView smileyCodeView;
 
-    @InjectView(R.id.copy_smiley_code)
+    @BindView(R.id.copy_smiley_code)
     ImageButton copySmileyCodeButton;
 
-    @InjectView(R.id.edit_smiley_keywords)
+    @BindView(R.id.edit_smiley_keywords)
     ImageButton editSmileyKeywordsButton;
 
-    @InjectView(R.id.add_smiley_to_favorites)
+    @BindView(R.id.add_smiley_to_favorites)
     ImageButton addSmileyToFavoritesButton;
 
-    @InjectView(R.id.remove_smiley_from_favorites)
+    @BindView(R.id.remove_smiley_from_favorites)
     ImageButton removeSmileyFromFavoritesButton;
 
     private final boolean isOwnProfile;
@@ -53,7 +53,7 @@ public class ProfileDetailsSmileyView extends CoordinatorLayout {
 
     private void initialize() {
         inflate(getContext(), R.layout.item_profile_custom_smiley, this);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
 
         Glide.with(this).load(smiley.imageUrl()).into(smileyImageView);
         smileyCodeView.setText(smiley.code());

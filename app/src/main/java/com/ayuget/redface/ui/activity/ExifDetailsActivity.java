@@ -35,17 +35,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.InjectView;
+import butterknife.BindView;
 import timber.log.Timber;
 
 @SuppressWarnings("Convert2MethodRef")
 public class ExifDetailsActivity extends BaseActivity {
     public static final String FIELD_SEPARATOR = "  ·  ";
 
-    @InjectView(R.id.toolbar_actionbar)
+    @BindView(R.id.toolbar_actionbar)
     Toolbar toolbar;
 
-    @InjectView(R.id.image_attributes)
+    @BindView(R.id.image_attributes)
     LinearLayout imageAttributes;
 
     @Override

@@ -38,7 +38,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.InjectView;
+import butterknife.BindView;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
@@ -59,34 +59,34 @@ public class ProfileActivity extends BaseActivity implements ProfileDetailsSmile
     @Inject
     UserManager userManager;
 
-    @InjectView(R.id.loading_indicator)
+    @BindView(R.id.loading_indicator)
     RelativeLayout loadingIndicator;
 
-    @InjectView(R.id.error_layout)
+    @BindView(R.id.error_layout)
     LinearLayout errorLayout;
 
-    @InjectView(R.id.error_reload_button)
+    @BindView(R.id.error_reload_button)
     Button errorReloadButton;
 
-    @InjectView(R.id.profile_wrapper)
+    @BindView(R.id.profile_wrapper)
     LinearLayout profileWrapper;
 
-    @InjectView(R.id.toolbar_actionbar)
+    @BindView(R.id.toolbar_actionbar)
     Toolbar toolbar;
 
-    @InjectView(R.id.profile_picture)
+    @BindView(R.id.profile_picture)
     ImageView userProfilePicture;
 
-    @InjectView(R.id.username)
+    @BindView(R.id.username)
     TextView username;
 
-    @InjectView(R.id.status)
+    @BindView(R.id.status)
     TextView status;
 
-    @InjectView(R.id.profile_attributes)
+    @BindView(R.id.profile_attributes)
     LinearLayout profileAttributes;
 
-    @InjectView(R.id.favorite_smilies)
+    @BindView(R.id.favorite_smilies)
     LinearLayout favoriteSmilies;
 
     private SubscriptionHandler<Integer, Profile> profileHandler = new SubscriptionHandler<>();

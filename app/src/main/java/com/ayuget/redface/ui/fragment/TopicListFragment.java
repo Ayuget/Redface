@@ -63,7 +63,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.InjectView;
+import butterknife.BindView;
 import timber.log.Timber;
 
 @FragmentWithArgs
@@ -96,13 +96,13 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
 
     private SubcategoriesAdapter subcategoriesAdapter;
 
-    @InjectView(R.id.topics_list)
+    @BindView(R.id.topics_list)
     ContextMenuRecyclerView topicsRecyclerView;
 
-    @InjectView(R.id.topic_list_swipe_refresh_layout)
+    @BindView(R.id.topic_list_swipe_refresh_layout)
     SwipeRefreshLayout swipeRefreshLayout;
 
-    @InjectView(R.id.empty_content_image)
+    @BindView(R.id.empty_content_image)
     ImageView emptyTopicsImage;
 
     @Inject
