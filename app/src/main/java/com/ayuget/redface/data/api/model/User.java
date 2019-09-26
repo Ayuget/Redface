@@ -17,8 +17,20 @@
 package com.ayuget.redface.data.api.model;
 
 import android.content.Context;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-public class User {
+public class User implements Parcelable {
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+        public User createFromParcel(Parcel in) {
+            return new User(in);
+        }
+
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
+
     private final String username;
 
     private final String password;
@@ -92,5 +104,23 @@ public class User {
         sb.append("username='").append(username).append('\'');
         sb.append('}');
         return sb.toString();
+    }
+
+    public User(Parcel in) {
+        this.username = in.readString();
+        this.password = in.readString();
+        this.profile = in.readParcelable(User.class.getClassLoader());
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int flags) {
+        parcel.writeString(this.username);
+        parcel.writeString(this.password);
+        parcel.writeParcelable(this.profile, flags);
     }
 }

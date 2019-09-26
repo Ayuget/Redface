@@ -63,6 +63,8 @@ import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 public class BaseDrawerActivity extends BaseActivity {
+    private static final String ARG_DRAWER_USER = "drawer_user";
+
     private List<View> drawerItemsViews;
 
     boolean accountBoxExpanded = false;
@@ -122,6 +124,10 @@ public class BaseDrawerActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if (savedInstanceState != null) {
+            currentDrawerUser = savedInstanceState.getParcelable(ARG_DRAWER_USER);
+        }
+
         drawerItemsViews = new ArrayList<>();
     }
 
@@ -161,6 +167,13 @@ public class BaseDrawerActivity extends BaseActivity {
     protected void onStart() {
         super.onStart();
         updateUserIfNeeded();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putParcelable(ARG_DRAWER_USER, currentDrawerUser);
     }
 
     private void updateUserIfNeeded() {
@@ -248,12 +261,9 @@ public class BaseDrawerActivity extends BaseActivity {
     }
 
     private void setupAccountBox() {
-        expandAccountBoxIndicator.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                accountBoxExpanded = !accountBoxExpanded;
-                setupAccountBoxToggle();
-            }
+        expandAccountBoxIndicator.setOnClickListener(v -> {
+            accountBoxExpanded = !accountBoxExpanded;
+            setupAccountBoxToggle();
         });
 
         setupAccountBoxToggle();
