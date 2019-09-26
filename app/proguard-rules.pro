@@ -125,3 +125,8 @@
     @dagger.* *;
     <init>();
 }
+
+-keepclassmembers class rx.internal.util.unsafe.** {
+    long producerIndex;
+    long consumerIndex;
+}
