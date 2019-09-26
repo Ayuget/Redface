@@ -26,6 +26,7 @@ import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.ayuget.redface.R;
+import com.ayuget.redface.RedfaceApp;
 import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.ui.customtabs.CustomTabActivityHelper;
 import com.ayuget.redface.ui.misc.ThemeManager;
@@ -38,7 +39,6 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import dagger.android.AndroidInjection;
 import dagger.android.AndroidInjector;
-import dagger.android.DispatchingAndroidInjector;
 import dagger.android.HasAndroidInjector;
 import io.fabric.sdk.android.Fabric;
 import rx.Subscription;
@@ -46,9 +46,6 @@ import rx.subscriptions.CompositeSubscription;
 
 
 public class BaseActivity extends AppCompatActivity implements HasAndroidInjector {
-    @Inject
-    DispatchingAndroidInjector<Object> androidInjector;
-
     @Inject
     RedfaceSettings settings;
 
@@ -216,6 +213,6 @@ public class BaseActivity extends AppCompatActivity implements HasAndroidInjecto
 
     @Override
     public AndroidInjector<Object> androidInjector() {
-        return androidInjector;
+        return ((RedfaceApp) getApplication()).androidInjector();
     }
 }
