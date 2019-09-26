@@ -164,8 +164,8 @@ public class BaseDrawerActivity extends BaseActivity {
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
+    protected void onResume() {
+        super.onResume();
         updateUserIfNeeded();
     }
 
