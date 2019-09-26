@@ -21,6 +21,7 @@ import com.ayuget.redface.data.api.model.Subcategory;
 import com.ayuget.redface.util.HTMLUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -29,16 +30,18 @@ import rx.functions.Func1;
 
 /**
  * Parse HFR's forum categories from homepage HTML source.
- *
+ * <p>
  * Regex are usually a bad idea to parse HTML, but in this case this is clearly the best option
  * in terms of performance. Jsoup was my first choice, but parsing the source and constructing
  * the DOM tree takes a huge amount of time on a phone (400 ms on my recent Android phone, ...)
  */
 public final class HTMLToCategoryList implements Func1<String, List<Category>> {
+    private static final String MODERATORS_CATEGORY_BASE_LINK = "forum1.php?config=hfr.inc&amp;cat=0&amp;";
+
     private static final Pattern categoryPattern = Pattern.compile(
             "<tr.*?id=\"cat([0-9]+)\".*?" +
-            "<td.*?class=\"catCase1\".*?<b><a\\s*href=\"/hfr/([a-zA-Z0-9-]+)/.*?\"\\s*class=\"cCatTopic\">(.+?)</a></b>(.*?)" +
-            "</tr>",
+                    "<td.*?class=\"catCase1\".*?<b><a\\s*href=\"/hfr/([a-zA-Z0-9-]+)/.*?\"\\s*class=\"cCatTopic\">(.+?)</a></b>(.*?)" +
+                    "</tr>",
             Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
     private static final Pattern subcategoryPattern = Pattern.compile(
@@ -67,11 +70,22 @@ public final class HTMLToCategoryList implements Func1<String, List<Category>> {
             }
 
             Category category = Category.builder()
-                .id(categoryId)
-                .name(categoryName)
-                .slug(categorySlug)
-                .subcategories(subcategories)
-                .build();
+                    .id(categoryId)
+                    .name(categoryName)
+                    .slug(categorySlug)
+                    .subcategories(subcategories)
+                    .build();
+
+            categories.add(category);
+        }
+
+        if (source.contains(MODERATORS_CATEGORY_BASE_LINK)) {
+            Category category = Category.builder()
+                    .id(0)
+                    .name("Section réservée à la modération")
+                    .slug("")
+                    .subcategories(Collections.emptyList())
+                    .build();
 
             categories.add(category);
         }
