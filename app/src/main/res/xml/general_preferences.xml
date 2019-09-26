@@ -117,4 +117,11 @@
             android:entries="@array/pref_default_uploaded_image_variant_values"
             android:entryValues="@array/pref_default_uploaded_image_variant_entries" />
     </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_technical_category">
+        <Preference
+            android:key="clear_categories_cache"
+            android:title="@string/pref_clear_categories_cache_label"
+            android:summary="@string/pref_clear_categories_cache_summary" />
+    </PreferenceCategory>
 </PreferenceScreen>

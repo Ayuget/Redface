@@ -336,4 +336,8 @@
     <string name="favorite_smileys_button_description">Smileys favoris</string>
     <string name="pref_enable_smilies_actions_title">Activer les actions sur les smileys</string>
     <string name="pref_enable_smilies_actions_summary">Permettre les actions sur les smileys dans un sujet. Peut un peu ralentir l\'affichage des messages.</string>
+    <string name="pref_clear_categories_cache_label">Vider le cache des catégories</string>
+    <string name="pref_clear_categories_cache_summary">Vide le cache des catégories pour l\'utilisateur courant</string>
+    <string name="pref_technical_category">Technique</string>
+    <string name="categories_cache_cleared">Cache des catégories vidé, fermez et relancer l\'app</string>
 </resources>

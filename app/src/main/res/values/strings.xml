@@ -290,6 +290,12 @@
     <string name="pref_enable_smilies_actions_title">Enable smilies actions</string>
     <string name="pref_enable_smilies_actions_summary">Allow actions on smileys in a topic. Can slow down the display of messages a little bit.</string>
 
+    <!-- Technical preferences -->
+    <string name="pref_technical_category">Technical</string>
+    <string name="pref_clear_categories_cache_label">Clear category cache</string>
+    <string name="pref_clear_categories_cache_summary">Clears the category cache for the given user</string>
+    <string name="categories_cache_cleared">Categories cache cleared, please kill and reload the app</string>
+
     <!-- About page -->
     <string name="menu_about">About</string>
 

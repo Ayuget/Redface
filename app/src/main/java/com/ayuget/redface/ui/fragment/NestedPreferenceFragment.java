@@ -24,6 +24,7 @@ import android.preference.Preference;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 
@@ -271,4 +272,17 @@ public class NestedPreferenceFragment extends PreferenceFragment implements Shar
         updatePreferenceSummary(findPreference(key));
     }
 
+    @Override
+    public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
+        String key = preference.getKey();
+
+        if (key.equals(SettingsConstants.KEY_CLEAR_CATEGORIES_CACHE)) {
+            Timber.i("Clearing categories cache for active user (%s)", userManager.getActiveUser());
+            categoriesStore.clearCategories(userManager.getActiveUser());
+            Toast.makeText(getActivity(), R.string.categories_cache_cleared, Toast.LENGTH_LONG).show();
+            return true;
+        }
+
+        return false;
+    }
 }
