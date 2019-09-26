@@ -44,6 +44,7 @@ public class CategoriesStore {
     private static final String SUBCATEGORY_NAME_PREFIX = "subcategory_";
     private static final String USER_MAPPING_NAME_PREFIX = "user_mapping_";
     private static final String PRIMARY_SEPARATOR = "\\|";
+    private static final String PRIMARY_SEPARATOR_UNESCAPED = "|";
     private static final String SECONDARY_SEPARATOR = "#";
 
     /**
@@ -72,11 +73,11 @@ public class CategoriesStore {
         this.categoriesPrefs = context.getSharedPreferences(CATEGORIES_PREFS, 0);
 
         this.metaCategory = Category.builder()
-            .id(META_CATEGORY_ID)
-            .name(context.getResources().getString(R.string.navdrawer_item_my_topics))
-            .slug("meta")
-            .subcategories(Collections.<Subcategory>emptyList())
-            .build();
+                .id(META_CATEGORY_ID)
+                .name(context.getResources().getString(R.string.navdrawer_item_my_topics))
+                .slug("meta")
+                .subcategories(Collections.<Subcategory>emptyList())
+                .build();
 
         this.privateMessagesCategory = Category.builder()
                 .id(UIConstants.PRIVATE_MESSAGE_CAT_ID)
@@ -91,8 +92,7 @@ public class CategoriesStore {
     public List<Category> getCategories(User user) {
         if (userCategoriesCache.containsKey(user.getUsername())) {
             return userCategoriesCache.get(user.getUsername());
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -108,8 +108,7 @@ public class CategoriesStore {
     public Category getCategoryById(int categoryId) {
         if (categoryId == META_CATEGORY_ID) {
             return this.metaCategory;
-        }
-        else {
+        } else {
             return categoriesCache.get(categoryId);
         }
     }
@@ -151,8 +150,7 @@ public class CategoriesStore {
 
                             if (subcatsTokens.size() == 2) {
                                 subcategories.add(Subcategory.create(subcatsTokens.get(0), subcatsTokens.get(1)));
-                            }
-                            else {
+                            } else {
                                 Timber.e("Error while deserializing subcategory '%s'", subcatValue);
                             }
                         }
@@ -167,12 +165,10 @@ public class CategoriesStore {
                             .build();
 
                     categoriesCache.put(catId, category);
-                }
-                else {
+                } else {
                     Timber.e("Error while deserializing category '%s'", entryValue);
                 }
-            }
-            else if (entryKey.startsWith(USER_MAPPING_NAME_PREFIX)) {
+            } else if (entryKey.startsWith(USER_MAPPING_NAME_PREFIX)) {
                 userKeys.add(entryKey);
             }
         }
@@ -192,8 +188,7 @@ public class CategoriesStore {
                     } else {
                         Timber.e("Error while associating category '%s' to user '%s' : unknown category", category, username);
                     }
-                }
-                catch (NumberFormatException e) {
+                } catch (NumberFormatException e) {
                     // Don't crash the app if an invalid category is found
                     Timber.e("Error, deserializing category with non-int id : %s", category);
                 }
@@ -207,7 +202,7 @@ public class CategoriesStore {
      * Store categories and user/categories relationship in SharedPreferences
      */
     public void storeCategories(User user, List<Category> categories) {
-        if (! userCategoriesCache.containsKey(user.getUsername())) {
+        if (!userCategoriesCache.containsKey(user.getUsername())) {
             userCategoriesCache.put(user.getUsername(), categories);
 
             for (Category category : categories) {
@@ -219,7 +214,7 @@ public class CategoriesStore {
             for (Category category : categories) {
                 String categoryKey = CATEGORY_NAME_PREFIX + category.id();
 
-                if (! categoriesPrefs.contains(categoryKey)) {
+                if (!categoriesPrefs.contains(categoryKey)) {
                     storeCategory(editor, categoryKey, category);
                 }
             }
@@ -279,14 +274,14 @@ public class CategoriesStore {
         }
 
         List<String> categoryElements = Arrays.asList(
-            String.valueOf(category.id()), category.name(), category.slug(), TextUtils.join(SECONDARY_SEPARATOR, subcatsSlugs)
+                String.valueOf(category.id()), category.name(), category.slug(), TextUtils.join(SECONDARY_SEPARATOR, subcatsSlugs)
         );
 
-        return TextUtils.join(PRIMARY_SEPARATOR, categoryElements);
+        return TextUtils.join(PRIMARY_SEPARATOR_UNESCAPED, categoryElements);
     }
 
     protected String serializeSubcategory(Subcategory subcategory) {
-        return TextUtils.join(PRIMARY_SEPARATOR, Arrays.asList(subcategory.name(), subcategory.slug()));
+        return TextUtils.join(PRIMARY_SEPARATOR_UNESCAPED, Arrays.asList(subcategory.name(), subcategory.slug()));
     }
 
     protected String serializeCategoryIds(List<Category> categories) {
@@ -295,6 +290,6 @@ public class CategoriesStore {
             categoriesIds.add(String.valueOf(category.id()));
         }
 
-        return TextUtils.join(PRIMARY_SEPARATOR, categoriesIds);
+        return TextUtils.join(PRIMARY_SEPARATOR_UNESCAPED, categoriesIds);
     }
 }
