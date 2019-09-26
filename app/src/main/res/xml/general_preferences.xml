@@ -123,5 +123,10 @@
             android:key="clear_categories_cache"
             android:title="@string/pref_clear_categories_cache_label"
             android:summary="@string/pref_clear_categories_cache_summary" />
+
+        <Preference
+            android:key="open_login_screen"
+            android:title="@string/pref_log_in_again_label"
+            android:summary="@string/pref_log_in_again_summary" />
     </PreferenceCategory>
 </PreferenceScreen>

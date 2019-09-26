@@ -295,6 +295,8 @@
     <string name="pref_clear_categories_cache_label">Clear category cache</string>
     <string name="pref_clear_categories_cache_summary">Clears the category cache for the given user</string>
     <string name="categories_cache_cleared">Categories cache cleared, please kill and reload the app</string>
+    <string name="pref_log_in_again_label">Log-in again</string>
+    <string name="pref_log_in_again_summary">Opens the log-in screen</string>
 
     <!-- About page -->
     <string name="menu_about">About</string>

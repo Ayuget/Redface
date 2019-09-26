@@ -16,6 +16,7 @@
 
 package com.ayuget.redface.ui.fragment;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
@@ -37,6 +38,8 @@ import com.ayuget.redface.settings.Blacklist;
 import com.ayuget.redface.settings.ProxySettingsChangedEvent;
 import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.settings.SettingsConstants;
+import com.ayuget.redface.ui.UIConstants;
+import com.ayuget.redface.ui.activity.AccountActivity;
 import com.ayuget.redface.ui.event.ThemeChangedEvent;
 import com.hannesdorfmann.fragmentargs.FragmentArgs;
 import com.hannesdorfmann.fragmentargs.annotation.Arg;
@@ -278,9 +281,16 @@ public class NestedPreferenceFragment extends PreferenceFragment implements Shar
 
         if (key.equals(SettingsConstants.KEY_CLEAR_CATEGORIES_CACHE)) {
             Timber.i("Clearing categories cache for active user (%s)", userManager.getActiveUser());
-            categoriesStore.clearCategories(userManager.getActiveUser());
+            categoriesStore.clearCategories();
             Toast.makeText(getActivity(), R.string.categories_cache_cleared, Toast.LENGTH_LONG).show();
             return true;
+        }
+
+        if (key.equals(SettingsConstants.KEY_OPEN_LOGIN_SCREEN)) {
+            Intent intent = new Intent(getActivity(), AccountActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra(UIConstants.ARG_RELOGIN_MODE, true);
+            startActivity(intent);
         }
 
         return false;

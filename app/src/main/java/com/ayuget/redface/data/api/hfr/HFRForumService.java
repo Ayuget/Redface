@@ -153,7 +153,7 @@ public class HFRForumService implements MDService {
 
     public Observable<List<Category>> refreshCategories(User user) {
         return Observable.defer(() -> {
-            categoriesStore.clearCategories(user);
+            categoriesStore.clearCategories();
             return listCategories(user);
         });
     }
