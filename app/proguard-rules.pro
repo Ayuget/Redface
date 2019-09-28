@@ -130,3 +130,7 @@
     long producerIndex;
     long consumerIndex;
 }
+
+-keep class com.ayuget.redface.data.state.CategoriesStore { *; }
+-keep class com.ayuget.redface.network.UserCookieStore { *; }
+-keep class com.ayuget.redface.network.SerializableHttpCookie { *; }
