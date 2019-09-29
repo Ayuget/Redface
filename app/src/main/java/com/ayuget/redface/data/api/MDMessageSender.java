@@ -86,5 +86,5 @@ public interface MDMessageSender {
     /**
      * Removes a smiley from favorites
      */
-    Observable<Boolean> removeSmileyFromFavorites(User user, Smiley smiley, List<Smiley> favoriteSmileys, String hashcheck);
+    Observable<Boolean> removeSmileyFromFavorites(User user, Smiley smiley, List<Smiley> favoriteSmileys, String hashcheck, String hexcode);
 }
