@@ -40,7 +40,9 @@ public class ToggleToolbarFragment extends ToolbarFragment {
 
     @Override
     public void onPause() {
-        drawerLayout.removeDrawerListener(drawerToggle);
+        if (drawerLayout != null) {
+            drawerLayout.removeDrawerListener(drawerToggle);
+        }
         super.onPause();
     }
 }
