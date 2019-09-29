@@ -77,7 +77,6 @@
         app:elevation="@dimen/fab_elevation"
         app:pressedTranslationZ="@dimen/fab_pressed_translation_z"
         app:borderWidth="0dp"
-        android:visibility="gone"
         android:layout_marginRight="@dimen/fab_padding"
         android:layout_marginBottom="@dimen/move_to_bottom_bottom_padding"
         android:layout_gravity="bottom|right|end" />
@@ -92,7 +91,6 @@
         app:elevation="@dimen/fab_elevation"
         app:pressedTranslationZ="@dimen/fab_pressed_translation_z"
         app:borderWidth="0dp"
-        android:visibility="gone"
         android:layout_marginRight="@dimen/fab_padding"
         android:layout_marginTop="@dimen/move_to_top_top_padding"
         android:layout_gravity="top|right|end" />

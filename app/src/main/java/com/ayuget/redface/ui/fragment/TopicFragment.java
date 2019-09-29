@@ -243,14 +243,14 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
             replyButton.hide();
         }
 
-        setupQuickNavigationButtons();
-
         return rootView;
     }
 
     @Override
     public void onResume() {
         super.onResume();
+
+        setupQuickNavigationButtons();
 
         if (quotedMessagesCache.size() > 0 && isInActionMode) {
             startMultiQuoteAction(false);
@@ -769,11 +769,13 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
 
     private void setupQuickNavigationButtons() {
         if (settings.areNavigationButtonsEnabled()) {
+            Timber.d("Configuring quick actions buttons");
             float buttonsAlpha = 0.30f;
             moveToTopButton.setAlpha(buttonsAlpha);
             moveToBottomButton.setAlpha(buttonsAlpha);
-            moveToTopButton.show();
-            moveToBottomButton.show();
+        } else {
+            moveToTopButton.hide();
+            moveToBottomButton.hide();
         }
     }
 
