@@ -78,7 +78,9 @@ public class HFREndpoints implements MDEndpoints {
 
     private static final String ADD_FAVORITE_SMILEY_URL = "{base_url}/user/addperso.php?config=hfr.inc";
 
-    private static final String REMOVE_FAVORITE_SMILEY_URL = "{base_url}/user/supprperso_validation.php?config=hfr.inc&codehex=2b19933775e62eb7998d7db66177c4f8";
+    private static final String REMOVE_FAVORITE_SMILEY_URL = "{base_url}/user/supprperso_validation.php?config=hfr.inc";
+
+    private static final String REMOVE_FAVORITE_HEX_CODE_SMILEY_URL = "{base_url}/user/supprperso.php?config=hfr.inc";
 
     private static final String IMAGES_PROFILE_PAGE_URL = "{base_url}/user/editprofil.php?config=hfr.inc&page=5";
 
@@ -378,6 +380,14 @@ public class HFREndpoints implements MDEndpoints {
     @Override
     public String removeFavoriteSmiley() {
         return Phrase.from(REMOVE_FAVORITE_SMILEY_URL)
+                .put("base_url", FORUM_BASE_URL)
+                .format()
+                .toString();
+    }
+
+    @Override
+    public String removeFavoriteSmileyHexCode() {
+        return Phrase.from(REMOVE_FAVORITE_HEX_CODE_SMILEY_URL)
                 .put("base_url", FORUM_BASE_URL)
                 .format()
                 .toString();

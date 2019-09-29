@@ -33,8 +33,8 @@ android {
         applicationId "com.ayuget.redface"
         minSdkVersion 16
         targetSdkVersion 29
-        versionCode 4004
-        versionName "4.0.4"
+        versionCode 4005
+        versionName "4.0.5"
         vectorDrawables.useSupportLibrary = true
     }
     compileOptions {

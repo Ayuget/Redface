@@ -60,7 +60,6 @@ public class HFRMessageSender implements MDMessageSender {
     private static final Pattern SMILEY_ADDED_TO_FAVORITES_PATTERN = Pattern.compile("(.*)(Ajout effectué avec succès)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private static final Pattern SMILEY_MAX_COUNT_REACHED_OUT = Pattern.compile("(.*)(vous ne pouvez rajouter plus de)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private static final Pattern SMILEY_ALREADY_ADDED_AS_FAVORITE = Pattern.compile("(.*)(Ce smilie est déjà dans votre liste)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-
     private final HTTPClientProvider httpClientProvider;
 
     private final MDEndpoints mdEndpoints;
@@ -490,7 +489,7 @@ public class HFRMessageSender implements MDMessageSender {
     }
 
     @Override
-    public Observable<Boolean> removeSmileyFromFavorites(User user, Smiley smiley, List<Smiley> favoriteSmileys, String hashcheck) {
+    public Observable<Boolean> removeSmileyFromFavorites(User user, Smiley smiley, List<Smiley> favoriteSmileys, String hashcheck, String hexcode) {
         return Observable.create(subscriber -> {
             Timber.d("Removing smiley %s from favorites (keeping: %s)", smiley, favoriteSmileys);
 
@@ -513,8 +512,10 @@ public class HFRMessageSender implements MDMessageSender {
 
             RequestBody formBody = formBodyBuilder.build();
 
+            String removeSmileyUrl = mdEndpoints.removeFavoriteSmiley() + "&codehex=" + hexcode;
+
             Request request = new Request.Builder()
-                    .url(mdEndpoints.removeFavoriteSmiley())
+                    .url(removeSmileyUrl)
                     .post(formBody)
                     .build();
 

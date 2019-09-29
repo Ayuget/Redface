@@ -89,6 +89,8 @@ public interface MDEndpoints {
 
     String removeFavoriteSmiley();
 
+    String removeFavoriteSmileyHexCode();
+
     String imagesProfilePage();
 
     /**

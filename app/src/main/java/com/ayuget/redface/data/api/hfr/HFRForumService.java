@@ -55,6 +55,7 @@ import com.ayuget.redface.ui.misc.SmileyRegistry;
 import com.squareup.otto.Bus;
 
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
@@ -71,6 +72,7 @@ public class HFRForumService implements MDService {
     private static final Pattern POST_JOIN_REPORT_ALERT = Pattern.compile("(.*)(Une demande de modération a déjà été envoyée sur ce message)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private static final Pattern POST_REPORT_TREATED = Pattern.compile("(.*)(Votre demande de modération sur ce message a été traitée)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private static final Pattern POST_JOIN_REPORT_IN_PROGRESS = Pattern.compile("(.*)(La demande de modération sur ce message à laquelle vous vous êtes joint n'est pas encore traitée)(.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private static final Pattern DELETE_SMILEYS_HEX_CODE_PATTERN = Pattern.compile("(?:.*)(?:<form name=\"test\" action=\"supprperso_validation)(?:.*?)(?:codehex=)([^\"]+)(?:\")(?:.*)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
     private final PageFetcher pageFetcher;
     private final PostsTweaker postsTweaker;
@@ -326,11 +328,38 @@ public class HFRForumService implements MDService {
 
     @Override
     public Observable<Boolean> removeSmileyFromFavorites(User user, Smiley smiley) {
-        return getFavoriteSmileys(user)
-                .flatMap(favoriteSmileys -> mdMessageSender.removeSmileyFromFavorites(user, smiley, favoriteSmileys, currentHashcheck));
+        Observable<String> deleteSmileyHexCodeObservable = getDeleteSmileyHexCode(user);
+        Observable<List<Smiley>> favoriteSmileysObservable = getFavoriteSmileys(user);
+
+
+        return Observable.zip(deleteSmileyHexCodeObservable, favoriteSmileysObservable, FavoriteSmiliesAndHexCode::new)
+                .flatMap(favoriteSmileysAndHexCode -> mdMessageSender.removeSmileyFromFavorites(user, smiley, favoriteSmileysAndHexCode.favoriteSmileys, currentHashcheck, favoriteSmileysAndHexCode.hexCode));
+    }
+
+    private Observable<String> getDeleteSmileyHexCode(User user) {
+        return pageFetcher.fetchSource(user, mdEndpoints.removeFavoriteSmileyHexCode())
+                .map(htmlSource -> {
+                    Matcher matcher = DELETE_SMILEYS_HEX_CODE_PATTERN.matcher(htmlSource);
+
+                    if (matcher.matches()) {
+                        return matcher.group(1);
+                    } else {
+                        return "";
+                    }
+                });
     }
 
     private boolean matchesPattern(Pattern p, String content) {
         return p.matcher(content).matches();
+    }
+
+    private static class FavoriteSmiliesAndHexCode {
+        final String hexCode;
+        final List<Smiley> favoriteSmileys;
+
+        public FavoriteSmiliesAndHexCode(String hexCode, List<Smiley> favoriteSmileys) {
+            this.hexCode = hexCode;
+            this.favoriteSmileys = favoriteSmileys;
+        }
     }
 }
