@@ -202,9 +202,6 @@ public class PostsFragment extends BaseFragment {
             });
         }
 
-        // Deal with long-press actions on images inside the WebView
-        setupImagesInteractions();
-
         return rootView;
     }
 
@@ -212,6 +209,9 @@ public class PostsFragment extends BaseFragment {
     public void onResume() {
         super.onResume();
         debugLog("onResume (isInitialPage = %s)", isInitialPage);
+
+        // Deal with long-press actions on images inside the WebView
+        setupImagesInteractions();
 
         swipeRefreshLayout.setOnRefreshListener(() -> refreshPosts(false));
 
@@ -226,7 +226,7 @@ public class PostsFragment extends BaseFragment {
 
         boolean isCurrentPage = ((TopicFragment) getParentFragment()).getCurrentPage() == pageNumber;
         if (isInitialPage || isCurrentPage) {
-            boolean hasNoVisiblePosts = (displayedPosts != null && displayedPosts.size() == 0) || displayedPosts == null;
+            boolean hasNoVisiblePosts = displayedPosts == null || displayedPosts.size() == 0;
 
             // Page is loaded instantly only if it's the initial page requested on topic load. Other
             // pages will be loaded once selected in the ViewPager
