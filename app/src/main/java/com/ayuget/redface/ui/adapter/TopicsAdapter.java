@@ -155,7 +155,11 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.ViewHolder
         Drawable topicIconDrawable = viewHolder.topicIcon.getDrawable();
         topicIconDrawable.mutate().setColorFilter(getTopicIconTextColor(topic), PorterDuff.Mode.MULTIPLY);
 
-        viewHolder.setOnTopicClickedListener(v -> onTopicClickedListener.onTopicClicked(topic));
+        viewHolder.setOnTopicClickedListener(v -> {
+            if (onTopicClickedListener != null) {
+                onTopicClickedListener.onTopicClicked(topic);
+            }
+        });
 
 
         if (topic.hasUnreadPosts()) {
