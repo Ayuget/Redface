@@ -40,21 +40,6 @@ public class HTMLToPostList implements Func1<String, List<Post>> {
      */
     private static final int DEFAULT_POSTS_COUNT = 40;
 
-    private static final Pattern POST_PATTERN = Pattern.compile(
-            "(<table\\s*cellspacing.*?class=\"([a-z]+)\">.*?" +
-            "<tr.*?class=\"message.*?" +
-            "<a.*?href=\"#t([0-9]+)\".*?" +
-            "<b.*?class=\"s2\">(?:<a.*?>)?(.*?)(?:</a>)?</b>.*?" +
-            "(?:(?:<div\\s*class=\"avatar_center\".*?><img src=\"(.*?)\"\\s*alt=\".*?\"\\s*/></div>)|</td>).*?" +
-            "<div.*?class=\"left\">Posté le ([0-9]+)-([0-9]+)-([0-9]+).*?([0-9]+):([0-9]+):([0-9]+).*?" + "(.)" +
-            //"<a href=\"/hfr/profil-([0-9]+).htm\".*?" +
-
-            "<div.*?id=\"para[0-9]+\">(.*?)<div style=\"clear: both;\">\\s*</div></p>" +
-            "(?:<div\\s*class=\"edited\">)?(?:<a.*?>Message cité ([0-9]+) fois</a>)?(?:<br\\s*/>Message édité par .*? le ([0-9]+)-([0-9]+)-([0-9]+).*?([0-9]+):([0-9]+):([0-9]+)</div>)?.*?" +
-            "</div></td></tr></table>)"
-            , Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-
-
     private static final Pattern PAGE_PATTERN = Pattern.compile("Pages\\s*:\\s*(\\d+)");
     private int getTopicPageCount(Document html) {
         Elements htmlMetas = html.getElementsByTag("meta");
