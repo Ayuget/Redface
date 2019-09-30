@@ -36,8 +36,8 @@ public final class PostsTweaker {
     private static final String REGULAR_LINK_REGEX = "<a\\s*href=\"(https|http)(://forum\\.hardware\\.fr.*?)\"\\s*target=\"_blank\"\\s*class=\"cLink\">";
     private static final CallbackMatcher SMILEYS_REGEX = new CallbackMatcher("<img\\s*src=\"(https://forum\\-images\\.hardware\\.fr.*?)\"\\s*alt=\"(.*?)\".*?/>");
     private static final CallbackMatcher IMAGES_REGEX = new CallbackMatcher("<img\\s*src=\"https?://[^\"]*?\"\\s*alt=\"https?://[^\"]*?\"\\s*title=\"(https?://.*?)\".*?/>", Pattern.DOTALL);
-    private static final CallbackMatcher QUOTES_AND_SPOILERS = new CallbackMatcher("(?:<div class=\\\"container\\\"><table class=\\\")(oldcitation|citation|spoiler)(?:[^>]+)(?:>)(?:.*?)(?:<b class=\\\")(s1|s1Topic)(?:\\\">)(?:(?:<a href=\")([^\\\"]+)(?:\")(?:[^>]+)(?:>))?(.+?:)?", Pattern.DOTALL);
-    private static final CallbackMatcher END_OF_QUOTES = new CallbackMatcher("(?:</td></tr></tbody></table>)", Pattern.DOTALL);
+    private static final CallbackMatcher QUOTES_AND_SPOILERS = new CallbackMatcher("(?:<div class=\\\"container\\\">\\s*<table class=\\\")(oldcitation|citation|spoiler)(?:[^>]+)(?:>\\s*)(?:.*?)(?:<b class=\\\")(s1|s1Topic)(?:\\\">)(?:(?:<a href=\")([^\\\"]+)(?:\")(?:[^>]+)(?:>))?(.+?:)?", Pattern.DOTALL);
+    private static final CallbackMatcher END_OF_QUOTES = new CallbackMatcher("(?:\\s*</td>\\s*</tr>\\s*</tbody>\\s*</table>)", Pattern.DOTALL);
     private static final Pattern AUTHOR_NAME = Pattern.compile("(.+?) a écrit :");
 
     private final MDEndpoints mdEndpoints;
