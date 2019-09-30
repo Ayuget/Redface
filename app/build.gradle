@@ -34,7 +34,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 29
         versionCode 4005
-        versionName "4.0.5"
+        versionName "4.1.2"
         vectorDrawables.useSupportLibrary = true
     }
     compileOptions {
@@ -120,6 +120,7 @@ dependencies {
     implementation 'com.squareup.moshi:moshi:1.8.0'
     implementation 'com.jakewharton:disklrucache:2.0.2'
     implementation "com.github.VictorAlbertos:RxActivityResult:0.3.4"
+    implementation "org.jsoup:jsoup:1.12.1"
 
     // Deal with Android M new-style permissions
     implementation 'com.tbruyelle.rxpermissions:rxpermissions:0.5.1@aar'

@@ -20,6 +20,11 @@ import com.ayuget.redface.data.api.model.Post;
 import com.ayuget.redface.ui.UIConstants;
 import com.ayuget.redface.util.DateUtils;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -35,66 +40,160 @@ public class HTMLToPostList implements Func1<String, List<Post>> {
      */
     private static final int DEFAULT_POSTS_COUNT = 40;
 
-    private static final Pattern DESCRIPTION_PATTERN = Pattern.compile(
-            "(?:<meta name=\"Description\" content=\")(?:.*)(?:Pages : )(\\d+)(?:[^\"])"
-    );
+    private static final Pattern PAGE_PATTERN = Pattern.compile("Pages\\s*:\\s*(\\d+)");
+    private int getTopicPageCount(Document html) {
+        Elements htmlMetas = html.getElementsByTag("meta");
+        for(Element htmlMeta: htmlMetas) {
+            Elements htmlDescs = htmlMeta.getElementsByAttributeValue("name", "Description");
+            for(Element htmlDesc: htmlDescs) {
+                String desc = htmlDesc.attr("content");
+                Matcher m = PAGE_PATTERN.matcher(desc);
+                if(m.find())
+                    return Integer.valueOf(m.group(1));
+            }
+        }
 
-    private static final Pattern POST_PATTERN = Pattern.compile(
-            "(<table\\s*cellspacing.*?class=\"([a-z]+)\">.*?" +
-            "<tr.*?class=\"message.*?" +
-            "<a.*?href=\"#t([0-9]+)\".*?" +
-            "<b.*?class=\"s2\">(?:<a.*?>)?(.*?)(?:</a>)?</b>.*?" +
-            "(?:(?:<div\\s*class=\"avatar_center\".*?><img src=\"(.*?)\"\\s*alt=\".*?\"\\s*/></div>)|</td>).*?" +
-            "<div.*?class=\"left\">Posté le ([0-9]+)-([0-9]+)-([0-9]+).*?([0-9]+):([0-9]+):([0-9]+).*?" +
-            "<a href=\"/hfr/profil-([0-9]+).htm\".*?" +
+        return UIConstants.UNKNOWN_PAGES_COUNT;
+    }
 
-            "<div.*?id=\"para[0-9]+\">(.*?)<div style=\"clear: both;\">\\s*</div></p>" +
-            "(?:<div\\s*class=\"edited\">)?(?:<a.*?>Message cité ([0-9]+) fois</a>)?(?:<br\\s*/>Message édité par .*? le ([0-9]+)-([0-9]+)-([0-9]+).*?([0-9]+):([0-9]+):([0-9]+)</div>)?.*?" +
-            "</div></td></tr></table>)"
-            , Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private long getPostId(Element htmlPost) {
+        Elements htmlPostIds = htmlPost.getElementsByAttributeValueStarting("href", "#t");
+        if(!htmlPostIds.isEmpty()) {
+            return Long.parseLong(htmlPostIds.first().attr("href").substring(2));
+        }
+
+        return 0;
+    }
+
+    private static final Pattern PROFIL_URL_PATTERN = Pattern.compile("/hfr/profil-(\\d+).htm");
+    private int getAuthorUserId(Element htmlPost) {
+        Elements htmlPostUserIds = htmlPost.getElementsByAttributeValueStarting("title", "Voir son profil");
+        for(Element htmlPostUserId: htmlPostUserIds) {
+            String profilUrl = htmlPostUserId.parent().attr("href");
+            Matcher m = PROFIL_URL_PATTERN.matcher(profilUrl);
+            if(m.find())
+                return Integer.valueOf(m.group(1));
+        }
+
+        return 0;
+    }
+
+    private String getAuthorName(Element htmlPost) {
+        Elements htmlBolds = htmlPost.getElementsByTag("b");
+        for(Element htmlBold: htmlBolds) {
+            if(htmlBold.hasClass("s2")) {
+                return htmlBold.text();
+            }
+        }
+
+        return "Unnamed";
+    }
+
+    private String getAvatarUrl(Element htmlPost) {
+        Elements htmlAvatars = htmlPost.getElementsByClass("avatar_center");
+        for(Element htmlAvatar: htmlAvatars) {
+            Elements htmlAvatarImgs = htmlAvatar.getElementsByTag("img");
+            for(Element htmlAvatarImg: htmlAvatarImgs) {
+                return htmlAvatarImg.attr("src");
+            }
+        }
+
+        return "";
+    }
+
+    private static final Pattern POST_DATE_PATTERN = Pattern.compile(
+            "Posté le\\s*(\\d+)-(\\d+)-(\\d+)\\D*(\\d+):(\\d+):(\\d+)",
+            Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private Date getPostDate(Element htmlPost) {
+        Elements htmlToolbars = htmlPost.getElementsByClass("toolbar");
+        for(Element htmlToolbar : htmlToolbars) {
+            String html = htmlToolbar.html();
+            Matcher m = POST_DATE_PATTERN.matcher(html);
+            if(m.find()) {
+                return DateUtils.fromHTMLDate(m.group(3), m.group(2), m.group(1), m.group(4), m.group(5), m.group(6));
+            }
+        }
+
+        return null;
+    }
+
+    private static final Pattern QUOTE_NB_PATTERN  = Pattern.compile("Message cité (\\d+) fois");
+    private int getQuoteCount(Element htmlEditBlock) {
+        Elements htmlLinks = htmlEditBlock.getElementsByTag("a");
+        for(Element htmlLink: htmlLinks) {
+            String text = htmlLink.text();
+            Matcher m = QUOTE_NB_PATTERN.matcher(text);
+            if(m.find()) {
+                return Integer.valueOf(m.group(1));
+            }
+        }
+        return 0;
+    }
+
+    private static final Pattern EDIT_DATE_PATTERN = Pattern.compile(
+            "Message édité par .* le\\s*(\\d+)-(\\d+)-(\\d+)\\D*(\\d+):(\\d+):(\\d+)",
+            Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    private Date getLastEditDate(Element htmlEditBlock) {
+        String text = htmlEditBlock.text();
+        Matcher m = EDIT_DATE_PATTERN.matcher(text);
+        if(m.find()) {
+            return DateUtils.fromHTMLDate(m.group(3), m.group(2), m.group(1), m.group(4), m.group(5), m.group(6));
+        }
+        return null;
+    }
+
+    private String getPostHTMLContent(Element htmlPost) {
+        Elements htmlMsgs = htmlPost.getElementsByAttributeValueStarting("id", "para");
+        for(Element htmlMsgTmp : htmlMsgs) {
+            //removing the "quote counter / edit date" part
+            Element htmlMsg = htmlMsgTmp.clone();
+            Elements htmlEdits = htmlMsg.getElementsByClass("edited");
+            for(Element htmlEdit: htmlEdits) {
+                htmlEdit.remove();
+            }
+
+            //remove post / quote counter / edit date separator
+            Elements htmlDivs = htmlMsg.getElementsByTag("div");
+            for(Element htmlDiv: htmlDivs) {
+                if(htmlDiv.hasAttr("style")) {
+                    htmlDiv.remove();
+                }
+            }
+
+            //remove signature
+            Elements htmlSignatures = htmlMsg.getElementsByClass("signature");
+            for(Element htmlSignature: htmlSignatures) {
+                htmlSignature.remove();
+            }
+
+            return htmlMsg.html();
+        }
+
+        return "";
+    }
 
     @Override
     public List<Post> call(String source) {
+        Document doc = Jsoup.parse(source);
+        int topicPagesCount = getTopicPageCount(doc);
+
         List<Post> posts = new ArrayList<>(DEFAULT_POSTS_COUNT);
 
-        // Description tag parsing to find the total number of pages. If
-        int topicPagesCount = UIConstants.UNKNOWN_PAGES_COUNT;
-        Matcher pagesMatcher = DESCRIPTION_PATTERN.matcher(source);
+        Elements htmlPosts = doc.getElementsByClass("message");
+        for(Element htmlPost: htmlPosts) {
+            Post post = new Post(getPostId(htmlPost));
+            post.setAuthor(getAuthorName(htmlPost));
+            post.setAuthorId(getAuthorUserId(htmlPost));
+            post.setAvatarUrl(getAvatarUrl(htmlPost));
+            post.setPostDate(getPostDate(htmlPost));
 
-        if (pagesMatcher.find()) {
-            topicPagesCount = Integer.valueOf(pagesMatcher.group(1));
-        }
-
-        Matcher m = POST_PATTERN.matcher(source);
-
-        while (m.find()) {
-            long postId = Long.parseLong(m.group(3));
-            String postHTMLContent = m.group(13);
-            Date postDate = DateUtils.fromHTMLDate(m.group(8), m.group(7), m.group(6), m.group(9), m.group(10), m.group(11));
-            int authorUserId = Integer.parseInt(m.group(12));
-            Date lastEditDate = null;
-            int quoteCount = 0;
-            String author = m.group(4);
-            String avatarUrl = m.group(5);
-            boolean wasEdited = m.group(15) != null;
-            boolean wasQuoted = m.group(14) != null;
-
-            if (wasEdited) {
-                lastEditDate = DateUtils.fromHTMLDate(m.group(17), m.group(16), m.group(15), m.group(18), m.group(19), m.group(20));
+            Elements htmlEditBlocks = htmlPost.getElementsByClass("edited");
+            for(Element htmlEditBlock: htmlEditBlocks) {
+                post.setLastEditionDate(getLastEditDate(htmlEditBlock));
+                post.setQuoteCount(getQuoteCount(htmlEditBlock));
             }
 
-            if (wasQuoted) {
-                quoteCount = Integer.parseInt(m.group(14));
-            }
-
-            Post post = new Post(postId);
-            post.setHtmlContent(postHTMLContent);
-            post.setAuthor(author);
-            post.setAuthorId(authorUserId);
-            post.setAvatarUrl(avatarUrl);
-            post.setLastEditionDate(lastEditDate);
-            post.setPostDate(postDate);
-            post.setQuoteCount(quoteCount);
+            post.setHtmlContent(getPostHTMLContent(htmlPost));
 
             if (topicPagesCount != UIConstants.UNKNOWN_PAGES_COUNT) {
                 post.setTopicPagesCount(topicPagesCount);
