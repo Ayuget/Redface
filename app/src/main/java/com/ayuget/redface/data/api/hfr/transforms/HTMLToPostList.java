@@ -101,7 +101,9 @@ public class HTMLToPostList implements Func1<String, List<Post>> {
         return "";
     }
 
-    private static final Pattern POST_DATE_PATTERN = Pattern.compile("Posté le\\s*(\\d+)-(\\d+)-(\\d+).*(\\d+):(\\d+):(\\d+)");
+    private static final Pattern POST_DATE_PATTERN = Pattern.compile(
+            "Posté le\\s*(\\d+)-(\\d+)-(\\d+)\\D*(\\d+):(\\d+):(\\d+)",
+            Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private Date getPostDate(Element htmlPost) {
         Elements htmlToolbars = htmlPost.getElementsByClass("toolbar");
         for(Element htmlToolbar : htmlToolbars) {
@@ -128,7 +130,9 @@ public class HTMLToPostList implements Func1<String, List<Post>> {
         return 0;
     }
 
-    private static final Pattern EDIT_DATE_PATTERN = Pattern.compile("Message édité par .* le\\s*(\\d+)-(\\d+)-(\\d+).*(\\d+):(\\d+):(\\d+)");
+    private static final Pattern EDIT_DATE_PATTERN = Pattern.compile(
+            "Message édité par .* le\\s*(\\d+)-(\\d+)-(\\d+)\\D*(\\d+):(\\d+):(\\d+)",
+            Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private Date getLastEditDate(Element htmlEditBlock) {
         String text = htmlEditBlock.text();
         Matcher m = EDIT_DATE_PATTERN.matcher(text);
