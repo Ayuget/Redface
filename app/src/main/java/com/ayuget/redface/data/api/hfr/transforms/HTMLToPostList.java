@@ -145,18 +145,25 @@ public class HTMLToPostList implements Func1<String, List<Post>> {
     private String getPostHTMLContent(Element htmlPost) {
         Elements htmlMsgs = htmlPost.getElementsByAttributeValueStarting("id", "para");
         for(Element htmlMsgTmp : htmlMsgs) {
-            //removing the "quote" part
+            //removing the "quote counter / edit date" part
             Element htmlMsg = htmlMsgTmp.clone();
             Elements htmlEdits = htmlMsg.getElementsByClass("edited");
             for(Element htmlEdit: htmlEdits) {
                 htmlEdit.remove();
             }
 
+            //remove post / quote counter / edit date separator
             Elements htmlDivs = htmlMsg.getElementsByTag("div");
             for(Element htmlDiv: htmlDivs) {
                 if(htmlDiv.hasAttr("style")) {
                     htmlDiv.remove();
                 }
+            }
+
+            //remove signature
+            Elements htmlSignatures = htmlMsg.getElementsByClass("signature");
+            for(Element htmlSignature: htmlSignatures) {
+                htmlSignature.remove();
             }
 
             return htmlMsg.html();
