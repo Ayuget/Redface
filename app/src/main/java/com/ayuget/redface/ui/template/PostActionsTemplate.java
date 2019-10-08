@@ -39,6 +39,7 @@ public class PostActionsTemplate extends HTMLTemplate<Post> {
      * Mapping from post actions to Javascript function & icon
      */
     private static final Map<PostAction, Pair<String, String>> POST_ACTIONS_MAPPING;
+
     static {
         POST_ACTIONS_MAPPING = new HashMap<>(6);
         POST_ACTIONS_MAPPING.put(PostAction.EDIT, Pair.create("editPost", "mode_edit"));
@@ -73,8 +74,7 @@ public class PostActionsTemplate extends HTMLTemplate<Post> {
         if (userManager.isActiveUser(post.getAuthor())) {
             renderAction(PostAction.EDIT, post.getId(), stream);
             renderAction(PostAction.DELETE, post.getId(), stream);
-        }
-        else {
+        } else if (post.getAuthorId() != null) {
             renderAction(PostAction.VIEW_USER_PROFILE, post.getId(), stream);
         }
 
@@ -82,7 +82,7 @@ public class PostActionsTemplate extends HTMLTemplate<Post> {
         renderAction(PostAction.WRITE_PRIVATE_MESSAGE, post.getId(), stream);
         renderAction(PostAction.COPY_LINK_TO_POST, post.getId(), stream);
 
-        if (! userManager.isActiveUser(post.getAuthor())) { // Don't block yourself...
+        if (!userManager.isActiveUser(post.getAuthor())) { // Don't block yourself...
             renderAction(PostAction.BLOCK_USER, post.getId(), stream);
         }
 
