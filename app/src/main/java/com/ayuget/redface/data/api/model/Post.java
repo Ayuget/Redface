@@ -30,7 +30,7 @@ public class Post implements Parcelable {
 
     private String author;
 
-    private int authorId;
+    private Integer authorId;
 
     private String avatarUrl;
 
@@ -65,11 +65,11 @@ public class Post implements Parcelable {
         this.author = author;
     }
 
-    public int getAuthorId() {
+    public Integer getAuthorId() {
         return authorId;
     }
 
-    public void setAuthorId(int authorId) {
+    public void setAuthorId(Integer authorId) {
         this.authorId = authorId;
     }
 

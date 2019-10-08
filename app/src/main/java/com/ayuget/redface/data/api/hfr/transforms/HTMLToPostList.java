@@ -41,17 +41,20 @@ public class HTMLToPostList implements Func1<String, List<Post>> {
 
     private static final Pattern POST_PATTERN = Pattern.compile(
             "(<table\\s*cellspacing.*?class=\"([a-z]+)\">.*?" +
-            "<tr.*?class=\"message.*?" +
-            "<a.*?href=\"#t([0-9]+)\".*?" +
-            "<b.*?class=\"s2\">(?:<a.*?>)?(.*?)(?:</a>)?</b>.*?" +
-            "(?:(?:<div\\s*class=\"avatar_center\".*?><img src=\"(.*?)\"\\s*alt=\".*?\"\\s*/></div>)|</td>).*?" +
-            "<div.*?class=\"left\">Posté le ([0-9]+)-([0-9]+)-([0-9]+).*?([0-9]+):([0-9]+):([0-9]+).*?" +
-            "<a href=\"/hfr/profil-([0-9]+).htm\".*?" +
-
-            "<div.*?id=\"para[0-9]+\">(.*?)<div style=\"clear: both;\">\\s*</div></p>" +
-            "(?:<div\\s*class=\"edited\">)?(?:<a.*?>Message cité ([0-9]+) fois</a>)?(?:<br\\s*/>Message édité par .*? le ([0-9]+)-([0-9]+)-([0-9]+).*?([0-9]+):([0-9]+):([0-9]+)</div>)?.*?" +
-            "</div></td></tr></table>)"
+                    "<tr.*?class=\"message.*?" +
+                    "<a.*?href=\"#t([0-9]+)\".*?" +
+                    "<b.*?class=\"s2\">(?:<a.*?>)?(.*?)(?:</a>)?</b>.*?" +
+                    "(?:(?:<div\\s*class=\"avatar_center\".*?><img src=\"(.*?)\"\\s*alt=\".*?\"\\s*/></div>)|</td>).*?" +
+                    "<div.*?class=\"left\">Posté le ([0-9]+)-([0-9]+)-([0-9]+).*?([0-9]+):([0-9]+):([0-9]+).*?" +
+                    "<div.*?id=\"para[0-9]+\">(.*?)<div style=\"clear: both;\">\\s*</div></p>" +
+                    "(?:<div\\s*class=\"edited\">)?(?:<a.*?>Message cité ([0-9]+) fois</a>)?(?:<br\\s*/>Message édité par .*? le ([0-9]+)-([0-9]+)-([0-9]+).*?([0-9]+):([0-9]+):([0-9]+)</div>)?.*?" +
+                    "</div></td></tr></table>)"
             , Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+
+    private static final Pattern USER_PROFILE_ID_PATTERN = Pattern.compile(
+            ".*<a href=\"/hfr/profil-([0-9]+)\\.htm\".*",
+            Pattern.CASE_INSENSITIVE | Pattern.DOTALL
+    );
 
     @Override
     public List<Post> call(String source) {
@@ -69,23 +72,25 @@ public class HTMLToPostList implements Func1<String, List<Post>> {
 
         while (m.find()) {
             long postId = Long.parseLong(m.group(3));
-            String postHTMLContent = m.group(13);
+            String postHTMLContent = m.group(12);
             Date postDate = DateUtils.fromHTMLDate(m.group(8), m.group(7), m.group(6), m.group(9), m.group(10), m.group(11));
-            int authorUserId = Integer.parseInt(m.group(12));
             Date lastEditDate = null;
             int quoteCount = 0;
             String author = m.group(4);
             String avatarUrl = m.group(5);
-            boolean wasEdited = m.group(15) != null;
-            boolean wasQuoted = m.group(14) != null;
+            boolean wasEdited = m.group(14) != null;
+            boolean wasQuoted = m.group(13) != null;
 
             if (wasEdited) {
-                lastEditDate = DateUtils.fromHTMLDate(m.group(17), m.group(16), m.group(15), m.group(18), m.group(19), m.group(20));
+                lastEditDate = DateUtils.fromHTMLDate(m.group(16), m.group(15), m.group(14), m.group(17), m.group(18), m.group(19));
             }
 
             if (wasQuoted) {
-                quoteCount = Integer.parseInt(m.group(14));
+                quoteCount = Integer.parseInt(m.group(13));
             }
+
+            Matcher userProfileIdMatcher = USER_PROFILE_ID_PATTERN.matcher(m.group(1));
+            Integer authorUserId = userProfileIdMatcher.matches() ? Integer.parseInt(userProfileIdMatcher.group(1)) : null;
 
             Post post = new Post(postId);
             post.setHtmlContent(postHTMLContent);

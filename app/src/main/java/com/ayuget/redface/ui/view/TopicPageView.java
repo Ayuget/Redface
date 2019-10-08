@@ -376,7 +376,7 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
         public void viewUserProfile(final int postId) {
             Timber.d("View user profile for post '%d'", postId);
             for (final Post post : topicPage.posts()) {
-                if (post.getId() == postId) {
+                if (post.getId() == postId && post.getAuthorId() != null) {
                     TopicPageView.this.post(() -> bus.post(new ViewUserProfileEvent(post.getAuthorId())));
                 }
             }
