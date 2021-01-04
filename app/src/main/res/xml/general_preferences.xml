@@ -110,6 +110,11 @@
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/pref_rehost_settings">
+        <ListPreference android:key="rehost_default_provider"
+            android:title="@string/pref_rehost_provider"
+            android:defaultValue="@string/pref_rehost_provider_rehost"
+            android:entries="@array/pref_rehost_providers_values"
+            android:entryValues="@array/pref_rehost_providers_entries"/>
         <ListPreference
             android:key="rehost_default_variant"
             android:title="@string/pref_default_uploaded_image_variant"

@@ -231,10 +231,24 @@
         <item>GROUP_BY_CATS</item>
     </string-array>
 
-    <string name="pref_rehost_settings">Reho.st (image service)</string>
+    <string name="pref_rehost_settings">Image Rehosting service</string>
+    <string name="pref_rehost_provider">Default image rehosting provider</string>
+    <string name="pref_rehost_provider_rehost" translatable="false">Reho.st</string>
+    <string name="pref_rehost_provider_superhost" translatable="false">Super-H.fr</string>
+    <string name="pref_rehost_provider_default" translatable="false">@string/pref_rehost_provider_rehost</string>
+    <string-array name="pref_rehost_providers_values" translatable="false">
+        <item>@string/pref_rehost_provider_rehost</item>
+        <item>@string/pref_rehost_provider_superhost</item>
+    </string-array>
+    <string name="pref_rehost_provider_rehost_entry" translatable="false">REHOST</string>
+    <string name="pref_rehost_provider_superhost_entry" translatable="false">SUPERH</string>
+    <string-array name="pref_rehost_providers_entries" translatable="false">
+        <item>@string/pref_rehost_provider_rehost_entry</item>
+        <item>@string/pref_rehost_provider_superhost_entry</item>
+    </string-array>
     <string name="pref_default_uploaded_image_variant">Default quality for uploaded images</string>
     <string name="pref_default_uploaded_image_variant_summary">Choose which quality gets automatically inserted in the message right after the upload</string>
-    <string name="pref_default_uploaded_image_variant_default" translatable="false">PREVIEW</string>
+    <string name="pref_default_uploaded_image_variant_default" translatable="false">MEDIUM</string>
     <string-array name="pref_default_uploaded_image_variant_values">
         <item>@string/image_uploaded_original</item>
         <item>@string/image_uploaded_medium</item>
@@ -243,8 +257,8 @@
     </string-array>
     <string-array name="pref_default_uploaded_image_variant_entries" translatable="false">
         <item>ORIGINAL</item>
-        <item>MEDIUM</item>
         <item>@string/pref_default_uploaded_image_variant_default</item>
+        <item>PREVIEW</item>
         <item>THUMBNAIL</item>
     </string-array>
 
@@ -393,7 +407,7 @@
     <string name="image_shared_success">Link to image has been copied to clipboard</string>
     <string name="image_shared_failure">Failed to share image</string>
     <string name="upload_on_hfr_rehost">Upload on hfrRehost</string>
-    <string name="image_sharing_confirmation">Upload this image to reho.st service ?</string>
+    <string name="image_sharing_confirmation">Upload this image ?</string>
     <string name="image_sharing_confirmation_positive">Yes</string>
     <string name="image_sharing_confirmation_negative">No</string>
 
