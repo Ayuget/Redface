@@ -21,6 +21,7 @@ import android.content.SharedPreferences;
 
 import com.ayuget.redface.R;
 import com.ayuget.redface.data.api.model.TopicFilter;
+import com.ayuget.redface.image.ImageHostingProvider;
 import com.ayuget.redface.image.ImageQuality;
 import com.ayuget.redface.network.DownloadStrategy;
 import com.ayuget.redface.ui.misc.MetaPageOrdering;
@@ -89,6 +90,12 @@ public class RedfaceSettings {
         String imageQualityValue = sharedPreferences.getString(SettingsConstants.KEY_REHOST_DEFAULT_VARIANT, context.getString(R.string.pref_default_uploaded_image_variant_default));
         return ImageQuality.valueOf(imageQualityValue);
     }
+
+    public ImageHostingProvider getDefaultHostingProvider() {
+        String host = sharedPreferences.getString(SettingsConstants.KEY_REHOST_PROVIDER_CHOICE, context.getResources().getString(R.string.pref_rehost_provider_rehost_entry));
+        return ImageHostingProvider.valueOf(host);
+    }
+
 
     public int getProxyPort() {
         return Integer.valueOf(sharedPreferences.getString(SettingsConstants.KEY_PROXY_PORT, "0"));

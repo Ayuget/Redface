@@ -65,6 +65,8 @@ public class SettingsConstants {
 
     public static final String KEY_REHOST_DEFAULT_VARIANT = "rehost_default_variant";
 
+    public static final String KEY_REHOST_PROVIDER_CHOICE = "rehost_default_provider";
+
     public static final String KEY_SHOW_NAVIGATION_BUTTONS = "show_navigation_buttons";
 
     public static final String KEY_REFRESH_TOPIC_LIST = "refresh_topic_list";
@@ -84,4 +86,6 @@ public class SettingsConstants {
     public static final String KEY_CLEAR_CATEGORIES_CACHE = "clear_categories_cache";
 
     public static final String KEY_OPEN_LOGIN_SCREEN = "open_login_screen";
+
+
 }
