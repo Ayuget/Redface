@@ -19,6 +19,7 @@ package com.ayuget.redface;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.multidex.MultiDex;
 import androidx.work.Configuration;
 import androidx.work.WorkManager;
 
@@ -32,46 +33,52 @@ import rx_activity_result.RxActivityResult;
 import timber.log.Timber;
 
 public class RedfaceApp extends DaggerApplication {
-    @Override
-    public void onCreate() {
-        super.onCreate();
+	@Override
+	public void onCreate() {
+		super.onCreate();
 
-        // Setup logging
-        // Error logs are sent to the cloud with Crashlytics
-        if (BuildConfig.DEBUG) {
-            Timber.plant(new Timber.DebugTree());
-        } else {
-            Timber.plant(new CrashlyticsLogTree(Log.ERROR));
-        }
+		// Setup logging
+		// Error logs are sent to the cloud with Crashlytics
+		if (BuildConfig.DEBUG) {
+			Timber.plant(new Timber.DebugTree());
+		} else {
+			Timber.plant(new CrashlyticsLogTree(Log.ERROR));
+		}
 
-        initWorkerFactory();
+		initWorkerFactory();
 
-        RxActivityResult.register(this);
+		RxActivityResult.register(this);
 
-        RedfaceNotifications.setupNotifications(this);
-    }
+		RedfaceNotifications.setupNotifications(this);
+	}
 
-    private void initWorkerFactory() {
-        DaggerWorkerFactory workerFactory = ((RedfaceComponent) applicationInjector()).daggerWorkerFactory();
+	private void initWorkerFactory() {
+		DaggerWorkerFactory workerFactory = ((RedfaceComponent) applicationInjector()).daggerWorkerFactory();
 
-        Configuration workManagerConfig = new Configuration.Builder()
-                .setWorkerFactory(workerFactory)
-                .build();
+		Configuration workManagerConfig = new Configuration.Builder()
+				.setWorkerFactory(workerFactory)
+				.build();
 
-        WorkManager.initialize(this, workManagerConfig);
-    }
+		WorkManager.initialize(this, workManagerConfig);
+	}
 
-    public static RedfaceApp get(Context context) {
-        return (RedfaceApp) context.getApplicationContext();
-    }
+	public static RedfaceApp get(Context context) {
+		return (RedfaceApp) context.getApplicationContext();
+	}
 
-    public RedfaceSettings getSettings() {
-        return ((RedfaceComponent) applicationInjector()).redfaceSettings();
-    }
+	public RedfaceSettings getSettings() {
+		return ((RedfaceComponent) applicationInjector()).redfaceSettings();
+	}
 
-    @Override
-    protected AndroidInjector<? extends DaggerApplication> applicationInjector() {
-        return DaggerRedfaceComponent.factory()
-                .create(this);
-    }
+	@Override
+	protected AndroidInjector<? extends DaggerApplication> applicationInjector() {
+		return DaggerRedfaceComponent.factory()
+				.create(this);
+	}
+
+	@Override
+	protected void attachBaseContext(Context base) {
+		super.attachBaseContext(base);
+		MultiDex.install(this);
+	}
 }
