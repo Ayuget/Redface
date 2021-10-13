@@ -2,18 +2,18 @@ package com.ayuget.redface.image;
 
 import com.ayuget.redface.image.rehost.RehostHostingService;
 import com.ayuget.redface.image.rehost.RehostResultParser;
+import com.ayuget.redface.network.SecureHttpClientFactory;
 
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import okhttp3.OkHttpClient;
 
 @Module
 public class ImageModule {
-    @Provides
-    @Singleton
-    ImageHostingService provideImageHostingService() {
-        return new RehostHostingService(new OkHttpClient(), new RehostResultParser());
-    }
+	@Provides
+	@Singleton
+	ImageHostingService provideImageHostingService() {
+		return new RehostHostingService(SecureHttpClientFactory.newBuilder().build(), new RehostResultParser());
+	}
 }
