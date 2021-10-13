@@ -1,7 +1,7 @@
 package com.ayuget.redface.image;
 
-import com.ayuget.redface.image.rehost.RehostHostingService;
-import com.ayuget.redface.image.rehost.RehostResultParser;
+import com.ayuget.redface.image.superhost.SuperHostResultParser;
+import com.ayuget.redface.image.superhost.SuperHostService;
 
 import javax.inject.Singleton;
 
@@ -14,6 +14,6 @@ public class ImageModule {
     @Provides
     @Singleton
     ImageHostingService provideImageHostingService() {
-        return new RehostHostingService(new OkHttpClient(), new RehostResultParser());
+        return new SuperHostService(new OkHttpClient(), new SuperHostResultParser());
     }
 }

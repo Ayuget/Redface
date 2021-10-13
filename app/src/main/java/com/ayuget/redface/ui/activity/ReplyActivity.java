@@ -418,6 +418,8 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
         } else {
             intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
             intent.addCategory(Intent.CATEGORY_OPENABLE);
+            intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         }
 
         intent.setType("image/*");
@@ -841,7 +843,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
         imageUploadObservable.subscribe(hostedImage -> {
             Timber.d("Successfully uploaded image ! -> %s", hostedImage);
 
-            EditTextState editTextState = UiUtils.insertTextAndSaveState(replyEditText, String.format(UPLOADED_IMAGE_BB_CODE, hostedImage.url(), hostedImage.variant(settings.getDefaultRehostImageQuality())));
+            EditTextState editTextState = UiUtils.insertTextAndSaveState(replyEditText, String.format(UPLOADED_IMAGE_BB_CODE, hostedImage.url(), hostedImage.url()));
 
             // No need to restore background job anymore
             RetainedFragmentHelper.remove(this, getSupportFragmentManager());
