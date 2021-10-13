@@ -119,8 +119,9 @@ dependencies {
 	// Misc...
 	implementation 'com.squareup:otto:1.3.5'
 	implementation 'com.squareup.retrofit:retrofit:1.9.0'
-	implementation 'com.squareup.okhttp3:okhttp:3.12.0'
-	implementation 'com.squareup.okhttp3:okhttp-urlconnection:3.4.1'
+	implementation 'com.squareup.okhttp3:okhttp:3.14.9'
+	implementation 'com.squareup.okhttp3:okhttp-urlconnection:3.14.9'
+	implementation 'com.squareup.okhttp3:okhttp-tls:3.14.9'
 	implementation 'com.squareup.phrase:phrase:1.0.3'
 	implementation 'com.squareup.moshi:moshi:1.8.0'
 	implementation 'com.jakewharton:disklrucache:2.0.2'
