@@ -30,55 +30,53 @@ import timber.log.Timber;
  * Resolves an URL which is causing a redirection (HTTP code {@code 301}) to its destination URL
  */
 public class HTTPRedirection {
-    /**
-     * HTTP status code for "redirected"
-     */
-    private static final int REDIRECTED_STATUS_CODE = 301;
+	/**
+	 * HTTP status code for "redirected"
+	 */
+	private static final int REDIRECTED_STATUS_CODE = 301;
 
-    /**
-     * HTTP location header indicating the target URL when redirected
-     */
-    private static final String LOCATION_HEADER = "Location";
+	/**
+	 * HTTP location header indicating the target URL when redirected
+	 */
+	private static final String LOCATION_HEADER = "Location";
 
-    private HTTPRedirection() {
-        // Utility class, prevent instantiation
-    }
+	private HTTPRedirection() {
+		// Utility class, prevent instantiation
+	}
 
-    /**
-     * Resolves a redirected URL {@code originalUrl} to its final location.
-     *
-     * If the URL is not really redirected, the original URL is returned.
-     */
-    public static Observable<String> resolve(final String originalUrl) {
-        return Observable.create(new Observable.OnSubscribe<String>() {
-            @Override
-            public void call(Subscriber<? super String> subscriber) {
-                OkHttpClient httpClient = new OkHttpClient.Builder()
-                        .followRedirects(false)
-                        .build();
+	/**
+	 * Resolves a redirected URL {@code originalUrl} to its final location.
+	 * <p>
+	 * If the URL is not really redirected, the original URL is returned.
+	 */
+	public static Observable<String> resolve(final String originalUrl) {
+		return Observable.create(new Observable.OnSubscribe<String>() {
+			@Override
+			public void call(Subscriber<? super String> subscriber) {
+				OkHttpClient httpClient = SecureHttpClientFactory.newBuilder()
+						.followRedirects(false)
+						.build();
 
-                Request request = new Request.Builder()
-                        .url(originalUrl)
-                        .build();
+				Request request = new Request.Builder()
+						.url(originalUrl)
+						.build();
 
-                try {
-                    Response response = httpClient.newCall(request).execute();
+				try {
+					Response response = httpClient.newCall(request).execute();
 
-                    if (response.code() == REDIRECTED_STATUS_CODE) {
-                        String locationHeader = response.header(LOCATION_HEADER);
-                        String targetUrl = locationHeader == null ? originalUrl : "http://" + new URL(originalUrl).getHost() + locationHeader;
-                        Timber.d("URL '%s' is redirected to '%s'", originalUrl, targetUrl);
-                        subscriber.onNext(targetUrl);
-                    }
-                    else {
-                        Timber.w("URL '%s' is not redirected", originalUrl);
-                        subscriber.onNext(originalUrl);
-                    }
-                }
-                catch (IOException e) {
-                    subscriber.onError(e);
-                }
-            }
-        });
-    }
+					if (response.code() == REDIRECTED_STATUS_CODE) {
+						String locationHeader = response.header(LOCATION_HEADER);
+						String targetUrl = locationHeader == null ? originalUrl : "http://" + new URL(originalUrl).getHost() + locationHeader;
+						Timber.d("URL '%s' is redirected to '%s'", originalUrl, targetUrl);
+						subscriber.onNext(targetUrl);
+					} else {
+						Timber.w("URL '%s' is not redirected", originalUrl);
+						subscriber.onNext(originalUrl);
+					}
+				} catch (IOException e) {
+					subscriber.onError(e);
+				}
+			}
+		});
+	}
 }

@@ -7,13 +7,12 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import okhttp3.OkHttpClient;
 
 @Module
 public class ImageModule {
     @Provides
     @Singleton
     ImageHostingService provideImageHostingService() {
-        return new SuperHostService(new OkHttpClient(), new SuperHostResultParser());
+        return new SuperHostService(SecureHttpClientFactory.newBuilder().build(), new SuperHostResultParser());
     }
 }

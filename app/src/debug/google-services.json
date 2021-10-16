@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "846860900928",
+    "project_id": "redface-debug",
+    "storage_bucket": "redface-debug.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:846860900928:android:32a064ef5ab19222471da5",
+        "android_client_info": {
+          "package_name": "com.ayuget.redface.debug"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "846860900928-gsbmnj1rs8o2dvg8ea6d1lgqmlnm84st.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBxY2TIk1EsteoFjEQ1lWG3hhSGQtE87Jo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "846860900928-gsbmnj1rs8o2dvg8ea6d1lgqmlnm84st.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

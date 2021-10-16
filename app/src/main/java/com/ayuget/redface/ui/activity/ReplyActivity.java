@@ -85,7 +85,6 @@ import com.ayuget.redface.ui.view.SmileySelectorView;
 import com.ayuget.redface.util.ImageUtils;
 import com.ayuget.redface.util.RetainedFragmentHelper;
 import com.bumptech.glide.Glide;
-import com.crashlytics.android.Crashlytics;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
@@ -105,117 +104,117 @@ import timber.log.Timber;
 import static android.os.Build.VERSION_CODES.KITKAT;
 
 public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemClickListener {
-    private static final String ARG_TOPIC = "topic";
-    private static final long IMAGE_SELECTION_VIEW_ANIMATION_TRANSITION_TIME = 300;
-    private static final String UPLOADED_IMAGE_BB_CODE = "[url=%s][img]%s[/img][/url]";
-    private static final String IMAGE_FROM_URL_BB_CODE = "[img]%s[/img]";
-    private static final int REPLACE_SMILEY_SELECTOR_THRESHOLD = 6; // in pixels
-    private static final float SELECTOR_DRAGGED_THRESHOLD = 10.0f;
+	private static final String ARG_TOPIC = "topic";
+	private static final long IMAGE_SELECTION_VIEW_ANIMATION_TRANSITION_TIME = 300;
+	private static final String UPLOADED_IMAGE_BB_CODE = "[url=%s][img]%s[/img][/url]";
+	private static final String IMAGE_FROM_URL_BB_CODE = "[img]%s[/img]";
+	private static final int REPLACE_SMILEY_SELECTOR_THRESHOLD = 6; // in pixels
+	private static final float SELECTOR_DRAGGED_THRESHOLD = 10.0f;
 
-    /**
-     * The active pointer is the one currently use to move the smiley view
-     */
-    private int activePointerId = UIConstants.INVALID_POINTER_ID;
+	/**
+	 * The active pointer is the one currently use to move the smiley view
+	 */
+	private int activePointerId = UIConstants.INVALID_POINTER_ID;
 
-    /**
-     * Top offset (margin) in pixels for the smiley selector. Marks its default position on the
-     * y-axis.
-     */
-    private int smileySelectorTopOffset;
+	/**
+	 * Top offset (margin) in pixels for the smiley selector. Marks its default position on the
+	 * y-axis.
+	 */
+	private int smileySelectorTopOffset;
 
-    /**
-     * Reply window max height in pixels
-     */
-    private int replyWindowMaxHeight;
+	/**
+	 * Reply window max height in pixels
+	 */
+	private int replyWindowMaxHeight;
 
-    private int screenHeight;
+	private int screenHeight;
 
-    private float lastTouchY;
+	private float lastTouchY;
 
-    private float lastDy;
+	private float lastDy;
 
-    private boolean isUpwardMovement;
+	private boolean isUpwardMovement;
 
-    private boolean smileyPanelDragged;
+	private boolean smileyPanelDragged;
 
-    private int toolbarHeight;
+	private int toolbarHeight;
 
-    private boolean smileysToolbarAnimationInProgress;
+	private boolean smileysToolbarAnimationInProgress;
 
-    /**
-     * Main reply window (with user picker, toolbars, ...)
-     */
-    @BindView(R.id.main_reply_frame)
-    RelativeLayout mainReplyFrame;
+	/**
+	 * Main reply window (with user picker, toolbars, ...)
+	 */
+	@BindView(R.id.main_reply_frame)
+	RelativeLayout mainReplyFrame;
 
-    /**
-     * Primary dialog toolbar, with user selection and send button
-     */
-    @BindView(R.id.toolbar_reply_actions)
-    Toolbar actionsToolbar;
+	/**
+	 * Primary dialog toolbar, with user selection and send button
+	 */
+	@BindView(R.id.toolbar_reply_actions)
+	Toolbar actionsToolbar;
 
-    /**
-     * Secondary action toolbar (bold, italic, links, ...)
-     */
-    @BindView(R.id.toolbar_reply_extra)
-    Toolbar extrasToolbar;
+	/**
+	 * Secondary action toolbar (bold, italic, links, ...)
+	 */
+	@BindView(R.id.toolbar_reply_extra)
+	Toolbar extrasToolbar;
 
-    /**
-     * Finger draggable view to select smileys
-     */
-    @BindView(R.id.smiley_selector_view)
-    View smileysSelector;
+	/**
+	 * Finger draggable view to select smileys
+	 */
+	@BindView(R.id.smiley_selector_view)
+	View smileysSelector;
 
-    /**
-     * Toolbar to switch between popular / recent / favorite smileys
-     */
-    @BindView(R.id.smileys_toolbar)
-    Toolbar smileysToolbar;
+	/**
+	 * Toolbar to switch between popular / recent / favorite smileys
+	 */
+	@BindView(R.id.smileys_toolbar)
+	Toolbar smileysToolbar;
 
-    /**
-     * Reply text box
-     */
-    @BindView(R.id.reply_text)
-    EditText replyEditText;
+	/**
+	 * Reply text box
+	 */
+	@BindView(R.id.reply_text)
+	EditText replyEditText;
 
-    /**
-     * Smiley list loading indicator
-     */
-    @BindView(R.id.loading_indicator)
-    View smileysLoadingIndicator;
+	/**
+	 * Smiley list loading indicator
+	 */
+	@BindView(R.id.loading_indicator)
+	View smileysLoadingIndicator;
 
-    /**
-     * Smiley list
-     */
-    @BindView(R.id.smileyList)
-    SmileySelectorView smileyList;
+	/**
+	 * Smiley list
+	 */
+	@BindView(R.id.smileyList)
+	SmileySelectorView smileyList;
 
-    /**
-     * Root ViewGroup for the reply window
-     */
-    @BindView(R.id.reply_window_root)
-    FrameLayout replyWindowRoot;
+	/**
+	 * Root ViewGroup for the reply window
+	 */
+	@BindView(R.id.reply_window_root)
+	FrameLayout replyWindowRoot;
 
-    /**
-     * Smileys search box
-     */
-    @BindView(R.id.smileys_search)
-    SearchView smileysSearch;
+	/**
+	 * Smileys search box
+	 */
+	@BindView(R.id.smileys_search)
+	SearchView smileysSearch;
 
-    @BindView(R.id.sending_message_spinner)
-    View sendingMessageSpinner;
+	@BindView(R.id.sending_message_spinner)
+	View sendingMessageSpinner;
 
-    @BindView(R.id.image_selection_view)
-    View imageSelectionView;
+	@BindView(R.id.image_selection_view)
+	View imageSelectionView;
 
-    @BindView(R.id.add_image_from_gallery)
-    Button addImageFromGalleryButton;
+	@BindView(R.id.add_image_from_gallery)
+	Button addImageFromGalleryButton;
 
-    @BindView(R.id.add_image_from_url)
-    Button addImageFromUrlButton;
+	@BindView(R.id.add_image_from_url)
+	Button addImageFromUrlButton;
 
-    @BindView(R.id.image_upload_progress_bar)
-    ProgressBar imageUploadProgressBar;
+	@BindView(R.id.image_upload_progress_bar)
+	ProgressBar imageUploadProgressBar;
 
     @Inject
     UserManager userManager;
