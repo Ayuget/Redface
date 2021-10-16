@@ -125,7 +125,7 @@ dependencies {
 	implementation 'com.squareup.phrase:phrase:1.0.3'
 	implementation 'com.squareup.moshi:moshi:1.8.0'
 	implementation 'com.jakewharton:disklrucache:2.0.2'
-	implementation "com.github.VictorAlbertos:RxActivityResult:0.3.4"
+	implementation "com.github.VictorAlbertos:RxActivityResult:0.3.9"
 
 	// Deal with Android M new-style permissions
 	implementation 'com.tbruyelle.rxpermissions:rxpermissions:0.5.1@aar'
