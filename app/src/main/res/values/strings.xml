@@ -388,12 +388,12 @@
     <string name="image_enter_url">Enter image URL</string>
     <string name="image_enter_url_ok">OK</string>
     <string name="image_enter_url_cancel">Cancel</string>
-    <string name="image_enter_url_text" translatable="false">http://</string>
+    <string name="image_enter_url_text" translatable="false"></string>
 
     <string name="image_shared_success">Link to image has been copied to clipboard</string>
     <string name="image_shared_failure">Failed to share image</string>
     <string name="upload_on_hfr_rehost">Upload on hfrRehost</string>
-    <string name="image_sharing_confirmation">Upload this image to reho.st service ?</string>
+    <string name="image_sharing_confirmation">Upload this image to super-h?</string>
     <string name="image_sharing_confirmation_positive">Yes</string>
     <string name="image_sharing_confirmation_negative">No</string>
 

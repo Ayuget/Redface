@@ -1,8 +1,7 @@
 package com.ayuget.redface.image;
 
-import com.ayuget.redface.image.rehost.RehostHostingService;
-import com.ayuget.redface.image.rehost.RehostResultParser;
-import com.ayuget.redface.network.SecureHttpClientFactory;
+import com.ayuget.redface.image.superhost.SuperHostResultParser;
+import com.ayuget.redface.image.superhost.SuperHostService;
 
 import javax.inject.Singleton;
 
@@ -11,9 +10,9 @@ import dagger.Provides;
 
 @Module
 public class ImageModule {
-	@Provides
-	@Singleton
-	ImageHostingService provideImageHostingService() {
-		return new RehostHostingService(SecureHttpClientFactory.newBuilder().build(), new RehostResultParser());
-	}
+    @Provides
+    @Singleton
+    ImageHostingService provideImageHostingService() {
+        return new SuperHostService(SecureHttpClientFactory.newBuilder().build(), new SuperHostResultParser());
+    }
 }
