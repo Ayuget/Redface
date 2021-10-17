@@ -17,15 +17,12 @@
 package com.ayuget.redface;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.multidex.MultiDex;
 import androidx.work.Configuration;
 import androidx.work.WorkManager;
 
 import com.ayuget.redface.settings.RedfaceSettings;
-
-import net.ypresto.timbertreeutils.CrashlyticsLogTree;
 
 import dagger.android.AndroidInjector;
 import dagger.android.support.DaggerApplication;
@@ -41,8 +38,6 @@ public class RedfaceApp extends DaggerApplication {
 		// Error logs are sent to the cloud with Crashlytics
 		if (BuildConfig.DEBUG) {
 			Timber.plant(new Timber.DebugTree());
-		} else {
-			Timber.plant(new CrashlyticsLogTree(Log.ERROR));
 		}
 
 		initWorkerFactory();

@@ -7,9 +7,7 @@ buildscript {
 
 	dependencies {
 		classpath 'com.android.tools.build:gradle:7.0.3'
-		classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:2.0.0'
-		classpath 'com.google.gms:google-services:4.3.10'
-		classpath 'com.google.firebase:firebase-crashlytics-gradle:2.7.1'
+		classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:3.0.1'
 	}
 }
 
@@ -92,7 +90,6 @@ dependencies {
 
 	// Boilerplate destruction !!
 	implementation 'com.jakewharton.timber:timber:4.1.2'
-	implementation 'net.ypresto.timbertreeutils:timbertreeutils:1.0.0'
 	implementation 'com.jakewharton:butterknife:10.2.0'
 	annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.0'
 	androidTestAnnotationProcessor 'com.jakewharton:butterknife:6.0.0'
