@@ -2,6 +2,7 @@ package com.ayuget.redface.image.superhost;
 
 import com.ayuget.redface.image.HostedImage;
 import com.ayuget.redface.image.ImageQuality;
+import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -11,7 +12,7 @@ import java.util.Map;
 public class SuperHostResultParser {
 
     HostedImage parseResult(String result) {
-        Gson gson = new GsonBuilder().serializeNulls().create();
+        Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).serializeNulls().create();
         SuperHostResult superHostResult = gson.fromJson(result, SuperHostResult.class);
         Map<ImageQuality, String> map = new HashMap<>();
         if (superHostResult.getImage().getMedium() != null) {
@@ -20,7 +21,7 @@ public class SuperHostResultParser {
         if (superHostResult.getImage().getThumb() != null) {
             map.put(ImageQuality.THUMBNAIL, superHostResult.getImage().getThumb().getUrl());
         }
-        return HostedImage.create(superHostResult.getImage().url, map);
+        return HostedImage.create(superHostResult.getImage().getUrl(), map);
     }
 
 }
