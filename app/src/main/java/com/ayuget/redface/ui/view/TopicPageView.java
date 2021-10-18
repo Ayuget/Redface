@@ -256,12 +256,22 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
 						final Response response = call.execute();
 
 						// Response body should not be null
-						// noinspection ConstantConditions
-						return new WebResourceResponse(
-								HttpResponses.getHeaderOrDefault(response, "Content-Type", ""),
-								HttpResponses.getHeaderOrDefault(response, "Content-Encoding", "utf-8"),
-								response.body().byteStream()
-						);
+						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+							return new WebResourceResponse(
+									HttpResponses.getHeaderOrDefault(response, "Content-Type", ""),
+									HttpResponses.getHeaderOrDefault(response, "Content-Encoding", "utf-8"),
+									200,
+									"OK",
+									HttpResponses.getResponseHeaders(response), // Forward response headers (necessary for CORS, ...)
+									response.body().byteStream()
+							);
+						} else {
+							return new WebResourceResponse(
+									HttpResponses.getHeaderOrDefault(response, "Content-Type", ""),
+									HttpResponses.getHeaderOrDefault(response, "Content-Encoding", "utf-8"),
+									response.body().byteStream()
+							);
+						}
 					} catch (Exception e) {
 						return HttpResponses.newErrorResponse();
 					}

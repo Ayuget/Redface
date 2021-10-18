@@ -4,10 +4,22 @@ import android.webkit.WebResourceResponse;
 
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 
 import okhttp3.Response;
 
 public class HttpResponses {
+	public static Map<String, String> getResponseHeaders(Response response) {
+		final Map<String, String> responseHeaders = new HashMap<>();
+		for (String headerName : response.headers().names()) {
+			String headerValue = response.header(headerName);
+			if (headerValue != null) {
+				responseHeaders.put(headerName, headerValue);
+			}
+		}
+		return responseHeaders;
+	}
 
 	public static WebResourceResponse newErrorResponse() {
 		try {
