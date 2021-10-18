@@ -27,7 +27,7 @@ public class RedfaceNotifications {
         RedfaceSettings appSettings = ((RedfaceApp) context.getApplicationContext()).getSettings();
 
         registerNotificationChannels(context);
-        launchPrivateMessagesWorker(appSettings.getPrivateMessagesPollingFrequency());
+        launchPrivateMessagesWorker(context, appSettings.getPrivateMessagesPollingFrequency());
     }
 
     private static void registerNotificationChannels(Context context) {
@@ -45,10 +45,10 @@ public class RedfaceNotifications {
         }
     }
 
-    private static void launchPrivateMessagesWorker(int privateMessagesPollingFrequency) {
+    private static void launchPrivateMessagesWorker(Context context, int privateMessagesPollingFrequency) {
         Timber.d("Launching private messages worker with a polling frequency of %d minutes", privateMessagesPollingFrequency);
 
-        WorkManager.getInstance()
+        WorkManager.getInstance(context)
                 .enqueueUniquePeriodicWork(
                         PRIVATE_MESSAGES_WORK_TASK_TAG,
                         ExistingPeriodicWorkPolicy.KEEP,
@@ -56,14 +56,14 @@ public class RedfaceNotifications {
                 );
     }
 
-    public static void disablePrivateMessagesNotifications() {
-        WorkManager.getInstance()
+    public static void disablePrivateMessagesNotifications(Context context) {
+        WorkManager.getInstance(context)
                 .cancelAllWorkByTag(RedfaceNotifications.PRIVATE_MESSAGES_GROUP);
     }
 
-    public static void updateOrLaunchPrivateMessagesWorker(int frequencyInMinutes) {
-        disablePrivateMessagesNotifications();
-        launchPrivateMessagesWorker(frequencyInMinutes);
+    public static void updateOrLaunchPrivateMessagesWorker(Context context, int frequencyInMinutes) {
+        disablePrivateMessagesNotifications(context);
+        launchPrivateMessagesWorker(context, frequencyInMinutes);
     }
 
     public static void dismissPrivateMessageNotificationIfNeeded(Context context, PrivateMessage privateMessage) {
