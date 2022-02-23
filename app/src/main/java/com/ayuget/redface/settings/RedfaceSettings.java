@@ -36,6 +36,10 @@ public class RedfaceSettings {
         this.sharedPreferences = sharedPreferences;
     }
 
+    public Context getContext() {
+        return this.context;
+    }
+
     public String getActiveUsername() {
         return sharedPreferences.getString(SettingsConstants.KEY_ACTIVE_USERNAME, null);
     }
