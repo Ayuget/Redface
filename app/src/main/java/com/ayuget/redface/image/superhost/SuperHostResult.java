@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 public class SuperHostResult {
 
     int statusCode;
-    String statusText;
+    String statusTxt;
     SuperHostImage image;
 
     public int getStatusCode() {
@@ -16,12 +16,12 @@ public class SuperHostResult {
         this.statusCode = statusCode;
     }
 
-    public String getStatusText() {
-        return statusText;
+    public String getStatusTxt() {
+        return statusTxt;
     }
 
-    public void setStatusText(String statusText) {
-        this.statusText = statusText;
+    public void setStatusTxt(String statusTxt) {
+        this.statusTxt = statusTxt;
     }
 
     public SuperHostImage getImage() {
