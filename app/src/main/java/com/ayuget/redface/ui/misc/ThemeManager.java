@@ -16,6 +16,8 @@
 
 package com.ayuget.redface.ui.misc;
 
+import android.content.res.Configuration;
+
 import com.ayuget.redface.R;
 import com.ayuget.redface.settings.RedfaceSettings;
 import com.ayuget.redface.ui.theme.RedfaceTheme;
@@ -35,10 +37,14 @@ public class ThemeManager {
         this.settings = settings;
     }
 
+    private boolean isOsLightModeEnabled() {
+        return (this.settings.getContext().getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) != Configuration.UI_MODE_NIGHT_YES;
+    }
+
     public int getActiveThemeStyle() {
         RedfaceTheme activeTheme = settings.getTheme();
 
-        if (activeTheme == RedfaceTheme.LIGHT) {
+        if (activeTheme == RedfaceTheme.LIGHT || (activeTheme == RedfaceTheme.AUTO && isOsLightModeEnabled())) {
             return R.style.Theme_Redface_Light;
         }
         else if (activeTheme == RedfaceTheme.DARK){
@@ -52,7 +58,7 @@ public class ThemeManager {
     public int getReplyWindowStyle() {
         RedfaceTheme activeTheme = settings.getTheme();
 
-        if (activeTheme == RedfaceTheme.LIGHT) {
+        if (activeTheme == RedfaceTheme.LIGHT || (activeTheme == RedfaceTheme.AUTO && isOsLightModeEnabled())) {
             return R.style.Theme_Redface_Transparent_Light;
         }
         else {
@@ -63,7 +69,7 @@ public class ThemeManager {
     public String getActiveThemeCssClass() {
         RedfaceTheme activeTheme = settings.getTheme();
 
-        if (activeTheme == RedfaceTheme.LIGHT) {
+        if (activeTheme == RedfaceTheme.LIGHT || (activeTheme == RedfaceTheme.AUTO && isOsLightModeEnabled())) {
             return LIGHT_THEME_CSS_CLASS;
         }
         else if (activeTheme == RedfaceTheme.DARK){
@@ -81,7 +87,7 @@ public class ThemeManager {
     public int getListDividerDrawable() {
         RedfaceTheme activeTheme = settings.getTheme();
 
-        if (activeTheme == RedfaceTheme.LIGHT) {
+        if (activeTheme == RedfaceTheme.LIGHT || (activeTheme == RedfaceTheme.AUTO && isOsLightModeEnabled())) {
             return R.drawable.list_divider_light;
         }
         else {
@@ -92,7 +98,7 @@ public class ThemeManager {
     public int getTopicUnreadCountDrawable() {
         RedfaceTheme activeTheme = settings.getTheme();
 
-        if (activeTheme == RedfaceTheme.LIGHT) {
+        if (activeTheme == RedfaceTheme.LIGHT || (activeTheme == RedfaceTheme.AUTO && isOsLightModeEnabled())) {
             return R.drawable.topic_unread_count_light;
         }
         else {
@@ -103,7 +109,7 @@ public class ThemeManager {
     public int getPrivateMessageUnreadDrawable() {
         RedfaceTheme activeTheme = settings.getTheme();
 
-        if (activeTheme == RedfaceTheme.LIGHT) {
+        if (activeTheme == RedfaceTheme.LIGHT || (activeTheme == RedfaceTheme.AUTO && isOsLightModeEnabled())) {
             return R.drawable.private_message_unread_light;
         }
         else {
@@ -118,7 +124,7 @@ public class ThemeManager {
     public int getProfileAvatarBackgroundDrawable() {
         RedfaceTheme activeTheme = settings.getTheme();
 
-        if (activeTheme == RedfaceTheme.LIGHT) {
+        if (activeTheme == RedfaceTheme.LIGHT || (activeTheme == RedfaceTheme.AUTO && isOsLightModeEnabled())) {
             return R.drawable.profile_avatar_background_light;
         }
         else {
