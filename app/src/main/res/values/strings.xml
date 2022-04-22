@@ -231,7 +231,7 @@
         <item>GROUP_BY_CATS</item>
     </string-array>
 
-    <string name="pref_rehost_settings">Super-h (image service)</string>
+    <string name="pref_rehost_settings">Image rehost</string>
     <string name="pref_default_uploaded_image_variant">Default quality for uploaded images</string>
     <string name="pref_default_uploaded_image_variant_summary">Choose which quality gets automatically inserted in the message right after the upload</string>
     <string name="pref_default_uploaded_image_variant_default" translatable="false">PREVIEW</string>
@@ -392,8 +392,8 @@
 
     <string name="image_shared_success">Link to image has been copied to clipboard</string>
     <string name="image_shared_failure">Failed to share image</string>
-    <string name="upload_on_hfr_rehost">Upload on Super-h</string>
-    <string name="image_sharing_confirmation">Upload this image to Super-h?</string>
+    <string name="upload_on_hfr_rehost">Upload on Diberie</string>
+    <string name="image_sharing_confirmation">Upload this image to Diberie?</string>
     <string name="image_sharing_confirmation_positive">Yes</string>
     <string name="image_sharing_confirmation_negative">No</string>
 

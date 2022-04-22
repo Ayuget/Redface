@@ -248,14 +248,14 @@
     <string name="image_enter_url_ok">OK</string>
     <string name="image_shared_success">Lien vers l\'image copié dans le presse-papier</string>
     <string name="image_shared_failure">Erreur de partage de l\'image</string>
-    <string name="upload_on_hfr_rehost">Upload sur Super-h</string>
-    <string name="image_sharing_confirmation">Uploader cette image sur Super-h ?</string>
+    <string name="upload_on_hfr_rehost">Upload sur Diberie</string>
+    <string name="image_sharing_confirmation">Uploader cette image sur Diberie ?</string>
     <string name="image_sharing_confirmation_negative">Non</string>
     <string name="image_sharing_confirmation_positive">Oui</string>
 
-    <string name="pref_rehost_settings">Super-h (hébergement d\'images)</string>
+    <string name="pref_rehost_settings">Diberie (hébergement d\'images)</string>
     <string name="pref_default_uploaded_image_variant">Qualité par défaut</string>
-    <string name="pref_default_uploaded_image_variant_summary">Qualité d\'image qui sera ajoutée automatiquement aux messages une fois l\'upload sur Super-h terminé</string>
+    <string name="pref_default_uploaded_image_variant_summary">Qualité d\'image qui sera ajoutée automatiquement aux messages une fois l\'upload sur Diberie terminé</string>
     <string-array name="pref_default_uploaded_image_variant_values">
         <item>@string/image_uploaded_original</item>
         <item>@string/image_uploaded_medium</item>
