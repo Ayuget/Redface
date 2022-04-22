@@ -108,7 +108,7 @@ public class ImageMenuHandler {
 	 * Saves image from network using OkHttp. Glide is not used because it would strip away the
 	 * EXIF data once the image is saved (Glide directly gives us a Bitmap).
 	 */
-	private void saveImageFromNetwork(final File mediaFile, final Bitmap.CompressFormat targetFormat, final boolean compressAsPng, final boolean notifyUser, final boolean broadcastSave, final ImageSavedCallback imageSavedCallback) {
+	private void saveImageFromNetwork(final File imgMediaFile, final Bitmap.CompressFormat targetFormat, final boolean compressAsPng, final boolean notifyUser, final boolean broadcastSave, final ImageSavedCallback imageSavedCallback) {
 		OkHttpClient okHttpClient = SecureHttpClientFactory.newBuilder().build();
 
 		final Request request = new Request.Builder().url(imageUrl).build();
@@ -131,6 +131,7 @@ public class ImageMenuHandler {
 							public void call(Boolean granted) {
 								if (granted) {
 									Timber.d("WRITE_EXTERNAL_STORAGE granted, saving image to disk");
+									File mediaFile = imgMediaFile;
 
 									try {
 										Timber.d("Saving image to %s", mediaFile.getAbsolutePath());
@@ -139,7 +140,29 @@ public class ImageMenuHandler {
 											Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
 											StorageHelper.storeImageToFile(bitmap, mediaFile, targetFormat);
 										} else {
-											StorageHelper.storeImageToFile(imageBytes, mediaFile);
+											try {
+												StorageHelper.storeImageToFile(imageBytes, mediaFile);
+											} catch (IOException e) {
+												// if there was no extension for the image, we hardcoded jpg in StorageHelper#getMediaFile() method
+												// but it could be another extension, we have no way to guess so let's try one by one...
+												final String[] extensions = {".png", ".jpeg", ".gif", ".bmp", ".tif", ".tiff", ".jif", ".jfif", ".jp2", ".svg", ".apng", ".pcd"};
+												final String originalMediaFilename = mediaFile.getPath();
+												boolean correctExtensionFound = false;
+												for (String extension : extensions) {
+													if (!correctExtensionFound) {
+														mediaFile = new File(originalMediaFilename.replace(".jpg", extension));
+														try {
+															StorageHelper.storeImageToFile(imageBytes, mediaFile);
+															correctExtensionFound = true;
+														} catch (IOException e2) {
+															Timber.d("IOException when trying to save " + mediaFile);
+														}
+													}
+												}
+												if (!correctExtensionFound) {
+													throw new IOException("Unable to save " + originalMediaFilename + " (even after trying for several extensions...)");
+												}
+											}
 										}
 
 										if (broadcastSave) {
@@ -151,6 +174,7 @@ public class ImageMenuHandler {
 										}
 
 										if (notifyUser) {
+											final String mediaFileAbsolutePath = mediaFile.getAbsolutePath();
 											// Then, notify the user with an enhanced snackbar, allowing
 											// him (or her) to open the image in his favorite app.
 											Snackbar snackbar = SnackbarHelper.makeWithAction(activity, R.string.image_saved_successfully, R.string.action_snackbar_open_image, new View.OnClickListener() {
@@ -158,7 +182,7 @@ public class ImageMenuHandler {
 												public void onClick(View v) {
 													Intent intent = new Intent();
 													intent.setAction(Intent.ACTION_VIEW);
-													intent.setDataAndType(Uri.parse("file://" + mediaFile.getAbsolutePath()), "image/*");
+													intent.setDataAndType(Uri.parse("file://" + mediaFileAbsolutePath), "image/*");
 													activity.startActivity(intent);
 												}
 											});
