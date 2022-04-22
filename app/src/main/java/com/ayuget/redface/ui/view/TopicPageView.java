@@ -186,6 +186,8 @@ public class TopicPageView extends NestedScrollingWebView implements View.OnTouc
 
 			getSettings().setJavaScriptEnabled(true);
 			getSettings().setAllowFileAccessFromFileURLs(true);
+			getSettings().setBuiltInZoomControls(true);
+			getSettings().setDisplayZoomControls(false);
 
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 				getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
