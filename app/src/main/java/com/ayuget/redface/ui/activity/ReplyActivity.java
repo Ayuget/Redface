@@ -435,6 +435,11 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
 					int resultCode = result.resultCode();
 
 					if (resultCode == RESULT_OK) {
+
+						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+							getContentResolver().takePersistableUriPermission(data.getData(), Intent.FLAG_GRANT_READ_URI_PERMISSION);
+						}
+
 						new AlertDialog.Builder(this)
 								.setPositiveButton(R.string.image_sharing_confirmation_positive, (dialog, which) -> result.targetUI().uploadImageToHostingService(data.getData()))
 								.setNegativeButton(R.string.image_sharing_confirmation_negative, (dialog, which) -> hideImageSelectionView())
