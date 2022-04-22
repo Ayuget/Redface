@@ -858,6 +858,11 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
 		}, t -> {
 			Timber.e(t, "Got an error while uploading image");
 			SnackbarHelper.makeError(ReplyActivity.this, R.string.image_upload_failed).show();
+
+			// display error message in text area
+			EditTextState editTextState = UiUtils.insertTextAndSaveState(replyEditText, " !! ERROR !! " + t.getMessage() + " !!! " + t.getCause() + " !!!");
+			RetainedFragmentHelper.remove(this, getSupportFragmentManager());
+
 			hideImageSelectionView();
 		});
 	}
