@@ -25,6 +25,7 @@ import android.os.Environment;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.UUID;
 
 
 public class StorageHelper {
@@ -36,13 +37,12 @@ public class StorageHelper {
 	private static final int SAVED_IMAGES_QUALITY = 100;
 
 	public static File getMediaFile(String filename) throws IOException {
-		File mediaStorageDir;
-
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-			mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + APP_STORAGE_DIR);
-		} else {
-			mediaStorageDir = new File(Environment.getExternalStorageDirectory() + APP_STORAGE_DIR);
+		File picturesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+		if (picturesDir == null || !picturesDir.exists()) {
+			picturesDir = Environment.getExternalStorageDirectory();
 		}
+
+		File mediaStorageDir = new File(picturesDir + APP_STORAGE_DIR);
 
 //		if (mediaStorageDir.canWrite()) {
 			// Create the storage directory if it does not exist
@@ -51,7 +51,9 @@ public class StorageHelper {
 					throw new IOException("Unable to create media storage directory");
 				}
 			}
-
+			if (filename == null || filename.trim().isEmpty()) {
+				filename = "rdmstr" + UUID.randomUUID().toString();
+			}
 			// fix to remove image name sufixes (prevents from saving image)
 			if (filename.contains("?")) {
 				filename = filename.substring(0, filename.indexOf("?"));
