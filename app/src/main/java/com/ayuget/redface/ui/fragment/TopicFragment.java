@@ -214,6 +214,7 @@ public class TopicFragment extends ToolbarFragment implements ViewPager.OnPageCh
             isInSearchMode = savedInstanceState.getBoolean(ARG_IS_IN_SEARCH_MODE);
             currentTopicSearchResult = savedInstanceState.getParcelable(ARG_CURRENT_SEARCH_RESULT);
             currentPage = savedInstanceState.getInt(ARG_TOPIC_CURRENT_PAGE);
+            savedInstanceState.clear();
         }
 
         if (topicPageAdapter == null) {

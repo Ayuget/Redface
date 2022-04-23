@@ -358,6 +358,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
 
 				subscribeToImageUploadObservable(imageUploadObservable);
 			}
+			savedInstanceState.clear();
 		}
 	}
 
