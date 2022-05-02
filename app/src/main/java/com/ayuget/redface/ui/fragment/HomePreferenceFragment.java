@@ -68,6 +68,10 @@ public class HomePreferenceFragment extends PreferenceFragment implements Prefer
         if (blacklistPreference != null) {
             blacklistPreference.setOnPreferenceClickListener(this);
         }
+
+        if (savedInstanceState != null) {
+            savedInstanceState.clear();
+        }
     }
 
     @Override

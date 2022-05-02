@@ -37,6 +37,9 @@ public class ToolbarFragment extends BaseFragment {
             onCreateOptionsMenu(toolbar);
             onToolbarInitialized(toolbar);
         }
+        if (savedInstanceState != null) {
+            savedInstanceState.clear();
+        }
     }
 
     @Override

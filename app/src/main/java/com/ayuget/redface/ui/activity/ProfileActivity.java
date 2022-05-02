@@ -128,6 +128,9 @@ public class ProfileActivity extends BaseActivity implements ProfileDetailsSmile
         } else {
             showProfile(profile);
         }
+        if (savedInstanceState != null) {
+            savedInstanceState.clear();
+        }
     }
 
     private void loadProfile() {

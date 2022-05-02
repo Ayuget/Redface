@@ -104,6 +104,10 @@ public class MetaPageFragment extends TopicListFragment implements StickyRecycle
         topicsRecyclerView.addItemDecoration(headerDecoration);
         topicsRecyclerView.addOnItemTouchListener(touchListener);
 
+        if (savedInstanceState != null) {
+            savedInstanceState.clear();
+        }
+
         return createdView;
     }
 

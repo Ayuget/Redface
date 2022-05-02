@@ -207,6 +207,10 @@ public class PostsFragment extends BaseFragment {
 			});
 		}
 
+		if (savedInstanceState != null) {
+			savedInstanceState.clear();
+		}
+
 		return rootView;
 	}
 

@@ -70,6 +70,9 @@ public class ExifDetailsActivity extends BaseActivity {
             ImageMenuHandler imageMenuHandler = new ImageMenuHandler(this, imageUrl);
             imageMenuHandler.saveImage(false, false, false, false, (savedImage, format) -> loadExifDetails(savedImage));
         }
+        if (savedInstanceState != null) {
+            savedInstanceState.clear();
+        }
     }
 
     /**

@@ -222,6 +222,7 @@ public class PrivateMessageListFragment extends ToggleToolbarFragment implements
                 pmAdapter.replaceWith(displayedPrivateMessages);
                 showPrivateMessages();
             }
+            savedInstanceState.clear();
         }
     }
 

@@ -43,6 +43,9 @@ public class DefaultFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            savedInstanceState.clear();
+        }
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_default, container, false);
     }

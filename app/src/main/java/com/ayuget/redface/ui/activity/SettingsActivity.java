@@ -50,6 +50,8 @@ public class SettingsActivity extends BaseActivity {
             getFragmentManager().beginTransaction()
                     .replace(R.id.container, new HomePreferenceFragment())
                     .commit();
+        } else {
+            savedInstanceState.clear();
         }
     }
 

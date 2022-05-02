@@ -195,6 +195,7 @@ public class TopicListFragment extends ToggleToolbarFragment implements TopicsAd
 		// Restore the list of topics when the fragment is recreated by the framework
 		if (savedInstanceState != null) {
 			lastLoadedPage = savedInstanceState.getInt(ARG_LAST_LOADED_PAGE, 0);
+			savedInstanceState.clear();
 		}
 	}
 

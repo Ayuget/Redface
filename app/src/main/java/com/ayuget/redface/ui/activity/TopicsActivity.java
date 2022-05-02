@@ -115,6 +115,7 @@ public class TopicsActivity extends MultiPaneActivity implements TopicListFragme
                 onCategoryClicked(selectedCategory);
             }
         }
+        intentBundle.clear();
     }
 
     @Override

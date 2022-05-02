@@ -130,6 +130,7 @@ public class BaseActivity extends AppCompatActivity implements HasAndroidInjecto
 			onSetupUiState();
 		} else {
 			onRestoreUiState(savedInstanceState);
+			savedInstanceState.clear();
 		}
 	}
 

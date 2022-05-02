@@ -49,6 +49,10 @@ public class DetailsDefaultFragment extends BaseFragment {
 
         UiUtils.setDrawableColor(emptyContentImage.getDrawable(), getResources().getColor(R.color.empty_view_image_color));
 
+        if (savedInstanceState != null) {
+            savedInstanceState.clear();
+        }
+
         return rootView;
     }
 }

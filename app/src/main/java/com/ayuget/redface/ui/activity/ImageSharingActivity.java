@@ -43,6 +43,10 @@ public class ImageSharingActivity extends AppCompatActivity {
                     .setMessage(R.string.image_sharing_confirmation)
                     .show();
         }
+
+        if (savedInstanceState != null) {
+            savedInstanceState.clear();
+        }
     }
 
     private Uri parseUriFromIntent() {
