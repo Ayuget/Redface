@@ -52,6 +52,10 @@ public class WritePrivateMessageActivity extends ReplyActivity {
                 recipientUsername.setText(initialRecipient);
             }
         }
+
+        if (savedInstanceState != null) {
+            savedInstanceState.clear();
+        }
     }
 
     @Override

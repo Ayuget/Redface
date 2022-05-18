@@ -20,6 +20,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.ayuget.redface.R;
@@ -124,6 +125,11 @@ public class PrivateMessagesActivity extends MultiPaneActivity implements Privat
         PrivateMessageListFragment pmListFragment = (PrivateMessageListFragment) getSupportFragmentManager().findFragmentByTag(PM_LIST_FRAGMENT_TAG);
         if (pmListFragment != null) {
             pmListFragment.setOnPrivateMessageClickedListener(this);
+        } else {
+            Fragment defaultFragment = getSupportFragmentManager().findFragmentByTag(DEFAULT_FRAGMENT_TAG);
+            if (defaultFragment instanceof PrivateMessageListFragment) {
+                ((PrivateMessageListFragment)defaultFragment).setOnPrivateMessageClickedListener(this);
+            }
         }
     }
 

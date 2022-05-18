@@ -43,6 +43,9 @@ public class EditPostActivity extends ReplyActivity {
         if (intent != null) {
             editedPostId = intent.getIntExtra(UIConstants.ARG_EDITED_POST_ID, 0);
         }
+        if (savedInstanceState != null) {
+            savedInstanceState.clear();
+        }
     }
 
     @Override

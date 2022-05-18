@@ -358,6 +358,7 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
 
 				subscribeToImageUploadObservable(imageUploadObservable);
 			}
+			savedInstanceState.clear();
 		}
 	}
 
@@ -435,6 +436,11 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
 					int resultCode = result.resultCode();
 
 					if (resultCode == RESULT_OK) {
+
+						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+							getContentResolver().takePersistableUriPermission(data.getData(), Intent.FLAG_GRANT_READ_URI_PERMISSION);
+						}
+
 						new AlertDialog.Builder(this)
 								.setPositiveButton(R.string.image_sharing_confirmation_positive, (dialog, which) -> result.targetUI().uploadImageToHostingService(data.getData()))
 								.setNegativeButton(R.string.image_sharing_confirmation_negative, (dialog, which) -> hideImageSelectionView())
@@ -842,7 +848,8 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
 		imageUploadObservable.subscribe(hostedImage -> {
 			Timber.d("Successfully uploaded image ! -> %s", hostedImage);
 
-			EditTextState editTextState = UiUtils.insertTextAndSaveState(replyEditText, String.format(UPLOADED_IMAGE_BB_CODE, hostedImage.url(), hostedImage.url()));
+			String mediumImageUrl = hostedImage.variant(ImageQuality.MEDIUM);
+			EditTextState editTextState = UiUtils.insertTextAndSaveState(replyEditText, String.format(UPLOADED_IMAGE_BB_CODE, hostedImage.url(), mediumImageUrl != null ? mediumImageUrl : hostedImage.url()));
 
 			// No need to restore background job anymore
 			RetainedFragmentHelper.remove(this, getSupportFragmentManager());
@@ -852,6 +859,11 @@ public class ReplyActivity extends BaseActivity implements Toolbar.OnMenuItemCli
 		}, t -> {
 			Timber.e(t, "Got an error while uploading image");
 			SnackbarHelper.makeError(ReplyActivity.this, R.string.image_upload_failed).show();
+
+			// display error message in text area
+			EditTextState editTextState = UiUtils.insertTextAndSaveState(replyEditText, " !! ERROR !! " + t.getMessage() + " !!! " + t.getCause() + " !!!");
+			RetainedFragmentHelper.remove(this, getSupportFragmentManager());
+
 			hideImageSelectionView();
 		});
 	}

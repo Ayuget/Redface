@@ -1,7 +1,7 @@
 package com.ayuget.redface.image;
 
-import com.ayuget.redface.image.superhost.SuperHostResultParser;
-import com.ayuget.redface.image.superhost.SuperHostService;
+import com.ayuget.redface.image.diberie.DiberieHostResultParser;
+import com.ayuget.redface.image.diberie.DiberieHostService;
 import com.ayuget.redface.network.SecureHttpClientFactory;
 
 import javax.inject.Singleton;
@@ -14,6 +14,6 @@ public class ImageModule {
 	@Provides
 	@Singleton
 	ImageHostingService provideImageHostingService() {
-		return new SuperHostService(SecureHttpClientFactory.newBuilder().build(), new SuperHostResultParser());
+		return new DiberieHostService(SecureHttpClientFactory.newBuilder().build(), new DiberieHostResultParser());
 	}
 }

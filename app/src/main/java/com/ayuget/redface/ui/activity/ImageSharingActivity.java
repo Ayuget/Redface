@@ -43,6 +43,10 @@ public class ImageSharingActivity extends AppCompatActivity {
                     .setMessage(R.string.image_sharing_confirmation)
                     .show();
         }
+
+        if (savedInstanceState != null) {
+            savedInstanceState.clear();
+        }
     }
 
     private Uri parseUriFromIntent() {
@@ -60,15 +64,15 @@ public class ImageSharingActivity extends AppCompatActivity {
 
         Observable<HostedImage> hostedImageObservable;
 
-        if (uriStartsWithHTTPProtocol(imageUri)) {
-            // Image is already hosted somewhere...
-            hostedImageObservable = imageHostingService.hostFromUrl(imageUri.toString());
-        } else {
+//        if (uriStartsWithHTTPProtocol(imageUri)) {
+//            // Image is already hosted somewhere...
+//            hostedImageObservable = imageHostingService.hostFromUrl(imageUri.toString());
+//        } else {
             // Local image, needs to be uploaded
             hostedImageObservable = Observable.fromCallable(() -> getContentResolver().openInputStream(imageUri))
                     .map(ImageUtils::readStreamFully)
                     .flatMap(b -> imageHostingService.hostFromLocalImage(b));
-        }
+//        }
 
         hostedImageObservable
                 .observeOn(AndroidSchedulers.mainThread())
@@ -88,7 +92,7 @@ public class ImageSharingActivity extends AppCompatActivity {
         overridePendingTransition(0, 0);
     }
 
-    private boolean uriStartsWithHTTPProtocol(Uri uri) {
-        return uri.toString().startsWith("http://") || uri.toString().startsWith("https://");
-    }
+//    private boolean uriStartsWithHTTPProtocol(Uri uri) {
+//        return uri.toString().startsWith("http://") || uri.toString().startsWith("https://");
+//    }
 }

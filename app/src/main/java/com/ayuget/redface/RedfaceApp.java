@@ -17,6 +17,7 @@
 package com.ayuget.redface;
 
 import android.content.Context;
+import android.os.StrictMode;
 
 import androidx.multidex.MultiDex;
 import androidx.work.Configuration;
@@ -45,6 +46,10 @@ public class RedfaceApp extends DaggerApplication {
 		RxActivityResult.register(this);
 
 		RedfaceNotifications.setupNotifications(this);
+
+		// fix for FileUriExposedException when sharing image
+		StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+		StrictMode.setVmPolicy(builder.build());
 	}
 
 	private void initWorkerFactory() {

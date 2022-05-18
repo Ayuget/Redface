@@ -90,6 +90,10 @@ public class NestedPreferenceFragment extends PreferenceFragment implements Shar
         AndroidInjection.inject(this);
 
         checkPreferenceResource();
+
+        if (savedInstanceState != null) {
+            savedInstanceState.clear();
+        }
     }
 
     @Override

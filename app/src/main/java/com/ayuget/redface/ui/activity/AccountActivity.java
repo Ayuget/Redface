@@ -79,6 +79,9 @@ public class AccountActivity extends BaseActivity {
             Timber.d("Relogin mode");
             reloginInstructions.setVisibility(View.VISIBLE);
         }
+        if (savedInstanceState != null) {
+            savedInstanceState.clear();
+        }
     }
 
     @OnClick(R.id.sign_in_button)

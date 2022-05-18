@@ -2,4 +2,6 @@
 
 <!-- Remove certificates manipulation since it's not necessary in Android O and above -->
 <!--suppress CheckTagEmptyBody -->
-<network-security-config></network-security-config>
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true"/>
+</network-security-config>
