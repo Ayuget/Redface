@@ -6,7 +6,7 @@ buildscript {
 	}
 
 	dependencies {
-		classpath 'com.android.tools.build:gradle:7.0.3'
+		classpath 'com.android.tools.build:gradle:7.2.1'
 		classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:3.0.1'
 	}
 }
@@ -23,15 +23,14 @@ apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
 
 android {
-	compileSdkVersion 31
-	buildToolsVersion '30.0.2'
+	compileSdkVersion 33
 
 	defaultConfig {
 		applicationId "com.ayuget.redface"
 		minSdkVersion 16
-		targetSdkVersion 31
+		targetSdkVersion 33
 		multiDexEnabled true
-		versionCode 4007
+		versionCode 5000
 		versionName "5.0.0"
 		vectorDrawables.useSupportLibrary = true
 	}
@@ -57,10 +56,10 @@ android {
 			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 		}
 	}
-
-	lintOptions {
+	lint {
 		abortOnError false
 	}
+
 }
 
 dependencies {

@@ -11,3 +11,4 @@ captures
 *.iml
 .idea/
 output.json
+app/release
