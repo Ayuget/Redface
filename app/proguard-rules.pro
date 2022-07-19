@@ -135,3 +135,4 @@
 -keep class com.ayuget.redface.image.superhost.** { *; }
 -keep class com.ayuget.redface.network.UserCookieStore { *; }
 -keep class com.ayuget.redface.network.SerializableHttpCookie { *; }
+-keep class com.ayuget.redface.image.diberie.DiberieHostResult { *; }
