@@ -30,7 +30,7 @@ public class TopicTransform {
                     "<td.*?class=\"sujetCase6.*?>(?:<a\\s*rel=\"nofollow\"\\s*href=\"/profilebdd.*?>)?(?:<span.*?>)?(.+?)(?:</span>)?(?:</a>)?</td>.*?" +
                     "<td.*?class=\"sujetCase7\".*?>(.+?)</td>.*?" +
                     "<td.*?class=\"sujetCase9.*?>.*?class=\"Tableau\">" +
-                    "([0-9]+)-([0-9]+)-([0-9]+).*?([0-9]+):([0-9]+)<br /><b>(.+?)</b>.*?</td>.*?" +
+                    "([0-9]+)-([0-9]+)-([0-9]+).*?([0-9]+):([0-9]+)<br /><b>(.*?)</b>.*?</td>.*?" +
                     "</tr>))"
             , Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
