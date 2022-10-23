@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2015 Ayuget
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,29 +15,24 @@
   -->
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item
-        android:title="@string/action_save_original_image"
-        android:id="@+id/action_save_original_image"
-        app:showAsAction="always" />
+	xmlns:app="http://schemas.android.com/apk/res-auto">
+	<item
+		android:title="@string/action_save_original_image"
+		android:id="@+id/action_save_original_image"
+		app:showAsAction="always" />
 
-    <item
-        android:title="@string/action_save_image_as_png"
-        android:id="@+id/action_save_image_as_png"
-        app:showAsAction="always" />
+	<item
+		android:title="@string/action_share_image"
+		android:id="@+id/action_share_image"
+		app:showAsAction="always" />
 
-    <item
-        android:title="@string/action_share_image"
-        android:id="@+id/action_share_image"
-        app:showAsAction="always" />
+	<item
+		android:title="@string/action_open_image"
+		android:id="@+id/action_open_image"
+		app:showAsAction="always" />
 
-    <item
-        android:title="@string/action_open_image"
-        android:id="@+id/action_open_image"
-        app:showAsAction="always" />
-
-    <item
-        android:title="@string/action_exif_data"
-        android:id="@+id/action_exif_data"
-        app:showAsAction="always" />
+	<item
+		android:title="@string/action_exif_data"
+		android:id="@+id/action_exif_data"
+		app:showAsAction="always" />
 </menu>

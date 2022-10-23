@@ -591,10 +591,7 @@ public class PostsFragment extends BaseFragment {
 		MenuItem.OnMenuItemClickListener itemClickListener = item -> {
 			switch (item.getItemId()) {
 				case R.id.action_save_original_image:
-					imageMenuHandler.saveImage(false);
-					break;
-				case R.id.action_save_image_as_png:
-					imageMenuHandler.saveImage(true);
+					imageMenuHandler.saveImage();
 					break;
 				case R.id.action_open_image:
 					imageMenuHandler.openImage();

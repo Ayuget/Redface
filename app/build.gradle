@@ -6,7 +6,7 @@ buildscript {
 	}
 
 	dependencies {
-		classpath 'com.android.tools.build:gradle:7.2.1'
+		classpath 'com.android.tools.build:gradle:7.3.1'
 		classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:3.0.1'
 	}
 }
@@ -59,6 +59,7 @@ android {
 	lint {
 		abortOnError false
 	}
+	namespace 'com.ayuget.redface'
 
 }
 

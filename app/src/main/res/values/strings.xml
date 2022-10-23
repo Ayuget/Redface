@@ -15,494 +15,494 @@
   -->
 
 <resources>
-    <string name="app_name">Redface</string>
-    <string name="guest_username">Guest</string>
+	<string name="app_name">Redface</string>
+	<string name="guest_username">Guest</string>
 
-    <!-- Actionbar actions -->
-    <string name="action_settings">Settings</string>
-    <string name="action_topics_filter">Topic filters</string>
-    <string name="action_go_to_last_read_page">Go to last read page</string>
-    <string name="action_go_to_first_page">Go to first page</string>
-    <string name="action_go_to_last_page">Go to last page</string>
-    <string name="action_go_to_specific_page">Go to page…</string>
-    <string name="action_reply_to_topic">Post a reply</string>
-    <string name="action_copy_link">Copy a link to this topic</string>
-    <string name="action_share">Share</string>
-    <string name="action_refresh_topic">Refresh</string>
-    <string name="action_search">Rechercher</string>
-    <string name="action_show_all_spoilers">Show all spoilers</string>
-    <string name="action_unflag_topic">Remove flag</string>
-    <string name="action_open_in_browser">Open topic in browser</string>
-    <string name="link_sucessfully_copied">Link copied to clipboard</string>
-    <string name="flag_successfully_removed">Flag successfully removed</string>
-    <string name="error_removing_flag">Error while removing flag</string>
+	<!-- Actionbar actions -->
+	<string name="action_settings">Settings</string>
+	<string name="action_topics_filter">Topic filters</string>
+	<string name="action_go_to_last_read_page">Go to last read page</string>
+	<string name="action_go_to_first_page">Go to first page</string>
+	<string name="action_go_to_last_page">Go to last page</string>
+	<string name="action_go_to_specific_page">Go to page…</string>
+	<string name="action_reply_to_topic">Post a reply</string>
+	<string name="action_copy_link">Copy a link to this topic</string>
+	<string name="action_share">Share</string>
+	<string name="action_refresh_topic">Refresh</string>
+	<string name="action_search">Rechercher</string>
+	<string name="action_show_all_spoilers">Show all spoilers</string>
+	<string name="action_unflag_topic">Remove flag</string>
+	<string name="action_open_in_browser">Open topic in browser</string>
+	<string name="link_sucessfully_copied">Link copied to clipboard</string>
+	<string name="flag_successfully_removed">Flag successfully removed</string>
+	<string name="error_removing_flag">Error while removing flag</string>
 
-    <string name="action_topics_filter_title">Topics filter</string>
-    <string name="action_topics_filter_all">All</string>
-    <string name="action_topics_filter_favorites">Favorites</string>
-    <string name="action_topics_filter_participated">Favorites &amp; Starred</string>
-    <string name="action_topics_filter_read">Read</string>
+	<string name="action_topics_filter_title">Topics filter</string>
+	<string name="action_topics_filter_all">All</string>
+	<string name="action_topics_filter_favorites">Favorites</string>
+	<string name="action_topics_filter_participated">Favorites &amp; Starred</string>
+	<string name="action_topics_filter_read">Read</string>
 
-    <string name="action_topic_search_title">Topic search filters</string>
-    <string name="action_topic_search_filter">Filter</string>
-    <string name="action_topic_search_from_first_page">From first page</string>
+	<string name="action_topic_search_title">Topic search filters</string>
+	<string name="action_topic_search_filter">Filter</string>
+	<string name="action_topic_search_from_first_page">From first page</string>
 
-    <string name="action_meta_sort">Sorting options</string>
-    <string name="action_meta_sort_by_date">Sort topics by date</string>
-    <string name="action_meta_group_by_cats">Group topics by categories</string>
+	<string name="action_meta_sort">Sorting options</string>
+	<string name="action_meta_sort_by_date">Sort topics by date</string>
+	<string name="action_meta_group_by_cats">Group topics by categories</string>
 
-    <!-- Navigation drawer -->
-    <string name="drawer_open">Open navigation drawer</string>
-    <string name="drawer_close">Close navigation drawer</string>
-    <string name="category_icon_description">Category icon</string>
+	<!-- Navigation drawer -->
+	<string name="drawer_open">Open navigation drawer</string>
+	<string name="drawer_close">Close navigation drawer</string>
+	<string name="category_icon_description">Category icon</string>
 
-    <string name="navdrawer_item_private_messages">Private messages</string>
-    <string name="navdrawer_item_settings">Settings</string>
-    <string name="navdrawer_item_profile">Profile</string>
-    <string name="navdrawer_item_my_topics">My topics</string>
-    <string name="navdrawer_add_account">Add account</string>
-    <string name="navdrawer_profile_picture">Profile picture</string>
+	<string name="navdrawer_item_private_messages">Private messages</string>
+	<string name="navdrawer_item_settings">Settings</string>
+	<string name="navdrawer_item_profile">Profile</string>
+	<string name="navdrawer_item_my_topics">My topics</string>
+	<string name="navdrawer_add_account">Add account</string>
+	<string name="navdrawer_profile_picture">Profile picture</string>
 
-    <!-- Default fragment -->
-    <string name="default_fragment_text">Please select a category from the navigation drawer</string>
+	<!-- Default fragment -->
+	<string name="default_fragment_text">Please select a category from the navigation drawer</string>
 
-    <!-- Settings / Preferences -->
-    <string name="settings_title">Settings</string>
+	<!-- Settings / Preferences -->
+	<string name="settings_title">Settings</string>
 
-    <!-- General preferences screen-->
-    <string name="pref_general_title">General</string>
-    <string name="pref_general_summary">Yes sir !</string>
+	<!-- General preferences screen-->
+	<string name="pref_general_title">General</string>
+	<string name="pref_general_summary">Yes sir !</string>
 
-    <string name="pref_notify_private_messages_title">Notification for private messages</string>
-    <string name="pref_notify_private_messages_summary">Be notified when you receive a new private message</string>
+	<string name="pref_notify_private_messages_title">Notification for private messages</string>
+	<string name="pref_notify_private_messages_summary">Be notified when you receive a new private message</string>
 
-    <!-- Network preferences screen-->
-    <string name="pref_network_title">Network</string>
-    <string name="pref_network_summary">Configure network related options (proxy, …)</string>
+	<!-- Network preferences screen-->
+	<string name="pref_network_title">Network</string>
+	<string name="pref_network_summary">Configure network related options (proxy, …)</string>
 
-    <string name="pref_activate_proxy_title">Enable proxy</string>
-    <string name="pref_activate_proxy_summary">Use a proxy to connect to the forum</string>
-    <string name="pref_proxy_host_title">Proxy host</string>
-    <string name="pref_proxy_port_title">Proxy port</string>
+	<string name="pref_activate_proxy_title">Enable proxy</string>
+	<string name="pref_activate_proxy_summary">Use a proxy to connect to the forum</string>
+	<string name="pref_proxy_host_title">Proxy host</string>
+	<string name="pref_proxy_port_title">Proxy port</string>
 
-    <string name="pref_proxy_settings">Proxy settings</string>
+	<string name="pref_proxy_settings">Proxy settings</string>
 
-    <!-- Appearance preferences screen-->
-    <string name="pref_appearance_title">Appearance</string>
-    <string name="pref_appearance_summary">Change how the application looks</string>
-    <string name="pref_show_fully_read_topics_title">Show fully read topics</string>
-    <string name="pref_enable_internal_browser_title">Enable internal browser</string>
-    <string name="pref_enable_internal_browser_summary">Open all external links in the internal browser</string>
-    <string name="pref_topic_list_compact_mode_title">Compact mode</string>
-    <string name="pref_topic_list_compact_mode_summary">Display topic list in a compact way</string>
-    <string name="pref_topic_list_compact_mode_more_info_title">Show additional details</string>
-    <string name="pref_topic_list_compact_mode_more_info_summary">More details in compact mode</string>
-    <string name="pref_double_tap_to_refresh_title">Enable double tap to refresh</string>
-    <string name="pref_double_tap_to_refresh_summary">Double tapping inside a topic will trigger a page refresh</string>
-    <string name="pref_show_previous_page_last_post_title">Show previous page last post</string>
-    <string name="pref_show_previous_page_last_post_summary">Display the last post of the previous page at the top of the page</string>
-    <string name="pref_refresh_topic_list_title">Refresh topic list</string>
-    <string name="pref_refresh_topic_list_summary">Refresh topic list when returning from a topic</string>
-    <string name="pref_show_fully_read_topics_summary">This option only works if you are not in the Meta category</string>
-    <string name="pref_use_modern_quote_style">Use modern quote style</string>
-    <string name="pref_show_navigation_buttons_title">Show navigation buttons</string>
-    <string name="pref_show_navigation_buttons_summary">Display "go to top" and "go to bottom" buttons when reading a topic</string>
+	<!-- Appearance preferences screen-->
+	<string name="pref_appearance_title">Appearance</string>
+	<string name="pref_appearance_summary">Change how the application looks</string>
+	<string name="pref_show_fully_read_topics_title">Show fully read topics</string>
+	<string name="pref_enable_internal_browser_title">Enable internal browser</string>
+	<string name="pref_enable_internal_browser_summary">Open all external links in the internal browser</string>
+	<string name="pref_topic_list_compact_mode_title">Compact mode</string>
+	<string name="pref_topic_list_compact_mode_summary">Display topic list in a compact way</string>
+	<string name="pref_topic_list_compact_mode_more_info_title">Show additional details</string>
+	<string name="pref_topic_list_compact_mode_more_info_summary">More details in compact mode</string>
+	<string name="pref_double_tap_to_refresh_title">Enable double tap to refresh</string>
+	<string name="pref_double_tap_to_refresh_summary">Double tapping inside a topic will trigger a page refresh</string>
+	<string name="pref_show_previous_page_last_post_title">Show previous page last post</string>
+	<string name="pref_show_previous_page_last_post_summary">Display the last post of the previous page at the top of the page</string>
+	<string name="pref_refresh_topic_list_title">Refresh topic list</string>
+	<string name="pref_refresh_topic_list_summary">Refresh topic list when returning from a topic</string>
+	<string name="pref_show_fully_read_topics_summary">This option only works if you are not in the Meta category</string>
+	<string name="pref_use_modern_quote_style">Use modern quote style</string>
+	<string name="pref_show_navigation_buttons_title">Show navigation buttons</string>
+	<string name="pref_show_navigation_buttons_summary">Display "go to top" and "go to bottom" buttons when reading a topic</string>
 
-    <string name="pref_enable_egoquote_title">Enable EgoQuote</string>
-    <string name="pref_enable_egoquote_summary">Highlights posts in which you are quoted</string>
+	<string name="pref_enable_egoquote_title">Enable EgoQuote</string>
+	<string name="pref_enable_egoquote_summary">Highlights posts in which you are quoted</string>
 
-    <string name="pref_default_topic_filter">Default topic filter</string>
-    <string name="pref_default_topic_filter_default" translatable="false">NONE</string>
-    <string-array name="pref_default_topic_filter_values">
-        <item>All</item>
-        <item>Favorites</item>
-        <item>Favorites &amp; Starred</item>
-        <item>Read</item>
-    </string-array>
-    <string-array name="pref_default_topic_filter_entries" translatable="false">
-        <item>NONE</item>
-        <item>FAVORITE</item>
-        <item>PARTICIPATED</item>
-        <item>READ</item>
-    </string-array>
+	<string name="pref_default_topic_filter">Default topic filter</string>
+	<string name="pref_default_topic_filter_default" translatable="false">NONE</string>
+	<string-array name="pref_default_topic_filter_values">
+		<item>All</item>
+		<item>Favorites</item>
+		<item>Favorites &amp; Starred</item>
+		<item>Read</item>
+	</string-array>
+	<string-array name="pref_default_topic_filter_entries" translatable="false">
+		<item>NONE</item>
+		<item>FAVORITE</item>
+		<item>PARTICIPATED</item>
+		<item>READ</item>
+	</string-array>
 
-    <string name="pref_default_category">Default category</string>
-    <string name="pref_default_category_default" translatable="false">666</string>
-    <string-array name="pref_default_category_values">
-        <item>@string/navdrawer_item_my_topics</item>
-    </string-array>
-    <string-array name="pref_default_category_entries" translatable="false">
-        <item>@string/pref_default_category_default</item>
-    </string-array>
+	<string name="pref_default_category">Default category</string>
+	<string name="pref_default_category_default" translatable="false">666</string>
+	<string-array name="pref_default_category_values">
+		<item>@string/navdrawer_item_my_topics</item>
+	</string-array>
+	<string-array name="pref_default_category_entries" translatable="false">
+		<item>@string/pref_default_category_default</item>
+	</string-array>
 
-    <string name="download_strategy_never">Never</string>
-    <string name="download_strategy_fast_connection">On fast connection</string>
-    <string name="download_strategy_wifi">On WiFi</string>
-    <string name="download_strategy_always">Always</string>
+	<string name="download_strategy_never">Never</string>
+	<string name="download_strategy_fast_connection">On fast connection</string>
+	<string name="download_strategy_wifi">On WiFi</string>
+	<string name="download_strategy_always">Always</string>
 
-    <string name="pref_images_settings">Images</string>
+	<string name="pref_images_settings">Images</string>
 
-    <string name="pref_images_strategy">Display images</string>
-    <string name="pref_images_strategy_default" translatable="false">ALWAYS</string>
-    <string-array name="pref_images_strategy_values" translatable="false">
-        <item>NEVER</item>
-        <item>FASTCX</item>
-        <item>WIFI</item>
-        <item>@string/pref_images_strategy_default</item>
-    </string-array>
-    <string-array name="pref_images_strategy_entries">
-        <item>@string/download_strategy_never</item>
-        <item>@string/download_strategy_fast_connection</item>
-        <item>@string/download_strategy_wifi</item>
-        <item>@string/download_strategy_always</item>
-    </string-array>
+	<string name="pref_images_strategy">Display images</string>
+	<string name="pref_images_strategy_default" translatable="false">ALWAYS</string>
+	<string-array name="pref_images_strategy_values" translatable="false">
+		<item>NEVER</item>
+		<item>FASTCX</item>
+		<item>WIFI</item>
+		<item>@string/pref_images_strategy_default</item>
+	</string-array>
+	<string-array name="pref_images_strategy_entries">
+		<item>@string/download_strategy_never</item>
+		<item>@string/download_strategy_fast_connection</item>
+		<item>@string/download_strategy_wifi</item>
+		<item>@string/download_strategy_always</item>
+	</string-array>
 
-    <string name="pref_avatars_strategy">Display avatars</string>
-    <string name="pref_avatars_strategy_default" translatable="false">ALWAYS</string>
-    <string-array name="pref_avatars_strategy_values" translatable="false">
-        <item>NEVER</item>
-        <item>FASTCX</item>
-        <item>WIFI</item>
-        <item>@string/pref_avatars_strategy_default</item>
-    </string-array>
-    <string-array name="pref_avatars_strategy_entries">
-        <item>@string/download_strategy_never</item>
-        <item>@string/download_strategy_fast_connection</item>
-        <item>@string/download_strategy_wifi</item>
-        <item>@string/download_strategy_always</item>
-    </string-array>
+	<string name="pref_avatars_strategy">Display avatars</string>
+	<string name="pref_avatars_strategy_default" translatable="false">ALWAYS</string>
+	<string-array name="pref_avatars_strategy_values" translatable="false">
+		<item>NEVER</item>
+		<item>FASTCX</item>
+		<item>WIFI</item>
+		<item>@string/pref_avatars_strategy_default</item>
+	</string-array>
+	<string-array name="pref_avatars_strategy_entries">
+		<item>@string/download_strategy_never</item>
+		<item>@string/download_strategy_fast_connection</item>
+		<item>@string/download_strategy_wifi</item>
+		<item>@string/download_strategy_always</item>
+	</string-array>
 
-    <string name="pref_smileys_strategy">Display smileys</string>
-    <string name="pref_smileys_strategy_default" translatable="false">ALWAYS</string>
-    <string-array name="pref_smileys_strategy_values" translatable="false">
-        <item>NEVER</item>
-        <item>FASTCX</item>
-        <item>WIFI</item>
-        <item>@string/pref_smileys_strategy_default</item>
-    </string-array>
-    <string-array name="pref_smileys_strategy_entries">
-        <item>@string/download_strategy_never</item>
-        <item>@string/download_strategy_fast_connection</item>
-        <item>@string/download_strategy_wifi</item>
-        <item>@string/download_strategy_always</item>
-    </string-array>
+	<string name="pref_smileys_strategy">Display smileys</string>
+	<string name="pref_smileys_strategy_default" translatable="false">ALWAYS</string>
+	<string-array name="pref_smileys_strategy_values" translatable="false">
+		<item>NEVER</item>
+		<item>FASTCX</item>
+		<item>WIFI</item>
+		<item>@string/pref_smileys_strategy_default</item>
+	</string-array>
+	<string-array name="pref_smileys_strategy_entries">
+		<item>@string/download_strategy_never</item>
+		<item>@string/download_strategy_fast_connection</item>
+		<item>@string/download_strategy_wifi</item>
+		<item>@string/download_strategy_always</item>
+	</string-array>
 
-    <string name="pref_theme_title">Theme</string>
-    <string name="pref_theme_default" translatable="false">LIGHT</string>
-    <string-array name="pref_theme_values">
-        <item>Light</item>
-        <item>Dark</item>
-        <item>Night</item>
-        <item>Auto</item>
-    </string-array>
-    <string-array name="pref_theme_entries" translatable="false">
-        <item>@string/pref_theme_default</item>
-        <item>DARK</item>
-        <item>NIGHT</item>
-        <item>AUTO</item>
-    </string-array>
+	<string name="pref_theme_title">Theme</string>
+	<string name="pref_theme_default" translatable="false">LIGHT</string>
+	<string-array name="pref_theme_values">
+		<item>Light</item>
+		<item>Dark</item>
+		<item>Night</item>
+		<item>Auto</item>
+	</string-array>
+	<string-array name="pref_theme_entries" translatable="false">
+		<item>@string/pref_theme_default</item>
+		<item>DARK</item>
+		<item>NIGHT</item>
+		<item>AUTO</item>
+	</string-array>
 
-    <string name="pref_font_size_title">Font size</string>
-    <string name="pref_font_size_summary">Customize the font size (currently only inside a topic)</string>
-    <string name="pref_font_size_default" translatable="false">NORMAL</string>
-    <string-array name="pref_font_size_values">
-        <item>Small</item>
-        <item>Normal</item>
-        <item>Big</item>
-        <item>Huge</item>
-        <item>More Huge</item>
-        <item>Really Huge</item>
-    </string-array>
-    <string-array name="pref_font_size_entries" translatable="false">
-        <item>SMALL</item>
-        <item>@string/pref_font_size_default</item>
-        <item>BIG</item>
-        <item>HUGE</item>
-        <item>MOREHUGE</item>
-        <item>REALLYHUGE</item>
-    </string-array>
+	<string name="pref_font_size_title">Font size</string>
+	<string name="pref_font_size_summary">Customize the font size (currently only inside a topic)</string>
+	<string name="pref_font_size_default" translatable="false">NORMAL</string>
+	<string-array name="pref_font_size_values">
+		<item>Small</item>
+		<item>Normal</item>
+		<item>Big</item>
+		<item>Huge</item>
+		<item>More Huge</item>
+		<item>Really Huge</item>
+	</string-array>
+	<string-array name="pref_font_size_entries" translatable="false">
+		<item>SMALL</item>
+		<item>@string/pref_font_size_default</item>
+		<item>BIG</item>
+		<item>HUGE</item>
+		<item>MOREHUGE</item>
+		<item>REALLYHUGE</item>
+	</string-array>
 
-    <string name="pref_default_meta_ordering">Default ordering for \"My topics\" screen</string>
-    <string name="pref_default_meta_ordering_default" translatable="false">SORT_BY_DATE</string>
-    <string-array name="pref_default_meta_ordering_values">
-        <item>Order by descending date</item>
-        <item>Group by categories</item>
-    </string-array>
-    <string-array name="pref_default_meta_ordering_entries" translatable="false">
-        <item>@string/pref_default_meta_ordering_default</item>
-        <item>GROUP_BY_CATS</item>
-    </string-array>
+	<string name="pref_default_meta_ordering">Default ordering for \"My topics\" screen</string>
+	<string name="pref_default_meta_ordering_default" translatable="false">SORT_BY_DATE</string>
+	<string-array name="pref_default_meta_ordering_values">
+		<item>Order by descending date</item>
+		<item>Group by categories</item>
+	</string-array>
+	<string-array name="pref_default_meta_ordering_entries" translatable="false">
+		<item>@string/pref_default_meta_ordering_default</item>
+		<item>GROUP_BY_CATS</item>
+	</string-array>
 
-    <string name="pref_rehost_settings">Image rehost</string>
-    <string name="pref_default_uploaded_image_variant">Default quality for uploaded images</string>
-    <string name="pref_default_uploaded_image_variant_summary">Choose which quality gets automatically inserted in the message right after the upload</string>
-    <string name="pref_default_uploaded_image_variant_default" translatable="false">PREVIEW</string>
-    <string-array name="pref_default_uploaded_image_variant_values">
-        <item>@string/image_uploaded_original</item>
-        <item>@string/image_uploaded_medium</item>
-        <item>@string/image_uploaded_preview</item>
-        <item>@string/image_uploaded_thumbnail</item>
-    </string-array>
-    <string-array name="pref_default_uploaded_image_variant_entries" translatable="false">
-        <item>ORIGINAL</item>
-        <item>MEDIUM</item>
-        <item>@string/pref_default_uploaded_image_variant_default</item>
-        <item>THUMBNAIL</item>
-    </string-array>
+	<string name="pref_rehost_settings">Image rehost</string>
+	<string name="pref_default_uploaded_image_variant">Default quality for uploaded images</string>
+	<string name="pref_default_uploaded_image_variant_summary">Choose which quality gets automatically inserted in the message right after the upload</string>
+	<string name="pref_default_uploaded_image_variant_default" translatable="false">PREVIEW</string>
+	<string-array name="pref_default_uploaded_image_variant_values">
+		<item>@string/image_uploaded_original</item>
+		<item>@string/image_uploaded_medium</item>
+		<item>@string/image_uploaded_preview</item>
+		<item>@string/image_uploaded_thumbnail</item>
+	</string-array>
+	<string-array name="pref_default_uploaded_image_variant_entries" translatable="false">
+		<item>ORIGINAL</item>
+		<item>MEDIUM</item>
+		<item>@string/pref_default_uploaded_image_variant_default</item>
+		<item>THUMBNAIL</item>
+	</string-array>
 
-    <string name="private_messages_notification_channel">Private Messages</string>
-    <string name="pref_notification_settings">Notifications</string>
-    <string name="pref_enable_pm_notifications_title">Enable private messages notifications</string>
-    <string name="pref_enable_pm_notifications_summary">Be notified when you receive a new private message</string>
-    <string name="pref_pm_notification_frequency">Polling frequency</string>
-    <string name="pref_pm_notification_frequency_default" translatable="false">120</string>
-    <string-array name="pref_pm_notification_frequency_values" translatable="false">
-        <item>15</item>
-        <item>30</item>
-        <item>60</item>
-        <item>@string/pref_pm_notification_frequency_default</item>
-        <item>360</item>
-        <item>720</item>
-        <item>1440</item>
-    </string-array>
-    <string-array name="pref_pm_notification_frequency_entries">
-        <item>15 minutes</item>
-        <item>30 minutes</item>
-        <item>1 hour</item>
-        <item>2 hours</item>
-        <item>6 hours</item>
-        <item>12 hours</item>
-        <item>24 hours</item>
-    </string-array>
+	<string name="private_messages_notification_channel">Private Messages</string>
+	<string name="pref_notification_settings">Notifications</string>
+	<string name="pref_enable_pm_notifications_title">Enable private messages notifications</string>
+	<string name="pref_enable_pm_notifications_summary">Be notified when you receive a new private message</string>
+	<string name="pref_pm_notification_frequency">Polling frequency</string>
+	<string name="pref_pm_notification_frequency_default" translatable="false">120</string>
+	<string-array name="pref_pm_notification_frequency_values" translatable="false">
+		<item>15</item>
+		<item>30</item>
+		<item>60</item>
+		<item>@string/pref_pm_notification_frequency_default</item>
+		<item>360</item>
+		<item>720</item>
+		<item>1440</item>
+	</string-array>
+	<string-array name="pref_pm_notification_frequency_entries">
+		<item>15 minutes</item>
+		<item>30 minutes</item>
+		<item>1 hour</item>
+		<item>2 hours</item>
+		<item>6 hours</item>
+		<item>12 hours</item>
+		<item>24 hours</item>
+	</string-array>
 
-    <!-- Blacklist preferences screen -->
-    <string name="pref_blacklist_title">Blacklist</string>
-    <string name="pref_blacklist_summary">Manage blocked users</string>
-    <string name="pref_blacklist_activate">Activate blacklist</string>
-    <string name="pref_blacklist_activate_summary">Authorize blaclist members to be blocked</string>
-    <string name="pref_blacklist_empty">No blocked user</string>
-    <string name="pref_blacklist_users">Users</string>
-    <string name="pref_blacklist_alertdialog_message">Delete from blacklist?</string>
-    <string name="pref_blacklist_alertdialog_positive">@android:string/ok</string>
-    <string name="pref_blacklist_alertdialog_negative">@android:string/cancel</string>
-    <string name="pref_blacklist_show_blocked">Show blocked user</string>
-    <string name="pref_blaclist_show_blocked_summary">Show the name of the blocked user instead of the message</string>
+	<!-- Blacklist preferences screen -->
+	<string name="pref_blacklist_title">Blacklist</string>
+	<string name="pref_blacklist_summary">Manage blocked users</string>
+	<string name="pref_blacklist_activate">Activate blacklist</string>
+	<string name="pref_blacklist_activate_summary">Authorize blaclist members to be blocked</string>
+	<string name="pref_blacklist_empty">No blocked user</string>
+	<string name="pref_blacklist_users">Users</string>
+	<string name="pref_blacklist_alertdialog_message">Delete from blacklist?</string>
+	<string name="pref_blacklist_alertdialog_positive">@android:string/ok</string>
+	<string name="pref_blacklist_alertdialog_negative">@android:string/cancel</string>
+	<string name="pref_blacklist_show_blocked">Show blocked user</string>
+	<string name="pref_blaclist_show_blocked_summary">Show the name of the blocked user instead of the message</string>
 
-    <!-- Smilies actions preferences -->
-    <string name="pref_enable_smilies_actions_title">Enable smilies actions</string>
-    <string name="pref_enable_smilies_actions_summary">Allow actions on smileys in a topic. Can slow down the display of messages a little bit.</string>
+	<!-- Smilies actions preferences -->
+	<string name="pref_enable_smilies_actions_title">Enable smilies actions</string>
+	<string name="pref_enable_smilies_actions_summary">Allow actions on smileys in a topic. Can slow down the display of messages a little bit.</string>
 
-    <!-- Technical preferences -->
-    <string name="pref_technical_category">Technical</string>
-    <string name="pref_clear_categories_cache_label">Clear category cache</string>
-    <string name="pref_clear_categories_cache_summary">Clears the category cache for the given user</string>
-    <string name="categories_cache_cleared">Categories cache cleared, please kill and reload the app</string>
-    <string name="pref_log_in_again_label">Log-in again</string>
-    <string name="pref_log_in_again_summary">Opens the log-in screen</string>
+	<!-- Technical preferences -->
+	<string name="pref_technical_category">Technical</string>
+	<string name="pref_clear_categories_cache_label">Clear category cache</string>
+	<string name="pref_clear_categories_cache_summary">Clears the category cache for the given user</string>
+	<string name="categories_cache_cleared">Categories cache cleared, please kill and reload the app</string>
+	<string name="pref_log_in_again_label">Log-in again</string>
+	<string name="pref_log_in_again_summary">Opens the log-in screen</string>
 
-    <!-- About page -->
-    <string name="menu_about">About</string>
+	<!-- About page -->
+	<string name="menu_about">About</string>
 
-    <!-- Topic list -->
-    <string name="error_loading_topics">Error while loading topics</string>
-    <string name="error_loading_topics_page">Error while loading topics for page {page}</string>
-    <string name="prompt_go_to_page">Go to page…</string>
-    <string name="invalid_page_number">Invalid page number</string>
-    <string name="pages_count">{page} pages</string>
-    <string name="pages_count_currently">Currently {current_page} / {pages_count}</string>
+	<!-- Topic list -->
+	<string name="error_loading_topics">Error while loading topics</string>
+	<string name="error_loading_topics_page">Error while loading topics for page {page}</string>
+	<string name="prompt_go_to_page">Go to page…</string>
+	<string name="invalid_page_number">Invalid page number</string>
+	<string name="pages_count">{page} pages</string>
+	<string name="pages_count_currently">Currently {current_page} / {pages_count}</string>
 
-    <!-- Post actions -->
-    <string name="marking_as_favorite_in_progress">Marking as favorite…</string>
-    <string name="mark_as_favorite_failed">Failed to mark as favorite</string>
-    <string name="mark_as_favorite_success">Successfully marked as favorite !</string>
-    <string name="delete_post_in_progress">Deleting post…</string>
-    <string name="delete_post_failed">Failed to delete post</string>
-    <string name="delete_post_success">Successfully deleted post !</string>
-    <string name="action_multiquote">Quote those messages</string>
-    <string name="quoted_messages">1 quoted message</string>
-    <string name="quoted_messages_plural">{count} quoted messages</string>
-    <string name="user_blocked">User %1$s blocked !</string>
+	<!-- Post actions -->
+	<string name="marking_as_favorite_in_progress">Marking as favorite…</string>
+	<string name="mark_as_favorite_failed">Failed to mark as favorite</string>
+	<string name="mark_as_favorite_success">Successfully marked as favorite !</string>
+	<string name="delete_post_in_progress">Deleting post…</string>
+	<string name="delete_post_failed">Failed to delete post</string>
+	<string name="delete_post_success">Successfully deleted post !</string>
+	<string name="action_multiquote">Quote those messages</string>
+	<string name="quoted_messages">1 quoted message</string>
+	<string name="quoted_messages_plural">{count} quoted messages</string>
+	<string name="user_blocked">User %1$s blocked !</string>
 
-    <!-- Post page -->
-    <string name="reload_page">Reload</string>
-    <string name="page_loading_error">Error loading page</string>
-    <string name="no_topics_found">No topics found</string>
-    <string name="select_topic_message">Please select a topic</string>
-    <string name="topic_loading_message">Loading topic</string>
-    <string name="post_added_to_quote">Post successfully quoted</string>
-    <string name="post_failed_to_quote">Unable to quote this message</string>
-    <string name="post_edited_on">Edited on {date}</string>
-    <string name="post_delete_confirmation">Delete post ?</string>
-    <string name="post_delete_yes">Delete</string>
-    <string name="post_delete_no">Cancel</string>
+	<!-- Post page -->
+	<string name="reload_page">Reload</string>
+	<string name="page_loading_error">Error loading page</string>
+	<string name="no_topics_found">No topics found</string>
+	<string name="select_topic_message">Please select a topic</string>
+	<string name="topic_loading_message">Loading topic</string>
+	<string name="post_added_to_quote">Post successfully quoted</string>
+	<string name="post_failed_to_quote">Unable to quote this message</string>
+	<string name="post_edited_on">Edited on {date}</string>
+	<string name="post_delete_confirmation">Delete post ?</string>
+	<string name="post_delete_yes">Delete</string>
+	<string name="post_delete_no">Cancel</string>
 
-    <!-- Private messages -->
-    <string name="no_private_messages_found">No private messages found</string>
-    <string name="error_loading_private_messages">Error while private messages</string>
-    <string name="error_loading_private_messages_page">Error while loading private messages for page {page}</string>
-    <string name="action_new_private_message">New private message</string>
-    <string name="new_private_messages_count">{count} new messages</string>
-    <string name="new_private_messages_summary">New private messages</string>
-    <string name="new_private_messages_title">New private message from {username}</string>
+	<!-- Private messages -->
+	<string name="no_private_messages_found">No private messages found</string>
+	<string name="error_loading_private_messages">Error while private messages</string>
+	<string name="error_loading_private_messages_page">Error while loading private messages for page {page}</string>
+	<string name="action_new_private_message">New private message</string>
+	<string name="new_private_messages_count">{count} new messages</string>
+	<string name="new_private_messages_summary">New private messages</string>
+	<string name="new_private_messages_title">New private message from {username}</string>
 
-    <!-- Login page -->
-    <string name="prompt_username">Username</string>
-    <string name="prompt_password">Password</string>
-    <string name="action_sign_in">Sign in</string>
-    <string name="title_activity_login">Log in</string>
-    <string name="login_username_empty">Username cannot be empty</string>
-    <string name="login_password_empty">Password cannot be empty</string>
-    <string name="login_successful">Successfully logged in !</string>
-    <string name="login_failed">Failed to login, check username/password</string>
-    <string name="connect_to_forum">Add a new account</string>
+	<!-- Login page -->
+	<string name="prompt_username">Username</string>
+	<string name="prompt_password">Password</string>
+	<string name="action_sign_in">Sign in</string>
+	<string name="title_activity_login">Log in</string>
+	<string name="login_username_empty">Username cannot be empty</string>
+	<string name="login_password_empty">Password cannot be empty</string>
+	<string name="login_successful">Successfully logged in !</string>
+	<string name="login_failed">Failed to login, check username/password</string>
+	<string name="connect_to_forum">Add a new account</string>
 
-    <!-- Reply dialog -->
-    <string name="action_reply_reply_dialog">Reply</string>
-    <string name="add_smiley_button_description">Add smiley</string>
-    <string name="insert_smiley_tag_button_description">Insert a smiley tag</string>
-    <string name="make_text_bold_button_description">Make text bold</string>
-    <string name="make_text_italic_button_description">Make text italic</string>
-    <string name="underline_text_button_description">Underline text</string>
-    <string name="insert_quote_button_description">Insert quote</string>
-    <string name="insert_code_button_description">Insert code block</string>
-    <string name="insert_spoiler_button_description">Insert spoiler</string>
-    <string name="insert_link_button_description">Make text italic</string>
-    <string name="insert_image_description">Insert image</string>
+	<!-- Reply dialog -->
+	<string name="action_reply_reply_dialog">Reply</string>
+	<string name="add_smiley_button_description">Add smiley</string>
+	<string name="insert_smiley_tag_button_description">Insert a smiley tag</string>
+	<string name="make_text_bold_button_description">Make text bold</string>
+	<string name="make_text_italic_button_description">Make text italic</string>
+	<string name="underline_text_button_description">Underline text</string>
+	<string name="insert_quote_button_description">Insert quote</string>
+	<string name="insert_code_button_description">Insert code block</string>
+	<string name="insert_spoiler_button_description">Insert spoiler</string>
+	<string name="insert_link_button_description">Make text italic</string>
+	<string name="insert_image_description">Insert image</string>
 
-    <string name="popular_smileys_button_description">Popular smileys</string>
-    <string name="recent_smileys_button_description">Recent smileys</string>
-    <string name="default_smileys_button_description">Default smileys</string>
-    <string name="favorite_smileys_button_description">Favorite smileys</string>
+	<string name="popular_smileys_button_description">Popular smileys</string>
+	<string name="recent_smileys_button_description">Recent smileys</string>
+	<string name="default_smileys_button_description">Default smileys</string>
+	<string name="favorite_smileys_button_description">Favorite smileys</string>
 
-    <string name="show_smileys_picker">Show smileys picker</string>
-    <string name="no_smileys_found">No result</string>
+	<string name="show_smileys_picker">Show smileys picker</string>
+	<string name="no_smileys_found">No result</string>
 
-    <string name="image_upload_in_progress">Uploading image…</string>
-    <string name="image_upload_failed">Failed to upload image</string>
-    <string name="image_upload_success">Image successfully uploaded !</string>
-    <string name="image_upload_variants">Variants</string>
-    <string name="image_upload_select_variant">Select a variant</string>
-    <string name="image_uploaded_original">Original</string>
-    <string name="image_uploaded_medium">Medium (800px)</string>
-    <string name="image_uploaded_preview">Preview (600px)</string>
-    <string name="image_uploaded_thumbnail">Thumbnail</string>
+	<string name="image_upload_in_progress">Uploading image…</string>
+	<string name="image_upload_failed">Failed to upload image</string>
+	<string name="image_upload_success">Image successfully uploaded !</string>
+	<string name="image_upload_variants">Variants</string>
+	<string name="image_upload_select_variant">Select a variant</string>
+	<string name="image_uploaded_original">Original</string>
+	<string name="image_uploaded_medium">Medium (800px)</string>
+	<string name="image_uploaded_preview">Preview (600px)</string>
+	<string name="image_uploaded_thumbnail">Thumbnail</string>
 
-    <string name="image_enter_url">Enter image URL</string>
-    <string name="image_enter_url_ok">OK</string>
-    <string name="image_enter_url_cancel">Cancel</string>
-    <string name="image_enter_url_text" translatable="false"></string>
+	<string name="image_enter_url">Enter image URL</string>
+	<string name="image_enter_url_ok">OK</string>
+	<string name="image_enter_url_cancel">Cancel</string>
+	<string name="image_enter_url_text" translatable="false"></string>
 
-    <string name="image_shared_success">Link to image has been copied to clipboard</string>
-    <string name="image_shared_failure">Failed to share image</string>
-    <string name="upload_on_hfr_rehost">Upload on Diberie</string>
-    <string name="image_sharing_confirmation">Upload this image to Diberie?</string>
-    <string name="image_sharing_confirmation_positive">Yes</string>
-    <string name="image_sharing_confirmation_negative">No</string>
+	<string name="image_shared_success">Link to image has been copied to clipboard</string>
+	<string name="image_shared_failure">Failed to share image</string>
+	<string name="upload_on_hfr_rehost">Upload on Diberie</string>
+	<string name="image_sharing_confirmation">Upload this image to Diberie?</string>
+	<string name="image_sharing_confirmation_positive">Yes</string>
+	<string name="image_sharing_confirmation_negative">No</string>
 
-    <string name="reply_successfully_posted">Reply successfully posted</string>
-    <string name="reply_post_failure">Failed to post reply</string>
-    <string name="message_successfully_edited">Reply successfully posted</string>
-    <string name="message_edit_failure">Failed to edit message</string>
-    <string name="user_switch_sucessful">Changed active user to {username}</string>
+	<string name="reply_successfully_posted">Reply successfully posted</string>
+	<string name="reply_post_failure">Failed to post reply</string>
+	<string name="message_successfully_edited">Reply successfully posted</string>
+	<string name="message_edit_failure">Failed to edit message</string>
+	<string name="user_switch_sucessful">Changed active user to {username}</string>
 
-    <string name="pm_recipient">Recipient username</string>
-    <string name="pm_subject">Message subject</string>
-    <string name="pm_no_recipient">Please enter a recipient name</string>
-    <string name="pm_no_subject">Please enter a subject</string>
-    <string name="pm_successfully_sent">Private message successfully sent</string>
-    <string name="error_sending_pm">Failed to send private message</string>
+	<string name="pm_recipient">Recipient username</string>
+	<string name="pm_subject">Message subject</string>
+	<string name="pm_no_recipient">Please enter a recipient name</string>
+	<string name="pm_no_subject">Please enter a subject</string>
+	<string name="pm_successfully_sent">Private message successfully sent</string>
+	<string name="error_sending_pm">Failed to send private message</string>
 
-    <string name="relogin_instructions">If your login credentials have changed, or if you wish to re-login, please fill-in the following form</string>
+	<string name="relogin_instructions">If your login credentials have changed, or if you wish to re-login, please fill-in the following form</string>
 
-    <string name="unknown_category">Unknown</string>
+	<string name="unknown_category">Unknown</string>
 
-    <!-- Dialogs -->
-    <string name="dialog_go_to_page_positive_text">Go !</string>
+	<!-- Dialogs -->
+	<string name="dialog_go_to_page_positive_text">Go !</string>
 
-    <!-- Save image menu -->
-    <string name="action_save_original_image">Save original image</string>
-    <string name="action_save_image_as_png">Save image as PNG</string>
-    <string name="action_share_image">Share image</string>
-    <string name="action_open_image">Open image at full size</string>
-    <string name="action_exif_data">Show exif data</string>
+	<!-- Save image menu -->
+	<string name="action_save_original_image">Save original image</string>
+	<string name="action_share_image">Share image</string>
+	<string name="action_open_image">Open image at full size</string>
+	<string name="action_exif_data">Show exif data</string>
 
-    <!-- Exif data-->
-    <string name="exif_data_title">Exif data</string>
-    <string name="unknown_model">Unknown model</string>
+	<!-- Exif data-->
+	<string name="exif_data_title">Exif data</string>
+	<string name="unknown_model">Unknown model</string>
 
-    <!-- Image management -->
-    <string name="error_saving_image">Error while saving image</string>
-    <string name="error_invalid_image">Error while saving image : image is invalid</string>
-    <string name="error_saving_image_permission_denied">Permission required to save image</string>
-    <string name="image_saved_successfully">Image successfully saved !</string>
-    <string name="action_snackbar_open_image">Open</string>
-    <string name="gallery_image_loading_error">Error loading image</string>
+	<!-- Image management -->
+	<string name="error_saving_image">Error while saving image</string>
+	<string name="error_invalid_image">Error while saving image : image is invalid</string>
+	<string name="error_saving_image_permission_denied">Permission required to save image</string>
+	<string name="image_saved_successfully">Image successfully saved !</string>
+	<string name="action_snackbar_open_image">Open</string>
+	<string name="gallery_image_loading_error">Error loading image</string>
+	<string name="error_exif_info_permission_denied">Permission required to read EXIF data</string>
 
-    <!-- Insert image menu -->
-    <string name="insert_image_from_url">URL</string>
-    <string name="insert_image_from_favorites">Favorites</string>
-    <string name="insert_image_from_gallery">Gallery</string>
+	<!-- Insert image menu -->
+	<string name="insert_image_from_url">URL</string>
+	<string name="insert_image_from_favorites">Favorites</string>
+	<string name="insert_image_from_gallery">Gallery</string>
 
-    <!-- Search topic -->
-    <string name="search_topic_words">Words</string>
-    <string name="search_topic_user">User</string>
-    <string name="search_topic_in_progress">Search in progress</string>
-    <string name="search_topic_error">Search failed</string>
-    <string name="search_topic_ended">No more results</string>
+	<!-- Search topic -->
+	<string name="search_topic_words">Words</string>
+	<string name="search_topic_user">User</string>
+	<string name="search_topic_in_progress">Search in progress</string>
+	<string name="search_topic_error">Search failed</string>
+	<string name="search_topic_ended">No more results</string>
 
-    <!-- Profile -->
-    <string name="profile_general_info">General info</string>
-    <string name="profile_forum_info">Forum info</string>
-    <string name="profile_email_label">Email</string>
-    <string name="profile_birthday_label">Birthday</string>
-    <string name="profile_gender_label">Gender</string>
-    <string name="profile_city_label">City</string>
-    <string name="profile_employment_label">Employment</string>
-    <string name="profile_hobbies_label">Hobbies</string>
-    <string name="profile_status_label">Status</string>
-    <string name="profile_message_count_label">Messages</string>
-    <string name="profile_arrival_date_label">Date of arrival on the forum</string>
-    <string name="profile_last_message_date">Last message date</string>
-    <string name="profile_personal_quote_label">Personal quote</string>
-    <string name="profile_signature_label">Message signature</string>
-    <string name="profile_personal_smilies_label">Personal smilies</string>
-    <string name="profile_personal_smilies_mark_as_favorite">Add to favorites</string>
-    <string name="profile_personal_smilies_remove_from_favorites">Remove from favorites</string>
-    <string name="profile_personal_smilies_edit_smiley_keywords">Edit keywords</string>
-    <string name="profile_personal_smilies_copy_code">Copy code</string>
-    <string name="profile_personal_smilies_code_copied">Smiley code copied to clipboard!</string>
-    <string name="profile_favorite_smilies_label">Favorite smilies</string>
-    <string name="profile_no_favorite_smilies">No favorite smileys defined. You can favorite smileys by long-pressing them when in a topic or when searching for smileys when typing a post.</string>
+	<!-- Profile -->
+	<string name="profile_general_info">General info</string>
+	<string name="profile_forum_info">Forum info</string>
+	<string name="profile_email_label">Email</string>
+	<string name="profile_birthday_label">Birthday</string>
+	<string name="profile_gender_label">Gender</string>
+	<string name="profile_city_label">City</string>
+	<string name="profile_employment_label">Employment</string>
+	<string name="profile_hobbies_label">Hobbies</string>
+	<string name="profile_status_label">Status</string>
+	<string name="profile_message_count_label">Messages</string>
+	<string name="profile_arrival_date_label">Date of arrival on the forum</string>
+	<string name="profile_last_message_date">Last message date</string>
+	<string name="profile_personal_quote_label">Personal quote</string>
+	<string name="profile_signature_label">Message signature</string>
+	<string name="profile_personal_smilies_label">Personal smilies</string>
+	<string name="profile_personal_smilies_mark_as_favorite">Add to favorites</string>
+	<string name="profile_personal_smilies_remove_from_favorites">Remove from favorites</string>
+	<string name="profile_personal_smilies_edit_smiley_keywords">Edit keywords</string>
+	<string name="profile_personal_smilies_copy_code">Copy code</string>
+	<string name="profile_personal_smilies_code_copied">Smiley code copied to clipboard!</string>
+	<string name="profile_favorite_smilies_label">Favorite smilies</string>
+	<string name="profile_no_favorite_smilies">No favorite smileys defined. You can favorite smileys by long-pressing them when in a topic or when searching for smileys when typing a post.</string>
 
-    <!-- Account -->
-    <string name="profile_account_connection_title">Connection to the forum</string>
-    <string name="profile_account_connection_connected">Connected</string>
-    <string name="profile_account_connection_disconnected">Disconnected</string>
-    <string name="profile_account_connection_action_connect">Connect</string>
-    <string name="profile_account_connection_action_update_credentials">Update credentials</string>
+	<!-- Account -->
+	<string name="profile_account_connection_title">Connection to the forum</string>
+	<string name="profile_account_connection_connected">Connected</string>
+	<string name="profile_account_connection_disconnected">Disconnected</string>
+	<string name="profile_account_connection_action_connect">Connect</string>
+	<string name="profile_account_connection_action_update_credentials">Update credentials</string>
 
-    <!-- Smiley actions -->
-    <string name="adding_smiley_as_favorite">Adding smiley to favorites…</string>
-    <string name="removing_smiley_from_favorites">Removing smiley from favorites…</string>
-    <string name="add_smiley_as_favorite_success">Smiley successfully added to favorites</string>
-    <string name="add_smiley_as_favorite_unknown_error">Error when adding smiley as favorite</string>
-    <string name="add_smiley_as_favorite_max_reached_out_error">You cannot add more than 10 smilies as favorites</string>
-    <string name="add_smiley_as_favorite_already_added_error">Smiley already added as favorite!</string>
-    <string name="remove_smiley_from_favorites_success">Smiley successfully removed from favorites</string>
-    <string name="remove_smiley_from_favorites_failure">Error when removing smiley from favorites</string>
-    <string name="edit_smiley_keywords_success">Smiley keywords successfully updated</string>
-    <string name="edit_smiley_keywords_failure">Error when updating smiley keywords</string>
+	<!-- Smiley actions -->
+	<string name="adding_smiley_as_favorite">Adding smiley to favorites…</string>
+	<string name="removing_smiley_from_favorites">Removing smiley from favorites…</string>
+	<string name="add_smiley_as_favorite_success">Smiley successfully added to favorites</string>
+	<string name="add_smiley_as_favorite_unknown_error">Error when adding smiley as favorite</string>
+	<string name="add_smiley_as_favorite_max_reached_out_error">You cannot add more than 10 smilies as favorites</string>
+	<string name="add_smiley_as_favorite_already_added_error">Smiley already added as favorite!</string>
+	<string name="remove_smiley_from_favorites_success">Smiley successfully removed from favorites</string>
+	<string name="remove_smiley_from_favorites_failure">Error when removing smiley from favorites</string>
+	<string name="edit_smiley_keywords_success">Smiley keywords successfully updated</string>
+	<string name="edit_smiley_keywords_failure">Error when updating smiley keywords</string>
 
-    <string name="action_add_smiley_to_favorites">Add smiley to favorites</string>
-    <string name="action_copy_smiley_code">Copy smiley code to the clipboard</string>
+	<string name="action_add_smiley_to_favorites">Add smiley to favorites</string>
+	<string name="action_copy_smiley_code">Copy smiley code to the clipboard</string>
 
-    <!-- Report post -->
-    <string name="action_report_post_label">Moderation request</string>
-    <string name="action_report_validate">Send</string>
-    <string name="report_post_failed">Error when reporting post to moderation</string>
-    <string name="report_join_label">An existing moderation request has already been sent. Join existing request?</string>
-    <string name="report_text_hint">Moderation request reason</string>
-    <string name="report_request_in_progress">Your moderation request has not yet been treated</string>
-    <string name="report_already_treated">Moderation request already treated</string>
-    <string name="report_request_success">Moderation request successfully sent</string>
+	<!-- Report post -->
+	<string name="action_report_post_label">Moderation request</string>
+	<string name="action_report_validate">Send</string>
+	<string name="report_post_failed">Error when reporting post to moderation</string>
+	<string name="report_join_label">An existing moderation request has already been sent. Join existing request?</string>
+	<string name="report_text_hint">Moderation request reason</string>
+	<string name="report_request_in_progress">Your moderation request has not yet been treated</string>
+	<string name="report_already_treated">Moderation request already treated</string>
+	<string name="report_request_success">Moderation request successfully sent</string>
 </resources>
