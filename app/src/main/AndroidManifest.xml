@@ -14,7 +14,10 @@
 	<uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
 
 	<!-- Image management -->
-	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+	<uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+	<uses-permission
+		android:name="android.permission.READ_EXTERNAL_STORAGE"
+		android:maxSdkVersion="28" />
 	<uses-permission
 		android:name="android.permission.WRITE_EXTERNAL_STORAGE"
 		android:maxSdkVersion="28" />

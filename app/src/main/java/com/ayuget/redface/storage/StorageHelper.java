@@ -19,7 +19,6 @@ package com.ayuget.redface.storage;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.media.MediaScannerConnection;
-import android.os.Build;
 import android.os.Environment;
 
 import java.io.File;
@@ -45,25 +44,25 @@ public class StorageHelper {
 		File mediaStorageDir = new File(picturesDir + APP_STORAGE_DIR);
 
 //		if (mediaStorageDir.canWrite()) {
-			// Create the storage directory if it does not exist
-			if (!mediaStorageDir.exists()) {
-				if (!mediaStorageDir.mkdirs()) {
-					throw new IOException("Unable to create media storage directory");
-				}
+		// Create the storage directory if it does not exist
+		if (!mediaStorageDir.exists()) {
+			if (!mediaStorageDir.mkdirs()) {
+				throw new IOException("Unable to create media storage directory");
 			}
-			if (filename == null || filename.trim().isEmpty()) {
-				filename = "rdmstr" + UUID.randomUUID().toString();
-			}
-			// fix to remove image name sufixes (prevents from saving image)
-			if (filename.contains("?")) {
-				filename = filename.substring(0, filename.indexOf("?"));
-			}
-			// fix to add an extension in case there's none
-			if (!filename.contains(".")) {
-				filename = filename + ".jpg";
-			}
+		}
+		if (filename == null || filename.trim().isEmpty()) {
+			filename = "rdmstr" + UUID.randomUUID().toString();
+		}
+		// fix to remove image name sufixes (prevents from saving image)
+		if (filename.contains("?")) {
+			filename = filename.substring(0, filename.indexOf("?"));
+		}
+		// fix to add an extension in case there's none
+		if (!filename.contains(".")) {
+			filename = filename + ".jpg";
+		}
 
-			return new File(mediaStorageDir.getPath() + File.separator + filename);
+		return new File(mediaStorageDir.getPath() + File.separator + filename);
 //		} else {
 //			throw new IOException("External storage is not writable");
 //		}
@@ -104,8 +103,8 @@ public class StorageHelper {
 		}
 	}
 
-	public static void broadcastImageWasSaved(Context context, File image, Bitmap.CompressFormat compressFormat) {
-		MediaScannerConnection.scanFile(context, new String[]{image.getPath()}, new String[]{getImageMimeType(compressFormat)}, null);
+	public static void broadcastImageWasSaved(Context context, File image, String mimeType) {
+		MediaScannerConnection.scanFile(context, new String[]{image.getPath()}, new String[]{mimeType}, null);
 	}
 
 	public static String getImageMimeType(Bitmap.CompressFormat compressFormat) {
