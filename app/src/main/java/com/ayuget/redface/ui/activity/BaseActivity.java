@@ -212,4 +212,13 @@ public class BaseActivity extends AppCompatActivity implements HasAndroidInjecto
 	public AndroidInjector<Object> androidInjector() {
 		return ((RedfaceApp) getApplication()).androidInjector();
 	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		// fix for !!! FAILED BINDER TRANSACTION !!! TransactionTooLargeException: data parcel size XXX bytes
+		if (outState != null && outState.containsKey("android:viewHierarchyState")) {
+			outState.getBundle("android:viewHierarchyState").clear();
+		}
+	}
 }
