@@ -126,13 +126,6 @@
 
         <!-- Disable default WorkManagerFactory since we have a custom DI-friendly implementation -->
         <provider
-            android:name="androidx.work.impl.WorkManagerInitializer"
-            android:authorities="com.ayuget.redface.workmanager-init"
-            android:enabled="false"
-            android:exported="false"
-            tools:replace="android:authorities" />
-
-        <provider
             android:name="androidx.startup.InitializationProvider"
             android:authorities="${applicationId}.androidx-startup"
             android:exported="false"
@@ -142,7 +135,5 @@
                 android:value="androidx.startup"
                 tools:node="remove" />
         </provider>
-
     </application>
-
 </manifest>

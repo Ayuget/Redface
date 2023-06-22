@@ -1,13 +1,13 @@
 buildscript {
 	repositories {
-		jcenter()
+		mavenCentral()
 		maven { url 'https://maven.google.com' }
 		google()
 	}
 
 	dependencies {
-		classpath 'com.android.tools.build:gradle:7.3.1'
-		classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:3.0.1'
+		classpath 'com.android.tools.build:gradle:8.0.2'
+		classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:4.0.0'
 	}
 }
 
@@ -23,7 +23,7 @@ apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
 
 android {
-	compileSdkVersion 33
+	compileSdk 33
 
 	defaultConfig {
 		applicationId "com.ayuget.redface"
@@ -65,26 +65,26 @@ android {
 
 dependencies {
 	implementation fileTree(dir: 'libs', include: ['*.jar'])
+	implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.0"))
 
 	implementation 'androidx.multidex:multidex:2.0.1'
 
 	// Support libraries
-	implementation 'androidx.appcompat:appcompat:1.3.1'
-	implementation 'androidx.recyclerview:recyclerview:1.2.1'
+	implementation 'androidx.appcompat:appcompat:1.6.1'
+	implementation 'androidx.recyclerview:recyclerview:1.3.0'
 	implementation 'androidx.palette:palette:1.0.0'
-	implementation 'androidx.annotation:annotation:1.2.0'
-	implementation 'com.google.android.material:material:1.4.0'
-	implementation 'androidx.browser:browser:1.3.0'
-	implementation 'androidx.constraintlayout:constraintlayout:2.1.1'
+	implementation 'androidx.annotation:annotation:1.6.0'
+	implementation 'com.google.android.material:material:1.9.0'
+	implementation 'androidx.browser:browser:1.5.0'
+	implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 	implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
 
 	// WorkManager
-	//implementation "android.arch.work:work-runtime:1.0.1"
-	implementation 'androidx.work:work-runtime:2.7.1'
+	implementation 'androidx.work:work-runtime:2.8.1'
 
 	// Dependency injection
-	annotationProcessor 'com.google.dagger:dagger-compiler:2.35.1'
-	implementation 'com.google.dagger:dagger:2.35.1'
+	annotationProcessor 'com.google.dagger:dagger-compiler:2.46.1'
+	implementation 'com.google.dagger:dagger:2.46.1'
 	annotationProcessor 'com.google.dagger:dagger-android-processor:2.35.1'
 	implementation 'com.google.dagger:dagger-android:2.35.1'
 	implementation 'com.google.dagger:dagger-android-support:2.35.1'
@@ -123,7 +123,7 @@ dependencies {
 	implementation 'com.squareup.moshi:moshi:1.8.0'
 	implementation 'com.jakewharton:disklrucache:2.0.2'
 	implementation "com.github.VictorAlbertos:RxActivityResult:0.3.9"
-	implementation 'androidx.exifinterface:exifinterface:1.3.3'
+	implementation 'androidx.exifinterface:exifinterface:1.3.6'
 
 	// Deal with Android M new-style permissions
 	implementation 'com.tbruyelle.rxpermissions:rxpermissions:0.5.1@aar'
