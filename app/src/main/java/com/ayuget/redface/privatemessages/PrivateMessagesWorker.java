@@ -1,10 +1,11 @@
 package com.ayuget.redface.privatemessages;
 
+import android.Manifest;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Pair;
+import android.content.pm.PackageManager;
 
 import com.ayuget.redface.R;
 import com.ayuget.redface.RedfaceNotifications;
@@ -20,10 +21,12 @@ import com.squareup.phrase.Phrase;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
+
 import timber.log.Timber;
 
 public class PrivateMessagesWorker extends Worker {
@@ -57,8 +60,13 @@ public class PrivateMessagesWorker extends Worker {
     public Result doWork() {
         Timber.d("PrivateMessagesWorker is running");
 
-        if (! appSettings.arePrivateMessagesNoticationsEnabled()) {
+        if (!appSettings.arePrivateMessagesNoticationsEnabled()) {
             Timber.d("Private message notifications are disabled, exiting worker");
+            return Result.success();
+        }
+
+        // Permission cannot be asked here as this worker is run in the background. It's actually requested when the user enables the notifications
+        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             return Result.success();
         }
 
