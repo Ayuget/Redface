@@ -32,7 +32,7 @@ android {
 		targetSdkVersion 33
 		multiDexEnabled true
 		versionCode 5001
-		versionName "5.0.1"
+		versionName "5.1.0"
 		vectorDrawables.useSupportLibrary = true
 	}
 	compileOptions {
