@@ -35,7 +35,7 @@ public class HTMLToBBCode implements Func1<String, String> {
             String bbCode = matcher.group(1);
 
             if (bbCode != null) {
-                for (String line : bbCode.split("\n")) {
+                for (String line : bbCode.split("\\R")) {
                     builder.append(Html.fromHtml(line));
                     builder.append("\n");
                 }

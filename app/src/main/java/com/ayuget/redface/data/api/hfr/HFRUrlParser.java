@@ -26,6 +26,7 @@ import com.ayuget.redface.data.state.CategoriesStore;
 import com.ayuget.redface.network.HTTPRedirection;
 import com.ayuget.redface.ui.misc.PagePosition;
 
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

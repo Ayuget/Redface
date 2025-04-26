@@ -63,6 +63,9 @@
     @retrofit.http.* <methods>;
 }
 
+# Bouncycastle
+-dontwarn org.bouncycastle.**
+
 # OkHttp has some internal stuff not available on Android.
 -dontwarn okhttp3.internal.**
 
