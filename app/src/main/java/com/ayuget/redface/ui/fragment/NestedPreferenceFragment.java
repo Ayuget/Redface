@@ -137,8 +137,8 @@ public class NestedPreferenceFragment extends PreferenceFragment implements Shar
         List<Category> guestCategories = categoriesStore.getCategories(userManager.getGuestUser());
 
         if (guestCategories != null && defaultCatPreference != null) {
-            CharSequence entries[] = new String[guestCategories.size()];
-            CharSequence values[] = new String[guestCategories.size()];
+            CharSequence[] entries = new String[guestCategories.size()];
+            CharSequence[] values = new String[guestCategories.size()];
 
             int i = 0;
             for (Category category : guestCategories) {
