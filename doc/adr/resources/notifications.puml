@@ -1,0 +1,35 @@
+@startuml How to start the worker
+(*) --> Application start
+--> ===B1===
+--> "PM Worker"
+--> "Timeout"
+if "Permission\n&& notification enabled\n&& new message" then
+    --> [true] "Send notification"
+    --> "Timeout"
+else
+    --> [false] "Timeout"
+endif
+===B1=== --> "UI"
+if "" then
+    -left-> "PM activity"
+    if "Notification\npermission enabled?" then
+        --> [no] "Ask permission"
+        --> "Show private messages"
+    else
+        --> [yes] "Show private messages"
+    endif
+else
+    -right-> "General settings activity"
+    if "Notification\npermission enabled?" then
+        --> [no] if "Ask permission" then
+            --> [not granted] "Grey PM setting"
+            --> "Show settings"
+        else
+            --> [granted] "Show settings"
+        endif
+    else
+        --> [yes] "Show settings"
+    endif
+endif
+
+@enduml

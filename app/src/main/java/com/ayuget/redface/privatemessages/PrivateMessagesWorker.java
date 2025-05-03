@@ -57,14 +57,14 @@ public class PrivateMessagesWorker extends Worker {
     public Result doWork() {
         Timber.d("PrivateMessagesWorker is running");
 
-        if (! appSettings.arePrivateMessagesNoticationsEnabled()) {
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
+
+        if (!appSettings.arePrivateMessagesNoticationsEnabled() || !notificationManager.areNotificationsEnabled()) {
             Timber.d("Private message notifications are disabled, exiting worker");
             return Result.success();
         }
 
         Timber.d("Notifications are enabled, checking new private messages for all app users");
-
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
 
         for (User appUser : userManager.getRealUsers()) {
             Timber.d("Checking new private messages for user '%s'", appUser.getUsername());
@@ -89,6 +89,7 @@ public class PrivateMessagesWorker extends Worker {
                 Notification notificationForPrivateMessage = createNotificationForPrivateMessage(userNotificationsGroup, privateMessage);
                 int privateMessageId = (int) privateMessage.getId();
 
+                // Safe to call here, as we called areNotificationEnabled() above
                 notificationManager.notify(privateMessageId, notificationForPrivateMessage);
 
                 privateMessagesNotificationHandler.storeNotificationAsSent(appUser, privateMessage);
@@ -103,7 +104,7 @@ public class PrivateMessagesWorker extends Worker {
         resultIntent.setAction(String.valueOf(privateMessage.getId()));
         resultIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         resultIntent.putExtra(UIConstants.ARG_SELECTED_PM, privateMessage);
-        return PendingIntent.getActivity(getApplicationContext(), 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getActivity(getApplicationContext(), 0, resultIntent, PendingIntent.FLAG_IMMUTABLE);
     }
 
     private Notification createNotificationForPrivateMessage(String messagesGroup, PrivateMessage privateMessage) {
@@ -125,6 +126,6 @@ public class PrivateMessagesWorker extends Worker {
     private PendingIntent buildPrivateMessageSummaryNotificationIntent(Context context) {
         Intent resultIntent = new Intent(context, PrivateMessagesActivity.class);
         resultIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        return PendingIntent.getActivity(getApplicationContext(), 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getActivity(getApplicationContext(), 0, resultIntent, PendingIntent.FLAG_IMMUTABLE);
     }
 }
