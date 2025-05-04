@@ -31,7 +31,7 @@ android {
 		minSdkVersion 16
 		targetSdkVersion 33
 		multiDexEnabled true
-		versionCode 5001
+		versionCode 5002
 		versionName "5.1.0"
 		vectorDrawables.useSupportLibrary = true
 	}
@@ -46,12 +46,14 @@ android {
 
 		beta {
 			versionNameSuffix '-beta'
+			debuggable false
 			minifyEnabled true
 			shrinkResources true
 			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 		}
 
 		release {
+			debuggable false
 			minifyEnabled true
 			shrinkResources true
 			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
