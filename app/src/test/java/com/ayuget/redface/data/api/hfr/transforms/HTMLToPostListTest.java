@@ -16,15 +16,13 @@
 
 package com.ayuget.redface.data.api.hfr.transforms;
 
-import android.os.Build;
 
 import com.ayuget.redface.BaseTestCase;
-import com.ayuget.redface.BuildConfig;
 import com.ayuget.redface.data.api.model.Post;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.IOException;
 import java.util.List;

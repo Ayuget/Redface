@@ -24,7 +24,7 @@ import com.ayuget.redface.data.api.model.Topic;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import static org.assertj.core.api.Assertions.*;
 import java.io.IOException;
 

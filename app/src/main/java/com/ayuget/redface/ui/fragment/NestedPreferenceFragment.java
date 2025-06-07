@@ -16,9 +16,12 @@
 
 package com.ayuget.redface.ui.fragment;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
@@ -45,6 +48,7 @@ import com.hannesdorfmann.fragmentargs.FragmentArgs;
 import com.hannesdorfmann.fragmentargs.annotation.Arg;
 import com.hannesdorfmann.fragmentargs.annotation.FragmentWithArgs;
 import com.squareup.otto.Bus;
+import com.tbruyelle.rxpermissions.RxPermissions;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,6 +61,7 @@ import dagger.android.AndroidInjection;
 import timber.log.Timber;
 
 import static com.ayuget.redface.settings.SettingsConstants.KEY_ENABLE_PRIVATE_MESSAGES_NOTIFICATIONS;
+import static com.ayuget.redface.settings.SettingsConstants.KEY_GENERAL_PREFERENCES;
 import static com.ayuget.redface.settings.SettingsConstants.KEY_PRIVATE_MESSAGES_POLLING_FREQUENCY;
 
 @FragmentWithArgs
@@ -93,6 +98,18 @@ public class NestedPreferenceFragment extends PreferenceFragment implements Shar
 
         if (savedInstanceState != null) {
             savedInstanceState.clear();
+        }
+
+        // Since Android 13 (API 33), notifications need a permission
+        if (fragmentKey.equals(KEY_GENERAL_PREFERENCES) && Build.VERSION.SDK_INT >= 33) {
+            RxPermissions.getInstance(getActivity())
+                    .request(Manifest.permission.POST_NOTIFICATIONS)
+                    .subscribe(isPermissionGranted -> {
+                        if (!isPermissionGranted) {
+                            disablePrivateMessageNotificationsPref();
+                            Timber.w("POST_NOTIFICATIONS denied, disable the preference");
+                        }
+                    });
         }
     }
 
@@ -137,8 +154,8 @@ public class NestedPreferenceFragment extends PreferenceFragment implements Shar
         List<Category> guestCategories = categoriesStore.getCategories(userManager.getGuestUser());
 
         if (guestCategories != null && defaultCatPreference != null) {
-            CharSequence entries[] = new String[guestCategories.size()];
-            CharSequence values[] = new String[guestCategories.size()];
+            CharSequence[] entries = new String[guestCategories.size()];
+            CharSequence[] values = new String[guestCategories.size()];
 
             int i = 0;
             for (Category category : guestCategories) {
@@ -167,6 +184,13 @@ public class NestedPreferenceFragment extends PreferenceFragment implements Shar
             defaultCatPreference.setEntries(mergedEntriesArray);
             defaultCatPreference.setEntryValues(mergedEntryValuesArray);
         }
+    }
+
+    protected void disablePrivateMessageNotificationsPref() {
+        CheckBoxPreference defaultCatPreference = (CheckBoxPreference) findPreference(KEY_ENABLE_PRIVATE_MESSAGES_NOTIFICATIONS);
+        defaultCatPreference.setEnabled(false);
+        defaultCatPreference.setChecked(false);
+        defaultCatPreference.setShouldDisableView(true);
     }
 
     protected void initSummary() {
@@ -270,7 +294,7 @@ public class NestedPreferenceFragment extends PreferenceFragment implements Shar
             boolean arePrivateMessagesEnabled = sharedPreferences.getBoolean(KEY_ENABLE_PRIVATE_MESSAGES_NOTIFICATIONS, true);
 
             if (arePrivateMessagesEnabled) {
-                RedfaceNotifications.updateOrLaunchPrivateMessagesWorker(appSettings.getPrivateMessagesPollingFrequency());
+                RedfaceNotifications.updateOrLaunchPrivateMessagesWorker(getActivity(), appSettings.getPrivateMessagesPollingFrequency());
             } else {
                 RedfaceNotifications.disablePrivateMessagesNotifications();
             }
