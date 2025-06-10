@@ -16,10 +16,7 @@
 
 package com.ayuget.redface.data.api.hfr;
 
-import android.os.Build;
-
 import com.ayuget.redface.BaseTestCase;
-import com.ayuget.redface.BuildConfig;
 import com.ayuget.redface.data.api.MDLink;
 import com.ayuget.redface.data.api.model.Category;
 import com.ayuget.redface.data.api.model.Subcategory;
@@ -31,9 +28,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
 
 import java.util.LinkedList;
 
@@ -41,7 +36,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = Build.VERSION_CODES.M)
 public class HFRUrlParserTest extends BaseTestCase {
     HFREndpoints hfrEndpoints;
 
@@ -99,10 +93,12 @@ public class HFRUrlParserTest extends BaseTestCase {
     }
 
     @Test
-    public void testParseRedirectedUrl() throws Exception {
+    public void test_ParseRedirectedUrl()  {
         HFRUrlParser urlParser = new HFRUrlParser(hfrEndpoints, categoriesStore);
 
-        String redirectedUrl = "http://forum.hardware.fr/forum2.php?config=hfr.inc&cat=13&subcat=430&post=61179&page=1&p=1&sondage=0&owntopic=0&trash=0&trash_post=0&print=0&numreponse=45255613&quote_only=0&new=0&nojs=0#t45255613";
+        // http://forum.hardware.fr/forum2.php?config=hfr.inc&cat=13&subcat=430&post=61179&page=1&p=1&sondage=0&owntopic=0&trash=0&trash_post=0&print=0&numreponse=45255613&quote_only=0&new=0&nojs=0#t45255613
+        // will become another URL
+        String redirectedUrl = "https://forum.hardware.fr/hfr/Discussions/Sports/football-ballon-rond-sujet_61179_40331.htm#t45255613";
 
         MDLink parsedLink = urlParser.parseUrl(redirectedUrl).toBlocking().first();
 
