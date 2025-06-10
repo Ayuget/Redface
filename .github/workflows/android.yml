@@ -65,3 +65,25 @@ jobs:
         with:
           name: Signed app bundle
           path: ${{steps.sign_app.outputs.signedReleaseFile}}
+
+      - name: Download artifact
+        if: github.event_name == 'release' && github.event.action == 'created'
+        uses: actions/download-artifact@v4
+        with:
+          name: Signed app bundle
+          path: extracted
+
+      - name: Rename APK
+        if: github.event_name == 'release' && github.event.action == 'created'
+        run: |
+          mkdir renamed
+          apk_file=$(find extracted -name '*.apk' | head -n 1)
+          echo "Found APK: $apk_file"
+          cp "$apk_file" renamed/redface-beta-${{ github.event.release.tag_name }}.apk
+
+      - name: Upload to GitHub Release
+        if: github.event_name == 'release' && github.event.action == 'created'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload "$GITHUB_REF_NAME" renamed/redface-beta-${{ github.event.release.tag_name }}.apk --clobber
